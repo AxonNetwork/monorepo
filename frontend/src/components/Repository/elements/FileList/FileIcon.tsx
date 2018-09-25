@@ -11,7 +11,7 @@ import FolderIcon from '@material-ui/icons/Folder'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
 
 class FileIcon extends Component {
-    render(){
+    render() {
         let icon
         switch (this.props.fileType) {
             case 'data':
@@ -33,9 +33,9 @@ class FileIcon extends Component {
             default:
                 icon = <HelpOutlineIcon />
         }
-        if(this.props.status === "*modified" || this.props.status === "*added"){
+        if (this.props.status === '*modified' || this.props.status === '*added') {
             icon = (
-                <Badge classes={{badge:this.props.classes.badge}} badgeContent='' color="secondary">
+                <Badge classes={{badge: this.props.classes.badge}} badgeContent="" color="secondary">
                     {icon}
                 </Badge>
             )
@@ -51,16 +51,16 @@ class FileIcon extends Component {
 FileIcon.propTypes = {
     fileType: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
     badge: {
         top: '-4px',
-        width:' 8px',
+        width: ' 8px',
         right: '-4px',
-        height:' 8px'
-    }
+        height: ' 8px',
+    },
 })
 
 export default withStyles(styles)(FileIcon)

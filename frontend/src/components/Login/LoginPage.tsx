@@ -19,7 +19,7 @@ class LoginPage extends Component {
             displaySignup: false,
             name: '',
             password: '',
-            email: ''
+            email: '',
         }
 
         this.toggleView = this.toggleView.bind(this)
@@ -27,14 +27,14 @@ class LoginPage extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.props.fetchUserData()
     }
 
-    toggleView(event){
+    toggleView(event) {
         event.preventDefault()
         this.setState({
-            displaySignup: !this.state.displaySignup
+            displaySignup: !this.state.displaySignup,
         })
     }
 
@@ -46,16 +46,16 @@ class LoginPage extends Component {
 
     handleSubmit(event) {
         event.preventDefault()
-        if(this.state.displaySignup){
+        if (this.state.displaySignup) {
             this.props.signup(this.state.name, this.state.email, this.state.password)
-        }else{
+        }else {
             this.props.login(this.state.email, this.state.password)
         }
     }
 
     render() {
         const classes = this.props.classes
-        if(this.props.user.loggedIn){
+        if (this.props.user.loggedIn) {
             return null
         }
         const error = this.props.user.error
@@ -113,19 +113,19 @@ class LoginPage extends Component {
     }
 }
 
-function ToggleText(props){
-    if(props.displaySignup){
+function ToggleText(props) {
+    if (props.displaySignup) {
         return(
             <Typography>
                 Already have an account?&nbsp;
-                <a href='' className='link' onClick={props.toggleView}>Login</a>
+                <a href="" className="link" onClick={props.toggleView}>Login</a>
             </Typography>
         )
-    }else{
+    }else {
         return(
             <Typography>
                 Don't have an account?&nbsp;
-                <a href='' className='link' onClick={props.toggleView}>Signup</a>
+                <a href="" className="link" onClick={props.toggleView}>Signup</a>
             </Typography>
         )
     }
@@ -136,7 +136,7 @@ LoginPage.propTypes = {
     login: PropTypes.func.isRequired,
     signup: PropTypes.func.isRequired,
     fetchUserData: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
@@ -159,43 +159,43 @@ const styles = theme => ({
             },
         },
     },
-    headline:{
-        textAlign:'center'
+    headline: {
+        textAlign: 'center',
     },
-    textField:{
+    textField: {
         width: '100%',
-        marginTop: '16px'
+        marginTop: '16px',
     },
     button: {
         textTransform: 'none',
         display: 'inline-block',
         width: '50%',
         marginTop: '32px',
-        marginBottom: '16px'
+        marginBottom: '16px',
     },
-    errorMessage:{
-        marginBottom: '-20px'
+    errorMessage: {
+        marginBottom: '-20px',
     },
-    link:{
-        color: theme.palette.secondary.main
-    }
+    link: {
+        color: theme.palette.secondary.main,
+    },
 })
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        user: state.user
+        user: state.user,
     }
 }
 
 const mapDispatchToProps = {
     login,
     signup,
-    fetchUserData
+    fetchUserData,
 }
 
 const LoginPageContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(LoginPage))
 
 export default LoginPageContainer

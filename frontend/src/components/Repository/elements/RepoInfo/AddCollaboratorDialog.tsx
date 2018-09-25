@@ -10,10 +10,10 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 
 class AddCollaboratorDialog extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
-            email: ''
+            email: '',
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)

@@ -9,7 +9,7 @@ class Checkpoint extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            message: ''
+            message: '',
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -52,18 +52,18 @@ Checkpoint.propTypes = {
     folderPath: PropTypes.string.isRequired,
     repoID: PropTypes.string.isRequired,
     checkpointRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
     textField: {
-        width: '100%'
+        width: '100%',
     },
     button: {
         display: 'block',
         textTransform: 'none',
-        marginTop: '16px'
-    }
+        marginTop: '16px',
+    },
 })
 
 export default withStyles(styles)(Checkpoint)

@@ -19,7 +19,7 @@ class Boilerplate extends Component {
 }
 
 Boilerplate.propTypes = {
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

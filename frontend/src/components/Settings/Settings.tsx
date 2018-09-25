@@ -17,7 +17,7 @@ class Settings extends Component {
         return (
             <React.Fragment>
                 <Typography variant="headline" className={classes.headline}>Settings</Typography>
-                <Button variant="contained" color="secondary" className={classes.button} onClick={()=>this.props.logout()}>
+                <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
                     Logout
                 </Button>
             </React.Fragment>
@@ -27,15 +27,15 @@ class Settings extends Component {
 
 Settings.propTypes = {
     logout: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    headline:{
-        marginBottom: theme.spacing.unit*2
+    headline: {
+        marginBottom: theme.spacing.unit * 2,
     },
-    button:{
-        textTransform: 'none'
+    button: {
+        textTransform: 'none',
     },
 })
 

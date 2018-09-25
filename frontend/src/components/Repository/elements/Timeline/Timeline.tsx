@@ -77,7 +77,7 @@ Timeline.propTypes = {
     getDiff: PropTypes.func.isRequired,
     revertFiles: PropTypes.func.isRequired,
     selectEvent: PropTypes.func,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

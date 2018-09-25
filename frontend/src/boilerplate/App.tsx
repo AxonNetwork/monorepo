@@ -1,17 +1,17 @@
-import { ConnectedRouter } from 'connected-react-router';
-import { History } from 'history';
-import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
-import { Store } from 'redux';
+import { ConnectedRouter } from 'connected-react-router'
+import { History } from 'history'
+import * as React from 'react'
+import { I18nextProvider } from 'react-i18next'
+import { Provider } from 'react-redux'
+import { Store } from 'redux'
 
-import i18n from 'i18n';
-import router from 'router';
-import { IGlobalState } from 'types/global';
+import i18n from 'i18n'
+import router from 'router'
+import { IGlobalState } from 'types/global'
 
 interface IAppProps {
-  store: Store<IGlobalState>;
-  history: History;
+  store: Store<IGlobalState>
+  history: History
 }
 
 export default (props: IAppProps) => (
@@ -22,4 +22,4 @@ export default (props: IAppProps) => (
       </ConnectedRouter>
     </Provider>
   </I18nextProvider>
-);
+)

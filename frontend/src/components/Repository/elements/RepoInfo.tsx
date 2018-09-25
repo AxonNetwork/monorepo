@@ -23,7 +23,7 @@ class RepoInfo extends Component
 
     render() {
         const classes = this.props.classes
-        const version = (this.props.repo.timeline !== undefined) ? "v"+Object.keys(this.props.repo.timeline).length : ''
+        const version = (this.props.repo.timeline !== undefined) ? 'v' + Object.keys(this.props.repo.timeline).length : ''
 
         return (
             <React.Fragment>
@@ -62,7 +62,7 @@ RepoInfo.propTypes = {
     repo: PropTypes.object.isRequired,
     addCollaborator: PropTypes.func.isRequired,
     pullRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
@@ -71,15 +71,15 @@ const styles = theme => ({
         cursor: 'pointer',
     },
     headline: {
-        marginRight:'8px',
-        display: 'inline-block'
+        marginRight: '8px',
+        display: 'inline-block',
     },
     version: {
-        display: 'inline-block'
+        display: 'inline-block',
     },
     caption: {
-        fontSize: '10pt'
-    }
+        fontSize: '10pt',
+    },
 })
 
 export default withStyles(styles)(RepoInfo)

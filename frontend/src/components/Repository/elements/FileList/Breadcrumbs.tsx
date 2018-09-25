@@ -10,12 +10,12 @@ class Breadcrumbs extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showBasePath: false
+            showBasePath: false,
         }
     }
 
     componentWillReceiveProps(props) {
-        if(props.folderPath !== this.props.folderPath){
+        if (props.folderPath !== this.props.folderPath) {
             this.setState({showBasePath: false})
         }
     }
@@ -27,22 +27,22 @@ class Breadcrumbs extends Component {
     selectCrumb = (index) => {
         const parts = this.getParts(this.props.folderPath, this.props.selectedFolder)
         const dir = path.dirname(this.props.folderPath)
-        const toSelect = parts.slice(0, index+1).join('/')
+        const toSelect = parts.slice(0, index + 1).join('/')
         this.props.selectFile(path.join(dir, toSelect), true)
     }
 
     getParts = (folderPath, selectedFolder) => {
         const basePath = path.dirname(folderPath)
         let parts = [path.basename(folderPath)]
-        if(selectedFolder !== undefined){
-            const selected = selectedFolder.file.replace(basePath+"/", "")
+        if (selectedFolder !== undefined) {
+            const selected = selectedFolder.file.replace(basePath + '/', '')
             parts = selected.split('/')
         }
         return parts
     }
 
     render() {
-        const { folderPath, selectedFolder, classes }= this.props
+        const { folderPath, selectedFolder, classes } = this.props
         const basePath = path.dirname(folderPath)
         const parts = this.getParts(folderPath, selectedFolder)
 
@@ -56,13 +56,13 @@ class Breadcrumbs extends Component {
                     <span>{basePath.substring(1).split('/').join(' / ')}</span>
                 }
                 <span> / </span>
-                {parts.map((p, i)=>{
+                {parts.map((p, i) => {
                     return(
-                        <React.Fragment key={p+i}>
-                            <span className={classes.crumb} onClick={()=>this.selectCrumb(i)}>
+                        <React.Fragment key={p + i}>
+                            <span className={classes.crumb} onClick={() => this.selectCrumb(i)}>
                                 {p}
                             </span>
-                            {(i < parts.length -1) &&
+                            {(i < parts.length - 1) &&
                                 <span> / </span>
                             }
                         </React.Fragment>
@@ -77,14 +77,14 @@ Breadcrumbs.propTypes = {
     folderPath: PropTypes.string.isRequired,
     selectedFolder: PropTypes.string,
     selectFile: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    crumb:{
+    crumb: {
         color: theme.palette.secondary.main,
-        textDecoration: 'underline'
-    }
+        textDecoration: 'underline',
+    },
 })
 
 export default withStyles(styles)(Breadcrumbs)

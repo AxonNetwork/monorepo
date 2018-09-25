@@ -17,7 +17,7 @@ class RevertFilesDialog extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            checked: []
+            checked: [],
         }
     }
 
@@ -37,7 +37,7 @@ class RevertFilesDialog extends Component {
         }
 
         this.setState({
-            checked: newChecked
+            checked: newChecked,
         })
     }
 
@@ -54,11 +54,11 @@ class RevertFilesDialog extends Component {
                 <DialogTitle>Revert Files</DialogTitle>
                 <DialogContent className={classes.dialogContent}>
                     <List>
-                        {event.files.map(file=>{
+                        {event.files.map(file => {
                             return(
                                 <ListItem
                                     key={file}
-                                    onClick={()=>{this.handleToggle(file)}}
+                                    onClick={() => {this.handleToggle(file)}}
                                     className={classes.listItem}
                                 >
                                     <Checkbox
@@ -87,24 +87,24 @@ RevertFilesDialog.propTypes = {
     folderPath: PropTypes.string.isRequired,
     revertFiles: PropTypes.func.isRequired,
     open: PropTypes.bool,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    dialogContent:{
+    dialogContent: {
         minWidth: 350,
-        paddingBottom: 0
+        paddingBottom: 0,
     },
-    dialogActions:{
-        justifyContent: 'flex-start'
+    dialogActions: {
+        justifyContent: 'flex-start',
     },
-    listItem:{
+    listItem: {
         padding: 0,
-        marginLeft: -12
+        marginLeft: -12,
     },
-    button:{
-        margin: theme.spacing.unit*2
-    }
+    button: {
+        margin: theme.spacing.unit * 2,
+    },
 })
 
 export default withStyles(styles)(RevertFilesDialog)

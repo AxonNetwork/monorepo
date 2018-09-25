@@ -16,8 +16,8 @@ class Thread extends Component {
 
     constructor(props) {
         super(props)
-        this.state={
-            comment:""
+        this.state = {
+            comment: '',
         }
     }
 
@@ -35,17 +35,17 @@ class Thread extends Component {
 
     handleSubmit = event => {
         event.preventDefault()
-        if(this.state.comment.length === 0){
+        if (this.state.comment.length === 0) {
             return
         }
         this.props.createComment(
             this.props.repoID,
             this.state.comment,
-            {type:this.props.type, subject:this.props.subject},
-            this.props.user
+            {type: this.props.type, subject: this.props.subject},
+            this.props.user,
         )
 
-        this.setState({comment: ""})
+        this.setState({comment: ''})
     }
 
     render() {
@@ -64,11 +64,11 @@ class Thread extends Component {
                         {comments.length === 0 &&
                             <Typography className={classes.comment}>No comments yet. Start the discussion!</Typography>
                         }
-                        {comments.map(c=>{
+                        {comments.map(c => {
                             return (
                                 <div className={classes.comment} key={c.created}>
-                                    <Typography><strong>{c.name||c.user}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
-                                    {c.text.split("\n").map((p, i)=>(
+                                    <Typography><strong>{c.name || c.user}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
+                                    {c.text.split('\n').map((p, i) => (
                                         <Typography className={classes.text} key={i}>{p}</Typography>
                                     ))}
                                 </div>
@@ -87,7 +87,7 @@ class Thread extends Component {
                             onKeyUp={this.handleKeyPress}
                             className={classes.textField}
                         />
-                        <ButtonBase type='submit' className={classes.submit}>
+                        <ButtonBase type="submit" className={classes.submit}>
                             <SendIcon className={classes.icon}/>
                         </ButtonBase>
                     </form>
@@ -102,7 +102,7 @@ Thread.propTypes = {
     type: PropTypes.string.isRequired,
     subject: PropTypes.oneOfType([
         PropTypes.number,
-        PropTypes.string
+        PropTypes.string,
     ]).isRequired,
     unselect: PropTypes.func,
 
@@ -110,73 +110,73 @@ Thread.propTypes = {
     comments: PropTypes.array.isRequired,
     user: PropTypes.string.isRequired,
     createComment: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    threadContainer:{
+    threadContainer: {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        height: '100%'
+        height: '100%',
     },
-    cancel:{
+    cancel: {
         position: 'absolute',
         top: 0,
         right: 0,
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    title:{
+    title: {
         backgroundColor: theme.palette.grey[300],
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    thread:{
+    thread: {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
     },
-    comments:{
+    comments: {
         overflow: 'scroll',
-        flexGrow: 1
+        flexGrow: 1,
     },
-    comment:{
-        margin: theme.spacing.unit
+    comment: {
+        margin: theme.spacing.unit,
     },
-    text:{
-        paddingBottom: theme.spacing.unit*0.25,
+    text: {
+        paddingBottom: theme.spacing.unit * 0.25,
         marginLeft: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit*0.5,
+        paddingLeft: theme.spacing.unit * 0.5,
         borderLeft: '2px solid',
-        borderColor: theme.palette.grey[400]
+        borderColor: theme.palette.grey[400],
     },
-    reply:{
+    reply: {
         display: 'flex',
         alignSelf: 'flex-end',
         width: '100%',
         borderTop: '1px solid',
-        borderColor: theme.palette.grey[300]
+        borderColor: theme.palette.grey[300],
     },
-    textField:{
+    textField: {
         flexGrow: 1,
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    submit:{
+    submit: {
         padding: theme.spacing.unit,
         borderRadius: 4,
     },
-    icon:{
-        color: theme.palette.grey[700]
-    }
+    icon: {
+        color: theme.palette.grey[700],
+    },
 })
 
 
 const mapStateToProps = (state, ownProps) => {
     const repoID = state.repository.repos[state.repository.selectedRepo].repoID
-    const comments = state.discussion.comments.filter(c=>c.attachedTo.subject === ownProps.subject)
+    const comments = state.discussion.comments.filter(c => c.attachedTo.subject === ownProps.subject)
     return {
         repoID: repoID,
         comments: comments,
-        user: state.user.name
+        user: state.user.name,
     }
 }
 
@@ -186,7 +186,7 @@ const mapDispatchToProps = {
 
 const ThreadContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(Thread))
 
 export default ThreadContainer

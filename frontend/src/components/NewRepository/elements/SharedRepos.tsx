@@ -11,7 +11,7 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 
 class SharedRepos extends Component {
 
-    addRepo = (repoID) =>{
+    addRepo = (repoID) => {
         this.props.addSharedRepo(repoID)
     }
 
@@ -24,10 +24,10 @@ class SharedRepos extends Component {
                 </Typography>
                 <List>
                     {
-                        sharedRepos.map(repo=>(
+                        sharedRepos.map(repo => (
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
-                                <ListItemSecondaryAction onClick={()=>this.addRepo(repo.repoID)}>
+                                <ListItemSecondaryAction onClick={() => this.addRepo(repo.repoID)}>
                                     <IconButton>
                                         <ControlPointIcon />
                                     </IconButton>
@@ -44,7 +44,7 @@ class SharedRepos extends Component {
 SharedRepos.propTypes = {
     sharedRepos: PropTypes.array.isRequired,
     addSharedRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

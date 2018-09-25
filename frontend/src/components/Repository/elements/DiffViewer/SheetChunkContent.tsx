@@ -9,7 +9,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 
-import {formatCell} from './diffUtils'
+import { formatCell } from './diffUtils'
 
 class SheetChunkContent extends Component {
 
@@ -19,41 +19,41 @@ class SheetChunkContent extends Component {
 
     render() {
         let {classes, chunk} = this.props
-        const sheetIndex = chunk.changes[0].content.indexOf("]")
+        const sheetIndex = chunk.changes[0].content.indexOf(']')
         const sheetName = chunk.changes[0].content.substring(2, sheetIndex)
         // change row string to array of cells
-        const content = chunk.changes.map(change=>{
-            return change.content.substring(sheetIndex+2).split("\t")
+        const content = chunk.changes.map(change => {
+            return change.content.substring(sheetIndex + 2).split('\t')
         })
-        const colCount = content.reduce((acc, curr)=>Math.max(acc, curr.length),0) + 2
+        const colCount = content.reduce((acc, curr) => Math.max(acc, curr.length), 0) + 2
         return (
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change, i)=>{
+                        {chunk.changes.map((change, i) => {
                             switch (change.type) {
-                                case  "add":
+                                case  'add':
                                     return(
-                                        <TableRow key={i} className={classes.row + " " + classes.added}>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum + " " + classes.lineNumAdd}></TableCell>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum + " " + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
-                                            {content[i].map((cell, i)=><TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
+                                        <TableRow key={i} className={classes.row + ' ' + classes.added}>
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}></TableCell>
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
+                                            {content[i].map((cell, i) => <TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
                                         </TableRow>
                                     )
-                                case  "del":
+                                case  'del':
                                     return(
-                                        <TableRow key={i} className={classes.row + " " + classes.deleted}>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum + " " + classes.lineNumDel}><code>{change.ln}</code></TableCell>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum + " " + classes.lineNumDel}><code></code></TableCell>
-                                            {content[i].map((cell, i)=><TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
+                                        <TableRow key={i} className={classes.row + ' ' + classes.deleted}>
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code>{change.ln}</code></TableCell>
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code></code></TableCell>
+                                            {content[i].map((cell, i) => <TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
                                         </TableRow>
                                     )
                                 default:
                                     return(
                                         <TableRow key={i} className={classes.row}>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum}><code>{change.ln1}</code></TableCell>
-                                            <TableCell width={1} className={classes.cell + " " + classes.lineNum}><code>{change.ln2}</code></TableCell>
-                                            {content[i].map((cell, i)=><TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum}><code>{change.ln1}</code></TableCell>
+                                            <TableCell width={1} className={classes.cell + ' ' + classes.lineNum}><code>{change.ln2}</code></TableCell>
+                                            {content[i].map((cell, i) => <TableCell width={1} key={i} className={classes.cell}><code>{formatCell(cell)}</code></TableCell>)}
                                         </TableRow>
                                     )
                             }
@@ -67,45 +67,45 @@ class SheetChunkContent extends Component {
 
 SheetChunkContent.propTypes = {
     classes: PropTypes.object.isRequired,
-    chunk: PropTypes.object.isRequired
+    chunk: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    sheetName:{
-        display:'block'
+    sheetName: {
+        display: 'block',
     },
-    row:{
+    row: {
         height: '24px',
         border: 0,
     },
-    cell:{
-        border: "1px solid",
+    cell: {
+        border: '1px solid',
         borderColor: theme.palette.grey[300],
         padding: '0 4px',
     },
-    codeTag:{
-        backgroundColor: green[900]
+    codeTag: {
+        backgroundColor: green[900],
     },
-    pre:{
-        whiteSpace: 'pre'
+    pre: {
+        whiteSpace: 'pre',
     },
-    lineNum:{
+    lineNum: {
         backgroundColor: theme.palette.grey[50],
         color: theme.palette.grey[500],
-        fontSize: '9pt'
+        fontSize: '9pt',
     },
-    added:{
+    added: {
         backgroundColor: green[50],
     },
-    lineNumAdd:{
+    lineNumAdd: {
         backgroundColor: green[100],
     },
-    deleted:{
-        backgroundColor: red[50]
+    deleted: {
+        backgroundColor: red[50],
     },
-    lineNumDel:{
+    lineNumDel: {
         backgroundColor: red[100],
-    }
+    },
 
 })
 

@@ -24,7 +24,7 @@ class File extends Component
 
     selectFile() {
         if (!!this.props.selectFile) {
-            const isFolder = this.props.file.type === "folder"
+            const isFolder = this.props.file.type === 'folder'
             this.props.selectFile(this.props.file.path, isFolder)
         }
     }
@@ -64,7 +64,7 @@ class File extends Component
 File.propTypes = {
     file: PropTypes.object.isRequired,
     selectFile: PropTypes.func,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

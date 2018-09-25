@@ -14,36 +14,36 @@ class Chunk extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            expanded: false
+            expanded: false,
         }
     }
 
-    handleChange = (event, expanded) =>{
+    handleChange = (event, expanded) => {
         this.setState({expanded: expanded})
     }
 
     render() {
         const {classes, chunk, filename, type} = this.props
-        const changes = chunk.changes.reduce((acc, curr)=>{
-            if(curr.content[0] === "+") acc.add++
-            if(curr.content[0] === "-") acc.del++
+        const changes = chunk.changes.reduce((acc, curr) => {
+            if (curr.content[0] === '+') { acc.add++ }
+            if (curr.content[0] === '-') { acc.del++ }
             return acc
         }, {add: 0, del: 0})
         return (
             <React.Fragment>
                 <ExpansionPanel onChange={this.handleChange}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{root:classes.summaryRoot}}>
-                        <code>{filename + ": Added " + changes.add + " and deleted "+ changes.del + " around line " + chunk.newStart}</code>
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{root: classes.summaryRoot}}>
+                        <code>{filename + ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart}</code>
                     </ExpansionPanelSummary>
-                    <ExpansionPanelDetails classes={{root:classes.detailsRoot}}>
+                    <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
                         {this.state.expanded &&
                             <div>
-                                {type === "text" &&
+                                {type === 'text' &&
                                     <div className={classes.overflow}>
                                         <LineChunkContent chunk={chunk} />
                                     </div>
                                 }
-                                {type === "data" &&
+                                {type === 'data' &&
                                     <SheetChunkContent chunk={chunk} />
                                 }
                             </div>
@@ -61,21 +61,21 @@ Chunk.propTypes = {
 }
 
 const styles = theme => ({
-    row:{
+    row: {
         height: '24px',
         border: 0,
     },
-    summaryRoot:{
+    summaryRoot: {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.secondary.main,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
-    detailsRoot:{
-        padding: 0
+    detailsRoot: {
+        padding: 0,
     },
-    button:{
-        textTransform: 'none'
-    }
+    button: {
+        textTransform: 'none',
+    },
 })
 
 export default withStyles(styles)(Chunk)

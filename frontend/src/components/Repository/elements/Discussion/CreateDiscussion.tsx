@@ -12,10 +12,10 @@ class CreateDiscussion extends Component {
 
     constructor(props) {
         super(props)
-        this.state={
+        this.state = {
             error: undefined,
-            subject: "",
-            comment: ""
+            subject: '',
+            comment: '',
         }
     }
 
@@ -28,12 +28,12 @@ class CreateDiscussion extends Component {
     handleSubmit = event => {
         event.preventDefault()
         const valid = this.state.comment.length > 0 && this.state.subject.length > 0
-        this.setState({error: "Oops! You need both a subject and a comment."})
-        if(valid){
+        this.setState({error: 'Oops! You need both a subject and a comment.'})
+        if (valid) {
             this.setState({
-                subject:"",
-                comment: "",
-                error: undefined
+                subject: '',
+                comment: '',
+                error: undefined,
             })
             this.props.createDiscussion(this.props.repoID, this.state.subject, this.state.comment)
         }
@@ -81,31 +81,31 @@ CreateDiscussion.propTypes = {
     repoID: PropTypes.string.isRequired,
     createDiscussion: PropTypes.func.isRequired,
     unselect: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    cancel:{
+    cancel: {
         position: 'absolute',
         top: 0,
         right: 0,
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    title:{
+    title: {
         backgroundColor: theme.palette.grey[300],
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    form:{
+    form: {
         width: '100%',
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
     },
-    textField:{
+    textField: {
         display: 'block',
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing.unit,
     },
     error: {
 
-    }
+    },
 })
 
 export default withStyles(styles)(CreateDiscussion)

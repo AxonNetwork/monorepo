@@ -10,25 +10,25 @@ import AddCollaboratorDialog from './AddCollaboratorDialog'
 
 class Sharing extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
-            open: false
+            open: false,
         }
 
         this.handleClickOpen = this.handleClickOpen.bind(this)
         this.handleClose = this.handleClose.bind(this)
     }
 
-    handleClickOpen(){
+    handleClickOpen() {
         this.setState({
-            open: true
+            open: true,
         })
     }
 
-    handleClose(){
+    handleClose() {
         this.setState({
-            open: false
+            open: false,
         })
     }
 
@@ -40,11 +40,11 @@ class Sharing extends Component {
                 <Typography className={classes.text}>
                     Shared with:
                     {sharedUsers.length === 0 &&
-                        " none"
+                        ' none'
                     }
                 </Typography>
                 {sharedUsers.map(collaborator =>
-                    <Chip label={collaborator} key={collaborator} className={classes.chip} />
+                    <Chip label={collaborator} key={collaborator} className={classes.chip} />,
                 )}
                 <IconButton className={classes.button} onClick={this.handleClickOpen} >
                     <ControlPointIcon className={classes.icon} />
@@ -66,26 +66,26 @@ Sharing.propTypes = {
     folderPath: PropTypes.string.isRequired,
     repoID: PropTypes.string.isRequired,
     addCollaborator: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    text:{
+    text: {
         marginTop: '12px',
-        display: 'inline-block'
+        display: 'inline-block',
 
     },
-    button:{
+    button: {
         width: '24px',
         height: '24px',
-        padding: 0
+        padding: 0,
     },
-    icon:{
-        fontSize: '14pt'
+    icon: {
+        fontSize: '14pt',
     },
-    chip:{
-        margin: '2px 4px'
-    }
+    chip: {
+        margin: '2px 4px',
+    },
 })
 
 export default withStyles(styles)(Sharing)

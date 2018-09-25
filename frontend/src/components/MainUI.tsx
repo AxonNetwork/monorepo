@@ -99,16 +99,16 @@ class MainUI extends Component
                     </div>
 
                     <div className={classes.mainUIContentWrapper}>
-                        {this.props.currentPage === "new" &&
+                        {this.props.currentPage === 'new' &&
                             <NewRepository
                                 createRepo={this.props.createRepo}
                                 sharedRepos = {this.props.sharedRepos}
                                 addSharedRepo = {this.props.addSharedRepo}
                             />}
-                        {this.props.currentPage === "settings" &&
+                        {this.props.currentPage === 'settings' &&
                             <Settings logout={this.props.logout}/>
                         }
-                        {this.props.currentPage === "repo" &&
+                        {this.props.currentPage === 'repo' &&
                             <Repository
                                 repo={this.props.repo}
                                 checkpointRepo={this.props.checkpointRepo}
@@ -153,7 +153,7 @@ MainUI.propTypes = {
     addSharedRepo: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired,
 
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const drawerWidth = 200
@@ -162,7 +162,7 @@ const styles = theme => ({
     root: {
         display: 'flex',
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     mainUI: {
         display: 'flex',
@@ -252,7 +252,7 @@ const styles = theme => ({
 const mapStateToProps = (state, ownProps) => {
     const selected = state.repository.selectedRepo
     let repo
-    if (selected !== undefined){
+    if (selected !== undefined) {
         repo = state.repository.repos[selected]
     }
     return {
@@ -260,7 +260,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedFile: state.repository.selectedFile,
         user: state.user,
         sharedRepos: state.sharedRepos,
-        currentPage: state.navigation.currentPage
+        currentPage: state.navigation.currentPage,
     }
 }
 
@@ -281,7 +281,7 @@ const mapDispatchToProps = {
 
 const MainUIContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(MainUI))
 
 export default MainUIContainer

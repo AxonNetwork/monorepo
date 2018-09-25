@@ -1,7 +1,7 @@
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import i18n from 'i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
-import { isProduction } from 'utils';
+import { isProduction } from 'utils'
 
 export default i18n
   .use(LanguageDetector)
@@ -17,6 +17,6 @@ export default i18n
     },
   }, (err, _) => {
     if (err) {
-      return console.error('Load i18n instance failed.', err);
+      return console.error('Load i18n instance failed.', err)
     }
-  });
+  })

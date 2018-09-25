@@ -1,17 +1,17 @@
-import { connectRouter, routerMiddleware } from 'connected-react-router';
-import { History } from 'history';
-import Immutable from 'immutable';
-import { applyMiddleware, compose, createStore, Store } from 'redux';
-import logger from 'redux-logger';
-import createSagaMiddleware from 'redux-saga';
+import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { History } from 'history'
+import Immutable from 'immutable'
+import { applyMiddleware, compose, createStore, Store } from 'redux'
+import logger from 'redux-logger'
+import createSagaMiddleware from 'redux-saga'
 
-import reducers from 'reducers';
-import sagas from 'sagas';
-import { IGlobalState } from 'types/global';
+import reducers from 'reducers'
+import sagas from 'sagas'
+import { IGlobalState } from 'types/global'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
   // Create the saga middleware
-  const sagaMiddleware = createSagaMiddleware();
+  const sagaMiddleware = createSagaMiddleware()
 
   // Enhancer
   const composeEnhancers =
@@ -20,22 +20,22 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
         serialize: {
           immutable: Immutable,
         },
-      }) : compose;
+      }) : compose
   const enhancer = composeEnhancers(
     applyMiddleware(routerMiddleware(history), sagaMiddleware, logger),
-  );
+  )
 
   // Store
-  const store = createStore(connectRouter(history)(reducers), initialState, enhancer);
-  sagaMiddleware.run(sagas);
+  const store = createStore(connectRouter(history)(reducers), initialState, enhancer)
+  sagaMiddleware.run(sagas)
 
   // Enable Webpack hot module replacement for reducers
   if (module.hot) {
     module.hot.accept('../reducers', () => {
-      const nextReducers = require('reducers').default;
-      store.replaceReducer(connectRouter(history)(nextReducers));
-    });
+      const nextReducers = require('reducers').default
+      store.replaceReducer(connectRouter(history)(nextReducers))
+    })
   }
 
-  return store;
-};
+  return store
+}

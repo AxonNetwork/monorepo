@@ -27,4 +27,4 @@ export const PARALLAX_CODE = `
     </div>
   </div>
 </div>
-`;
+`

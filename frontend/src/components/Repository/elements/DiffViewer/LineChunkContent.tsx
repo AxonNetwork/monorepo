@@ -8,7 +8,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import SyntaxHighlighter from 'react-syntax-highlighter'
-import {docco} from 'react-syntax-highlighter/styles/hljs'
+import { docco } from 'react-syntax-highlighter/styles/hljs'
 
 class LineChunkContent extends Component {
 
@@ -24,33 +24,33 @@ class LineChunkContent extends Component {
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change, i)=>{
+                        {chunk.changes.map((change, i) => {
                             switch (change.type) {
-                                case  "add":
+                                case  'add':
                                     return(
-                                        <TableRow key={i} className={classes.row + " " + classes.added}>
-                                            <TableCell className={classes.cell + " " + classes.lineNum + " " + classes.lineNumAdd}></TableCell>
-                                            <TableCell className={classes.cell + " " + classes.lineNum + " " + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
+                                        <TableRow key={i} className={classes.row + ' ' + classes.added}>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}></TableCell>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
                                             <TableCell className={classes.cell}><code>+</code></TableCell>
-                                            <TableCell className={classes.cell}><SyntaxHighlighter style={docco} customStyle={syntaxStyle} codeTagProps={codeTagProps}>{change.content.replace("+", " ")}</SyntaxHighlighter></TableCell>
+                                            <TableCell className={classes.cell}><SyntaxHighlighter style={docco} customStyle={syntaxStyle} codeTagProps={codeTagProps}>{change.content.replace('+', ' ')}</SyntaxHighlighter></TableCell>
                                         </TableRow>
                                     )
                                     break
-                                case  "del":
+                                case  'del':
                                     return(
-                                        <TableRow key={i} className={classes.row + " " + classes.deleted}>
-                                            <TableCell className={classes.cell + " " + classes.lineNum + " " + classes.lineNumDel}><code>{change.ln}</code></TableCell>
-                                            <TableCell className={classes.cell + " " + classes.lineNum + " " + classes.lineNumDel}><code></code></TableCell>
+                                        <TableRow key={i} className={classes.row + ' ' + classes.deleted}>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code>{change.ln}</code></TableCell>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code></code></TableCell>
                                             <TableCell className={classes.cell}><code>-</code></TableCell>
-                                            <TableCell className={classes.cell}><SyntaxHighlighter style={docco} customStyle={syntaxStyle} codeTagProps={codeTagProps}>{change.content.replace("-", " ")}</SyntaxHighlighter></TableCell>
+                                            <TableCell className={classes.cell}><SyntaxHighlighter style={docco} customStyle={syntaxStyle} codeTagProps={codeTagProps}>{change.content.replace('-', ' ')}</SyntaxHighlighter></TableCell>
                                         </TableRow>
                                     )
                                     break
                                 default:
                                     return(
                                         <TableRow key={i} className={classes.row}>
-                                            <TableCell className={classes.cell + " " + classes.lineNum}><code>{change.ln1}</code></TableCell>
-                                            <TableCell className={classes.cell + " " + classes.lineNum}><code>{change.ln2}</code></TableCell>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln1}</code></TableCell>
+                                            <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln2}</code></TableCell>
                                             <TableCell className={classes.cell}></TableCell>
                                             <TableCell className={classes.cell}><SyntaxHighlighter style={docco} customStyle={syntaxStyle} codeTagProps={codeTagProps}>{change.content}</SyntaxHighlighter></TableCell>
                                         </TableRow>
@@ -66,41 +66,41 @@ class LineChunkContent extends Component {
 
 LineChunkContent.propTypes = {
     classes: PropTypes.object.isRequired,
-    chunk: PropTypes.object.isRequired
+    chunk: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    row:{
+    row: {
         height: '24px',
         border: 0,
     },
-    cell:{
+    cell: {
         border: 0,
         padding: '0 4px',
     },
-    codeTag:{
-        backgroundColor: green[900]
+    codeTag: {
+        backgroundColor: green[900],
     },
-    pre:{
-        whiteSpace: 'pre'
+    pre: {
+        whiteSpace: 'pre',
     },
-    lineNum:{
+    lineNum: {
         backgroundColor: theme.palette.grey[50],
         color: theme.palette.grey[500],
-        fontSize: '9pt'
+        fontSize: '9pt',
     },
-    added:{
-        backgroundColor: green[50]
+    added: {
+        backgroundColor: green[50],
     },
-    lineNumAdd:{
-        backgroundColor: green[100]
+    lineNumAdd: {
+        backgroundColor: green[100],
     },
-    deleted:{
-        backgroundColor: red[50]
+    deleted: {
+        backgroundColor: red[50],
     },
-    lineNumDel:{
-        backgroundColor: red[100]
-    }
+    lineNumDel: {
+        backgroundColor: red[100],
+    },
 
 })
 

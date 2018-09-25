@@ -15,7 +15,7 @@ const HomePage = Loadable({
     */
     './pages/HomePage'),
   loading: HomePageLoader,
-});
+})
 
 const NotFoundPage = Loadable({
   loader: () => import(
@@ -25,15 +25,15 @@ const NotFoundPage = Loadable({
     */
     './pages/NotFoundPage'),
   loading: NotFoundPageLoader,
-});
+})
 
 export default (
   <div>
     <Header />
     <Switch>
-      <Route exact path='/' component={HomePage} />
+      <Route exact path="/" component={HomePage} />
       <Route component={NotFoundPage} />
     </Switch>
     <Footer />
   </div>
-);
+)

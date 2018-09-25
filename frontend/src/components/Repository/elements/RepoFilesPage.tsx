@@ -16,11 +16,11 @@ class RepoFilesPage extends Component
         const files = repo.files || {}
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]
-            return (file.status === "*modified" || file.status === "*added")
+            return (file.status === '*modified' || file.status === '*added')
         })
 
         if (selectedFile !== undefined && !selectedFile.isFolder) {
-            const relPath = selectedFile.file.replace(repo.folderPath+'/', '')
+            const relPath = selectedFile.file.replace(repo.folderPath + '/', '')
             let timeline = []
             if (this.props.repo.timeline !== undefined) {
                 timeline = this.props.repo.timeline.filter(e => e.files.indexOf(relPath) > -1)

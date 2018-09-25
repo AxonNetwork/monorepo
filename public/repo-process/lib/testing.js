@@ -1,15 +1,15 @@
+const Promise = require('bluebird');
 const ConscienceManager = require('./ConscienceManager');
-const Promise = require('bluebird')
 
-async function stall(){
+async function stall() {
     return new Promise((resolve, reject) => {
-        setTimeout(resolve, 100000)
-    })
+        setTimeout(resolve, 100000);
+    });
 }
 
-(async function(){
-    const folderPath="/Users/daniel/Documents/Conscience/testing"
-    const repoID="daniel/testing"
+(async function () {
+    const folderPath = '/Users/daniel/Documents/Conscience/testing';
+    const repoID = 'daniel/testing';
     // await ConscienceManager.createRepo("test", "/Users/daniel/Documents/Conscience", "daniel")
     // const timeline = await ConscienceManager.getTimelines("/Users/daniel/Projects/conscience/protocol/testzone/another")
     // console.log(timeline)
@@ -23,8 +23,8 @@ async function stall(){
 
     // const success = await ConscienceManager.pullRepo("'git reset ' + commit + ' ' + filename")
     // console.log(success)
-   const timeline = await ConscienceManager.getTimeline(folderPath)
-//    console.log(timeline)
+    const timeline = await ConscienceManager.getTimeline(folderPath);
+    //    console.log(timeline)
 
     // await ConscienceManager.checkpointRepo("/Users/daniel/Projects/conscience/protocol/testzone/another", "asdf")
     // const repos = await ConscienceManager.getRepos()
@@ -33,4 +33,4 @@ async function stall(){
     // const diff = await ConscienceManager.getDiff("/Users/daniel/Documents/Conscience/skrt", "test.txt", "fd915fe3c9b61abdc32ca388086ecbd82c42358e")
     // console.log(diff)
     // await ConscienceManager.revertFiles('/Users/daniel/Documents/Conscience/skrt', ['test.txt', 'new.txt'], 'f72e9f1598924891477c53c24363b673fd28f801')
-})()
+}());

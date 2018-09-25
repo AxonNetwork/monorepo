@@ -36,10 +36,10 @@ class RepoTimelinePage extends Component
                 {this.state.selected &&
                     <div className={classes.thread}>
                         <Thread
-                            title={"Version "+this.state.selected}
-                            type='event'
+                            title={'Version ' + this.state.selected}
+                            type="event"
                             subject={this.state.selected}
-                            unselect={()=>this.selectEvent(undefined)}
+                            unselect={() => this.selectEvent(undefined)}
                         />
                     </div>
                 }
@@ -69,7 +69,7 @@ const styles = theme => ({
         overflowY: 'scroll',
     },
     thread: {
-        marginTop: theme.spacing.unit*4,
+        marginTop: theme.spacing.unit * 4,
         flexGrow: 1,
         width: 0,
         marginLeft: 32,

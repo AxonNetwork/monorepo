@@ -1,16 +1,16 @@
-import * as React from 'react';
+import * as React from 'react'
 
-import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
-import './prismCodes.scss';
+import Prism from 'prismjs'
+import 'prismjs/themes/prism.css'
+import './prismCodes.scss'
 
 interface IPrismCodesProps {
-  language: string;
+  language: string
 }
 
 export default class PrismCodes extends React.Component<IPrismCodesProps> {
   public componentDidMount() {
-    Prism.highlightAll();
+    Prism.highlightAll()
   }
 
   public render() {
@@ -20,6 +20,6 @@ export default class PrismCodes extends React.Component<IPrismCodesProps> {
           {this.props.children}
         </code>
       </pre>
-    );
+    )
   }
 }

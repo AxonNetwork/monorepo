@@ -6,12 +6,12 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 const shell = window.require('electron').shell
 
 class OpenFolderButton extends Component {
-    constructor(props){
+    constructor(props) {
         super(props)
         this.openFolder = this.openFolder.bind(this)
     }
 
-    openFolder(){
+    openFolder() {
         shell.openItem(this.props.folderPath)
     }
 
@@ -27,11 +27,11 @@ class OpenFolderButton extends Component {
 
 OpenFolderButton.propTypes = {
     folderPath: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    button:{
+    button: {
         position: 'absolute',
         textAlign: 'right',
         top: 0,
@@ -42,13 +42,13 @@ const styles = theme => ({
         borderTopColor: theme.palette.secondary.main,
         borderLeft: '64px solid transparent',
         color: 'white',
-        overflow: 'show'
+        overflow: 'show',
     },
-    icon:{
+    icon: {
         position: 'absolute',
         top: '-56px',
-        right: '8px'
-    }
+        right: '8px',
+    },
 })
 
 export default withStyles(styles)(OpenFolderButton)

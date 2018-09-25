@@ -55,7 +55,7 @@ class FileInfo extends Component {
                     <div className={classes.thread}>
                         <Thread
                             title={file.name}
-                            type='file'
+                            type="file"
                             subject={file.name}
                         />
                     </div>
@@ -71,37 +71,37 @@ FileInfo.propTypes = {
     folderPath: PropTypes.string.isRequired,
     selectFile: PropTypes.func.isRequired,
     getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired
+    revertFiles: PropTypes.func.isRequired,
 }
 
 const styles = theme => ({
-    infoContainer:{
-        display: 'flex'
+    infoContainer: {
+        display: 'flex',
     },
-    timeline:{
+    timeline: {
         flexGrow: 1,
         width: 0,
-        marginRight: 32
+        marginRight: 32,
     },
-    thread:{
-        marginTop: theme.spacing.unit*2,
+    thread: {
+        marginTop: theme.spacing.unit * 2,
         flexGrow: 1,
         width: 0,
         marginLeft: 32,
         border: '1px solid',
         borderColor: theme.palette.grey[300],
-        height: '100%'
+        height: '100%',
     },
-    button:{
+    button: {
         textTransform: 'none',
         fontSize: '12pt',
         padding: '5px 16px',
         minHeight: 0,
-        height: '32px'
+        height: '32px',
     },
-    table:{
-        borderTop: '1px solid rgba(224, 224, 224, 1)'
-    }
+    table: {
+        borderTop: '1px solid rgba(224, 224, 224, 1)',
+    },
 })
 
 export default withStyles(styles)(FileInfo)

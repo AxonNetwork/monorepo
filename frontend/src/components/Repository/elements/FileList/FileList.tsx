@@ -6,11 +6,11 @@ import TableBody from '@material-ui/core/TableBody'
 import Button from '@material-ui/core/Button'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
-import {filterSubfolder, mergeFolders} from './fileListUtils'
+import { filterSubfolder, mergeFolders } from './fileListUtils'
 import path from 'path'
 
 import File from './File'
-import Breadcrumbs from './Breadcrumbs';
+import Breadcrumbs from './Breadcrumbs'
 
 class FileList extends Component {
 
@@ -21,7 +21,7 @@ class FileList extends Component {
 
     render() {
         let {classes, files, selectedFile} = this.props
-        if(selectedFile !== undefined){
+        if (selectedFile !== undefined) {
             files = filterSubfolder(files, selectedFile.file)
         }
         files = mergeFolders(files)
@@ -66,7 +66,7 @@ FileList.propTypes = {
     files: PropTypes.object.isRequired,
     selectedFolder: PropTypes.object,
     selectFile: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
@@ -78,11 +78,11 @@ const styles = theme => ({
         height: 32,
     },
     table: {
-        marginTop: theme.spacing.unit*2,
+        marginTop: theme.spacing.unit * 2,
         borderTop: '1px solid rgba(224, 224, 224, 1)',
     },
     tableRow: {
-        height: 36
+        height: 36,
     },
 })
 

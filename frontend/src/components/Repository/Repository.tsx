@@ -87,7 +87,7 @@ Repository.propTypes = {
     revertFiles: PropTypes.func.isRequired,
     addCollaborator: PropTypes.func.isRequired,
     sidebarOpen: PropTypes.bool.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

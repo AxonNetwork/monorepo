@@ -14,12 +14,12 @@ class SharedReposDialog extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            open: true
+            open: true,
         }
     }
 
-    componentWillReceiveProps(nextProps){
-        if(nextProps.sharedRepo !== this.props.sharedRepo){
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.sharedRepo !== this.props.sharedRepo) {
             this.setState({ open: true })
         }
     }
@@ -33,13 +33,13 @@ class SharedReposDialog extends Component {
         this.props.addSharedRepo(this.props.sharedRepo.repoID)
     }
 
-    ignoreRepo = () =>{
+    ignoreRepo = () => {
         this.handleClose()
         this.props.ignoreRepo(this.props.sharedRepo.repoID)
     }
 
     render() {
-        if(this.props.sharedRepo === undefined){
+        if (this.props.sharedRepo === undefined) {
             return null
         }
         const repoID = this.props.sharedRepo.repoID
@@ -69,28 +69,28 @@ class SharedReposDialog extends Component {
 SharedReposDialog.propTypes = {
     sharedRepo: PropTypes.object,
     addSharedRepo: PropTypes.func.isRequired,
-    ignoreRepo: PropTypes.func.isRequired
+    ignoreRepo: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
-    let toPrompt = state.sharedRepos.filter(repo=>!repo.ignored)
+    let toPrompt = state.sharedRepos.filter(repo => !repo.ignored)
     let sharedRepo
-    if(toPrompt.length > 0){
+    if (toPrompt.length > 0) {
         sharedRepo = toPrompt[0]
     }
     return {
-        sharedRepo: sharedRepo
+        sharedRepo: sharedRepo,
     }
 }
 
 const mapDispatchToProps = {
     addSharedRepo,
-    ignoreRepo
+    ignoreRepo,
 }
 
 const SharedReposDialogContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(SharedReposDialog)
 
 export default SharedReposDialogContainer

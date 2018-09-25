@@ -21,11 +21,11 @@ class RepoDiscussionPage extends Component {
         super(props)
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.props.getDiscussions(this.props.repoID)
     }
 
-    selectDiscussion = (created) =>{
+    selectDiscussion = (created) => {
         this.props.selectDiscussion(created)
     }
 
@@ -46,9 +46,9 @@ class RepoDiscussionPage extends Component {
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
-                    {discussions.map(d=>(
+                    {discussions.map(d => (
                         <React.Fragment key={d.created}>
-                            <ListItem button className={classes.listItem} key={d.created} onClick={()=>this.selectDiscussion(d.created)}>
+                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.selectDiscussion(d.created)}>
                                 {selected === undefined &&
                                     <React.Fragment>
                                         <ListItemText primary={d.subject} secondary={d.email}/>
@@ -64,8 +64,8 @@ class RepoDiscussionPage extends Component {
                             <Divider />
                         </React.Fragment>
                     ))}
-                    <ListItem button className={classes.listItem} key={0} onClick={()=>this.selectDiscussion(0)}>
-                        <ListItemText primary={"New Discussion"} />
+                    <ListItem button className={classes.listItem} key={0} onClick={() => this.selectDiscussion(0)}>
+                        <ListItemText primary={'New Discussion'} />
                         {selected === undefined &&
                             <ListItemIcon>
                                 <ControlPointIcon />
@@ -80,15 +80,15 @@ class RepoDiscussionPage extends Component {
                             <CreateDiscussion
                                 repoID={this.props.repoID}
                                 createDiscussion={this.props.createDiscussion}
-                                unselect={()=>this.props.selectDiscussion(undefined)}
+                                unselect={() => this.props.selectDiscussion(undefined)}
                             />
                         }
                         {selected !== 'new' &&
                             <Thread
                                 title={selected.subject}
-                                type='discussion'
+                                type="discussion"
                                 subject={selected.created}
-                                unselect={()=>this.props.selectDiscussion(undefined)}
+                                unselect={() => this.props.selectDiscussion(undefined)}
                             />
                         }
                     </div>
@@ -108,35 +108,35 @@ RepoDiscussionPage.propTypes = {
     selectDiscussion: PropTypes.func.isRequired,
     createDiscussion: PropTypes.func.isRequired,
     createComment: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    discussionPage:{
+    discussionPage: {
         position: 'relative',
         height: 'calc(100% - 84px)',
         border: '1px solid',
         borderColor: theme.palette.grey[300],
-        display: 'flex'
+        display: 'flex',
     },
-    list:{
+    list: {
         height: '100%',
         padding: 0,
         overflow: 'scroll',
         flexGrow: 1,
-        width: 350
+        width: 350,
     },
-    title:{
-        marginTop: theme.spacing.unit*2,
-        marginBottom: theme.spacing.unit
+    title: {
+        marginTop: theme.spacing.unit * 2,
+        marginBottom: theme.spacing.unit,
     },
-    threadPane:{
+    threadPane: {
         borderLeft: '1px solid',
         borderColor: theme.palette.grey[300],
         height: '100%',
         width: '100%',
-        flexGrow: 5
-    }
+        flexGrow: 5,
+    },
 })
 
 const mapStateToProps = (state, ownProps) => {
@@ -146,7 +146,7 @@ const mapStateToProps = (state, ownProps) => {
         discussions: state.discussion.discussions,
         comments: state.discussion.comments,
         selected: state.discussion.selected,
-        user: state.user.name
+        user: state.user.name,
     }
 }
 
@@ -159,7 +159,7 @@ const mapDispatchToProps = {
 
 const RepoDiscussionPageContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(RepoDiscussionPage))
 
 export default RepoDiscussionPageContainer

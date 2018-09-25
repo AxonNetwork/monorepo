@@ -15,13 +15,13 @@ class Hypothesis extends Component {
         super(props)
         this.state = {
             show: false,
-            hypothesis: props.hypothesis || ''
+            hypothesis: props.hypothesis || '',
         }
     }
 
-    handleClickOpen = () =>{
+    handleClickOpen = () => {
         this.setState({
-            show: true
+            show: true,
         })
     }
 
@@ -35,13 +35,13 @@ class Hypothesis extends Component {
         event.preventDefault()
         this.props.addHypothesis(this.props.folderPath, this.state.hypothesis)
         this.setState({
-            show: false
+            show: false,
         })
     }
 
     render() {
         const classes = this.props.classes
-        if(this.props.hypothesis !== undefined && !this.state.show){
+        if (this.props.hypothesis !== undefined && !this.state.show) {
             return(
                 <Typography className={classes.text}>
                     Hypothesis: {this.props.hypothesis}
@@ -51,7 +51,7 @@ class Hypothesis extends Component {
                 </Typography>
             )
         }
-        if(!this.state.show){
+        if (!this.state.show) {
             return (
                 <Typography className={classes.text}>
                     Hypothesis:
@@ -91,29 +91,29 @@ Hypothesis.propTypes = {
     hypothesis: PropTypes.string,
     folderPath: PropTypes.string.isRequired,
     addHypothesis: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
-    text:{
-        marginTop: '12px'
+    text: {
+        marginTop: '12px',
     },
-    openButton:{
+    openButton: {
         width: '24px',
-        height: '24px'
+        height: '24px',
     },
-    icon:{
-        fontSize: '14pt'
+    icon: {
+        fontSize: '14pt',
     },
     textField: {
-        width: '100%'
+        width: '100%',
     },
     submitButton: {
         display: 'block',
         textTransform: 'none',
         marginTop: '8px',
-        marginLeft: '16px'
-    }
+        marginLeft: '16px',
+    },
 })
 
 export default withStyles(styles)(Hypothesis)

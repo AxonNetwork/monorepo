@@ -15,38 +15,38 @@ class BinaryChunkContent extends Component {
 
     render() {
         const {classes, file} = this.props
-        const changes = file.chunks.reduce((acc, curr)=>{
+        const changes = file.chunks.reduce((acc, curr) => {
             return acc.concat(curr.changes)
-        },[])
-        const sizes = changes.filter(ch=>ch.content.indexOf("Size") > -1)
-        const chunkCounts = changes.filter(ch=>ch.content.indexOf("chunks") > -1)
-        const chunkTotal = parseInt(chunkCounts[chunkCounts.length-1].content.split(" ")[1])
-        const adds = changes.filter(ch=>ch.add)
-        const dels = changes.filter(ch=>ch.del)
+        }, [])
+        const sizes = changes.filter(ch => ch.content.indexOf('Size') > -1)
+        const chunkCounts = changes.filter(ch => ch.content.indexOf('chunks') > -1)
+        const chunkTotal = parseInt(chunkCounts[chunkCounts.length - 1].content.split(' ')[1])
+        const adds = changes.filter(ch => ch.add)
+        const dels = changes.filter(ch => ch.del)
 
-        let chunks=[]
-        for(let i=3; i < (chunkTotal+3); i++){
+        let chunks = []
+        for (let i = 3; i < (chunkTotal + 3); i++) {
             let changed = false
-            if(adds.some((ch=>ch.ln&&ch.ln===i))){
-                chunks.push("add")
+            if (adds.some((ch => ch.ln && ch.ln === i))) {
+                chunks.push('add')
                 changed = true
             }
-            if(dels.some((ch=>ch.ln&&ch.ln===i))){
-                chunks.push("del")
+            if (dels.some((ch => ch.ln && ch.ln === i))) {
+                chunks.push('del')
                 changed = true
             }
-            if(!changed){
-                chunks.push("normal")
+            if (!changed) {
+                chunks.push('normal')
             }
         }
         return (
             <Card className={classes.card}>
                 <CardContent>
                     <code className={classes.header}>{`${file.to}: ${chunkTotal} chunks: ${adds.length} added and ${dels.length} deleted`}</code>
-                    {chunks.map((ch, i)=>{
+                    {chunks.map((ch, i) => {
                         let chunkClass = classes.chunk
-                        if(ch === "add") chunkClass = chunkClass + " " + classes.add
-                        if(ch === "del") chunkClass = chunkClass + " " + classes.del
+                        if (ch === 'add') { chunkClass = chunkClass + ' ' + classes.add }
+                        if (ch === 'del') { chunkClass = chunkClass + ' ' + classes.del }
                         return <div key={i} className={chunkClass}></div>
                     })}
                 </CardContent>
@@ -57,30 +57,30 @@ class BinaryChunkContent extends Component {
 
 BinaryChunkContent.propTypes = {
     classes: PropTypes.object.isRequired,
-    file: PropTypes.object.isRequired
+    file: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
     chunk: {
         width: 16,
         height: 16,
-        display: "inline-block",
+        display: 'inline-block',
         margin: 2,
-        border: "1px solid",
+        border: '1px solid',
         borderColor: theme.palette.grey[900],
-        backgroundColor: theme.palette.grey[200]
+        backgroundColor: theme.palette.grey[200],
     },
     add: {
-        backgroundColor: green[500]
+        backgroundColor: green[500],
     },
     del: {
-        backgroundColor: red[500]
+        backgroundColor: red[500],
     },
-    header:{
+    header: {
         color: theme.palette.secondary.main,
         fontWeight: 'bold',
         display: 'block',
-        marginBottom: 16
+        marginBottom: 16,
     },
 })
 

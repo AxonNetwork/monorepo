@@ -10,11 +10,11 @@ import { isProduction } from 'utils'
 
 // Webpack offline plugin
 if (isProduction) {
-  OfflinePluginRuntime.install();
+  OfflinePluginRuntime.install()
 }
 
 // Create browser history
-const history = createBrowserHistory();
+const history = createBrowserHistory()
 
 // Create render function
 const render = (Component: any) => {
@@ -23,16 +23,16 @@ const render = (Component: any) => {
       <Component store={store} history={history} />
     </AppContainer>,
     document.getElementById('root'),
-  );
-};
+  )
+}
 
 // First time render
-render(App);
+render(App)
 
 // Hot Reload Module API
 if (module.hot) {
   module.hot.accept('./App', () => {
-    const NextApp = require('App').default;
-    render(NextApp);
-  });
+    const NextApp = require('App').default
+    render(NextApp)
+  })
 }

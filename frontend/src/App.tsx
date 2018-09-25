@@ -53,13 +53,13 @@ class App extends Component
 }
 
 App.propTypes = {
-    userLoggedIn: PropTypes.bool.isRequired
+    userLoggedIn: PropTypes.bool.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
     const userLoggedIn = state.user.jwt !== undefined && state.user.jwt.length > 0
     return {
-        userLoggedIn: userLoggedIn
+        userLoggedIn: userLoggedIn,
     }
 }
 
@@ -69,7 +69,7 @@ const mapDispatchToProps = {
 
 const AppContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(App)
 
 export default AppContainer

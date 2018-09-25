@@ -33,7 +33,7 @@ class RepoList extends Component
                             const files = repo.files
                             if (files !== undefined) {
                                 isChanged = Object.keys(files).some(
-                                    (name) => files[name].status === "*modified" || files[name].status === "*added"
+                                    (name) => files[name].status === '*modified' || files[name].status === '*added',
                                 )
                             }
                             let isSelected = this.props.currentPage === 'repo' && repo.folderPath === this.props.selectedRepo
@@ -42,10 +42,10 @@ class RepoList extends Component
                                     <ListItem
                                         button
                                         className={classnames(classes.sidebarItem, { [classes.selected]: isSelected }) }
-                                        onClick={()=>this.props.selectRepo(repo)}
+                                        onClick={() => this.props.selectRepo(repo)}
                                     >
                                     { isChanged &&
-                                         <Badge classes={{badge:this.props.classes.badge}} badgeContent='' color="secondary">
+                                         <Badge classes={{badge: this.props.classes.badge}} badgeContent="" color="secondary">
                                             <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                         </Badge>
                                     }
@@ -94,9 +94,9 @@ const styles = theme => ({
     },
     badge: {
         top: '8px',
-        width:' 8px',
+        width: ' 8px',
         left: '-16px',
-        height:' 8px',
+        height: ' 8px',
     },
     sidebarItemText: {
         color: 'rgb(212, 212, 212)',

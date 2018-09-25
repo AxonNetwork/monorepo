@@ -18,7 +18,7 @@ class TimelineEvent extends Component
 {
     state = {
         openDialog: false,
-        showDiff: false
+        showDiff: false,
     }
 
     constructor(props) {
@@ -39,7 +39,7 @@ class TimelineEvent extends Component
 
     toggleDiff() {
         const event = this.props.event
-        for (let i=0; i<event.files.length; i++) {
+        for (let i = 0; i < event.files.length; i++) {
             this.props.getDiff(this.props.folderPath, event.files[i], event.commit)
         }
         this.setState({showDiff: !this.state.showDiff})
@@ -89,7 +89,7 @@ class TimelineEvent extends Component
                             {Object.keys(diffs).length == 0 &&
                                 <Typography>Loading...</Typography>
                             }
-                            {Object.keys(diffs).length > 0 && !Object.keys(diffs).some(d=>diffs[d] !== '') &&
+                            {Object.keys(diffs).length > 0 && !Object.keys(diffs).some(d => diffs[d] !== '') &&
                                 <Typography>No differences</Typography>
                             }
                             {Object.keys(diffs).map(((d, i) => {
@@ -123,13 +123,13 @@ TimelineEvent.propTypes = {
     revertFiles: PropTypes.func.isRequired,
     event: PropTypes.object.isRequired,
     folderPath: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
     event: {
         position: 'relative',
-        paddingTop:'24px',
+        paddingTop: '24px',
         marginLeft: '24px',
     },
     topline: {
@@ -143,56 +143,56 @@ const styles = theme => ({
     eventIconContainer: {
         position: 'absolute',
         top: '32px',
-        zIndex: 1
+        zIndex: 1,
     },
     avatar: {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.secondary.main,
-        border: '2px solid'
+        border: '2px solid',
     },
     eventDescription: {
         position: 'relative',
         display: 'inline-block',
         left: 56,
-        width: 'calc(100% - 56px)'
+        width: 'calc(100% - 56px)',
     },
     title: {
-        fontsize: '12pt'
+        fontsize: '12pt',
     },
     filename: {
         color: theme.palette.primary.main,
         fontSize: '10pt',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     date: {
-        fontSize: '8pt'
+        fontSize: '8pt',
     },
     message: {
         paddingLeft: '16px',
         borderLeft: '2px solid',
         borderLeftColor: theme.palette.grey[300],
-        color: theme.palette.text.secondary
+        color: theme.palette.text.secondary,
     },
     seeDiff: {
         color: theme.palette.secondary.main,
-        textDecoration: 'underline'
+        textDecoration: 'underline',
     },
     arrowIcon: {
         marginBottom: -6,
-        marginLeft: -6
+        marginLeft: -6,
     },
     diffContainer: {
         position: 'relative',
         left: 48,
-        width: '90%'
+        width: '90%',
     },
     menuButton: {
         position: 'absolute',
-        top:28,
+        top: 28,
         left: -30,
         width: 25,
-        height: 40
-    }
+        height: 40,
+    },
 })
 
 export default withStyles(styles)(TimelineEvent)

@@ -66,15 +66,15 @@ NewRepository.propTypes = {
     createRepo: PropTypes.func.isRequired,
     sharedRepos: PropTypes.array.isRequired,
     addSharedRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({
     button: {
         display: 'block',
         textTransform: 'none',
-        marginTop: '16px'
-    }
+        marginTop: '16px',
+    },
 })
 
 export default withStyles(styles)(NewRepository)

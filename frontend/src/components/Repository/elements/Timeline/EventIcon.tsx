@@ -5,8 +5,8 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
 import AssignmentIcon from '@material-ui/icons/Assignment'
 
-function EventIcon(props){
-    switch(props.eventType){
+function EventIcon(props) {
+    switch (props.eventType){
         case 'creation':
             return <ControlPointIcon className={props.className} color="secondary"/>
         case 'hypothesis':
