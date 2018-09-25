@@ -4,12 +4,9 @@ import logic from './logic.js'
 import reducer from './reducer'
 
 // Redux DevTools
-// const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const composeEnhancers = compose
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-const logicDeps = {
-
-}
+const logicDeps = {}
 const logicMiddleware = createLogicMiddleware(logic, logicDeps)
 
 const store = createStore(
