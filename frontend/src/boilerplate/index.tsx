@@ -4,8 +4,8 @@ import * as React from 'react'
 import * as ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import App from './App'
-import store from './redux/store'
+import App from './orig/components/App'
+import store from './orig/redux/store'
 import { isProduction } from 'utils'
 
 // Webpack offline plugin

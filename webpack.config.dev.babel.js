@@ -40,4 +40,5 @@ export default merge(BaseWebpackConfig, {
   // Source map mode
   // https://webpack.js.org/configuration/devtool
   devtool: 'eval-source-map',
+  target: 'electron-renderer',
 });
