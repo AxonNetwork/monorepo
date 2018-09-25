@@ -45,7 +45,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     createWindow()
-    // startRepoServer()
+    startRepoServer()
 })
 
 // Quit when all windows are closed.
@@ -65,37 +65,37 @@ app.on('activate', function () {
     }
 })
 
-// function startRepoServer() {
-//     const program = path.resolve(__dirname, './repo-process/index.js')
-//     const parameters = [];
-//     const options = {
-//         stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
-//     }
-//     repoServer = fork(program, parameters, options)
+function startRepoServer() {
+    const program = path.resolve(__dirname, './repo-process/index.js')
+    const parameters = [];
+    const options = {
+        stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
+    }
+    repoServer = fork(program, parameters, options)
 
-//     ipcMain.on('message', (event, arg) => {
-//         repoServer.send(JSON.stringify(arg))
-//     })
+    ipcMain.on('message', (event, arg) => {
+        repoServer.send(JSON.stringify(arg))
+    })
 
-//     repoServer.on('message', message => {
-//         mainWindow.webContents.send('message', JSON.stringify(message));
-//     })
+    repoServer.on('message', message => {
+        mainWindow.webContents.send('message', JSON.stringify(message));
+    })
 
-//     repoServer.stdout.on('data', (data) => {
-//         console.log(`Repo Process:\n${data}`)
-//     })
+    repoServer.stdout.on('data', (data) => {
+        console.log(`Repo Process:\n${data}`)
+    })
 
-//     repoServer.stderr.on('data', (data) => {
-//         console.error(`Repo Process error:\n${data}`)
-//     })
-// }
+    repoServer.stderr.on('data', (data) => {
+        console.error(`Repo Process error:\n${data}`)
+    })
+}
 
 // Add React Dev Tools
-// const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
-// app.on('ready', () => {
-//     [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
-//       installExtension(extension)
-//           .then((name) => console.log(`Added Extension: ${name}`))
-//           .catch((err) => console.log('An error occurred: ', err));
-//     });
-// });
+const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
+app.on('ready', () => {
+    [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
+      installExtension(extension)
+          .then((name) => console.log(`Added Extension: ${name}`))
+          .catch((err) => console.log('An error occurred: ', err));
+    });
+});
