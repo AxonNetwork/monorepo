@@ -8,6 +8,7 @@ export default merge(BaseWebpackConfig, {
   entry: {
     app: [
       './frontend/src/index',
+      require.resolve('./polyfills.js'),
     ],
   },
 
