@@ -1,35 +1,45 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import Timeline from './Timeline/Timeline'
 import Thread from './Discussion/Thread'
 
-class RepoTimelinePage extends Component
+import { ITimelineEvent } from '../../../common'
+import autobind from 'utils/autobind'
+
+export interface RepoTimelinePageProps {
+    folderPath: string
+    timeline: ITimelineEvent[]
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+export interface RepoTimelinePageState {
+    selected: number|undefined
+}
+
+@autobind
+class RepoTimelinePage extends React.Component<RepoTimelinePageProps, RepoTimelinePageState>
 {
     state = {
         selected: undefined,
     }
 
-    constructor(props) {
-        super(props)
-        this.selectEvent = this.selectEvent.bind(this)
-    }
-
-    selectEvent(version) {
+    selectEvent(version: number|undefined) {
         this.setState({ selected: version })
     }
 
     render() {
-        const classes = this.props.classes
+        const { folderPath, timeline, getDiff, revertFiles, classes } = this.props
         return (
             <div className={classes.infoContainer}>
                 <div className={classes.timeline}>
                     <Timeline
-                        folderPath={this.props.folderPath}
-                        timeline={this.props.timeline}
-                        getDiff={this.props.getDiff}
-                        revertFiles={this.props.revertFiles}
+                        folderPath={folderPath}
+                        timeline={timeline}
+                        getDiff={getDiff}
+                        revertFiles={revertFiles}
                         selectEvent={this.selectEvent}
                     />
                 </div>
@@ -48,14 +58,7 @@ class RepoTimelinePage extends Component
     }
 }
 
-RepoTimelinePage.propTypes = {
-    folderPath: PropTypes.string.isRequired,
-    timeline: PropTypes.array.isRequired,
-    getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     infoContainer: {
         display: 'flex',
         height: '100%',

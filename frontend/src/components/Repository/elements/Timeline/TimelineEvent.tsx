@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton'
@@ -14,22 +13,31 @@ import EventTitle from './EventTitle'
 import RevertFilesDialog from './RevertFilesDialog'
 import DiffViewer from '../DiffViewer/DiffViewer'
 
-class TimelineEvent extends Component
+import { ITimelineEvent } from '../../../../common'
+import autobind from 'utils/autobind'
+
+export interface TimelineEventProps {
+    event: ITimelineEvent
+    folderPath: string
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+export interface TimelineEventState {
+    openDialog: boolean
+    showDiff: boolean
+}
+
+@autobind
+class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventState>
 {
     state = {
         openDialog: false,
         showDiff: false,
     }
 
-    constructor(props) {
-        super(props)
-
-        this.handleClick = this.handleClick.bind(this)
-        this.handleClose = this.handleClose.bind(this)
-        this.toggleDiff = this.toggleDiff.bind(this)
-    }
-
-    handleClick(event) {
+    handleClick() {
         this.setState({ openDialog: true })
     }
 
@@ -46,8 +54,7 @@ class TimelineEvent extends Component
     }
 
     render() {
-        const classes = this.props.classes
-        const event = this.props.event
+        const { event, classes } = this.props
         const diffs = event.diffs || {}
         const userInitials = event.user.split(' ').map(x => x.substring(0, 1)).join('')
         return (
@@ -92,7 +99,7 @@ class TimelineEvent extends Component
                             {Object.keys(diffs).length > 0 && !Object.keys(diffs).some(d => diffs[d] !== '') &&
                                 <Typography>No differences</Typography>
                             }
-                            {Object.keys(diffs).map(((d, i) => {
+                            {Object.keys(diffs).map(((d: string, i: number) => {
                                 return (
                                     <DiffViewer
                                         key={i}
@@ -118,15 +125,7 @@ class TimelineEvent extends Component
     }
 }
 
-TimelineEvent.propTypes = {
-    getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired,
-    event: PropTypes.object.isRequired,
-    folderPath: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     event: {
         position: 'relative',
         paddingTop: '24px',

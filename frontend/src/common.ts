@@ -25,6 +25,7 @@ export interface ITimelineEvent {
     time: number
     message: string
     files: Array<string>
+    diffs: {[commit: string]: string}
 }
 
 export interface IComment {

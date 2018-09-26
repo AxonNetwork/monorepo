@@ -21,7 +21,7 @@ class FileInfo extends Component {
 
     goUpOneDir = () => {
         const dir = path.dirname(this.props.file.path)
-        this.props.selectFile(dir, true)
+        this.props.selectFile({file: dir, isFolder: true})
     }
 
     render() {
