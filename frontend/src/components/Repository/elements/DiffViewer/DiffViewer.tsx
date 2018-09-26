@@ -1,29 +1,38 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Chunk from './Chunk'
 import BinaryDiff from './BinaryDiff'
 
 import parse from 'parse-diff'
 
-class DiffViewer extends Component {
+export interface DiffViewerProps {
+    diff: string
+    type: string
+    classes: any
+}
 
-    constructor(props) {
+export interface DiffViewerState {
+    files: any
+}
+
+class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
+{
+    constructor(props: DiffViewerProps) {
         super(props)
         this.state = {
             files: DiffViewer.parseDiff(props.diff),
         }
     }
 
-    static parseDiff(diff) {
+    static parseDiff(diff: string) {
         if (diff.startsWith('Deleted')) {
             return diff
         }
         return parse(diff)
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: DiffViewerProps) {
         if (prevProps.diff !== this.props.diff) {
             this.setState({
                 files: DiffViewer.parseDiff(this.props.diff),
@@ -32,9 +41,9 @@ class DiffViewer extends Component {
     }
 
     render() {
-        const classes = this.props.classes
-        if (this.props.diff.startsWith('Deleted')) {
-            return <Typography>{this.props.diff}</Typography>
+        const { diff, classes } = this.props.classes
+        if (diff.startsWith('Deleted')) {
+            return <Typography>{diff}</Typography>
         }
         const files = this.state.files
         const type = this.props.type || 'text'
@@ -46,8 +55,8 @@ class DiffViewer extends Component {
             case 'binary':
                 return (
                     <div className={classes.root}>
-                        {files.map((file, i) => (
-                            <React.Fragment>
+                        {files.map((file:any, i:number) => (
+                            <React.Fragment key={i}>
                                 <BinaryDiff file={file} />
                             </React.Fragment>
                         ))}
@@ -58,9 +67,9 @@ class DiffViewer extends Component {
             default:
                 return (
                     <div className={classes.root}>
-                        {files.map((file, i) => (
+                        {files.map((file:any, i:number) => (
                             <React.Fragment key={i}>
-                                {file.chunks.map(chunk => (
+                                {file.chunks.map((chunk:any) => (
                                     <Chunk
                                         key={chunk.newStart}
                                         chunk={chunk}
@@ -77,13 +86,7 @@ class DiffViewer extends Component {
     }
 }
 
-DiffViewer.propTypes = {
-    classes: PropTypes.object.isRequired,
-    diff: PropTypes.string.isRequired,
-    type: PropTypes.string,
-}
-
-const styles = theme => ({
+const styles = createStyles({
     root: {
         margin: '16px 0 1px 0',
     },

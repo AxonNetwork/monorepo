@@ -51,6 +51,7 @@
     "@types/react-redux": "^6.0.9",
     "@types/react-router": "^4.0.31",
     "@types/react-router-dom": "^4.3.1",
+    "@types/react-syntax-highlighter": "^0.0.6",
     "@types/redux-logger": "^3.0.6",
     "@types/uuid": "^3.4.4",
     "@types/webpack-env": "^1.13.6",

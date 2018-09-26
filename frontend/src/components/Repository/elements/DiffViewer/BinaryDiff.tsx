@@ -1,37 +1,35 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
 
-class BinaryChunkContent extends Component {
+export interface BinaryChunkContentProps {
+    file: any
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-    }
-
+class BinaryChunkContent extends React.Component<BinaryChunkContentProps>
+{
     render() {
         const {classes, file} = this.props
-        const changes = file.chunks.reduce((acc, curr) => {
+        const changes = file.chunks.reduce((acc:any, curr:any) => {
             return acc.concat(curr.changes)
         }, [])
-        const sizes = changes.filter(ch => ch.content.indexOf('Size') > -1)
-        const chunkCounts = changes.filter(ch => ch.content.indexOf('chunks') > -1)
+        const chunkCounts = changes.filter((ch:any) => ch.content.indexOf('chunks') > -1)
         const chunkTotal = parseInt(chunkCounts[chunkCounts.length - 1].content.split(' ')[1])
-        const adds = changes.filter(ch => ch.add)
-        const dels = changes.filter(ch => ch.del)
+        const adds = changes.filter((ch:any) => ch.add)
+        const dels = changes.filter((ch:any) => ch.del)
 
         let chunks = []
         for (let i = 3; i < (chunkTotal + 3); i++) {
             let changed = false
-            if (adds.some((ch => ch.ln && ch.ln === i))) {
+            if (adds.some(((ch:any) => ch.ln && ch.ln === i))) {
                 chunks.push('add')
                 changed = true
             }
-            if (dels.some((ch => ch.ln && ch.ln === i))) {
+            if (dels.some(((ch:any) => ch.ln && ch.ln === i))) {
                 chunks.push('del')
                 changed = true
             }
@@ -55,12 +53,7 @@ class BinaryChunkContent extends Component {
     }
 }
 
-BinaryChunkContent.propTypes = {
-    classes: PropTypes.object.isRequired,
-    file: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     chunk: {
         width: 16,
         height: 16,

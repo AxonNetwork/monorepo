@@ -952,7 +952,13 @@
     csstype "^2.0.0"
     indefinite-observable "^1.0.1"
 
-"@types/lodash@^4.14.116":
+"@types/lodash.uniq@^4.14.116":
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/@types/lodash.uniq/-/lodash.uniq-4.5.4.tgz#8dd571e4a68adddcd1bac810538e68f440e87403"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*", "@types/lodash@^4.14.116":
   version "4.14.116"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
 
@@ -1028,6 +1034,12 @@
   resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.31.tgz#416bac49d746800810886c7b8582a622ed9604fc"
   dependencies:
     "@types/history" "*"
+    "@types/react" "*"
+
+"@types/react-syntax-highlighter@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@types/react-syntax-highlighter/-/react-syntax-highlighter-0.0.6.tgz#df076f4aa69b46760a56606bcd6d5ca1d6a42741"
+  dependencies:
     "@types/react" "*"
 
 "@types/react-test-renderer@^16.0.2":

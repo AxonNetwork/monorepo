@@ -1,4 +1,4 @@
-export function formatCell(cell) {
+export function formatCell(cell: string) {
     if (cell.length < 32) {
         return cell
     }

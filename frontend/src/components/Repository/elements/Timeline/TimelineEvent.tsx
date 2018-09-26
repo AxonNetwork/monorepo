@@ -48,7 +48,11 @@ class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventSta
     toggleDiff() {
         const event = this.props.event
         for (let i = 0; i < event.files.length; i++) {
-            this.props.getDiff(this.props.folderPath, event.files[i], event.commit)
+            this.props.getDiff({
+                folderPath: this.props.folderPath,
+                filename: event.files[i],
+                commit: event.commit
+            })
         }
         this.setState({showDiff: !this.state.showDiff})
     }

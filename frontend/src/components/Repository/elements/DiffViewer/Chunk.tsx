@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
@@ -8,23 +7,33 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 import LineChunkContent from './LineChunkContent'
 import SheetChunkContent from './SheetChunkContent'
+import autobind from 'utils/autobind'
 
-class Chunk extends Component {
+export interface ChunkProps {
+    filename: string
+    type: string
+    chunk: any
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            expanded: false,
-        }
+export interface ChunkState {
+    expanded: boolean
+}
+
+@autobind
+class Chunk extends React.Component<ChunkProps, ChunkState>
+{
+    state = {
+        expanded: false
     }
 
-    handleChange = (event, expanded) => {
+    handleChange = (_: any, expanded: boolean) => {
         this.setState({expanded: expanded})
     }
 
     render() {
-        const {classes, chunk, filename, type} = this.props
-        const changes = chunk.changes.reduce((acc, curr) => {
+        const { filename, type, chunk, classes } = this.props
+        const changes = chunk.changes.reduce((acc:any, curr:any) => {
             if (curr.content[0] === '+') { acc.add++ }
             if (curr.content[0] === '-') { acc.del++ }
             return acc
@@ -55,12 +64,7 @@ class Chunk extends Component {
     }
 }
 
-Chunk.propTypes = {
-    classes: PropTypes.object.isRequired,
-    chunk: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     row: {
         height: '24px',
         border: 0,
