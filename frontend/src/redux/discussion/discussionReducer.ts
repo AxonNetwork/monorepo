@@ -1,27 +1,37 @@
-import { GOT_DISCUSSIONS, SELECT_DISCUSSION, CREATE_COMMENT } from './discussionActions'
+import { DiscussionActionType, IDiscussionAction } from './discussionActions'
+import { IDiscussion, IComment } from '../../common'
 
 const initialState = {
     discussions: [],
-    comments: []
+    comments: [],
+    selected: undefined,
 }
 
-const discussionReducer = (state = initialState, action) => {
-    switch(action.type){
-        case GOT_DISCUSSIONS:
-            return{
+export interface IDiscussionState {
+    discussions: IDiscussion[]
+    comments: IComment[]
+    selected: number | undefined
+}
+
+const discussionReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
+    switch (action.type) {
+        case DiscussionActionType.GET_DISCUSSIONS_SUCCESS:
+            return {
                 ...state,
                 discussions: action.discussions,
                 comments: action.comments
             }
-        case SELECT_DISCUSSION:
-            return{
+
+        case DiscussionActionType.SELECT_DISCUSSION:
+            return {
                 ...state,
                 selected: action.created
             }
-        case CREATE_COMMENT:
-            return{
+
+        case DiscussionActionType.CREATE_COMMENT:
+            return {
                 ...state,
-                comments:[
+                comments: [
                     ...state.comments,
                     {
                         attachedTo: action.attachedTo,
@@ -32,6 +42,7 @@ const discussionReducer = (state = initialState, action) => {
                     }
                 ]
             }
+
         default:
             return state
     }

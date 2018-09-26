@@ -13,7 +13,7 @@ export interface IRepoState {
     selectedFile: { file: string, isFolder: boolean } | undefined
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction) => {
+const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS:
         case RepoActionType.FETCHED_REPO:
@@ -119,7 +119,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction) => {
                     ...state.repos,
                     [action.folderPath]: {
                         ...(state.repos[action.folderPath] || {}),
-                        sharedUsers:[
+                        sharedUsers: [
                             ...((state.repos[action.folderPath] || {}).sharedUsers || []),
                             action.email,
                         ]
