@@ -138,25 +138,21 @@ async function getFiles(folderPath) {
                 diff,
             });
         })).on('data', (item) => {
-            files.push(item);
-        })
-            .on('error', (err) => {
-                console.log('error walking files ~>', err);
-                reject(err);
-            })
-            .on('end', async () => {
-                unlock(folderPath);
+            files.push(item)
+        }).on('error', err => {
+            console.log('error walking files ~>', err)
+            reject(err)
+        }).on('end', async () => {
+            unlock(folderPath)
 
-                const timelines = await getTimelines(folderPath);
-                // convert array to obj + interpolate file timelines
-                files = files.reduce((acc, cur) => {
-                    cur.timeline = timelines[cur.name];
-                    acc[cur.name] = cur;
-                    return acc;
-                }, {});
-                resolve(files);
-            });
-    });
+            // convert array to obj
+            files = files.reduce((acc, cur) => {
+                acc[cur.name] = cur
+                return acc
+            }, {})
+            resolve(files)
+        })
+    })
 }
 
 async function getFilesFromTree(folderPath, oid, subfolder) {
@@ -217,44 +213,6 @@ async function getTimeline(folderPath) {
         });
     }
     return timeline;
-}
-
-async function getTimelines(folderPath) {
-    await waitAndLock(folderPath);
-    let commits; let
-        treePromises;
-    try {
-        commits = await git.log({ dir: folderPath });
-        treePromises = commits.map(commit => git.readObject({ dir: folderPath, oid: commit.tree }));
-    } catch (err) {
-        console.log('ERROR running ConscienceManager.getTimelines ~>', err);
-        unlock(folderPath);
-        return {};
-    }
-    unlock(folderPath);
-
-    const trees = await Promise.all(treePromises);
-    const filesByCommit = trees.map(tree => tree.object.entries);
-    const fileTimelines = {};
-    for (let i = 0; i < commits.length; i++) {
-        const commit = commits[i];
-        const files = filesByCommit[i];
-        files.forEach((file) => {
-            let timeline = fileTimelines[file.path];
-            if (timeline === undefined) {
-                timeline = [];
-            }
-            timeline.push({
-                version: i + 1,
-                user: commit.author.name,
-                filename: file.path,
-                time: commit.author.timestamp * 1000,
-                message: commit.message,
-            });
-            fileTimelines[file.path] = timeline;
-        });
-    }
-    return fileTimelines;
 }
 
 async function checkpointRepo(folderPath, message) {

@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
-import logic from './logic.js'
+import logic from './logic'
 import reducer from './reducer'
 
 // Redux DevTools
