@@ -1,31 +1,39 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
 import SharedRepos from './elements/SharedRepos'
+import { IRepo } from 'common'
+import autobind from 'utils/autobind'
 
-class NewRepository extends Component {
+export interface NewRepositoryProps {
+    createRepo: Function
+    sharedRepos: IRepo[]
+    addSharedRepo: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            repoName: '',
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+export interface NewRepositoryState {
+    repoName: string
+}
+
+@autobind
+class NewRepository extends React.Component<NewRepositoryProps, NewRepositoryState>
+{
+    state = {
+        repoName : ''
     }
 
-    handleChange = name => event => {
+    handleChange(event: React.ChangeEvent<HTMLInputElement>){
         this.setState({
-            [name]: event.target.value,
+            repoName: event.target.value,
         })
     }
 
-    handleSubmit(event) {
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         this.props.createRepo(this.state.repoName)
     }
@@ -44,7 +52,7 @@ class NewRepository extends Component {
                             id="repo-name"
                             label="Repository Name"
                             value={this.state.repoName}
-                            onChange={this.handleChange('repoName')}
+                            onChange={this.handleChange}
                         />
                         <Button variant="raised" color="secondary" className={classes.button} type="submit">
                             Create
@@ -62,14 +70,7 @@ class NewRepository extends Component {
     }
 }
 
-NewRepository.propTypes = {
-    createRepo: PropTypes.func.isRequired,
-    sharedRepos: PropTypes.array.isRequired,
-    addSharedRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = createStyles({
     button: {
         display: 'block',
         textTransform: 'none',

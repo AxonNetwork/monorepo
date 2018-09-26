@@ -24,10 +24,14 @@ const store = createStore(
 
 export default store
 
+interface SharedRepo{
+    ignored: boolean
+}
 
 export interface IGlobalState {
     repository: IRepoState
     navigation: INavigationState
     discussion: IDiscussionState
     user: IUserState
+    sharedRepos: SharedRepo[]
 }

@@ -1,6 +1,4 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -8,18 +6,20 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
+import { IRepo } from 'common'
 
-class SharedRepos extends Component {
+export interface SharedReposProps {
+    sharedRepos: IRepo[]
+    addSharedRepo: Function
+}
 
-    addRepo = (repoID) => {
-        this.props.addSharedRepo(repoID)
-    }
-
+class SharedRepos extends React.Component<SharedReposProps>
+{
     render() {
-        const {classes, sharedRepos } = this.props
+        const { sharedRepos } = this.props
         return (
             <React.Fragment>
-                <Typography className={classes.headline} variant="headline">
+                <Typography variant="headline">
                     Shared Repos
                 </Typography>
                 <List>
@@ -27,8 +27,8 @@ class SharedRepos extends Component {
                         sharedRepos.map(repo => (
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
-                                <ListItemSecondaryAction onClick={() => this.addRepo(repo.repoID)}>
-                                    <IconButton>
+                                <ListItemSecondaryAction>
+                                    <IconButton onClick={() => this.props.addSharedRepo(repo.repoID)}>
                                         <ControlPointIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
@@ -41,14 +41,4 @@ class SharedRepos extends Component {
     }
 }
 
-SharedRepos.propTypes = {
-    sharedRepos: PropTypes.array.isRequired,
-    addSharedRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
-
-})
-
-export default withStyles(styles)(SharedRepos)
+export default SharedRepos

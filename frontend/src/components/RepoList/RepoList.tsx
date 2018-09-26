@@ -15,7 +15,7 @@ import autobind from 'utils/autobind'
 
 export interface RepoListProps {
     repos: {[folderPath: string]: IRepo}
-    selectedRepo: string
+    selectedRepo?: string
     currentPage: string
     fetchRepos: Function
     selectRepo: Function

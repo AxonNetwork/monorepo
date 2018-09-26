@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
@@ -21,29 +21,41 @@ import RepoList from './RepoList/RepoList'
 import NewRepository from './NewRepository/NewRepository'
 import Settings from './Settings/Settings'
 import Repository from './Repository/Repository'
+import autobind from 'utils/autobind'
+import { IUserState } from 'redux/user/userReducer'
 import { createRepo, checkpointRepo, pullRepo, selectFile, getDiff, addCollaborator, revertFiles } from '../redux/repository/repoActions'
 import { addSharedRepo } from '../redux/sharedRepos/sharedReposActions'
 import { logout } from '../redux/user/userActions'
 import { navigateNewRepo, navigateSettings } from '../redux/navigation/navigationActions'
 
-class MainUI extends Component
+export interface MainUIProps {
+    user: IUserState
+    currentPage: string
+    classes: any
+}
+
+export interface MainUIState {
+    sidebarOpen: boolean
+}
+
+@autobind
+class MainUI extends React.Component<MainUIProps, MainUIState>
 {
     state = { sidebarOpen: true }
 
-    constructor(props) {
-        super(props)
-        this.onToggleSidebar = this.onToggleSidebar.bind(this)
+    onToggleSidebar() {
+        this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
     render() {
-        const { classes, user } = this.props
-        if(user.jwt === undefined){
+        const { currentPage, user, classes } = this.props
+        if(user.name === undefined){
             return(
                 <Login />
             )
         }
 
-        const userInitials = this.props.user.name.split(' ').map(x => x.substring(0, 1)).join('')
+        const userInitials = user.name.split(' ').map(x => x.substring(0, 1)).join('')
         return (
             <div className={classes.root}>
                 <Drawer
@@ -106,37 +118,22 @@ class MainUI extends Component
                     </div>
 
                     <div className={classes.mainUIContentWrapper}>
-                        {this.props.currentPage === 'new' &&
+                        {currentPage === 'new' &&
                             <NewRepository
                                 createRepo={this.props.createRepo}
                                 sharedRepos = {this.props.sharedRepos}
                                 addSharedRepo = {this.props.addSharedRepo}
                             />}
-                        {this.props.currentPage === 'settings' &&
-                            <Settings logout={this.props.logout}/>
+                        {currentPage === 'settings' &&
+                            <Settings />
                         }
-                        {this.props.currentPage === 'repo' &&
-                            <Repository
-                                repo={this.props.repo}
-                                checkpointRepo={this.props.checkpointRepo}
-                                pullRepo={this.props.pullRepo}
-                                selectedFile={this.props.selectedFile}
-                                selectFile={this.props.selectFile}
-                                unselectFile={()=>this.props.selectFile(undefined)}
-                                getDiff={this.props.getDiff}
-                                revertFiles={this.props.revertFiles}
-                                addCollaborator={this.props.addCollaborator}
-                                sidebarOpen={this.state.sidebarOpen}
-                            />
+                        {currentPage === 'repo' &&
+                            <Repository sidebarOpen={this.state.sidebarOpen} />
                         }
                     </div>
                 </main>
             </div>
         )
-    }
-
-    onToggleSidebar() {
-        this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 }
 
@@ -164,7 +161,7 @@ MainUI.propTypes = {
 
 const drawerWidth = 200
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         height: '100%',

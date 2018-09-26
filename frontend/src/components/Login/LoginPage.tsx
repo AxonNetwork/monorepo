@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import FormHelperText from '@material-ui/core/FormHelperText'
@@ -9,38 +9,47 @@ import Button from '@material-ui/core/Button'
 import logo from '../../assets/img/logo.png'
 
 import { login, signup, fetchUserData } from '../../redux/user/userActions'
+import { IGlobalState } from 'redux/store'
+import { IUserState } from 'redux/user/userReducer'
+import autobind from 'utils/autobind'
 
 export interface LoginPageProps {
-    user: Object
+    user: IUserState
     login: Function
     signup: Function
     fetchUserData: Function
-    classes: Object
+    classes: any
 }
 
-class LoginPageState {
-    readonly displaySignup: boolean = false
-    readonly name: string = ''
-    readonly password: string = ''
-    readonly email: string = ''
+export interface LoginPageState {
+    displaySignup: boolean
+    name: string
+    password: string
+    email: string
 }
 
+@autobind
 class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
 
-    readonly state = new LoginPageState()
+    state = {
+        displaySignup: false,
+        name: '',
+        password: '',
+        email: ''
+    }
 
     componentWillMount() {
         this.props.fetchUserData()
     }
 
-    toggleView = (event: Event) => {
+    toggleView(event: Event){
         event.preventDefault()
         this.setState({
             displaySignup: !this.state.displaySignup,
         })
     }
 
-    readonly handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event === null || event.target === null){
             return
         }
@@ -50,7 +59,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
         }))
     }
 
-    handleSubmit = (event: Event) => {
+    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (this.state.displaySignup) {
             this.props.signup(this.state.name, this.state.email, this.state.password)
@@ -119,25 +128,31 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     }
 }
 
-function ToggleText(props) {
+interface ToggleTextProps{
+    displaySignup: boolean
+    toggleView: Function
+    className: string
+}
+
+function ToggleText(props: ToggleTextProps) {
     if (props.displaySignup) {
         return(
             <Typography>
                 Already have an account?&nbsp;
-                <a href="" className="link" onClick={props.toggleView}>Login</a>
+                <a href="" className="link" onClick={props.toggleView as any}>Login</a>
             </Typography>
         )
     }else {
         return(
             <Typography>
                 Don't have an account?&nbsp;
-                <a href="" className="link" onClick={props.toggleView}>Signup</a>
+                <a href="" className="link" onClick={props.toggleView as any}>Signup</a>
             </Typography>
         )
     }
 }
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     loginContainer: {
         display: 'flex',
         alignItems: 'center',
@@ -145,7 +160,7 @@ const styles = theme => ({
         height: '100%',
 
         '& > div': {
-            flexGrow: '0',
+            flexGrow: 0,
             maxWidth: '50%',
             flexBasis: '50%',
             textAlign: 'center',
@@ -179,7 +194,7 @@ const styles = theme => ({
     },
 })
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state: IGlobalState) => {
     return {
         user: state.user,
     }

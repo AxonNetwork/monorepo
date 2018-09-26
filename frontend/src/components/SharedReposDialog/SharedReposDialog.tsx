@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -8,17 +7,26 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 
 import { addSharedRepo, ignoreRepo } from '../../redux/sharedRepos/sharedReposActions'
+import { IRepo } from 'common'
+import { IGlobalState } from 'redux/store'
 
-class SharedReposDialog extends Component {
+export interface SharedReposDialogProps {
+    sharedRepo: IRepo
+    addSharedRepo: Function
+    ignoreRepo: Function
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            open: true,
-        }
+export interface SharedReposDialogState {
+    open: boolean
+}
+
+class SharedReposDialog extends React.Component<SharedReposDialogProps, SharedReposDialogState>
+{
+    state={
+        open: true
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: SharedReposDialogProps) {
         if (nextProps.sharedRepo !== this.props.sharedRepo) {
             this.setState({ open: true })
         }
@@ -66,13 +74,7 @@ class SharedReposDialog extends Component {
     }
 }
 
-SharedReposDialog.propTypes = {
-    sharedRepo: PropTypes.object,
-    addSharedRepo: PropTypes.func.isRequired,
-    ignoreRepo: PropTypes.func.isRequired,
-}
-
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state: IGlobalState) => {
     let toPrompt = state.sharedRepos.filter(repo => !repo.ignored)
     let sharedRepo
     if (toPrompt.length > 0) {

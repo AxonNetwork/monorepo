@@ -10,7 +10,7 @@ import { checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/reposito
 
 export interface RepoFilesPageProps {
     repo: IRepo
-    selectedFile: {
+    selectedFile?: {
         file: string
         isFolder: boolean
     }
