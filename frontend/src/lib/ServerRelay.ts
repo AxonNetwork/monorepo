@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Promise from 'bluebird'
 import to from 'await-to-js'
-import { IAttachedTo } from '../common'
+import { IUser, IAttachedTo } from '../common'
 
 // @@TODO: this should come from process.env
 // const API_URL = 'http://demo.conscience.network/api',
@@ -17,11 +17,11 @@ const ServerRelay = {
     },
 
     async login(email: string, password: string) {
-        const [err, response] = await to(axios.post(API_URL + '/login', {
-            email: email,
-            password: password
-        }))
-        if (err) throw err.response.data.error
+        interface Response {
+            name: string
+            token: string
+        }
+        const response = await axios.post<Response>(API_URL + '/login', { email, password })
         ServerRelay.setJWT(response.data.token)
         return {
             email: email,
@@ -31,16 +31,14 @@ const ServerRelay = {
     },
 
     async signup(name: string, email: string, password: string) {
-        const [err, response] = await to(axios.post(API_URL + '/create-user', {
-            name: name,
-            email: email,
-            password: password
-        }))
-        if (err) throw err.response.data.error
+        interface Response {
+            token: string
+        }
+        const response = await axios.post<Response>(API_URL + '/create-user', { name, email, password })
         ServerRelay.setJWT(response.data.token)
         return {
-            email: email,
-            name: name,
+            email,
+            name,
             jwt: response.data.token
         }
     },
@@ -115,17 +113,17 @@ const ServerRelay = {
         return response.data
     },
 
-    async fetchUsers(emails: string) {
+    async fetchUsers(emails: string[]) {
+        // @@TODO: use querystring module
         let queryString = '?'
-        for(let i=0; i<emails.length; i++){
-            if (i>0){
+        for (let i = 0; i < emails.length; i++){
+            if (i > 0){
                 queryString += "&"
             }
             queryString+="emails="+emails[i]
         }
-        const [err, response] = await to(axios.get(API_URL+'/users'+queryString))
-        if (err) throw err.response.data.error
-        return response.data
+        const response = await axios.get(API_URL+'/users'+queryString)
+        return response.data as IUser[]
     },
 }
 

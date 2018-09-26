@@ -1,79 +1,68 @@
-import { createLogic } from 'redux-logic'
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAILED, SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAILED, FETCH_USER_DATA,
-    FETCH_USER_DATA_SUCCESS, LOGOUT, LOGOUT_SUCCESS } from './userActions'
+import { makeLogic } from '../reduxUtils'
+import { IUser } from '../../common'
+import { UserActionType, ILoginAction, ILoginSuccessAction, ISignupAction, ISignupSuccessAction, IFetchUserDataAction, IFetchUserDataSuccessAction, ILogoutAction, ILogoutSuccessAction, fetchUserData } from './userActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
-import to from 'await-to-js'
 
-const login = createLogic({
-    type: LOGIN,
-    async process({ getState, action }, dispatch, done) {
-        const [err, user] = await to(ServerRelay.login(action.email, action.password))
-        if(err){
-            await dispatch({
-                type: LOGIN_FAILED,
-                error: err
-            })
-        }else{
-            await UserData.login(user)
-            await dispatch({
-                type: LOGIN_SUCCESS,
-                user: user
-            })
-        }
-        done()
-      }
+const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
+    type: UserActionType.LOGIN,
+    async process({ action }, dispatch): Promise<ILoginSuccessAction['payload']> {
+        const { email, password } = action.payload
+
+        // Login and set the JWT
+        const resp = await ServerRelay.login(email, password)
+        await UserData.set('jwt', resp.jwt)
+
+        // Fetch the user's data
+        await dispatch(fetchUserData({ emails: [ email ] }))
+        // @@TODO: remove payload now that we're calling fetchUserData?
+        return { email: resp.email, name: resp.name }
+    },
 })
 
-const signup = createLogic({
-    type: SIGNUP,
-    async process({ getState, action }, dispatch, done) {
-        const [err, user] = await to(ServerRelay.signup(action.name, action.email, action.password))
-        if(err){
-            await dispatch({
-                type: SIGNUP_FAILED,
-                error: err
-            })
-        }else{
-            await UserData.login(user)
-            await dispatch({
-                type: SIGNUP_SUCCESS,
-                user: user
-            })
-        }
-        done()
-    }
+const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
+    type: UserActionType.SIGNUP,
+    async process({ action }, dispatch) {
+        const { name, email, password } = action.payload
+
+        // Create the user, login, and set the JWT
+        const resp = await ServerRelay.signup(name, email, password)
+        await UserData.set('jwt', resp.jwt)
+
+        // Fetch the user's data
+        await dispatch(fetchUserData({ emails: [ email ] }))
+        // @@TODO: remove payload now that we're calling fetchUserData?
+        return { name: resp.name, email: resp.email }
+    },
 })
 
-const fetchUserData = createLogic({
-    type: FETCH_USER_DATA,
-    async process({ getState, action }, dispatch, done) {
-        const user = await UserData.getUser()
-        if(user !== undefined){
-            await UserData.login(user)
-            ServerRelay.setJWT(user.jwt)
-            await dispatch({
-                type: FETCH_USER_DATA_SUCCESS,
-                user: user
-            })
-        }
-        done()
-    }
+const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
+    type: UserActionType.FETCH_USER_DATA,
+    async process({ action }) {
+        const userList = await ServerRelay.fetchUsers(action.payload.emails)
+
+        // Convert the list into an object
+        const users = userList.reduce((into, each) => {
+            into[each.email] = each
+            return into
+        }, {} as {[email: string]: IUser})
+
+        return { users }
+    },
 })
 
-const logout = createLogic({
-    type: LOGOUT,
-    async process({ getState, action }, dispatch, done) {
-        await UserData.logout()
+const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
+    type: UserActionType.LOGOUT,
+    async process() {
         ServerRelay.removeJWT()
-        await dispatch({type: LOGOUT_SUCCESS})
-        done()
-    }
+        await UserData.set('jwt', null)
+        return {}
+    },
 })
 
 export default [
-    login,
-    signup,
-    fetchUserData,
-    logout
+    loginLogic,
+    signupLogic,
+    fetchUserDataLogic,
+    logoutLogic,
 ]

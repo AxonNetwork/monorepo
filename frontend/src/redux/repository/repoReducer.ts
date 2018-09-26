@@ -5,20 +5,17 @@ const initialState = {
     repos: {},
     selectedRepo: undefined,
     selectedFile: undefined,
+    checkpointed: false,
 }
 
 export interface IRepoState {
-    repos: { [folderPath: string]: IRepo }
+    repos: { [folderPath: string]: IRepo & { behindRemote: boolean } }
     selectedRepo: string | undefined
     selectedFile: { file: string, isFolder: boolean } | undefined
+    checkpointed: boolean
 }
 
-<<<<<<< HEAD
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
-=======
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction) => {
-    console.log(action)
->>>>>>> typescript refactor: RepoFilesPage
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS:
         case RepoActionType.FETCHED_REPO:

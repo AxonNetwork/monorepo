@@ -1,36 +1,44 @@
-import { LOGIN_SUCCESS, LOGIN_FAILED, SIGNUP_SUCCESS, SIGNUP_FAILED, FETCH_USER_DATA_SUCCESS, FETCHED_OTHER_USER_INFO } from './userActions'
+import { UserActionType, IUserAction } from './userActions'
+import { IUser } from '../../common'
 
 const initialState = {
-    users:{}
+    users: {},
+    currentUser: null,
+    error: null,
 }
 
 export interface IUserState {
-    name: string
+    users: { [name: string]: IUser }
+    currentUser: string | null
+    error: Error | null
 }
 
-
-const userReducer = (state = initialState, action) => {
-    switch(action.type){
-        case LOGIN_SUCCESS:
-        case SIGNUP_SUCCESS:
-        case FETCH_USER_DATA_SUCCESS:
-            return{
-                ...state,
-                ...action.user
-            }
-        case LOGIN_FAILED:
-        case SIGNUP_FAILED:
+const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
+    switch (action.type) {
+        case UserActionType.LOGIN_SUCCESS:
+        case UserActionType.SIGNUP_SUCCESS:
             return {
-                error: action.error
-            }
-        case FETCHED_OTHER_USER_INFO:
-            return{
                 ...state,
-                users:{
-                    ...state.users,
-                    [action.user.email]: action.user
-                }
+                currentUser: action.payload.email,
             }
+
+        case UserActionType.FETCH_USER_DATA_SUCCESS:
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    ...action.payload.users,
+                },
+            }
+
+        case UserActionType.LOGIN_FAILED:
+        case UserActionType.SIGNUP_FAILED:
+            return {
+                ...state,
+                error: action.payload,
+                currentUser: null,
+            }
+
         default:
             return state
     }

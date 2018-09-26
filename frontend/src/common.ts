@@ -48,3 +48,12 @@ export interface IDiscussion {
     email: string
     subject: string
 }
+
+export interface IUser {
+    email: string
+    name: string
+    repos: string[]
+}
+
+
+
