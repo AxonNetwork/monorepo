@@ -33,6 +33,7 @@ export interface IComment {
     created: number
     text: string
     user: string
+    name: string|undefined
     attachedTo: IAttachedTo
 }
 

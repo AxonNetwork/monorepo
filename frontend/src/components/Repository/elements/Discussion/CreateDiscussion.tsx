@@ -1,31 +1,43 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import CancelIcon from '@material-ui/icons/Cancel'
+import autobind from 'utils/autobind'
 
-class CreateDiscussion extends Component {
+export interface CreateDiscussionProps {
+    repoID: string
+    createDiscussion: Function
+    unselect: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            error: undefined,
-            subject: '',
-            comment: '',
-        }
+export interface CreateDiscussionState {
+    error: string
+    subject: string
+    comment: string
+}
+
+@autobind
+class CreateDiscussion extends React.Component<CreateDiscussionProps, CreateDiscussionState>
+{
+    state={
+        error: '',
+        subject: '',
+        comment: '',
     }
 
-    handleChange = name => event => {
-        this.setState({
-          [name]: event.target.value,
-        })
+    handleChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        this.setState((current)=>({
+            ...current,
+            [name]: event.target.value,
+        }))
     }
 
-    handleSubmit = event => {
+    handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault()
         const valid = this.state.comment.length > 0 && this.state.subject.length > 0
         this.setState({error: 'Oops! You need both a subject and a comment.'})
@@ -33,7 +45,7 @@ class CreateDiscussion extends Component {
             this.setState({
                 subject: '',
                 comment: '',
-                error: undefined,
+                error: '',
             })
             this.props.createDiscussion(this.props.repoID, this.state.subject, this.state.comment)
         }
@@ -44,7 +56,10 @@ class CreateDiscussion extends Component {
 
         return (
             <React.Fragment>
-                <IconButton onClick={this.props.unselect} className={classes.cancel} size="small">
+                <IconButton
+                    onClick={this.props.unselect as any}
+                    className={classes.cancel}
+                >
                     <CancelIcon />
                 </IconButton>
                 <Typography variant="title" className={classes.title}>Start a New Discussion</Typography>
@@ -77,14 +92,7 @@ class CreateDiscussion extends Component {
     }
 }
 
-CreateDiscussion.propTypes = {
-    repoID: PropTypes.string.isRequired,
-    createDiscussion: PropTypes.func.isRequired,
-    unselect: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     cancel: {
         position: 'absolute',
         top: 0,
@@ -102,9 +110,6 @@ const styles = theme => ({
     textField: {
         display: 'block',
         marginBottom: theme.spacing.unit,
-    },
-    error: {
-
     },
 })
 

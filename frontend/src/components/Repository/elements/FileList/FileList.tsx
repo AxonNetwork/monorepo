@@ -13,7 +13,7 @@ import { IRepoFile } from '../../../../common'
 export interface FileListProps {
     folderPath: string
     files: {[name: string]: IRepoFile}
-    selectedFolder: string
+    selectedFolder: string|undefined
     selectFile: Function
     classes: any
 }

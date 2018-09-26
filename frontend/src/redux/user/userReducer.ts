@@ -4,6 +4,11 @@ const initialState = {
     users:{}
 }
 
+export interface IUserState {
+    name: string
+}
+
+
 const userReducer = (state = initialState, action) => {
     switch(action.type){
         case LOGIN_SUCCESS:

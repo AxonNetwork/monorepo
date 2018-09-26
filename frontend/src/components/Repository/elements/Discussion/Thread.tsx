@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
@@ -11,29 +10,44 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import moment from 'moment'
 
 import { createComment } from '../../../../redux/discussion/discussionActions'
+import { IComment } from '../../../../common'
+import autobind from 'utils/autobind'
+import { IGlobalState } from 'redux/store'
 
-class Thread extends Component {
+export interface ThreadProps {
+    title: string
+    type: string
+    subject: number|string
+    repoID: string
+    user: string
+    comments: IComment[]
+    unselect: Function
+    createComment: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            comment: '',
-        }
+export interface ThreadState {
+    comment: string
+}
+
+@autobind
+class Thread extends React.Component<ThreadProps, ThreadState>
+{
+    state = {
+        comment: '',
     }
 
-    handleKeyPress = event => {
+    handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>){
         if (event.key === 'Enter' && event.shiftKey) {
             this.handleSubmit(event)
         }
     }
 
-    handleChange = name => event => {
-        this.setState({
-          [name]: event.target.value,
-        })
+    handleChange(event:  React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>){
+        this.setState({comment: event.target.value})
     }
 
-    handleSubmit = event => {
+    handleSubmit(event: React.KeyboardEvent<HTMLDivElement>|React.FormEvent<HTMLFormElement>){
         event.preventDefault()
         if (this.state.comment.length === 0) {
             return
@@ -54,7 +68,10 @@ class Thread extends Component {
         return (
             <div className={classes.threadContainer}>
                 {this.props.unselect !== undefined &&
-                    <IconButton onClick={this.props.unselect} className={classes.cancel} size="small">
+                    <IconButton
+                        onClick={this.props.unselect as any}
+                        className={classes.cancel}
+                    >
                         <CancelIcon />
                     </IconButton>
                 }
@@ -83,7 +100,7 @@ class Thread extends Component {
                             multiline
                             rows={2}
                             rowsMax={8}
-                            onChange={this.handleChange('comment')}
+                            onChange={this.handleChange}
                             onKeyUp={this.handleKeyPress}
                             className={classes.textField}
                         />
@@ -97,23 +114,7 @@ class Thread extends Component {
     }
 }
 
-Thread.propTypes = {
-    title: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    subject: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string,
-    ]).isRequired,
-    unselect: PropTypes.func,
-
-    repoID: PropTypes.string.isRequired,
-    comments: PropTypes.array.isRequired,
-    user: PropTypes.string.isRequired,
-    createComment: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     threadContainer: {
         position: 'relative',
         display: 'flex',
@@ -170,8 +171,9 @@ const styles = theme => ({
 })
 
 
-const mapStateToProps = (state, ownProps) => {
-    const repoID = state.repository.repos[state.repository.selectedRepo].repoID
+const mapStateToProps = (state: IGlobalState, ownProps: Partial<ThreadProps>) => {
+    const selected = state.repository.selectedRepo || ""
+    const repoID = state.repository.repos[selected].repoID
     const comments = state.discussion.comments.filter(c => c.attachedTo.subject === ownProps.subject)
     return {
         repoID: repoID,

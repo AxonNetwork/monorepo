@@ -1,9 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
-import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -13,33 +11,38 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 
 import Thread from './Discussion/Thread'
 import CreateDiscussion from './Discussion/CreateDiscussion'
-import { getDiscussions, selectDiscussion, createDiscussion, createComment } from '../../../redux/discussion/discussionActions'
+import { getDiscussions, selectDiscussion, createDiscussion, createComment } from 'redux/discussion/discussionActions'
+import { IGlobalState } from 'redux/store'
+import { IDiscussion, IComment } from 'common'
 
-class RepoDiscussionPage extends Component {
+export interface RepoDiscussionPageProps {
+    repoID: string
+    discussions: IDiscussion[]
+    comments: IComment[]
+    user: string
+    selected: number|undefined
+    getDiscussions: Function
+    selectDiscussion: Function
+    createDiscussion: Function
+    createComment: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-    }
-
+class RepoDiscussionPage extends React.Component<RepoDiscussionPageProps>
+{
     componentWillMount() {
-        this.props.getDiscussions(this.props.repoID)
-    }
-
-    selectDiscussion = (created) => {
-        this.props.selectDiscussion(created)
+        this.props.getDiscussions({repoID: this.props.repoID})
     }
 
     render() {
         const classes = this.props.classes
         const discussions = this.props.discussions || []
-        let selected
-        let filteredComments = []
+        let selected: IDiscussion|undefined
+        let newDiscussion = false
         if (this.props.selected !== undefined) {
             selected = discussions.find(d => d.created === this.props.selected)
-            if (selected !== undefined) {
-                filteredComments = (this.props.comments || []).filter(c => c.attachedTo.subject === selected.created)
-            } else {
-                selected = 'new'
+            if (selected === undefined) {
+                newDiscussion = true
             }
         }
 
@@ -48,7 +51,7 @@ class RepoDiscussionPage extends Component {
                 <List className={classes.list}>
                     {discussions.map(d => (
                         <React.Fragment key={d.created}>
-                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.selectDiscussion(d.created)}>
+                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.props.selectDiscussion(d.created)}>
                                 {selected === undefined &&
                                     <React.Fragment>
                                         <ListItemText primary={d.subject} secondary={d.email}/>
@@ -64,7 +67,7 @@ class RepoDiscussionPage extends Component {
                             <Divider />
                         </React.Fragment>
                     ))}
-                    <ListItem button className={classes.listItem} key={0} onClick={() => this.selectDiscussion(0)}>
+                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion(0)}>
                         <ListItemText primary={'New Discussion'} />
                         {selected === undefined &&
                             <ListItemIcon>
@@ -74,23 +77,23 @@ class RepoDiscussionPage extends Component {
                     </ListItem>
                     <Divider />
                 </List>
-                {selected !== undefined &&
+                {newDiscussion &&
                     <div className={classes.threadPane}>
-                        {selected === 'new' &&
                             <CreateDiscussion
                                 repoID={this.props.repoID}
                                 createDiscussion={this.props.createDiscussion}
                                 unselect={() => this.props.selectDiscussion(undefined)}
                             />
-                        }
-                        {selected !== 'new' &&
-                            <Thread
-                                title={selected.subject}
-                                type="discussion"
-                                subject={selected.created}
-                                unselect={() => this.props.selectDiscussion(undefined)}
-                            />
-                        }
+                    </div>
+                }
+                {selected !== undefined &&
+                    <div className={classes.threadPane}>
+                        <Thread
+                            title={(selected as IDiscussion).subject}
+                            type="discussion"
+                            subject={(selected as IDiscussion).created}
+                            unselect={() => this.props.selectDiscussion(undefined)}
+                        />
                     </div>
                 }
             </div>
@@ -98,20 +101,7 @@ class RepoDiscussionPage extends Component {
     }
 }
 
-RepoDiscussionPage.propTypes = {
-    repoID: PropTypes.string.isRequired,
-    discussions: PropTypes.array.isRequired,
-    comments: PropTypes.array.isRequired,
-    user: PropTypes.string.isRequired,
-    selected: PropTypes.number,
-    getDiscussions: PropTypes.func.isRequired,
-    selectDiscussion: PropTypes.func.isRequired,
-    createDiscussion: PropTypes.func.isRequired,
-    createComment: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     discussionPage: {
         position: 'relative',
         height: 'calc(100% - 84px)',
@@ -139,8 +129,9 @@ const styles = theme => ({
     },
 })
 
-const mapStateToProps = (state, ownProps) => {
-    const repoID = state.repository.repos[state.repository.selectedRepo].repoID
+const mapStateToProps = (state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ""
+    const repoID = state.repository.repos[selected].repoID
     return {
         repoID: repoID,
         discussions: state.discussion.discussions,
