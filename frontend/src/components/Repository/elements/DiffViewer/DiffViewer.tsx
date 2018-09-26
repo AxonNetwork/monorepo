@@ -13,7 +13,7 @@ export interface DiffViewerProps {
 }
 
 export interface DiffViewerState {
-    files: any
+    files: parse.File[]|undefined
 }
 
 class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
@@ -27,7 +27,7 @@ class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
 
     static parseDiff(diff: string) {
         if (diff.startsWith('Deleted')) {
-            return diff
+            return
         }
         return parse(diff)
     }
@@ -45,7 +45,7 @@ class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
         if (diff.startsWith('Deleted')) {
             return <Typography>{diff}</Typography>
         }
-        const files = this.state.files
+        const files = this.state.files || []
         const type = this.props.type || 'text'
         if (files.length < 1) {
             return <div></div>

@@ -6,12 +6,13 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
+import parse from 'parse-diff'
 
 import { formatCell } from './diffUtils'
 
 
 export interface SheetChunkContentProps {
-    chunk: any
+    chunk: parse.Chunk
     classes: any
 }
 
@@ -21,14 +22,14 @@ class SheetChunkContent extends React.Component<SheetChunkContentProps>
         let {classes, chunk} = this.props
         const sheetIndex = chunk.changes[0].content.indexOf(']')
         // change row string to array of cells
-        const content = chunk.changes.map((change: any) => {
+        const content = chunk.changes.map((change: parse.Change) => {
             return change.content.substring(sheetIndex + 2).split('\t')
         })
         return (
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change: any, i: number) => {
+                        {chunk.changes.map((change: parse.Change, i: number) => {
                             switch (change.type) {
                                 case  'add':
                                     return(

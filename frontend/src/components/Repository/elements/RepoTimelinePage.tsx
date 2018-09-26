@@ -1,10 +1,11 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
-
+import { connect } from 'react-redux'
 import Timeline from './Timeline/Timeline'
 import Thread from './Discussion/Thread'
-
-import { ITimelineEvent } from '../../../common'
+import { IGlobalState } from 'redux/store'
+import { getDiff, revertFiles } from 'redux/repository/repoActions'
+import { ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 
 export interface RepoTimelinePageProps {
@@ -43,12 +44,12 @@ class RepoTimelinePage extends React.Component<RepoTimelinePageProps, RepoTimeli
                         selectEvent={this.selectEvent}
                     />
                 </div>
-                {this.state.selected &&
+                {this.state.selected !== undefined &&
                     <div className={classes.thread}>
                         <Thread
                             title={'Version ' + this.state.selected}
                             type="event"
-                            subject={this.state.selected}
+                            subject={this.state.selected || -1}
                             unselect={() => this.selectEvent(undefined)}
                         />
                     </div>
@@ -83,4 +84,29 @@ const styles = (theme: Theme) => createStyles({
 
 })
 
-export default withStyles(styles)(RepoTimelinePage)
+export interface RepoTimelinePageProps {
+    folderPath: string
+    timeline: ITimelineEvent[]
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+const mapStateToProps=(state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ""
+    const repo = state.repository.repos[selected]
+    return {
+        folderPath: repo.folderPath,
+        timeline: repo.timeline
+    }
+}
+
+const mapDispatchToProps = {
+    getDiff,
+    revertFiles,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withStyles(styles)(RepoTimelinePage))

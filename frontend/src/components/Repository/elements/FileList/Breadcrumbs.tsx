@@ -6,7 +6,7 @@ import autobind from '../../../../utils/autobind'
 
 export interface BreadcrumbsProps {
     folderPath: string
-    selectedFolder: string
+    selectedFolder: string|undefined
     selectFile: Function
     classes:{
         crumb: string
@@ -38,7 +38,7 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps>
         this.props.selectFile({file: path.join(dir, toSelect), isFolder: true})
     }
 
-    getParts(folderPath: string, selectedFolder: string){
+    getParts(folderPath: string, selectedFolder: string|undefined){
         const basePath = path.dirname(folderPath)
         let parts = [path.basename(folderPath)]
         if (selectedFolder !== undefined) {

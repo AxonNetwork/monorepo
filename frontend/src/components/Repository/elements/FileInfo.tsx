@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import Button from '@material-ui/core/Button'
@@ -12,20 +11,26 @@ import File from './FileList/File'
 import Timeline from './Timeline/Timeline'
 import DiffViewer from './DiffViewer/DiffViewer'
 import Thread from './Discussion/Thread'
+import { IRepoFile, ITimelineEvent } from 'common'
 
-class FileInfo extends Component {
+export interface FileInfoProps {
+    file: IRepoFile
+    timeline: ITimelineEvent[]
+    folderPath: string
+    selectFile: Function
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-    }
-
+class FileInfo extends React.Component<FileInfoProps> {
     goUpOneDir = () => {
         const dir = path.dirname(this.props.file.path)
         this.props.selectFile({file: dir, isFolder: true})
     }
 
     render() {
-        const {classes, file, unselectFile} = this.props
+        const {classes, file} = this.props
 
         return (
             <React.Fragment>
@@ -65,16 +70,7 @@ class FileInfo extends Component {
     }
 }
 
-FileInfo.propTypes = {
-    classes: PropTypes.object.isRequired,
-    file: PropTypes.object.isRequired,
-    folderPath: PropTypes.string.isRequired,
-    selectFile: PropTypes.func.isRequired,
-    getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     infoContainer: {
         display: 'flex',
     },

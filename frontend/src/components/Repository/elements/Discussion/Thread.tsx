@@ -21,7 +21,7 @@ export interface ThreadProps {
     repoID: string
     user: string
     comments: IComment[]
-    unselect: Function
+    unselect?: Function
     createComment: Function
     classes: any
 }

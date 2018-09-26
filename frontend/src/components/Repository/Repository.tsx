@@ -1,36 +1,40 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
 
-import path from 'path'
-
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoTimelinePage from './elements/RepoTimelinePage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
+import autobind from 'utils/autobind'
 
-class Repository extends Component
+export interface RepositoryProps {
+    sidebarOpen: boolean
+    classes:any
+}
+
+export interface RepositoryState {
+    page: number
+}
+
+@autobind
+class Repository extends React.Component<RepositoryProps, RepositoryState>
 {
-    state = { page: 0 }
-
-    constructor(props) {
-        super(props)
-        this.handleChange = this.handleChange.bind(this)
+    state = {
+        page: 0
     }
 
-    handleChange(e, page) {
+    handleChange(_:any, page: number) {
         this.setState({ page })
     }
 
     render() {
         const classes = this.props.classes
-        const timeline = this.props.repo.timeline || []
         return(
             <React.Fragment>
                 <RepoInfo />
@@ -38,12 +42,7 @@ class Repository extends Component
                     <RepoFilesPage />
                 }
                 {this.state.page === 1 &&
-                    <RepoTimelinePage
-                        folderPath={this.props.repo.folderPath}
-                        timeline={timeline}
-                        getDiff={this.props.getDiff}
-                        revertFiles={this.props.revertFiles}
-                    />
+                    <RepoTimelinePage />
                 }
                 {this.state.page === 2 &&
                     <RepoDiscussionPage />
@@ -63,29 +62,13 @@ class Repository extends Component
     }
 }
 
-Repository.propTypes = {
-    repo: PropTypes.object.isRequired,
-    checkpointRepo: PropTypes.func.isRequired,
-    pullRepo: PropTypes.func.isRequired,
-    selectedFile: PropTypes.object,
-    selectFile: PropTypes.func.isRequired,
-    unselectFile: PropTypes.func.isRequired,
-    getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired,
-    addCollaborator: PropTypes.func.isRequired,
-    sidebarOpen: PropTypes.bool.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     bottomNav: {
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         borderTop: '1px solid',
-        // backgroundColor: theme.palette.background.default,
-        // borderColor: theme.palette.grey[300],
         borderColor: '#bfbfbf',
         backgroundColor: '#f3f3f3',
         zIndex: 100,

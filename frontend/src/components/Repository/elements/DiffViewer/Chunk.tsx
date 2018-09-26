@@ -8,11 +8,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import LineChunkContent from './LineChunkContent'
 import SheetChunkContent from './SheetChunkContent'
 import autobind from 'utils/autobind'
+import parse from 'parse-diff'
 
 export interface ChunkProps {
     filename: string
     type: string
-    chunk: any
+    chunk: parse.Chunk
     classes: any
 }
 
@@ -33,7 +34,7 @@ class Chunk extends React.Component<ChunkProps, ChunkState>
 
     render() {
         const { filename, type, chunk, classes } = this.props
-        const changes = chunk.changes.reduce((acc:any, curr:any) => {
+        const changes = chunk.changes.reduce((acc:any, curr:parse.NormalChange|parse.AddChange|parse.DeleteChange) => {
             if (curr.content[0] === '+') { acc.add++ }
             if (curr.content[0] === '-') { acc.del++ }
             return acc

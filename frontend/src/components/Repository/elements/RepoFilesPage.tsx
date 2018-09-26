@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import FileList from './FileList/FileList'
 import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
-import { IRepo, ITimelineEvent } from '../../../common'
+import { IRepo, ITimelineEvent } from 'common'
 import { IGlobalState } from 'redux/store'
-import { checkpointRepo, selectFile, getDiff, revertFiles } from '../../../redux/repository/repoActions'
+import { checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
 
 export interface RepoFilesPageProps {
     repo: IRepo
@@ -92,7 +92,6 @@ const styles = createStyles({
         width: '100%',
     },
 })
-
 
 const mapStateToProps=(state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ""

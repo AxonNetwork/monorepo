@@ -10,7 +10,7 @@ export interface TimelineProps {
     timeline: ITimelineEvent[]
     getDiff: Function
     revertFiles: Function
-    selectEvent: Function
+    selectEvent?: Function
 }
 
 export interface TimelineState {

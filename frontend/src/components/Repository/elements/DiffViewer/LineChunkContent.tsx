@@ -8,9 +8,10 @@ import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { docco } from 'react-syntax-highlighter/styles/hljs'
+import parse from 'parse-diff'
 
 export interface LineChunkContentProps {
-    chunk: any
+    chunk: parse.Chunk
     classes: any
 }
 
@@ -24,7 +25,7 @@ class LineChunkContent extends React.Component<LineChunkContentProps>
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change: any, i: number) => {
+                        {chunk.changes.map((change: parse.Change, i: number) => {
                             switch (change.type) {
                                 case  'add':
                                     return(

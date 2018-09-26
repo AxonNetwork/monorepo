@@ -17,7 +17,7 @@ import { IRepoFile } from '../../../../common'
 
 export interface FileProps {
     file: IRepoFile
-    selectFile: Function
+    selectFile?: Function
     classes: any
 }
 

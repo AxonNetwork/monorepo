@@ -44,9 +44,10 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
         if(event === null || event.target === null){
             return
         }
-        this.setState({
+        this.setState((current)=>({
+            ...current,
             [name]: event.target.value,
-        })
+        }))
     }
 
     handleSubmit = (event: Event) => {

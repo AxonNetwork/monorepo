@@ -1,29 +1,41 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import autobind from 'utils/autobind'
 
-class Checkpoint extends Component {
+export interface CheckpointProps {
+    folderPath: string
+    repoID: string
+    checkpointRepo: Function
+    classes: any
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            message: '',
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+export interface CheckpointState {
+    message: string
+}
+
+@autobind
+class Checkpoint extends React.Component<CheckpointProps, CheckpointState>
+{
+    state={
+        message: ''
     }
 
-    handleChange = name => event => {
-        this.setState({
+    handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState((current)=>({
+            ...current,
             [name]: event.target.value,
-        })
+        }))
     }
 
-    handleSubmit(event) {
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        this.props.checkpointRepo(this.props.folderPath, this.props.repoID, this.state.message)
+        this.props.checkpointRepo({
+            folderPath: this.props.folderPath,
+            repoID: this.props.repoID,
+            message: this.state.message
+        })
     }
 
     render() {
@@ -48,14 +60,7 @@ class Checkpoint extends Component {
     }
 }
 
-Checkpoint.propTypes = {
-    folderPath: PropTypes.string.isRequired,
-    repoID: PropTypes.string.isRequired,
-    checkpointRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = createStyles({
     textField: {
         width: '100%',
     },

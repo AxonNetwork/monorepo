@@ -4,9 +4,10 @@ import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import parse from 'parse-diff'
 
 export interface BinaryChunkContentProps {
-    file: any
+    file: parse.File
     classes: any
 }
 
@@ -14,7 +15,7 @@ class BinaryChunkContent extends React.Component<BinaryChunkContentProps>
 {
     render() {
         const {classes, file} = this.props
-        const changes = file.chunks.reduce((acc:any, curr:any) => {
+        const changes = file.chunks.reduce((acc:parse.Change[], curr:parse.Chunk) => {
             return acc.concat(curr.changes)
         }, [])
         const chunkCounts = changes.filter((ch:any) => ch.content.indexOf('chunks') > -1)
