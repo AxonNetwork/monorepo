@@ -20,7 +20,7 @@ const theme = createMuiTheme({
             light: '#ff7d47',
             dark: '#ac0800',
         },
-    }
+    },
 })
 
 interface IAppProps {
@@ -28,7 +28,7 @@ interface IAppProps {
     history: History
 }
 
-export default (props: IAppProps)=>(
+export default (props: IAppProps) => (
     <Provider store={props.store}>
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
