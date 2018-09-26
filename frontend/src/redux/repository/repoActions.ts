@@ -174,7 +174,10 @@ export const watchRepo = (params: { repoID: string, folderPath: string }): IWatc
 export const selectRepo = (params: { repo: IRepo }): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, ...params })
 export const checkpointRepo = (params: { folderPath: string, repoID: string, message: string }): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, ...params })
 export const pullRepo = (params: { folderPath: string, repoID: string }): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, ...params })
-export const selectFile = (params: { file: string, isFolder: boolean }): ISelectFileAction => ({ type: RepoActionType.SELECT_FILE, ...params })
+export const selectFile = (params: { file: string, isFolder: boolean }): ISelectFileAction => {
+    console.log(params)
+    return{ type: RepoActionType.SELECT_FILE, ...params }
+}
 export const addCollaborator = (params: { folderPath: string, repoID: string, email: string }): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, ...params })
 export const addCollaboratorSuccess = (params: { folderPath: string, repoID: string, email: string }): IAddCollaboratorSuccessAction => ({ type: RepoActionType.ADD_COLLABORATOR, ...params })
 export const addHypothesis = (params: { folderPath: string, hypothesis: string }): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, ...params })

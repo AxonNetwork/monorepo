@@ -1,29 +1,42 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-
-import path from 'path'
-
+import React from 'react'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
 import FileList from './FileList/FileList'
 import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
+import { IRepo, ITimelineEvent } from '../../../common'
+import { IGlobalState } from 'redux/store'
+import { checkpointRepo, selectFile, getDiff, revertFiles } from '../../../redux/repository/repoActions'
 
-class RepoFilesPage extends Component
+export interface RepoFilesPageProps {
+    repo: IRepo
+    selectedFile: {
+        file: string
+        isFolder: boolean
+    }
+    checkpointRepo: Function
+    selectFile: Function
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+class RepoFilesPage extends React.Component<RepoFilesPageProps>
 {
 
     render() {
-        const { classes, repo, selectedFile } = this.props
+        const { repo, selectedFile, classes } = this.props
         const files = repo.files || {}
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]
             return (file.status === '*modified' || file.status === '*added')
         })
 
-        if (selectedFile !== undefined && !selectedFile.isFolder) {
+        if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             const relPath = selectedFile.file.replace(repo.folderPath + '/', '')
-            let timeline = []
-            if (this.props.repo.timeline !== undefined) {
-                timeline = this.props.repo.timeline.filter(e => e.files.indexOf(relPath) > -1)
+            let timeline: Array<ITimelineEvent> = []
+            if (repo.timeline !== undefined) {
+                timeline = repo.timeline.filter(e => e.files.indexOf(relPath) > -1)
             }
             return (
                 <FileInfo
@@ -36,17 +49,18 @@ class RepoFilesPage extends Component
                 />
             )
         } else {
+            const selectedFolder = (selectedFile !== undefined) ? selectedFile.file : undefined
             return (
                 <div className={classes.fileListContainer}>
                     <div className={classes.fileList}>
                         <FileList
                             folderPath={this.props.repo.folderPath}
                             files={files}
-                            selectedFile={selectedFile}
+                            selectedFolder={selectedFolder}
                             selectFile={this.props.selectFile}
                         />
                     </div>
-                    {filesChanged > 0 &&
+                    {filesChanged &&
                         <div className={classes.checkpoint}>
                             <Checkpoint
                                 checkpointRepo={this.props.checkpointRepo}
@@ -61,17 +75,7 @@ class RepoFilesPage extends Component
     }
 }
 
-RepoFilesPage.propTypes = {
-    repo: PropTypes.object.isRequired,
-    checkpointRepo: PropTypes.func.isRequired,
-    selectedFile: PropTypes.object,
-    selectFile: PropTypes.func.isRequired,
-    unselectFile: PropTypes.func.isRequired,
-    getDiff: PropTypes.func.isRequired,
-    revertFiles: PropTypes.func.isRequired,
-}
-
-const styles = theme => ({
+const styles = createStyles({
     fileListContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -89,4 +93,25 @@ const styles = theme => ({
     },
 })
 
-export default withStyles(styles)(RepoFilesPage)
+
+const mapStateToProps=(state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ""
+    const repo = state.repository.repos[selected]
+    const selectedFile = state.repository.selectedFile
+    return {
+        repo: repo,
+        selectedFile: selectedFile,
+    }
+}
+
+const mapDispatchToProps = {
+    checkpointRepo,
+    selectFile,
+    getDiff,
+    revertFiles,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withStyles(styles)(RepoFilesPage))

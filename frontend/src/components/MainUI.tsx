@@ -21,7 +21,7 @@ import RepoList from './RepoList/RepoList'
 import NewRepository from './NewRepository/NewRepository'
 import Settings from './Settings/Settings'
 import Repository from './Repository/Repository'
-import { createRepo, checkpointRepo, pullRepo, selectFile, unselectFile, getDiff, addCollaborator, revertFiles } from '../redux/repository/repoActions'
+import { createRepo, checkpointRepo, pullRepo, selectFile, getDiff, addCollaborator, revertFiles } from '../redux/repository/repoActions'
 import { addSharedRepo } from '../redux/sharedRepos/sharedReposActions'
 import { logout } from '../redux/user/userActions'
 import { navigateNewRepo, navigateSettings } from '../redux/navigation/navigationActions'
@@ -122,7 +122,7 @@ class MainUI extends Component
                                 pullRepo={this.props.pullRepo}
                                 selectedFile={this.props.selectedFile}
                                 selectFile={this.props.selectFile}
-                                unselectFile={this.props.unselectFile}
+                                unselectFile={()=>this.props.selectFile(undefined)}
                                 getDiff={this.props.getDiff}
                                 revertFiles={this.props.revertFiles}
                                 addCollaborator={this.props.addCollaborator}
@@ -149,7 +149,6 @@ MainUI.propTypes = {
     checkpointRepo: PropTypes.func.isRequired,
     pullRepo: PropTypes.func.isRequired,
     selectFile: PropTypes.func.isRequired,
-    unselectFile: PropTypes.func.isRequired,
     getDiff: PropTypes.func.isRequired,
     addCollaborator: PropTypes.func.isRequired,
     revertFiles: PropTypes.func.isRequired,
@@ -276,7 +275,6 @@ const mapDispatchToProps = {
     checkpointRepo,
     pullRepo,
     selectFile,
-    unselectFile,
     getDiff,
     addCollaborator,
     revertFiles,

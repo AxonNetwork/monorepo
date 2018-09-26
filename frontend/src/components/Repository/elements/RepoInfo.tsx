@@ -1,14 +1,18 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
 import OpenFolderButton from './RepoInfo/OpenFolderButton'
 import Sharing from './RepoInfo/Sharing'
 import PullButton from './RepoInfo/PullButton'
-import { Repo } from '../../../redux/repository/repoTypes'
+import { IRepo } from '../../../common'
+
+import { IGlobalState } from '../../../redux/store'
+import { pullRepo, addCollaborator } from '../../../redux/repository/repoActions'
 
 export interface RepoInfoProps {
-    repo: Repo
+    repo: IRepo
     addCollaborator: Function
     pullRepo: Function
     classes:{
@@ -67,4 +71,20 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(RepoInfo)
+const mapStateToProps=(state: IGlobalState) =>{
+    const selected = state.repository.selectedRepo || ""
+    const repo = state.repository.repos[selected]
+    return {
+        repo: repo
+    }
+}
+
+const mapDispatchToProps = {
+    pullRepo,
+    addCollaborator,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withStyles(styles)(RepoInfo))

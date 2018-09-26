@@ -33,22 +33,9 @@ class Repository extends Component
         const timeline = this.props.repo.timeline || []
         return(
             <React.Fragment>
-                <RepoInfo
-                    repo={this.props.repo}
-                    addCollaborator={this.props.addCollaborator}
-                    addHypothesis={this.props.addHypothesis}
-                    pullRepo={this.props.pullRepo}
-                />
+                <RepoInfo />
                 {this.state.page === 0 &&
-                    <RepoFilesPage
-                        repo={this.props.repo}
-                        checkpointRepo={this.props.checkpointRepo}
-                        selectedFile={this.props.selectedFile}
-                        selectFile={this.props.selectFile}
-                        unselectFile={this.props.unselectFile}
-                        getDiff={this.props.getDiff}
-                        revertFiles={this.props.revertFiles}
-                    />
+                    <RepoFilesPage />
                 }
                 {this.state.page === 1 &&
                     <RepoTimelinePage

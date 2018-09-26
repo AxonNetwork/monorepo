@@ -1,8 +1,12 @@
 import { NAVIGATE_NEW_REPO, NAVIGATE_SETTINGS } from './navigationActions'
-import { SELECT_REPO } from '../repository/repoActions'
+import { RepoActionType } from '../repository/repoActions'
 
 const initialState = {
     currentPage: 'new'
+}
+
+export interface INavigationState{
+    currentPage: string
 }
 
 const navigationReducer = (state = initialState, action) => {
@@ -17,7 +21,7 @@ const navigationReducer = (state = initialState, action) => {
                 ...state,
                 currentPage: 'settings'
             }
-        case SELECT_REPO:
+        case RepoActionType.SELECT_REPO:
             return {
                 ...state,
                 currentPage: 'repo'

@@ -1,10 +1,10 @@
-
-
 export interface IRepo {
     folderPath: string
+    repoID: string
     sharedUsers: string[]
-    files: IRepoFile[]
+    files: {[name: string]: IRepoFile}
     timeline: ITimelineEvent[]
+    behindRemote: boolean
 }
 
 export interface IRepoFile {
@@ -24,6 +24,7 @@ export interface ITimelineEvent {
     filename: string
     time: number
     message: string
+    files: Array<string>
 }
 
 export interface IComment {

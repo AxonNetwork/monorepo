@@ -8,12 +8,17 @@ const initialState = {
 }
 
 export interface IRepoState {
-    repos: { [name: string]: IRepo }
+    repos: { [folderPath: string]: IRepo }
     selectedRepo: string | undefined
     selectedFile: { file: string, isFolder: boolean } | undefined
 }
 
+<<<<<<< HEAD
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
+=======
+const repoReducer = (state: IRepoState = initialState, action: IRepoAction) => {
+    console.log(action)
+>>>>>>> typescript refactor: RepoFilesPage
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS:
         case RepoActionType.FETCHED_REPO:

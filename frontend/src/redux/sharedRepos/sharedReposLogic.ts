@@ -1,8 +1,8 @@
 import { createLogic } from 'redux-logic'
 import { FETCH_SHARED_REPOS, GOT_SHARED_REPO, ADD_SHARED_REPO, ADD_SHARED_REPO_SUCCESS, IGNORE_REPO } from './sharedReposActions'
 import { FETCHED_REPO, SELECT_REPO } from '../repository/repoActions'
-import ServerRelay from '../../lib/ServerRelay.js'
-import UserData from '../../lib/UserData.js'
+import ServerRelay from '../../lib/ServerRelay'
+import UserData from '../../lib/UserData'
 import to from 'await-to-js'
 import ConscienceRelay from '../../lib/ConscienceRelay';
 

@@ -8,23 +8,21 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
 import Divider from '@material-ui/core/Divider'
 
+import { IRepo } from '../../common'
+import { IGlobalState } from '../../redux/store'
 import { fetchRepos, selectRepo } from '../../redux/repository/repoActions'
+import autobind from 'utils/autobind'
 
 export interface RepoListProps {
-    repos: Object
+    repos: {[folderPath: string]: IRepo}
     selectedRepo: string
     currentPage: string
     fetchRepos: Function
     selectRepo: Function
-    classes: {
-        sidebarWrapper: string
-        repoList: string
-        selected: string
-        badge: string
-        sidebarItemText: string
-    }
+    classes: any
 }
 
+@autobind
 class RepoList extends React.Component<RepoListProps>
 {
     componentDidMount() {
@@ -53,7 +51,7 @@ class RepoList extends React.Component<RepoListProps>
                                     <ListItem
                                         button
                                         className={classnames({ [classes.selected]: isSelected })}
-                                        onClick={() => this.props.selectRepo(repo)}
+                                        onClick={() => this.props.selectRepo({repo: repo})}
                                     >
                                     { isChanged &&
                                          <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
@@ -100,7 +98,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: IGlobalState) => {
     return {
         repos: state.repository.repos,
         selectedRepo: state.repository.selectedRepo,

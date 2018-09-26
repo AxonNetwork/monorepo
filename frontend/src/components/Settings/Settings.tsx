@@ -5,10 +5,7 @@ import Button from '@material-ui/core/Button'
 
 export interface SettingsProps {
     logout: Function
-    classes: {
-        headline: string
-        button: string
-    }
+    classes: any
 }
 
 class Settings extends React.Component<SettingsProps>

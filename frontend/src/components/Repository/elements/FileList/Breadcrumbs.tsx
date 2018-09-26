@@ -1,41 +1,48 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-
 import path from 'path'
+import autobind from '../../../../utils/autobind'
 
-class Breadcrumbs extends Component {
+export interface BreadcrumbsProps {
+    folderPath: string
+    selectedFolder: string
+    selectFile: Function
+    classes:{
+        crumb: string
+    }
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            showBasePath: false,
-        }
+@autobind
+class Breadcrumbs extends React.Component<BreadcrumbsProps>
+{
+
+    state ={
+        showBasePath: false
     }
 
-    componentWillReceiveProps(props) {
+    componentWillReceiveProps(props: BreadcrumbsProps) {
         if (props.folderPath !== this.props.folderPath) {
             this.setState({showBasePath: false})
         }
     }
 
-    showBasePath = () => {
+    showBasePath(){
         this.setState({showBasePath: true})
     }
 
-    selectCrumb = (index) => {
+    selectCrumb(index: number){
         const parts = this.getParts(this.props.folderPath, this.props.selectedFolder)
         const dir = path.dirname(this.props.folderPath)
         const toSelect = parts.slice(0, index + 1).join('/')
-        this.props.selectFile(path.join(dir, toSelect), true)
+        this.props.selectFile({file: path.join(dir, toSelect), isFolder: true})
     }
 
-    getParts = (folderPath, selectedFolder) => {
+    getParts(folderPath: string, selectedFolder: string){
         const basePath = path.dirname(folderPath)
         let parts = [path.basename(folderPath)]
         if (selectedFolder !== undefined) {
-            const selected = selectedFolder.file.replace(basePath + '/', '')
+            const selected = selectedFolder.replace(basePath + '/', '')
             parts = selected.split('/')
         }
         return parts
@@ -73,14 +80,7 @@ class Breadcrumbs extends Component {
     }
 }
 
-Breadcrumbs.propTypes = {
-    folderPath: PropTypes.string.isRequired,
-    selectedFolder: PropTypes.string,
-    selectFile: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     crumb: {
         color: theme.palette.secondary.main,
         textDecoration: 'underline',

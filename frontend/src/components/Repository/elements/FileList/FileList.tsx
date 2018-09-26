@@ -1,40 +1,36 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
-import Button from '@material-ui/core/Button'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
-import { filterSubfolder, mergeFolders } from './fileListUtils'
-import path from 'path'
+import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 
 import File from './File'
 import Breadcrumbs from './Breadcrumbs'
+import { IRepoFile } from '../../../../common'
 
-class FileList extends Component {
 
-    goUpOneDir = () => {
-        const dir = path.dirname(this.props.selectedFile.file)
-        this.props.selectFile(dir, true)
-    }
+export interface FileListProps {
+    folderPath: string
+    files: {[name: string]: IRepoFile}
+    selectedFolder: string
+    selectFile: Function
+    classes: any
+}
 
+class FileList extends React.Component<FileListProps> {
     render() {
-        let {classes, files, selectedFile} = this.props
-        if (selectedFile !== undefined) {
-            files = filterSubfolder(files, selectedFile.file)
+        let {classes, files, selectedFolder} = this.props
+        if (selectedFolder !== undefined) {
+            files = filterSubfolder(files, selectedFolder)
         }
         files = mergeFolders(files)
-        const names = Object.keys(files).sort((a, b) => {
-            if (files[a].type === 'folder' && files[b].type !== 'folder') { return -1 }
-            if (files[a].type !== 'folder' && files[b].type === 'folder') { return 1 }
-            return (a < b ? -1 : 1)
-        })
+        const names = sortFolders(files)
         return (
             <React.Fragment>
                 <Breadcrumbs
                     folderPath={this.props.folderPath}
-                    selectedFolder={selectedFile}
+                    selectedFolder={selectedFolder}
                     selectFile={this.props.selectFile}
                 />
                 <Table className={classes.table}>
@@ -61,15 +57,7 @@ class FileList extends Component {
     }
 }
 
-FileList.propTypes = {
-    folderPath: PropTypes.string.isRequired,
-    files: PropTypes.object.isRequired,
-    selectedFolder: PropTypes.object,
-    selectFile: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     button: {
         textTransform: 'none',
         fontSize: '12pt',
