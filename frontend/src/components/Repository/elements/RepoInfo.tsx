@@ -1,71 +1,56 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
 import OpenFolderButton from './RepoInfo/OpenFolderButton'
 import Sharing from './RepoInfo/Sharing'
 import PullButton from './RepoInfo/PullButton'
-import Hypothesis from './Hypothesis'
+import { Repo } from '../../../redux/repository/repoTypes'
 
-const shell = window.require('electron').shell
+export interface RepoInfoProps {
+    repo: Repo
+    addCollaborator: Function
+    pullRepo: Function
+    classes:{
+        locationLink: string
+        headline: string
+        version: string
+        caption: string
+    }
+}
 
-class RepoInfo extends Component
+function RepoInfo(props: RepoInfoProps)
 {
-    constructor(props) {
-        super(props)
-        this.onClickOpenFolder = this.onClickOpenFolder.bind(this)
-    }
+    const { repo, addCollaborator, pullRepo, classes } = props
+    const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
 
-    onClickOpenFolder() {
-        shell.openItem(this.props.repo.folderPath)
-    }
-
-    render() {
-        const classes = this.props.classes
-        const version = (this.props.repo.timeline !== undefined) ? 'v' + Object.keys(this.props.repo.timeline).length : ''
-
-        return (
-            <React.Fragment>
-                <OpenFolderButton folderPath={this.props.repo.folderPath} />
-                <Typography variant="headline" className={classes.headline}>
-                    {this.props.repo.repoID}
-                </Typography>
-                <Typography className={classes.version}>
-                    {version}
-                </Typography>
-                <Sharing
-                    sharedUsers={this.props.repo.sharedUsers}
-                    folderPath={this.props.repo.folderPath}
-                    repoID={this.props.repo.repoID}
-                    addCollaborator={this.props.addCollaborator}
+    return (
+        <React.Fragment>
+            <OpenFolderButton folderPath={repo.folderPath} />
+            <Typography variant="headline" className={classes.headline}>
+                {repo.repoID}
+            </Typography>
+            <Typography className={classes.version}>
+                {version}
+            </Typography>
+            <Sharing
+                sharedUsers={repo.sharedUsers || []}
+                folderPath={repo.folderPath}
+                repoID={repo.repoID}
+                addCollaborator={addCollaborator}
+            />
+            {repo.behindRemote &&
+                <PullButton
+                    pullRepo={pullRepo}
+                    folderPath={repo.folderPath}
+                    repoID={repo.repoID}
                 />
-                {this.props.repo.behindRemote &&
-                    <PullButton
-                        pullRepo={this.props.pullRepo}
-                        folderPath={this.props.repo.folderPath}
-                        repoID={this.props.repo.repoID}
-                    />
-                }
-                {/* <Hypothesis
-                    hypothesis={this.props.repo.hypothesis}
-                    folderPath = {this.props.repo.folderPath}
-                    addHypothesis={this.props.addHypothesis}
-                /> */}
-                <br/>
-            </React.Fragment>
-        )
-    }
+            }
+        </React.Fragment>
+    )
 }
 
-RepoInfo.propTypes = {
-    repo: PropTypes.object.isRequired,
-    addCollaborator: PropTypes.func.isRequired,
-    pullRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     locationLink: {
         color: theme.palette.secondary.main,
         cursor: 'pointer',

@@ -1,40 +1,52 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Chip from '@material-ui/core/Chip'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 
 import AddCollaboratorDialog from './AddCollaboratorDialog'
+import autobind from '../../../../utils/autobind'
 
-class Sharing extends Component {
+export interface SharingProps {
+    sharedUsers: Array<string>
+    folderPath: string
+    repoID: string
+    addCollaborator: Function
+    classes:{
+        text: string
+        button: string
+        icon: string
+        chip: string
+    }
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            open: false,
-        }
+export interface SharingState {
+    open: boolean
+}
 
-        this.handleClickOpen = this.handleClickOpen.bind(this)
-        this.handleClose = this.handleClose.bind(this)
+@autobind
+class Sharing extends React.Component<SharingProps, SharingState>
+{
+
+    state = {
+        open: false
     }
 
-    handleClickOpen() {
+    handleClickOpen(){
         this.setState({
             open: true,
         })
     }
 
-    handleClose() {
+    handleClose(){
         this.setState({
             open: false,
         })
     }
 
     render() {
-        const classes = this.props.classes
-        let sharedUsers = this.props.sharedUsers || []
+        const { sharedUsers, folderPath, repoID, addCollaborator, classes } = this.props
         return (
             <div>
                 <Typography className={classes.text}>
@@ -52,24 +64,16 @@ class Sharing extends Component {
                 <AddCollaboratorDialog
                     open={this.state.open}
                     onClose={this.handleClose}
-                    folderPath={this.props.folderPath}
-                    repoID={this.props.repoID}
-                    addCollaborator={this.props.addCollaborator}
+                    folderPath={folderPath}
+                    repoID={repoID}
+                    addCollaborator={addCollaborator}
                 />
             </div>
         )
     }
 }
 
-Sharing.propTypes = {
-    sharedUsers: PropTypes.array,
-    folderPath: PropTypes.string.isRequired,
-    repoID: PropTypes.string.isRequired,
-    addCollaborator: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = createStyles({
     text: {
         marginTop: '12px',
         display: 'inline-block',

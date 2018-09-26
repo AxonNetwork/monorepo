@@ -1,18 +1,20 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 
-class Settings extends Component {
-
-    constructor(props) {
-        super(props)
-
+export interface SettingsProps {
+    logout: Function
+    classes: {
+        headline: string
+        button: string
     }
+}
 
+class Settings extends React.Component<SettingsProps>
+{
     render() {
-        const classes = this.props.classes
+        const { classes } = this.props
 
         return (
             <React.Fragment>
@@ -25,12 +27,7 @@ class Settings extends Component {
     }
 }
 
-Settings.propTypes = {
-    logout: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     headline: {
         marginBottom: theme.spacing.unit * 2,
     },

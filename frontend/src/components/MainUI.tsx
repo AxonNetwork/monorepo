@@ -16,6 +16,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 
+import Login from './Login/LoginPage'
 import RepoList from './RepoList/RepoList'
 import NewRepository from './NewRepository/NewRepository'
 import Settings from './Settings/Settings'
@@ -35,7 +36,13 @@ class MainUI extends Component
     }
 
     render() {
-        const classes = this.props.classes
+        const { classes, user } = this.props
+        if(user.jwt === undefined){
+            return(
+                <Login />
+            )
+        }
+
         const userInitials = this.props.user.name.split(' ').map(x => x.substring(0, 1)).join('')
         return (
             <div className={classes.root}>

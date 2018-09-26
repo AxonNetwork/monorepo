@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -11,40 +10,46 @@ import logo from '../../assets/img/logo.png'
 
 import { login, signup, fetchUserData } from '../../redux/user/userActions'
 
-class LoginPage extends Component {
+export interface LoginPageProps {
+    user: Object
+    login: Function
+    signup: Function
+    fetchUserData: Function
+    classes: Object
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            displaySignup: false,
-            name: '',
-            password: '',
-            email: '',
-        }
+class LoginPageState {
+    readonly displaySignup: boolean = false
+    readonly name: string = ''
+    readonly password: string = ''
+    readonly email: string = ''
+}
 
-        this.toggleView = this.toggleView.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-    }
+class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
+
+    readonly state = new LoginPageState()
 
     componentWillMount() {
         this.props.fetchUserData()
     }
 
-    toggleView(event) {
+    toggleView = (event: Event) => {
         event.preventDefault()
         this.setState({
             displaySignup: !this.state.displaySignup,
         })
     }
 
-    handleChange = name => event => {
+    readonly handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(event === null || event.target === null){
+            return
+        }
         this.setState({
             [name]: event.target.value,
         })
     }
 
-    handleSubmit(event) {
+    handleSubmit = (event: Event) => {
         event.preventDefault()
         if (this.state.displaySignup) {
             this.props.signup(this.state.name, this.state.email, this.state.password)
@@ -129,14 +134,6 @@ function ToggleText(props) {
             </Typography>
         )
     }
-}
-
-LoginPage.propTypes = {
-    user: PropTypes.object.isRequired,
-    login: PropTypes.func.isRequired,
-    signup: PropTypes.func.isRequired,
-    fetchUserData: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
 }
 
 const styles = theme => ({

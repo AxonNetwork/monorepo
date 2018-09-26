@@ -1,36 +1,29 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
-// import { shell } from 'electron'
-const shell = window.require('electron').shell
+const shell = (window as any).require('electron').shell
 
-class OpenFolderButton extends Component {
-    constructor(props) {
-        super(props)
-        this.openFolder = this.openFolder.bind(this)
-    }
-
-    openFolder() {
-        shell.openItem(this.props.folderPath)
-    }
-
-    render() {
-        const classes = this.props.classes
-        return (
-            <div className={classes.button} onClick={this.openFolder}>
-                <FolderOpenIcon className={classes.icon}/>
-            </div>
-        )
+export interface OpenFolderButtonProps {
+    folderPath: string
+    classes: {
+        button: string
+        icon: string
     }
 }
 
-OpenFolderButton.propTypes = {
-    folderPath: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired,
+function OpenFolderButton(props: OpenFolderButtonProps){
+    const { folderPath, classes } = props
+    return (
+        <div
+            className={classes.button}
+            onClick={()=>shell.openItem(folderPath)}
+        >
+            <FolderOpenIcon className={classes.icon}/>
+        </div>
+    )
 }
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     button: {
         position: 'absolute',
         textAlign: 'right',

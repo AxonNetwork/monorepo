@@ -1,33 +1,44 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { createStyles, withStyles, Theme } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Badge from '@material-ui/core/Badge'
 import Divider from '@material-ui/core/Divider'
 
 import { fetchRepos, selectRepo } from '../../redux/repository/repoActions'
 
-class RepoList extends Component
+export interface RepoListProps {
+    repos: Object
+    selectedRepo: string
+    currentPage: string
+    fetchRepos: Function
+    selectRepo: Function
+    classes: {
+        sidebarWrapper: string
+        repoList: string
+        selected: string
+        badge: string
+        sidebarItemText: string
+    }
+}
+
+class RepoList extends React.Component<RepoListProps>
 {
     componentDidMount() {
         this.props.fetchRepos()
     }
 
     render() {
-        const repos = this.props.repos
-        const classes = this.props.classes
+        const { repos, selectedRepo, currentPage, classes } = this.props
 
         return (
             <div className={classes.sidebarWrapper}>
-
                 <List className={classes.repoList}>
                     {
-                        Object.keys(repos).sort().map((folderPath) => {
+                        Object.keys(repos).sort().map((folderPath: string) => {
                             let repo = repos[folderPath]
                             let isChanged = false
                             const files = repo.files
@@ -36,16 +47,16 @@ class RepoList extends Component
                                     (name) => files[name].status === '*modified' || files[name].status === '*added',
                                 )
                             }
-                            let isSelected = this.props.currentPage === 'repo' && repo.folderPath === this.props.selectedRepo
+                            let isSelected = currentPage === 'repo' && repo.folderPath === selectedRepo
                             return (
                                 <React.Fragment key={repo.folderPath}>
                                     <ListItem
                                         button
-                                        className={classnames(classes.sidebarItem, { [classes.selected]: isSelected }) }
+                                        className={classnames({ [classes.selected]: isSelected })}
                                         onClick={() => this.props.selectRepo(repo)}
                                     >
                                     { isChanged &&
-                                         <Badge classes={{badge: this.props.classes.badge}} badgeContent="" color="secondary">
+                                         <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
                                             <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                         </Badge>
                                     }
@@ -58,32 +69,18 @@ class RepoList extends Component
                             )
                         })
                     }
-
                 </List>
             </div>
         )
     }
 }
 
-RepoList.propTypes = {
-    repos: PropTypes.object.isRequired,
-    selectedRepo: PropTypes.string,
-    user: PropTypes.object.isRequired,
-    fetchRepos: PropTypes.func.isRequired,
-    selectRepo: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     sidebarWrapper: {
         backgroundColor: '#383840',
         width: 200,
     },
     repoList: {
-        // position: 'fixed',
-        // top: 0,
-        // bottom: 0,
-        // left: 0,
         height: '100%',
         padding: 0,
         borderRight: '1px solid',
@@ -103,11 +100,10 @@ const styles = theme => ({
     },
 })
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         repos: state.repository.repos,
         selectedRepo: state.repository.selectedRepo,
-        user: state.user,
         currentPage: state.navigation.currentPage,
     }
 }
@@ -123,4 +119,3 @@ const RepoListContainer = connect(
 )(withStyles(styles)(RepoList))
 
 export default RepoListContainer
-

@@ -1,41 +1,49 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import autobind from '../../../../utils/autobind'
 
-class AddCollaboratorDialog extends Component {
+export interface AddCollaboratorDialogProps {
+    open: boolean
+    repoID: string
+    folderPath: string
+    onClose: () => void
+    addCollaborator: Function
+}
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            email: '',
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+export interface AddCollaboratorDialogState {
+    email: string
+}
+
+@autobind
+class AddCollaboratorDialog extends React.Component<AddCollaboratorDialogProps>
+{
+    state = {
+        email: ''
     }
 
-    handleChange = name => event => {
+    handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) =>{
         this.setState({
             [name]: event.target.value,
         })
     }
 
-    handleSubmit(event) {
+    handleSubmit(event: React.MouseEvent<HTMLElement>) {
         event.preventDefault()
         this.props.onClose()
         this.props.addCollaborator(this.props.folderPath, this.props.repoID, this.state.email)
     }
 
     render() {
+        const { open, onClose } = this.props
         return (
             <Dialog
-                open={this.props.open}
-                onClose={this.props.onClose}
+                open={open}
+                onClose={onClose}
             >
                 <DialogTitle>Add Collaborator</DialogTitle>
                     <DialogContent>
@@ -63,17 +71,4 @@ class AddCollaboratorDialog extends Component {
     }
 }
 
-AddCollaboratorDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    addCollaborator: PropTypes.func.isRequired,
-    repoID: PropTypes.string.isRequired,
-    folderPath: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired,
-}
-
-const styles = theme => ({
-
-})
-
-export default withStyles(styles)(AddCollaboratorDialog)
+export default AddCollaboratorDialog

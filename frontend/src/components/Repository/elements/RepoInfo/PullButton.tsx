@@ -1,39 +1,37 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import GetAppIcon from '@material-ui/icons/GetApp'
 
-class PullButton extends Component {
-
-    constructor(props) {
-        super(props)
-    }
-
-    pullRepo() {
-        this.props.pullRepo(this.props.folderPath, this.props.repoID)
-    }
-
-    render() {
-        const classes = this.props.classes
-
-        return (
-            <Button variant="contained" size="small" color="secondary" className={classes.button} onClick={() => this.pullRepo()}>
-                Pull
-                <GetAppIcon className={classes.icon} />
-            </Button>
-        )
+export interface PullButtonProps {
+    pullRepo: Function
+    folderPath: string
+    repoID: string
+    classes: {
+        button: string
+        icon: string
     }
 }
 
-PullButton.propTypes = {
-    classes: PropTypes.object.isRequired,
-    pullRepo: PropTypes.func.isRequired,
-    folderPath: PropTypes.string.isRequired,
-    repoID: PropTypes.string.isRequired,
+// function PullButton extends React.Component<PullButtonProps>
+function PullButton(props: PullButtonProps) {
+    const { pullRepo, folderPath, repoID, classes } = props
+
+    return (
+        <Button
+            variant="contained"
+            size="small"
+            color="secondary"
+            className={classes.button}
+            onClick={() => pullRepo(folderPath, repoID)}
+        >
+            Pull
+            <GetAppIcon className={classes.icon} />
+        </Button>
+    )
 }
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     button: {
         marginTop: theme.spacing.unit,
         textTransform: 'none',
