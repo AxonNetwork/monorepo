@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Promise from 'bluebird'
 import to from 'await-to-js'
 import { IUser, IComment, IAttachedTo, IDiscussion } from '../common'
 
@@ -43,13 +42,9 @@ const ServerRelay = {
         }
     },
 
-    async createRepo(repoID: string, secretKey: string) {
-        const [err, response] = await to(axios.post(API_URL + '/create-repo', {
-            repoID: repoID,
-            secretKey: secretKey,
-        }))
-        if (err) throw err.response.data.error
-        return response
+    async createRepo(repoID: string) {
+        interface Response {}
+        await axios.post<Response>(API_URL + '/create-repo', { repoID })
     },
 
     async shareRepo(repoID: string, email: string) {
@@ -62,8 +57,10 @@ const ServerRelay = {
     },
 
     async getSharedUsers(repoID: string) {
-        const [err, response] = await to(axios.get(API_URL+'/shared-users?repoID='+repoID))
-        if (err) throw err.response.data.error
+        interface Response {
+            sharedUsers: { name: string, email: string }[]
+        }
+        const response = await axios.get<Response>(API_URL+'/shared-users?repoID='+repoID)
         return response.data.sharedUsers
     },
 

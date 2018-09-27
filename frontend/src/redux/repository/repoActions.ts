@@ -1,8 +1,10 @@
 import { IRepo, IRepoFile, ITimelineEvent } from '../../common'
+import { FailedAction } from '../reduxUtils'
 
 export enum RepoActionType {
     CREATE_REPO = 'CREATE_REPO',
     CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
+    CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
     FETCH_REPOS = 'FETCH_REPOS',
     FETCHED_REPO = 'FETCHED_REPO',
     FETCH_FULL_REPO = 'FETCH_FULL_REPO',
@@ -32,6 +34,8 @@ export interface ICreateRepoSuccessAction {
     type: RepoActionType.CREATE_REPO_SUCCESS
     repo: IRepo
 }
+
+export type ICreateRepoFailedAction = FailedAction<RepoActionType.CREATE_REPO_FAILED>
 
 export interface IFetchReposAction {
     type: RepoActionType.FETCH_REPOS
@@ -146,6 +150,7 @@ export interface ISetIsBehindRemoteAction {
 export type IRepoAction =
     ICreateRepoAction |
     ICreateRepoSuccessAction |
+    ICreateRepoFailedAction |
     IFetchReposAction |
     IFetchedReposAction |
     IFetchFullRepoAction |
@@ -166,7 +171,6 @@ export type IRepoAction =
     ISetIsBehindRemoteAction
 
 export const createRepo = (params: { repoID: string }): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, ...params })
-export const createRepoSuccess = (params: { repo: IRepo }): ICreateRepoSuccessAction => ({ type: RepoActionType.CREATE_REPO_SUCCESS, ...params })
 export const fetchRepos = (): IFetchReposAction => ({ type: RepoActionType.FETCH_REPOS })
 export const fetchedRepo = (params: { repo: IRepo }): IFetchedReposAction => ({ type: RepoActionType.FETCHED_REPO, ...params })
 export const fetchFullRepo = (params: { repoID: string, folderPath: string }): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, ...params })
@@ -179,12 +183,9 @@ export const selectFile = (params: { file: string, isFolder: boolean }): ISelect
     return{ type: RepoActionType.SELECT_FILE, ...params }
 }
 export const addCollaborator = (params: { folderPath: string, repoID: string, email: string }): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, ...params })
-export const addCollaboratorSuccess = (params: { folderPath: string, repoID: string, email: string }): IAddCollaboratorSuccessAction => ({ type: RepoActionType.ADD_COLLABORATOR, ...params })
 export const addHypothesis = (params: { folderPath: string, hypothesis: string }): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, ...params })
 export const getDiff = (params: { folderPath: string, filename: string, commit: string }): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, ...params })
-export const getDiffSuccess = (params: { diff: string, folderPath: string, filename: string, commit: string }): IGetDiffSuccessAction => ({ type: RepoActionType.GET_DIFF_SUCCESS, ...params })
 export const revertFiles = (params: { folderPath: string, files: string, commit: string }): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, ...params })
-export const revertFilesSuccess = (params: { folderPath: string, filename: string }): IRevertFilesSuccessAction => ({ type: RepoActionType.REVERT_FILES_SUCCESS, ...params })
 export const fetchedFiles = (params: { folderPath: string, files: IRepoFile[] }): IFetchedFilesAction => ({ type: RepoActionType.FETCHED_FILES, ...params })
 export const fetchedTimeline = (params: { folderPath: string, timeline: ITimelineEvent[] }): IFetchedTimelineAction => ({ type: RepoActionType.FETCHED_TIMELINE, ...params })
 export const setIsBehindRemote = (params: { folderPath: string }): ISetIsBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, ...params })

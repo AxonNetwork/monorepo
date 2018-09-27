@@ -1,5 +1,10 @@
+import { makeLogic } from '../reduxUtils'
 import { createLogic } from 'redux-logic'
-import { RepoActionType, createRepoSuccess, selectRepo, fetchedRepo, fetchFullRepo, watchRepo, getDiffSuccess, revertFilesSuccess, addCollaboratorSuccess, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
+import { RepoActionType,
+    // IFetchFullRepoAction,
+    // ICreateRepoAction,
+    // ICreateRepoSuccessAction,
+    selectRepo, fetchedRepo, fetchFullRepo, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { FETCH_SHARED_REPOS } from '../sharedRepos/sharedReposActions'
 import { GET_DISCUSSIONS } from '../discussion/discussionActions'
 import UserData from '../../lib/UserData'
@@ -9,13 +14,12 @@ import to from 'await-to-js'
 
 const createRepoLogic = createLogic({
     type: RepoActionType.CREATE_REPO,
-    async process({ getState, action }, dispatch, done) {
+    async process({ getState, action }, dispatch) {
+        // @@TODO: UserData.conscienceLocation should live in a config or something
         const repo = await ConscienceRelay.createRepo(action.repoID, UserData.conscienceLocation)
         await ServerRelay.createRepo(repo.repoID)
-        await dispatch(createRepoSuccess({ repo }))
         await dispatch(selectRepo({ repo }))
-        done()
-      }
+    }
 })
 
 const fetchReposLogic = createLogic({
@@ -49,14 +53,8 @@ const fetchFullRepoLogic = createLogic({
     type: RepoActionType.FETCH_FULL_REPO,
     async process({ getState, action }, dispatch, done) {
         // @@TODO: maybe don't use `to` here, not much benefit
-        let [repoErr, repo] = await to(ConscienceRelay.fetchRepo(action.repoID, action.folderPath))
-        let [userErr, sharedUsers] = await to(ServerRelay.getSharedUsers(repo.repoID))
-        // @@TODO: use `done(err)`?
-        if (repoErr) {
-            throw repoErr
-        } else if (userErr) {
-            throw userErr
-        }
+        const repo = await ConscienceRelay.fetchRepo(action.repoID, action.folderPath)
+        const sharedUsers = await ServerRelay.getSharedUsers(repo.repoID)
 
         repo.sharedUsers = (sharedUsers || []).map(user => user.name || user.email)
         dispatch({

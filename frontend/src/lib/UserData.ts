@@ -1,14 +1,12 @@
 import path from 'path'
-import mkdirp from 'mkdirp'
-import Promise from 'bluebird'
 const { app } = window.require('electron').remote
 const fs = window.require('fs')
 
-const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
+export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
 
 const UserData = {
     async readAll() {
-        return new Promise((resolve, reject) => {
+        return new Promise<{[name: string]: any}>((resolve, reject) => {
             fs.readFile(CONFIG_PATH, (err: Error, bytes: string) => {
                 if (err) {
                     return reject(err)

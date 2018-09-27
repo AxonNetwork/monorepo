@@ -1,20 +1,6 @@
 import * as π from 'pants'
 import functionsIn from 'lodash/functionsIn'
 
-// const NO_AUTOBIND = {
-//     constructor: true,
-//     refs: true,
-//     props: true,
-//     state: true,
-//     getDOMNode: true,
-//     setState: true,
-//     replaceState: true,
-//     forceUpdate: true,
-//     isMounted: true,
-//     setProps: true,
-//     replaceProps: true,
-// }
-
 /**
      All React components that aren't created via React.createClass() need this decorator to bind `this` to all of the
     component's methods (weird, I know).
