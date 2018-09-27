@@ -15,6 +15,9 @@ export enum UserActionType {
     LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
     LOGOUT_FAILED = 'LOGOUT_FAILED',
     FETCHED_OTHER_USER_INFO = 'FETCHED_OTHER_USER_INFO',
+    CHECK_LOCAL_USER = 'CHECK_LOCAL_USER',
+    CHECK_LOCAL_USER_SUCCESS = 'CHECK_LOCAL_USER_SUCCESS',
+    CHECK_LOCAL_USER_FAILED = 'CHECK_LOCAL_USER_FAILED',
 }
 
 export interface ILoginAction {
@@ -82,6 +85,21 @@ export interface IFetchUserDataSuccessAction {
 
 export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
 
+export interface ICheckLocalUserAction {
+    type: UserActionType.CHECK_LOCAL_USER
+    payload: {}
+}
+
+export interface ICheckLocalUserSuccessAction {
+    type: UserActionType.CHECK_LOCAL_USER_SUCCESS
+    payload: {
+        email: string
+        name: string
+    }
+}
+
+export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCAL_USER_FAILED>
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -94,10 +112,14 @@ export type IUserAction =
     ISignupFailedAction |
     IFetchUserDataAction |
     IFetchUserDataSuccessAction |
-    IFetchUserDataFailedAction
+    IFetchUserDataFailedAction |
+    ICheckLocalUserAction |
+    ICheckLocalUserSuccessAction |
+    ICheckLocalUserFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
+export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, payload: {}})
 

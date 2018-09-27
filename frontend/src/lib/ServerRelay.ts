@@ -20,7 +20,12 @@ const ServerRelay = {
             name: string
             token: string
         }
-        const response = await axios.post<Response>(API_URL + '/login', { email, password })
+        let response
+        try{
+            response = await axios.post<Response>(API_URL + '/login', { email, password })
+        }catch(err){
+            throw err.response.data.error
+        }
         ServerRelay.setJWT(response.data.token)
         return {
             email: email,
@@ -33,12 +38,30 @@ const ServerRelay = {
         interface Response {
             token: string
         }
-        const response = await axios.post<Response>(API_URL + '/create-user', { name, email, password })
+        let response
+        try{
+            response = await axios.post<Response>(API_URL + '/create-user', { name, email, password })
+        }catch(err){
+            throw err.response.data.error
+        }
         ServerRelay.setJWT(response.data.token)
         return {
             email,
             name,
             jwt: response.data.token
+        }
+    },
+
+    async whoami(jwt: string) {
+        interface Response {
+            name: string
+            email: string
+        }
+        ServerRelay.setJWT(jwt)
+        const response = await axios.get<Response>(API_URL + '/whoami?jwt=' + jwt)
+        return {
+            email: response.data.email,
+            name: response.data.name
         }
     },
 

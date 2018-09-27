@@ -8,16 +8,14 @@ import Button from '@material-ui/core/Button'
 
 import logo from '../../assets/img/logo.png'
 
-import { login, signup, fetchUserData } from '../../redux/user/userActions'
+import { login, signup } from '../../redux/user/userActions'
 import { IGlobalState } from 'redux/store'
-import { IUserState } from 'redux/user/userReducer'
 import autobind from 'utils/autobind'
 
 export interface LoginPageProps {
-    user: IUserState
+    error: Error|null
     login: Function
     signup: Function
-    fetchUserData: Function
     classes: any
 }
 
@@ -38,10 +36,6 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
         email: ''
     }
 
-    componentWillMount() {
-        this.props.fetchUserData()
-    }
-
     toggleView(event: Event){
         event.preventDefault()
         this.setState({
@@ -50,30 +44,24 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     }
 
     handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(event === null || event.target === null){
-            return
-        }
+        const value = event.target.value
         this.setState((current)=>({
             ...current,
-            [name]: event.target.value,
+            [name]: value,
         }))
     }
 
     handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (this.state.displaySignup) {
-            this.props.signup(this.state.name, this.state.email, this.state.password)
+            this.props.signup({name: this.state.name, email: this.state.email, password: this.state.password})
         }else {
-            this.props.login(this.state.email, this.state.password)
+            this.props.login({email: this.state.email, password: this.state.password})
         }
     }
 
     render() {
-        const classes = this.props.classes
-        if (this.props.user.loggedIn) {
-            return null
-        }
-        const error = this.props.user.error
+        const {error, classes } = this.props
         return (
             <div className={classes.loginContainer}>
                 <div>
@@ -90,7 +78,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                     value={this.state.name}
                                     onChange={this.handleChange('name')}
                                     className={classes.textField}
-                                    error={error !== undefined}
+                                    error={error !== null}
                                 />
                             }
                             <TextField
@@ -99,7 +87,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                 value={this.state.email}
                                 onChange={this.handleChange('email')}
                                 className={classes.textField}
-                                error={error !== undefined}
+                                error={error !== null}
                             />
                             <TextField
                                 id="password"
@@ -108,7 +96,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                 value={this.state.password}
                                 onChange={this.handleChange('password')}
                                 className={classes.textField}
-                                error={error !== undefined}
+                                error={error !== null}
                             />
                             {error !== undefined &&
                                 <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
@@ -196,14 +184,13 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        user: state.user,
+        error: state.user.error
     }
 }
 
 const mapDispatchToProps = {
     login,
     signup,
-    fetchUserData,
 }
 
 const LoginPageContainer = connect(

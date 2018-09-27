@@ -22,14 +22,15 @@ import NewRepository from './NewRepository/NewRepository'
 import Settings from './Settings/Settings'
 import Repository from './Repository/Repository'
 import autobind from 'utils/autobind'
-import { IUserState } from 'redux/user/userReducer'
 import { createRepo, checkpointRepo, pullRepo, selectFile, getDiff, addCollaborator, revertFiles } from '../redux/repository/repoActions'
-import { addSharedRepo } from '../redux/sharedRepos/sharedReposActions'
-import { logout } from '../redux/user/userActions'
-import { navigateNewRepo, navigateSettings } from '../redux/navigation/navigationActions'
+import { IGlobalState } from 'redux/store'
+import { addSharedRepo } from 'redux/sharedRepos/sharedReposActions'
+import { logout } from 'redux/user/userActions'
+import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
+import { IUser } from 'common'
 
 export interface MainUIProps {
-    user: IUserState
+    user: IUser
     currentPage: string
     classes: any
 }
@@ -49,7 +50,7 @@ class MainUI extends React.Component<MainUIProps, MainUIState>
 
     render() {
         const { currentPage, user, classes } = this.props
-        if(user.name === undefined){
+        if(user === undefined){
             return(
                 <Login />
             )
@@ -252,16 +253,18 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state, ownProps) => {
-    const selected = state.repository.selectedRepo
+const mapStateToProps = (state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ""
     let repo
     if (selected !== undefined) {
         repo = state.repository.repos[selected]
     }
+    const currentUser = state.user.currentUser || ""
+    const user = state.user.users[currentUser]
     return {
         repo: repo,
         selectedFile: state.repository.selectedFile,
-        user: state.user,
+        user: user,
         sharedRepos: state.sharedRepos,
         currentPage: state.navigation.currentPage,
     }

@@ -17,6 +17,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
     switch (action.type) {
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
+        case UserActionType.CHECK_LOCAL_USER_SUCCESS:
             return {
                 ...state,
                 currentUser: action.payload.email,

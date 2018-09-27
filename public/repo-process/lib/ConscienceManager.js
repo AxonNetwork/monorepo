@@ -172,7 +172,7 @@ async function getFilesFromTree(folderPath, oid, subfolder) {
     const subTrees = tree.object.entries.filter(f => f.type === 'tree')
     let files = tree.object.entries.filter(f => f.type === 'blob')
     const subFileArrays = await Promise.all(subTrees.map(t => getFilesFromTree(folderPath, t.oid, t.path)))
-    for (let i = 0 i < subFileArrays.length i++) {
+    for (let i = 0; i < subFileArrays.length; i++) {
         files = files.concat(subFileArrays[i])
     }
     files = files.map((f) => {
@@ -186,8 +186,8 @@ async function getFilesFromTree(folderPath, oid, subfolder) {
 
 async function getTimeline(folderPath) {
     await waitAndLock(folderPath)
-    let commits let
-        filesByCommit
+    let commits
+    let filesByCommit
     try {
         commits = await git.log({ dir: folderPath })
         treeOids = commits.map(commit => commit.tree)
@@ -200,7 +200,7 @@ async function getTimeline(folderPath) {
     unlock(folderPath)
 
     const timeline = []
-    for (let i = 0 i < commits.length i++) {
+    for (let i = 0; i < commits.length; i++) {
         const commit = commits[i]
         let files = filesByCommit[i].filter((f) => {
             if (i === commits.length - 1) { return true }
@@ -313,7 +313,7 @@ async function getDiff(folderPath, filename, commit) {
 async function revertFiles(folderPath, files, commit) {
     try {
         let fileList = ''
-        for (let i = 0 i < files.length i++) {
+        for (let i = 0; i < files.length; i++) {
             await execCmd(`git reset ${commit} ${files[i]}`, folderPath)
             await execCmd(`git checkout -- ${files[i]}`, folderPath)
             fileList += files[i]
@@ -335,7 +335,6 @@ module.exports = {
     pullRepo,
     getFiles,
     getTimeline,
-    getTimelines,
     checkpointRepo,
     createRepo,
     cloneRepo,

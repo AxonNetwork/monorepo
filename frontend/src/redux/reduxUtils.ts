@@ -14,12 +14,15 @@ export function makeLogic
 {
     return createLogic({
         type: opts.type,
-        process: opts.process,
-        processOptions: {
-            successType: opts.type + '_SUCCESS',
-            failType: opts.type + '_FAILED',
-            dispatchReturn: true,
-        },
+        process: async (depObj, dispatch, done) => {
+            try {
+                const retval = await Promise.resolve((opts.process as any)(depObj, dispatch, done))
+                dispatch({ type: opts.type + '_SUCCESS', payload: retval })
+            } catch (err) {
+                dispatch({ type: opts.type + '_FAILED', error: true, payload: err })
+            }
+            done()
+        }
     })
 }
 

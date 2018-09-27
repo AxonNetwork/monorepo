@@ -1,6 +1,6 @@
 import path from 'path'
-const { app } = window.require('electron').remote
-const fs = window.require('fs')
+const { app } = (window as any).require('electron').remote
+const fs = (window as any).require('fs')
 
 export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
 
@@ -23,7 +23,12 @@ const UserData = {
     },
 
     async set(key: string, value: any) {
-        const data = await UserData.readAll()
+        let data: any
+        try{
+            data = await UserData.readAll()
+        }catch(err){
+            data = {}
+        }
         data[key] = value
         return new Promise((resolve, reject) => {
             fs.writeFile(CONFIG_PATH, JSON.stringify(data), (err: Error) => {

@@ -6,7 +6,10 @@ import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 import store from './redux/store'
+import { checkLocalUser } from 'redux/user/userActions'
 import { isProduction } from 'utils'
+
+store.dispatch(checkLocalUser())
 
 // Webpack offline plugin
 if (isProduction) {
