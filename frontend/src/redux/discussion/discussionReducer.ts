@@ -1,46 +1,38 @@
 import { DiscussionActionType, IDiscussionAction } from './discussionActions'
-import { IDiscussion, IComment } from '../../common'
+import { IDiscussion } from '../../common'
 
 const initialState = {
-    discussions: [],
-    comments: [],
-    selected: undefined,
+    discussions: {},
+    selected: null,
 }
 
 export interface IDiscussionState {
-    discussions: IDiscussion[]
-    comments: IComment[]
-    selected: number | undefined
+    discussions: {
+        [repoID: string]: {
+            [id: string]: IDiscussion
+        }
+    }
+    selected: number | null
 }
 
 const discussionReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
     switch (action.type) {
         case DiscussionActionType.GET_DISCUSSIONS_SUCCESS:
+            const { repoID, discussions } = action.payload
             return {
                 ...state,
-                discussions: action.discussions,
-                comments: action.comments
+                discussions: {
+                    [repoID]: {
+                        ...(state.discussions[repoID] || {}),
+                        ...discussions,
+                    }
+                },
             }
 
         case DiscussionActionType.SELECT_DISCUSSION:
             return {
                 ...state,
-                selected: action.created
-            }
-
-        case DiscussionActionType.CREATE_COMMENT:
-            return {
-                ...state,
-                comments: [
-                    ...state.comments,
-                    {
-                        attachedTo: action.attachedTo,
-                        repoID: action.repoID,
-                        text: action.text,
-                        user: action.user,
-                        created: new Date().getTime(),
-                    }
-                ]
+                selected: action.payload.created,
             }
 
         default:

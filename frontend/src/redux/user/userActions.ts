@@ -1,4 +1,5 @@
 import { IUser } from '../../common'
+import { FailedAction } from '../reduxUtils'
 
 export enum UserActionType {
     LOGIN = 'LOGIN',
@@ -32,11 +33,7 @@ export interface ILoginSuccessAction {
     }
 }
 
-export interface ILoginFailedAction {
-    type: UserActionType.LOGIN_FAILED
-    payload: Error
-    error: boolean
-}
+export type ILoginFailedAction = FailedAction<UserActionType.LOGIN_FAILED>
 
 export interface ILogoutAction {
     type: UserActionType.LOGOUT
@@ -48,11 +45,7 @@ export interface ILogoutSuccessAction {
     payload: {}
 }
 
-export interface ILogoutFailedAction {
-    type: UserActionType.LOGOUT_FAILED
-    payload: Error
-    error: boolean
-}
+export type ILogoutFailedAction = FailedAction<UserActionType.LOGOUT_FAILED>
 
 export interface ISignupAction {
     type: UserActionType.SIGNUP
@@ -71,11 +64,7 @@ export interface ISignupSuccessAction {
     }
 }
 
-export interface ISignupFailedAction {
-    type: UserActionType.SIGNUP_FAILED
-    payload: Error
-    error: boolean
-}
+export type ISignupFailedAction = FailedAction<UserActionType.SIGNUP_FAILED>
 
 export interface IFetchUserDataAction {
     type: UserActionType.FETCH_USER_DATA
@@ -91,11 +80,7 @@ export interface IFetchUserDataSuccessAction {
     }
 }
 
-export interface IFetchUserDataFailedAction {
-    type: UserActionType.FETCH_USER_DATA_FAILED
-    payload: Error
-    error: boolean
-}
+export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
 
 export type IUserAction =
     ILoginAction |

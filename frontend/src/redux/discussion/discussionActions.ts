@@ -1,53 +1,90 @@
+import { FailedAction } from '../reduxUtils'
 import { IComment, IDiscussion, IAttachedTo } from '../../common'
 
 export enum DiscussionActionType {
     GET_DISCUSSIONS = 'GET_DISCUSSIONS',
     GET_DISCUSSIONS_SUCCESS = 'GET_DISCUSSIONS_SUCCESS',
+    GET_DISCUSSIONS_FAILED = 'GET_DISCUSSIONS_FAILED',
     SELECT_DISCUSSION = 'SELECT_DISCUSSION',
     CREATE_DISCUSSION = 'CREATE_DISCUSSION',
+    CREATE_DISCUSSION_SUCCESS = 'CREATE_DISCUSSION_SUCCESS',
+    CREATE_DISCUSSION_FAILED = 'CREATE_DISCUSSION_FAILED',
     CREATE_COMMENT = 'CREATE_COMMENT',
+    CREATE_COMMENT_SUCCESS = 'CREATE_COMMENT_SUCCESS',
+    CREATE_COMMENT_FAILED = 'CREATE_COMMENT_FAILED',
 }
 
 export interface IGetDiscussionsAction {
     type: DiscussionActionType.GET_DISCUSSIONS
-    repoID: string
+    payload: {
+        repoID: string
+    }
 }
 
 export interface IGetDiscussionsSuccessAction {
     type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS
-    discussions: IDiscussion[]
-    comments: IComment[]
+    payload: {
+        repoID: string
+        discussions: {[id: string]: IDiscussion}
+    }
 }
+
+export type IGetDiscussionsFailedAction = FailedAction<DiscussionActionType.GET_DISCUSSIONS_FAILED>
 
 export interface ISelectDiscussionAction {
     type: DiscussionActionType.SELECT_DISCUSSION
-    created: number
+    payload: {
+        created: number
+    }
 }
 
 export interface ICreateDiscussionAction {
     type: DiscussionActionType.CREATE_DISCUSSION
-    repoID: string
-    subject: string
-    commentText: string
+    payload: {
+        repoID: string
+        subject: string
+        commentText: string
+    }
 }
+
+export interface ICreateDiscussionSuccessAction {
+    type: DiscussionActionType.CREATE_DISCUSSION_SUCCESS
+    payload: {}
+}
+
+export type ICreateDiscussionFailedAction = FailedAction<DiscussionActionType.CREATE_DISCUSSION_FAILED>
 
 export interface ICreateCommentAction {
     type: DiscussionActionType.CREATE_COMMENT
-    repoID: string
-    text: string
-    attachedTo: IAttachedTo
-    user: string
+    payload: {
+        repoID: string
+        text: string
+        attachedTo: IAttachedTo
+    }
 }
+
+export interface ICreateCommentSuccessAction {
+    type: DiscussionActionType.CREATE_COMMENT_SUCCESS
+    payload: {
+        comment: IComment
+    }
+}
+
+export type ICreateCommentFailedAction = FailedAction<DiscussionActionType.CREATE_COMMENT_FAILED>
 
 export type IDiscussionAction =
     IGetDiscussionsAction |
     IGetDiscussionsSuccessAction |
+    IGetDiscussionsFailedAction |
     ISelectDiscussionAction |
     ICreateDiscussionAction |
-    ICreateCommentAction
+    ICreateDiscussionSuccessAction |
+    ICreateDiscussionFailedAction |
+    ICreateCommentAction |
+    ICreateCommentSuccessAction |
+    ICreateCommentFailedAction
 
-export const getDiscussions = (params: { repoID: string }): IGetDiscussionsAction => ({ type: DiscussionActionType.GET_DISCUSSIONS, ...params })
-export const getDiscussionsSuccess = (params: { discussions: IDiscussion[], comments: IComment[] }): IGetDiscussionsSuccessAction => ({ type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS, ...params })
-export const selectDiscussion = (params: { created: number }): ISelectDiscussionAction => ({ type: DiscussionActionType.SELECT_DISCUSSION, ...params })
-export const createDiscussion = (params: { repoID: string, subject: string, commentText: string }): ICreateDiscussionAction => ({ type: DiscussionActionType.CREATE_DISCUSSION, ...params })
-export const createComment = (params: { repoID: string, text: string, attachedTo: IAttachedTo, user: string }): ICreateCommentAction => ({ type: DiscussionActionType.CREATE_COMMENT, ...params })
+export const getDiscussions = (payload: IGetDiscussionsAction['payload']): IGetDiscussionsAction => ({ type: DiscussionActionType.GET_DISCUSSIONS, payload })
+export const selectDiscussion = (payload: ISelectDiscussionAction['payload']): ISelectDiscussionAction => ({ type: DiscussionActionType.SELECT_DISCUSSION, payload })
+export const createDiscussion = (payload: ICreateDiscussionAction['payload']): ICreateDiscussionAction => ({ type: DiscussionActionType.CREATE_DISCUSSION, payload })
+export const createComment = (payload: ICreateCommentAction['payload']): ICreateCommentAction => ({ type: DiscussionActionType.CREATE_COMMENT, payload })

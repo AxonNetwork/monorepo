@@ -3,16 +3,21 @@ import { IRepo } from '../../common'
 
 const initialState = {
     repos: {},
-    selectedRepo: undefined,
-    selectedFile: undefined,
+    selectedRepo: null,
+    selectedFile: null,
     checkpointed: false,
+    hypothesis: null,
 }
 
 export interface IRepoState {
     repos: { [folderPath: string]: IRepo & { behindRemote: boolean } }
-    selectedRepo: string | undefined
-    selectedFile: { file: string, isFolder: boolean } | undefined
+    selectedRepo: string | null
+    selectedFile: {
+        file: string
+        isFolder: boolean
+    } | null
     checkpointed: boolean
+    hypothesis: string | null
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
@@ -31,7 +36,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             return {
                 ...state,
                 selectedRepo: action.repo.folderPath,
-                selectedFile: undefined,
+                selectedFile: null,
             }
 
         case RepoActionType.FETCHED_FILES:

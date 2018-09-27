@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Promise from 'bluebird'
 import to from 'await-to-js'
-import { IUser, IAttachedTo } from '../common'
+import { IUser, IComment, IAttachedTo, IDiscussion } from '../common'
 
 // @@TODO: this should come from process.env
 // const API_URL = 'http://demo.conscience.network/api',
@@ -81,36 +81,41 @@ const ServerRelay = {
         return response.data.sharedRepos
     },
 
-    async getDiscussions(repoID: string) {
-        const [err, response] = await to(axios.get(API_URL+'/discussion?repoID='+repoID))
-        if (err) throw err.response.data.error
+    async getDiscussionsForRepo(repoID: string) {
+        interface Response {
+            discussions: IDiscussion[]
+        }
+        const response = await axios.get<Response>(API_URL+'/discussion?repoID='+repoID)
         return response.data.discussions
     },
 
-    async getComments(repoID: string) {
-        const [err, response] = await to(axios.get(API_URL+'/all-comments?repoID='+repoID))
-        if (err) throw err.response.data.error
+    async getCommentsForRepo(repoID: string) {
+        interface Response {
+            comments: IComment[]
+        }
+        const response = await axios.get<Response>(API_URL+'/all-comments?repoID='+repoID)
         return response.data.comments
     },
 
     async createDiscussion(repoID: string, subject: string, commentText: string) {
-        const [err, response] = await to(axios.post(API_URL+'/discussion', {
-            repoID: repoID,
-            subject: subject,
-            commentText: commentText
-        }))
-        if (err) throw err.response.data.error
+        interface Response {
+            comment: IComment
+            discussion: IDiscussion
+        }
+        const response = await axios.post<Response>(API_URL+'/discussion', { repoID, subject, commentText })
         return response.data
     },
 
     async createComment(repoID: string, text: string, attachedTo: IAttachedTo) {
-        const [err, response] = await to(axios.post(API_URL+'/create-comment', {
+        interface Response {
+            newComment: IComment
+        }
+        const response = await axios.post<Response>(API_URL+'/create-comment', {
             repoID: repoID,
             text: text,
             attachedTo: attachedTo
-        }))
-        if (err) throw err.response.data.error
-        return response.data
+        })
+        return response.data.newComment
     },
 
     async fetchUsers(emails: string[]) {

@@ -5,8 +5,10 @@ import userReducer from './user/userReducer'
 import repoReducer from './repository/repoReducer'
 import sharedReposReducer from './sharedRepos/sharedReposReducer'
 import navigationReducer from './navigation/navigationReducer'
+import commentReducer from './comment/commentReducer'
 import discussionReducer from './discussion/discussionReducer'
 
+// @@TODO: is this necessary?
 import { LOGOUT_SUCCESS } from './user/userActions'
 
 const appReducer = combineReducers({
@@ -15,10 +17,12 @@ const appReducer = combineReducers({
     repository: repoReducer,
     sharedRepos: sharedReposReducer,
     navigation: navigationReducer,
-    discussion: discussionReducer
+    comment: commentReducer,
+    discussion: discussionReducer,
 })
 
 const rootReducer = (state, action) => {
+    // @@TODO: is this necessary?
     if (action.type === LOGOUT_SUCCESS) {
         state = undefined
     }
