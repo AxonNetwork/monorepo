@@ -214,7 +214,7 @@ export interface IWatchRepoAction {
     type: RepoActionType.WATCH_REPO
     payload: {
         repoID: string
-        folderPath: string
+        path: string
     }
 }
 

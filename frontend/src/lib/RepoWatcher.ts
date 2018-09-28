@@ -2,52 +2,58 @@ const fs = (window as any).require('fs')
 
 import * as rpc from '../rpc'
 
-const rpcClient = rpc.initClient()
-console.log(rpcClient)
-const watching:{[folderPath: string]:{repoID: string, folderPath: string, mtime: number}|undefined} = {}
+const watching:{[path: string]:{repoID: string, path: string, mtime: number}|undefined} = {}
 
 const RepoWatcher = {
-    watch(repoID: string, folderPath: string) {
-        watching[folderPath]={ folderPath, repoID, mtime: 0}
+    watch(repoID: string, path: string) {
+        watching[path]={ path, repoID, mtime: 0}
     },
 
-    unwatch(folderPath: string){
-        watching[folderPath] = undefined
+    unwatch(path: string){
+        watching[path] = undefined
     }
 }
 
 function loop(){
     const repos = Object.keys(watching)
     for(let i=0; i<repos.length; i++){
-        const folderPath = repos[i]
-        checkForChange(folderPath)
-        checkBehindRemote(folderPath)
+        const path = repos[i]
+        checkForChange(path)
+        checkBehindRemote(path)
     }
     setTimeout(loop, 5000)
 }
 
-async function checkForChange(folderPath: string){
-        const repo = watching[folderPath]
+async function checkForChange(path: string){
+        const repo = watching[path]
         if(repo === undefined){
             return
         }
-        const mtime = fs.statSync(repo.folderPath).mtimeMs
+        const mtime = fs.statSync(repo.path).mtimeMs
         if(mtime > repo.mtime && repo.mtime !== 0){
             // TODO: Get new file
-            console.log(repo.folderPath + " CHANGED")
-            try{
-                const files = await rpcClient.getRepoFilesAsync({repoID: repo.repoID, path: repo.folderPath})
-                console.log("Files: ", files)
-            }catch(err){
-                console.log(err)
-            }
+            // console.log(repo.path + " CHANGED")
+            // try{
+            //     const files = await rpcClient.getRepoFilesAsync({repoID: repo.repoID, path: repo.path})
+            //     console.log("Files: ", files)
+            // }catch(err){
+            //     console.log(err)
+            // }
         }
         repo.mtime = mtime
-        watching[folderPath] = repo
+        watching[path] = repo
 }
 
-function checkBehindRemote(folderPath: string){
-
+async function checkBehindRemote(path: string){
+    const repo = watching[path]
+    if(repo === undefined){
+        return
+    }
+    // const rpcClient = rpc.initClient()
+    // const remote = await rpcClient.getRemoteRefsAsync({repoID: repo.repoID, pageSize: 10, page: 0})
+    // const local = await rpcClient.getLocalRefsAsync({repoID: repo.repoID, path: repo.path})
+    // const remoteMaster = remote.refs.find(r=>r.refName="refs/heads/master").commitHash
+    // const localMaster = local.refs.find(r=>r.refName="refs/heads/master").commitHash
 }
 
 loop()

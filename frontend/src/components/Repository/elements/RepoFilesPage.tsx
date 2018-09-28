@@ -26,6 +26,9 @@ class RepoFilesPage extends React.Component<RepoFilesPageProps>
 
     render() {
         const { repo, selectedFile, classes } = this.props
+        if(repo === undefined){
+            return <div></div>
+        }
         const files = repo.files || {}
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]

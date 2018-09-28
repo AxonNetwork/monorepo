@@ -1,6 +1,6 @@
 import { makeLogic } from '../reduxUtils'
 import { createLogic } from 'redux-logic'
-import { ILocalRepo } from '../../common'
+import { ILocalRepo, ITimelineEvent } from '../../common'
 import { RepoActionType,
     // IFetchFullRepoAction,
     ICreateRepoAction,
@@ -55,14 +55,14 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
         for (let repo of repoList) {
             // await dispatch(fetchedRepo({ repo }))
             // @@TODO: make sure we're not already watching a given repo
-            dispatch(watchRepo({ repoID: repo.repoID, folderPath: repo.path }))
+            dispatch(watchRepo({ repoID: repo.repoID, path: repo.path }))
             repos[repo.path] = repo
         }
 
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         if (repoList.length > 0) {
             const { repoID, path } = repoList[0]
-            await dispatch(selectRepo({ repoID, path }))
+            dispatch(selectRepo({ repoID, path }))
         }
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         // await dispatch({ type: FETCH_SHARED_REPOS })
@@ -105,7 +105,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const { path, repoID } = action.payload
 
         const rpcClient = rpc.initClient()
-        const files = await rpcClient.getRepoFilesAsync({ path, repoID })
+        const files = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
 
         return { repoID, path, files }
     }
@@ -117,15 +117,17 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
         const { path, repoID } = action.payload
 
         const rpcClient = rpc.initClient()
-        const timeline = (await rpcClient.getRepoTimelineAsync({ path, repoID })).map(event => ({
+        const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, page: 0}))
+        const timeline = history.commits.map(event => ({
             version: 0,
             commit: event.commitHash,
             user: event.author,
-            time: event.timestamp,
+            time: new Date(event.timestamp.toNumber()*1000),
             message: event.message,
             files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
             diffs: {},
-        }))
+        } as ITimelineEvent))
+        console.log("TIMELINE: ", timeline)
 
         return { repoID, path, timeline }
     }
@@ -221,8 +223,8 @@ const addCollaboratorLogic = createLogic({
 const watchRepoLogic = makeLogic<IWatchRepoAction, IWatchRepoSuccessAction>({
     type: RepoActionType.WATCH_REPO,
     async process({ getState, action }, dispatch, done) {
-        const { repoID, folderPath} = action.payload
-        RepoWatcher.watch(repoID, folderPath)
+        const { repoID, path } = action.payload
+        RepoWatcher.watch(repoID, path)
         return{}
     }
 })

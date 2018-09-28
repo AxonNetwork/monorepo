@@ -26,8 +26,10 @@ export interface RepoInfoProps {
 function RepoInfo(props: RepoInfoProps)
 {
     const { repo, addCollaborator, pullRepo, classes } = props
+    if(repo === undefined){
+        return <div></div>
+    }
     const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
-
     return (
         <React.Fragment>
             <OpenFolderButton folderPath={repo.folderPath} />
