@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
@@ -6,12 +7,15 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
 import SharedRepos from './elements/SharedRepos'
-import { IRepo } from 'common'
+import { IGlobalState } from 'redux/store'
+import { createRepo} from 'redux/repository/repoActions'
+import { addSharedRepo } from 'redux/sharedRepos/sharedReposActions'
+import { ISharedRepoInfo } from 'common'
 import autobind from 'utils/autobind'
 
 export interface NewRepositoryProps {
     createRepo: Function
-    sharedRepos: IRepo[]
+    sharedRepos: ISharedRepoInfo[]
     addSharedRepo: Function
     classes: any
 }
@@ -78,4 +82,18 @@ const styles = createStyles({
     },
 })
 
-export default withStyles(styles)(NewRepository)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        sharedRepos: state.sharedRepos,
+    }
+}
+
+const mapDispatchToProps = {
+    createRepo,
+    addSharedRepo,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(NewRepository))

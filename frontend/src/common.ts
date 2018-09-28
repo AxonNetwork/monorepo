@@ -7,6 +7,11 @@ export interface IRepo {
     behindRemote: boolean
 }
 
+export interface ISharedRepoInfo {
+    ignored: boolean
+    repoID: string
+}
+
 export interface IRepoFile {
     path: string
     name: string

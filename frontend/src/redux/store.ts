@@ -7,6 +7,7 @@ import { INavigationState } from './navigation/navigationReducer'
 import { ICommentState } from './comment/commentReducer'
 import { IDiscussionState } from './discussion/discussionReducer'
 import { IUserState } from './user/userReducer'
+import { ISharedRepoInfo } from 'common'
 
 // Redux DevTools
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -25,15 +26,11 @@ const store = createStore(
 
 export default store
 
-interface SharedRepo{
-    ignored: boolean
-}
-
 export interface IGlobalState {
     repository: IRepoState
     navigation: INavigationState
     comment: ICommentState
     discussion: IDiscussionState
     user: IUserState
-    sharedRepos: SharedRepo[]
+    sharedRepos: ISharedRepoInfo[]
 }

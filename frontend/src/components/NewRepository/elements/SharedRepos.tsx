@@ -6,10 +6,10 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import { IRepo } from 'common'
+import { ISharedRepoInfo } from 'common'
 
 export interface SharedReposProps {
-    sharedRepos: IRepo[]
+    sharedRepos: ISharedRepoInfo[]
     addSharedRepo: Function
 }
 

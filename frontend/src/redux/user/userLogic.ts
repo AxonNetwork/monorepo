@@ -1,5 +1,4 @@
 import { makeLogic } from '../reduxUtils'
-import {createLogic} from 'redux-logic'
 import { IUser } from '../../common'
 import { UserActionType, ILoginAction, ILoginSuccessAction, ISignupAction, ISignupSuccessAction, IFetchUserDataAction,
     IFetchUserDataSuccessAction, ICheckLocalUserAction, ICheckLocalUserSuccessAction, ILogoutAction,

@@ -1,6 +1,5 @@
 import React from 'react'
 import classnames from 'classnames'
-import { connect } from 'react-redux'
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -8,16 +7,13 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
 import Divider from '@material-ui/core/Divider'
 
-import { IRepo } from '../../common'
-import { IGlobalState } from '../../redux/store'
-import { fetchRepos, selectRepo } from '../../redux/repository/repoActions'
+import { IRepo } from 'common'
 import autobind from 'utils/autobind'
 
 export interface RepoListProps {
     repos: {[folderPath: string]: IRepo}
-    selectedRepo?: string
+    selectedRepo?: string|null
     currentPage: string
-    fetchRepos: Function
     selectRepo: Function
     classes: any
 }
@@ -26,7 +22,7 @@ export interface RepoListProps {
 class RepoList extends React.Component<RepoListProps>
 {
     componentDidMount() {
-        this.props.fetchRepos()
+        // this.props.fetchRepos()
     }
 
     render() {
@@ -98,22 +94,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState) => {
-    return {
-        repos: state.repository.repos,
-        selectedRepo: state.repository.selectedRepo,
-        currentPage: state.navigation.currentPage,
-    }
-}
-
-const mapDispatchToProps = {
-    fetchRepos,
-    selectRepo,
-}
-
-const RepoListContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(RepoList))
-
-export default RepoListContainer
+export default withStyles(styles)(RepoList)
