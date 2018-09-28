@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+import _Promise from 'bluebird'
 import { ILocalRepo, IRef, IRepoFile } from '../common'
 
 // const PROTO_PATH = __dirname + 'noderpc.proto'
@@ -39,7 +39,7 @@ var client: IRPCClient
 export function initClient() {
     if (client === undefined) {
         client = new noderpc.NodeRPC(process.env.NODE_RPC, grpcLibrary.credentials.createInsecure())
-        client = Promise.promisifyAll(client, { suffix: 'Async' })
+        client = _Promise.promisifyAll(client, { suffix: 'Async' })
 
         // We have to manually keep this in sync with the types specified in the Protocol.sol UserType enum
         client.UserType = {

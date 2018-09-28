@@ -3,12 +3,9 @@ import fs from 'fs'
 // const fs = window.require('fs')
 const ipcRenderer = window.require('electron').ipcRenderer
 
-<<<<<<< Updated upstream
-=======
 // console.log('including protobufs test')
 // require('../protobufs/test')
 
->>>>>>> Stashed changes
 ipcRenderer.setMaxListeners(100)
 
 async function sendMessage(message){
@@ -25,26 +22,6 @@ async function sendMessage(message){
         }
         ipcRenderer.on('message',cb)
     })
-}
-
-export async function getRepos(){
-	const message = {
-		type: 'GET_REPOS',
-	}
-	const response = await sendMessage(message)
-	console.log('ConscienceManager.getRepos ~>', response)
-	return response.repos
-}
-
-export async function fetchRepo(repoID, folderPath){
-    const message = {
-        type: 'FETCH_REPO',
-        repoID: repoID,
-        folderPath: folderPath
-    }
-	const response = await sendMessage(message)
-    console.log('ConscienceManager.fetchRepo ~>', response)
-    return response.repo
 }
 
 export async function checkpointRepo(folderPath, commitMessage){
@@ -66,27 +43,6 @@ export async function pullRepo(folderPath){
 	const response = await sendMessage(message)
     console.log('ConscienceManager.pullRepo ~>', response)
     return true
-}
-
-export async function getFiles(folderPath){
-    const message = {
-        type: 'GET_FILES',
-        folderPath: folderPath
-    }
-	const response = await sendMessage(message)
-	console.log('ConscienceManager.getFiles ~>', response)
-	return response.files
-}
-
-export async function createRepo(repoID, location){
-    const message = {
-        type: 'CREATE_REPO',
-        repoID: repoID,
-        location: location,
-    }
-	const response = await sendMessage(message)
-	console.log('ConscienceManager.createRepo ~>', response)
-	return response.repo
 }
 
 export async function cloneRepo(repoID, location){
@@ -115,16 +71,6 @@ export async function getDiff(folderPath, filename, commit){
 	return response.diff
 }
 
-export async function getTimeline(folderPath){
-    const message = {
-        type: 'GET_TIMELINE',
-        folderPath: folderPath,
-    }
-	const response = await sendMessage(message)
-	console.log('ConscienceManager.getTimeline~>', response)
-	return response.timeline
-}
-
 export async function revertFiles(folderPath, files, commit){
     const message = {
         type: 'REVERT_FILES',
@@ -135,17 +81,6 @@ export async function revertFiles(folderPath, files, commit){
 	const response = await sendMessage(message)
 	console.log('ConscienceManager.revertFiles ~>', response)
 	return true
-}
-
-export async function isBehindRemote(repoID, folderPath){
-    const message = {
-        type: 'IS_BEHIND_REMOTE',
-        repoID: repoID,
-        folderPath: folderPath,
-    }
-	const response = await sendMessage(message)
-	// console.log('ConscienceManager.isBehindRemote ~>', response)
-	return response.isBehind
 }
 
 function watchRepo(repoID, folderPath){
@@ -178,15 +113,10 @@ function watchRepo(repoID, folderPath){
 }
 
 export default {
-    getRepos,
-    fetchRepo,
     checkpointRepo,
     pullRepo,
-    getFiles,
-    createRepo,
     cloneRepo,
     getDiff,
-    getTimeline,
     revertFiles,
     watchRepo,
 }

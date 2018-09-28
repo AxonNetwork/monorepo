@@ -1,4 +1,4 @@
-import { IRepo, IRepoFile, ITimelineEvent } from '../../common'
+import { IRepoFile, ITimelineEvent } from '../../common'
 import { FailedAction } from '../reduxUtils'
 
 export enum RepoActionType {

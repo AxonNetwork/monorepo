@@ -1,5 +1,5 @@
 const {
-    GET_REPOS, FETCH_REPO, CREATE_REPO, CLONE_REPO, CHECKPOINT_REPO, PULL_REPO, GET_FILES, GET_TIMELINE, GET_DIFF, REVERT_FILES, IS_BEHIND_REMOTE,
+    CLONE_REPO, CHECKPOINT_REPO, PULL_REPO, GET_DIFF, REVERT_FILES,
 } = require('./lib/messageTypes');
 const ConscienceManager = require('./lib/ConscienceManager');
 
@@ -10,24 +10,9 @@ process.on('message', async (message) => {
 
 async function processMessage(message) {
     switch (message.type) {
-    case GET_REPOS:
-        try {
-            const repos = await ConscienceManager.getRepos();
-            return { response: 'SUCCESS', id: message.id, repos };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
-    case FETCH_REPO:
-        try {
-            const repo = await ConscienceManager.fetchRepo(message.repoID, message.folderPath);
-            return { response: 'SUCCESS', id: message.id, repo };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
     case CLONE_REPO:
         try {
             const repo = await ConscienceManager.cloneRepo(message.repoID, message.location);
-            return { response: 'SUCCESS', id: message.id, repo };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
-    case CREATE_REPO:
-        try {
-            const repo = await ConscienceManager.createRepo(message.repoID, message.location, message.username);
             return { response: 'SUCCESS', id: message.id, repo };
         } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
     case CHECKPOINT_REPO:
@@ -40,16 +25,6 @@ async function processMessage(message) {
             await ConscienceManager.pullRepo(message.folderPath);
             return { response: 'SUCCESS', id: message.id };
         } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
-    case GET_FILES:
-        try {
-            const files = await ConscienceManager.getFiles(message.folderPath);
-            return { response: 'SUCCESS', id: message.id, files };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
-    case GET_TIMELINE:
-        try {
-            const timeline = await ConscienceManager.getTimeline(message.folderPath);
-            return { response: 'SUCCESS', id: message.id, timeline };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
     case GET_DIFF:
         try {
             const diff = await ConscienceManager.getDiff(message.folderPath, message.filename, message.commit);
@@ -59,11 +34,6 @@ async function processMessage(message) {
         try {
             await ConscienceManager.revertFiles(message.folderPath, message.files, message.commit);
             return { response: 'SUCCESS', id: message.id };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
-    case IS_BEHIND_REMOTE:
-        try {
-            const isBehind = await ConscienceManager.isBehindRemote(message.repoID, message.folderPath);
-            return { response: 'SUCCESS', id: message.id, isBehind };
         } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
 
     default:

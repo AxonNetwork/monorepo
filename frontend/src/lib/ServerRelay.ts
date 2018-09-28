@@ -1,5 +1,4 @@
 import axios from 'axios'
-import to from 'await-to-js'
 import { IUser, IComment, IAttachedTo, IDiscussion } from '../common'
 
 // @@TODO: this should come from process.env

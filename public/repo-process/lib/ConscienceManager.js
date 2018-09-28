@@ -37,129 +37,6 @@ function isLocked(folderPath) {
     return repoMutex[folderPath] !== undefined && repoMutex[folderPath]
 }
 
-async function getRepos() {
-    const stdout = await execCmd('conscience repos')
-    if (stdout.length === 0) { return [] }
-
-    let repos = stdout.trim().split('\n')
-    repos = repos.map((repo) => {
-        const repoID = repo.split(' ')[0]
-        return {
-            repoID,
-            folderPath: repo.split(' ')[1],
-            name: repoID.split('/')[1],
-            creator: repoID.split('/')[0],
-        }
-    })
-    return repos
-}
-
-async function fetchRepo(repoID, folderPath) {
-    const files = await getFiles(folderPath)
-    const timeline = await getTimeline(folderPath)
-    const behindRemote = await isBehindRemote(repoID, folderPath)
-    return {
-        repoID,
-        folderPath,
-        files,
-        timeline,
-        behindRemote,
-    }
-}
-
-async function isBehindRemote(repoID, folderPath) {
-    const remoteRefs = await execCmd(`conscience get-refs ${repoID}`)
-    if (remoteRefs.length === 0) {
-        return false
-    }
-
-    const masterRef = remoteRefs.split('\n').find(ref => ref.indexOf('refs/heads/master') > -1)
-    const masterHash = masterRef.split(' ')[0]
-
-    // if have commit local, return false
-    try {
-        await waitAndLock(folderPath)
-        const obj = await git.readObject({ dir: folderPath, oid: masterHash })
-        if (obj.type === 'commit') {
-            unlock(folderPath)
-            return false
-        }
-    } catch (err) {
-        if (err.code === 'ReadObjectFail') {
-            // No-op, this is expected to happen if we don't have the commit pointed to by the remote ref
-        } else {
-            // This is an unexpected error
-            console.log('ERROR running ConscienceManager.isBehindRemote ~>', err)
-        }
-    }
-    unlock(folderPath)
-    return true
-}
-
-async function getFiles(folderPath) {
-    let files = []
-    return new Promise(async (resolve, reject) => {
-        await waitAndLock(folderPath)
-
-        klaw(folderPath, {
-            // Filter certain paths entirely (we don't even walk these)
-            filter: (item) => {
-                const basename = path.basename(item)
-                // @@TODO: don't hardcode these
-                return basename !== 'node_modules' && basename !== '.git' && basename !== '.DS_Store'
-            },
-
-        }).pipe(through2.obj((item, enc, next) => {
-            // Exclude directories
-            if (!item.stats.isDirectory()) {
-                next(null, item)
-            } else {
-                next()
-            }
-        })).pipe(through2.obj(async (item, enc, next) => {
-            const relPath = path.relative(folderPath, item.path)
-
-            let status
-            try {
-                status = await git.status({ dir: folderPath, filepath: relPath })
-            } catch (err) {
-                status = '*added'
-            }
-
-            let diff = ''
-            if (status === '*modified') {
-                try {
-                    diff = await getDiff(folderPath, item.path)
-                } catch (err) {}
-            }
-
-            next(null, {
-                path: item.path,
-                name: relPath,
-                size: item.stats.size,
-                modified: Date.parse(item.stats.mtime),
-                type: fileType(item.path),
-                status,
-                diff,
-            })
-        })).on('data', (item) => {
-            files.push(item)
-        }).on('error', err => {
-            console.log('error walking files ~>', err)
-            reject(err)
-        }).on('end', async () => {
-            unlock(folderPath)
-
-            // convert array to obj
-            files = files.reduce((acc, cur) => {
-                acc[cur.name] = cur
-                return acc
-            }, {})
-            resolve(files)
-        })
-    })
-}
-
 async function getFilesFromTree(folderPath, oid, subfolder) {
     let tree
     try {
@@ -182,42 +59,6 @@ async function getFilesFromTree(folderPath, oid, subfolder) {
         return f
     })
     return files
-}
-
-async function getTimeline(folderPath) {
-    await waitAndLock(folderPath)
-    let commits
-    let filesByCommit
-    try {
-        commits = await git.log({ dir: folderPath })
-        treeOids = commits.map(commit => commit.tree)
-        filesByCommit = await Promise.all(treeOids.map(oid => getFilesFromTree(folderPath, oid, '')))
-    } catch (err) {
-        console.log('ERROR running ConscienceManager.getTimeline ~>', err)
-        unlock(folderPath)
-        return []
-    }
-    unlock(folderPath)
-
-    const timeline = []
-    for (let i = 0; i < commits.length; i++) {
-        const commit = commits[i]
-        let files = filesByCommit[i].filter((f) => {
-            if (i === commits.length - 1) { return true }
-            const prev = filesByCommit[i + 1].find(f2 => f2.path === f.path)
-            return prev === undefined || f.oid !== prev.oid
-        })
-        files = files.map(f => f.path)
-        timeline.push({
-            commit: commit.oid,
-            version: commits.length - i,
-            user: commit.author.name,
-            files,
-            time: commit.author.timestamp * 1000,
-            message: commit.message,
-        })
-    }
-    return timeline
 }
 
 async function checkpointRepo(folderPath, message) {
@@ -259,20 +100,6 @@ async function execCmd(cmd, cwd) {
             }
         })
     })
-}
-
-async function createRepo(repoID, location) {
-    const folderPath = path.join(location, repoID)
-    mkdirp(folderPath)
-    try {
-        await execCmd(`conscience init ${repoID}`, folderPath)
-    } catch (err) {
-        console.log('ERROR running ConscienceManager.createRepo ~>', err)
-    }
-    return {
-        repoID,
-        folderPath,
-    }
 }
 
 async function cloneRepo(repoID, location) {
@@ -329,14 +156,8 @@ async function revertFiles(folderPath, files, commit) {
 }
 
 module.exports = {
-    getRepos,
-    fetchRepo,
-    isBehindRemote,
     pullRepo,
-    getFiles,
-    getTimeline,
     checkpointRepo,
-    createRepo,
     cloneRepo,
     getDiff,
     revertFiles,
