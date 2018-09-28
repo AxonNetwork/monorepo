@@ -3,6 +3,12 @@ import fs from 'fs'
 // const fs = window.require('fs')
 const ipcRenderer = window.require('electron').ipcRenderer
 
+<<<<<<< Updated upstream
+=======
+// console.log('including protobufs test')
+// require('../protobufs/test')
+
+>>>>>>> Stashed changes
 ipcRenderer.setMaxListeners(100)
 
 async function sendMessage(message){

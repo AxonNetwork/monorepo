@@ -1,10 +1,11 @@
 import Promise from 'bluebird'
 import { ILocalRepo, IRef } from '../common'
 
-const PROTO_PATH = __dirname + '/noderpc.proto'
+// const PROTO_PATH = __dirname + 'noderpc.proto'
+const PROTO_PATH = '/Users/daniel/Projects/conscience/desktop-app-v2/frontend/src/rpc/noderpc.proto'
 
-const protoLoader = window.require('@grpc/proto-loader')
-const grpcLibrary = window.require('grpc')
+const protoLoader = (window as any).require('@grpc/proto-loader')
+const grpcLibrary = (window as any).require('grpc')
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {})
 const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)

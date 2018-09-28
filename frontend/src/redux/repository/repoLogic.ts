@@ -22,9 +22,11 @@ import { RepoActionType,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchRepoIsBehindRemote, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
-import UserData from '../../lib/UserData'
-import ConscienceRelay from '../../lib/ConscienceRelay'
-import ServerRelay from '../../lib/ServerRelay'
+import ConscienceRelay from 'lib/ConscienceRelay'
+import ServerRelay from 'lib/ServerRelay'
+import RepoWatcher from 'lib/RepoWatcher'
+
+
 import * as rpc from '../../rpc'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
@@ -138,9 +140,10 @@ const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchR
 const fetchRepoIsBehindRemoteLogic = makeLogic<IFetchRepoIsBehindRemoteAction, IFetchRepoIsBehindRemoteSuccessAction>({
     type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE,
     async process({ action }) {
-        YOU DONT NEED THIS
-        JUST CALL noderpcClient.getAllRefsAsync()
-        AND DO THE COMPARISON IN THE COMPONENTS
+        // YOU DONT NEED THIS
+        // JUST CALL noderpcClient.getAllRefsAsync()
+        // AND DO THE COMPARISON IN THE COMPONENTS
+        return
     }
 })
 
@@ -202,20 +205,12 @@ const addCollaboratorLogic = createLogic({
     }
 })
 
-const watchRepoLogic = createLogic({
+const watchRepoLogic = makeLogic<IWatchRepoAction, IWatchRepoSuccessAction>({
     type: RepoActionType.WATCH_REPO,
-    warnTimeout: 0,
     async process({ getState, action }, dispatch, done) {
-        // @@TODO: we need a way to tear this down probably
-        const watcher = await ConscienceRelay.watchRepo(action.repoID, action.folderPath)
-        watcher.on('file_change', (files, timeline) => {
-            dispatch(fetchedFiles({ folderPath: action.folderPath, files }))
-            dispatch(fetchedTimeline({ folderPath: action.folderPath, timeline }))
-        })
-        watcher.on('behind_remote', () => {
-            dispatch(setIsBehindRemote({ folderPath: action.folderPath }))
-        })
-        done()
+        const { repoID, folderPath} = action.payload
+        RepoWatcher.watch(repoID, folderPath)
+        return{}
     }
 })
 

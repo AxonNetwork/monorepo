@@ -34,7 +34,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         case RepoActionType.SELECT_REPO:
             return {
                 ...state,
-                selectedRepo: action.repo.folderPath,
+                selectedRepo: action.payload.path,
                 selectedFile: null,
             }
 

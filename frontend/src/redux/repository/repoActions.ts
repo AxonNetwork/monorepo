@@ -32,6 +32,7 @@ export enum RepoActionType {
 
     FETCHED_REPO = 'FETCHED_REPO',
     WATCH_REPO = 'WATCH_REPO',
+    WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
 
     SELECT_REPO = 'SELECT_REPO',
     SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
@@ -191,8 +192,15 @@ export interface ISelectRepoSuccessAction {
 
 export interface IWatchRepoAction {
     type: RepoActionType.WATCH_REPO
-    repoID: string
-    folderPath: string
+    payload: {
+        repoID: string
+        folderPath: string
+    }
+}
+
+export interface IWatchRepoSuccessAction {
+    type: RepoActionType.WATCH_REPO_SUCCESS
+    payload: {}
 }
 
 export interface ICheckpointRepoAction {
@@ -310,6 +318,9 @@ export type IRepoAction =
 
     ISelectRepoAction |
     IWatchRepoAction |
+    IWatchRepoSuccessAction |
+
+    ISelectRepoAction |
     ICheckpointRepoAction |
     IPullRepoAction |
     ISelectFileAction |
@@ -334,7 +345,7 @@ export const fetchRepoIsBehindRemote = (payload: IFetchRepoIsBehindRemoteAction[
 
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
 
-export const watchRepo = (params: { repoID: string, folderPath: string }): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, ...params })
+export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const checkpointRepo = (params: { folderPath: string, repoID: string, message: string }): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, ...params })
 export const pullRepo = (params: { folderPath: string, repoID: string }): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, ...params })
 export const selectFile = (params: { file: string, isFolder: boolean }): ISelectFileAction => {

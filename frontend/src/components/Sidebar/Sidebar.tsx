@@ -164,7 +164,6 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const currentUser = state.user.currentUser || ""
-    console.log(state.user)
     const user = state.user.users[currentUser]
     return {
         repos: state.repository.repos,
