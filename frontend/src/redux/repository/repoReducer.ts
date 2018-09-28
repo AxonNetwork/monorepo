@@ -23,7 +23,6 @@ export interface IRepoState {
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS:
-        case RepoActionType.FETCHED_REPO:
             return {
                 ...state,
                 repos: {

@@ -61,6 +61,7 @@ const ServerRelay = {
             name: string
             email: string
         }
+
         ServerRelay.setJWT(jwt)
         const response = await axios.get<Response>(API_URL + '/whoami?jwt=' + jwt)
         return {
@@ -71,17 +72,12 @@ const ServerRelay = {
 
     async createRepo(repoID: string) {
         interface Response {}
-
         await axios.post<Response>(API_URL + '/create-repo', { repoID })
     },
 
     async shareRepo(repoID: string, email: string) {
-        const [err, response] = await to(axios.post(API_URL + '/share-repo', {
-            repoID: repoID,
-            email: email
-        }))
-        if (err) throw err.response.data.error
-        return response
+        interface Response {}
+        await axios.post<Response>(API_URL + '/share-repo', { repoID, email })
     },
 
     async getSharedUsers(repoID: string) {
@@ -94,16 +90,17 @@ const ServerRelay = {
     },
 
     async unshareRepo(repoID: string, email: string) {
-        const [err, response] = await to(axios.post(API_URL + '/unshare-repo', {
-            repoID: repoID,
-            email: email
-        }))
-        if (err) throw err.response.data.error
-        return response
+        interface Response {}
+
+        await axios.post<Response>(API_URL + '/unshare-repo', { repoID, email })
     },
 
     async getSharedRepos(email: string) {
-        const response= await axios.get(API_URL+'/shared-repos?email='+email)
+        interface Response {
+            sharedRepos: string[]
+        }
+
+        const response = await axios.get<Response>(API_URL+'/shared-repos?email='+email)
         return response.data.sharedRepos
     },
 

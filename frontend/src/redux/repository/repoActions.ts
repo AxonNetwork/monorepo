@@ -22,6 +22,14 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
 
+    FETCH_REPO_IS_BEHIND_REMOTE = 'FETCH_REPO_IS_BEHIND_REMOTE',
+    FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS = 'FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS',
+    FETCH_REPO_IS_BEHIND_REMOTE_FAILED = 'FETCH_REPO_IS_BEHIND_REMOTE_FAILED',
+
+    FETCH_REPO_SHARED_USERS = 'FETCH_REPO_SHARED_USERS',
+    FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
+    FETCH_REPO_SHARED_USERS_FAILED = 'FETCH_REPO_SHARED_USERS_FAILED',
+
     FETCHED_REPO = 'FETCHED_REPO',
     WATCH_REPO = 'WATCH_REPO',
 
@@ -89,9 +97,7 @@ export interface IFetchFullRepoAction {
 
 export interface IFetchFullRepoSuccessAction {
     type: RepoActionType.FETCH_FULL_REPO_SUCCESS
-    payload: {
-        repo: IRepo
-    }
+    payload: {}
 }
 
 export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
@@ -125,10 +131,50 @@ export interface IFetchRepoTimelineAction {
 
 export interface IFetchRepoTimelineSuccessAction {
     type: RepoActionType.FETCH_REPO_TIMELINE_SUCCESS
-    payload: { asdf: 'todo!' }
+    payload: {
+        path: string
+        repoID: string
+        timeline: ITimelineEvent[]
+    }
 }
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
+
+export interface IFetchRepoIsBehindRemoteAction {
+    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE
+    payload: {
+        path: string
+        repoID: string
+    }
+}
+
+export interface IFetchRepoIsBehindRemoteSuccessAction {
+    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS
+    payload: {
+        path: string
+        repoID: string
+        isBehindRemote: boolean
+    }
+}
+
+export type IFetchRepoIsBehindRemoteFailedAction = FailedAction<RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE_FAILED>
+
+export interface IFetchRepoSharedUsersAction {
+    type: RepoActionType.FETCH_REPO_SHARED_USERS
+    payload: {
+        repoID: string
+    }
+}
+
+export interface IFetchRepoSharedUsersSuccessAction {
+    type: RepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS
+    payload: {
+        repoID: string
+        sharedUsers: string[]
+    }
+}
+
+export type IFetchRepoSharedUsersFailedAction = FailedAction<RepoActionType.FETCH_REPO_SHARED_USERS_FAILED>
 
 export interface ISelectRepoAction {
     type: RepoActionType.SELECT_REPO
@@ -254,6 +300,14 @@ export type IRepoAction =
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
 
+    IFetchRepoSharedUsersAction |
+    IFetchRepoSharedUsersSuccessAction |
+    IFetchRepoSharedUsersFailedAction |
+
+    IFetchRepoIsBehindRemoteAction |
+    IFetchRepoIsBehindRemoteSuccessAction |
+    IFetchRepoIsBehindRemoteFailedAction |
+
     ISelectRepoAction |
     IWatchRepoAction |
     ICheckpointRepoAction |
@@ -275,6 +329,8 @@ export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IG
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
+export const fetchRepoSharedUsers = (payload: IFetchRepoSharedUsersAction['payload']): IFetchRepoSharedUsersAction => ({ type: RepoActionType.FETCH_REPO_SHARED_USERS, payload })
+export const fetchRepoIsBehindRemote = (payload: IFetchRepoIsBehindRemoteAction['payload']): IFetchRepoIsBehindRemoteAction => ({ type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE, payload })
 
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
 

@@ -31,10 +31,9 @@ export interface ITimelineEvent {
     version: number
     commit: string
     user: string
-    filename: string
     time: number
     message: string
-    files: Array<string>
+    files: string[]
     diffs: {[commit: string]: string}
 }
 
@@ -43,7 +42,6 @@ export interface IComment {
     created: number
     text: string
     user: string
-    name: string|undefined
     attachedTo: IAttachedTo
 }
 
@@ -65,5 +63,8 @@ export interface IUser {
     repos: string[]
 }
 
-
+export interface IRef {
+    refName: string
+    commitHash: string
+}
 

@@ -13,10 +13,13 @@ import { RepoActionType,
     IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction,
     IFetchRepoTimelineSuccessAction,
+    IFetchRepoSharedUsersAction,
+    IFetchRepoSharedUsersSuccessAction,
+    IFetchRepoIsBehindRemoteAction,
+    IFetchRepoIsBehindRemoteSuccessAction,
     ISelectRepoAction,
     ISelectRepoSuccessAction,
-    selectRepo, fetchedRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
-import { FETCH_SHARED_REPOS } from '../sharedRepos/sharedReposActions'
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchRepoIsBehindRemote, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
 import UserData from '../../lib/UserData'
@@ -85,11 +88,9 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(fetchRepoTimeline({ path, repoID }))
         dispatch(getCommentsForRepo({ repoID }))
         dispatch(getDiscussions({ repoID }))
-
-        // const repo = await ConscienceRelay.fetchRepo(action.repoID, action.folderPath)
-        const sharedUsers = await ServerRelay.getSharedUsers(repoID)
-        repo.sharedUsers = (sharedUsers || []).map(user => user.name || user.email)
-        return { repo }
+        dispatch(fetchRepoSharedUsers({ repoID }))
+        dispatch(fetchRepoIsBehindRemote({ path, repoID }))
+        return {}
     }
 })
 
@@ -102,6 +103,44 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const files = await rpcClient.getRepoFilesAsync({ path, repoID })
 
         return { repoID, path, files }
+    }
+})
+
+const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
+    type: RepoActionType.FETCH_REPO_TIMELINE,
+    async process({ action }) {
+        const { path, repoID } = action.payload
+
+        const rpcClient = rpc.initClient()
+        const timeline = (await rpcClient.getRepoTimelineAsync({ path, repoID })).map(event => ({
+            version: 0,
+            commit: event.commitHash,
+            user: event.author,
+            time: event.timestamp,
+            message: event.message,
+            files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
+            diffs: {},
+        }))
+
+        return { repoID, path, timeline }
+    }
+})
+
+const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
+    type: RepoActionType.FETCH_REPO_SHARED_USERS,
+    async process({ action }) {
+        const { repoID } = action.payload
+        const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.email)
+        return { repoID, sharedUsers }
+    }
+})
+
+const fetchRepoIsBehindRemoteLogic = makeLogic<IFetchRepoIsBehindRemoteAction, IFetchRepoIsBehindRemoteSuccessAction>({
+    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE,
+    async process({ action }) {
+        YOU DONT NEED THIS
+        JUST CALL noderpcClient.getAllRefsAsync()
+        AND DO THE COMPARISON IN THE COMPONENTS
     }
 })
 
@@ -186,6 +225,9 @@ export default [
     selectRepoLogic,
     fetchFullRepoLogic,
     fetchRepoFilesLogic,
+    fetchRepoTimelineLogic,
+    fetchRepoSharedUsersLogic,
+    fetchRepoIsBehindRemoteLogic,
     checkpointRepoLogic,
     pullRepoLogic,
     getDiffLogic,

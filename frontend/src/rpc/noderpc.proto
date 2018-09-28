@@ -21,6 +21,7 @@ service NodeRPC {
 
   rpc GetRepoHistory(GetRepoHistoryRequest) returns (GetRepoHistoryResponse) {}
   rpc GetRepoFiles(GetRepoFilesRequest) returns (GetRepoFilesResponse) {}
+  rpc RepoHasObject(RepoHasObjectRequest) returns (RepoHasObjectResponse) {}
 }
 
 message SetUsernameRequest {
@@ -123,7 +124,8 @@ message ReplicationResponse {}
 
 message GetRepoHistoryRequest {
     string repoID = 1;
-    uint64 page = 2;
+    string path = 2;
+    uint64 page = 3;
 }
 
 message Commit {
@@ -153,4 +155,14 @@ message File {
 
 message GetRepoFilesResponse {
     repeated File files = 1;
+}
+
+message RepoHasObjectRequest {
+    string repoID = 1;
+    string path = 2;
+    bytes objectID = 3;
+}
+
+message RepoHasObjectResponse {
+    bool hasObject = 1;
 }
