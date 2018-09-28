@@ -20,11 +20,14 @@ import * as rpc from '../../rpc'
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
     async process({ action }, dispatch) {
+        const { repoID } = action.payload
+
         const rpcClient = rpc.initClient()
-        await rpcClient.initRepoAsync({ repoID: action.payload.repoID })
-        await ServerRelay.createRepo(action.payload.repoID)
-        await dispatch(selectRepo({ repo }))
-        return { repo }
+        const { path } = await rpcClient.initRepoAsync({ repoID: repoID })
+        await ServerRelay.createRepo(repoID)
+
+        await dispatch(selectRepo({ repoID, path }))
+        return { repoID, path }
     }
 })
 
@@ -56,9 +59,11 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
 
 const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     type: RepoActionType.SELECT_REPO,
-    async process({ action }, dispatch) {
+    async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
-        await dispatch(fetchFullRepo({ repoID, folderPath: path }))
+        if (getState().repository.repos[repoID] === undefined) {
+            await dispatch(fetchFullRepo({ repoID, folderPath: path }))
+        }
         return {}
     }
 })

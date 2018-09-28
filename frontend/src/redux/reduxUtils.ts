@@ -1,11 +1,12 @@
 import { createLogic } from 'redux-logic'
+import { IGlobalState } from './store'
 
 interface ActionType {
     payload: any
 }
 
 interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType extends ActionType> {
-    (depObj: { getState: Function, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload']>
+    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload']>
 }
 
 export function makeLogic

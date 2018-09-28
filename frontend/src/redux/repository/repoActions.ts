@@ -5,6 +5,7 @@ export enum RepoActionType {
     CREATE_REPO = 'CREATE_REPO',
     CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
     CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
+
     GET_LOCAL_REPOS = 'GET_LOCAL_REPOS',
     GET_LOCAL_REPOS_SUCCESS = 'GET_LOCAL_REPOS_SUCCESS',
     GET_LOCAL_REPOS_FAILED = 'GET_LOCAL_REPOS_FAILED',
@@ -41,7 +42,8 @@ export interface ICreateRepoAction {
 export interface ICreateRepoSuccessAction {
     type: RepoActionType.CREATE_REPO_SUCCESS
     payload: {
-        repo: IRepo
+        repoID: string
+        path: string
     }
 }
 

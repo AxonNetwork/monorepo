@@ -11,7 +11,7 @@ const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
 const noderpc = packageObject.noderpc
 
 interface IRPCClient {
-    initRepoAsync: any
+    initRepoAsync: (params: { repoID: string, path?: string }) => Promise<{ path: string }>
     getLocalRepos: any
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
     // @@TODO: convert to enum
