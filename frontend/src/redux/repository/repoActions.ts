@@ -22,9 +22,13 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
 
-    FETCH_REPO_IS_BEHIND_REMOTE = 'FETCH_REPO_IS_BEHIND_REMOTE',
-    FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS = 'FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS',
-    FETCH_REPO_IS_BEHIND_REMOTE_FAILED = 'FETCH_REPO_IS_BEHIND_REMOTE_FAILED',
+    FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
+    FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
+    FETCH_REMOTE_REFS_FAILED = 'FETCH_REMOTE_REFS_FAILED',
+
+    FETCH_LOCAL_REFS = 'FETCH_LOCAL_REFS',
+    FETCH_LOCAL_REFS_SUCCESS = 'FETCH_LOCAL_REFS_SUCCESS',
+    FETCH_LOCAL_REFS_FAILED = 'FETCH_LOCAL_REFS_FAILED',
 
     FETCH_REPO_SHARED_USERS = 'FETCH_REPO_SHARED_USERS',
     FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
@@ -141,24 +145,40 @@ export interface IFetchRepoTimelineSuccessAction {
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
 
-export interface IFetchRepoIsBehindRemoteAction {
-    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE
+export interface IFetchLocalRefsAction {
+    type: RepoActionType.FETCH_LOCAL_REFS
+    payload: {
+        repoID: string
+        path: string
+    }
+}
+
+export interface IFetchLocalRefsSuccessAction {
+    type: RepoActionType.FETCH_LOCAL_REFS_SUCCESS
     payload: {
         path: string
+        localRefs: {[name: string]: string}
+    }
+}
+
+export type IFetchLocalRefsFailedAction = FailedAction<RepoActionType.FETCH_LOCAL_REFS_FAILED>
+
+export interface IFetchRemoteRefsAction {
+    type: RepoActionType.FETCH_REMOTE_REFS
+    payload: {
         repoID: string
     }
 }
 
-export interface IFetchRepoIsBehindRemoteSuccessAction {
-    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE_SUCCESS
+export interface IFetchRemoteRefsSuccessAction {
+    type: RepoActionType.FETCH_REMOTE_REFS_SUCCESS
     payload: {
-        path: string
         repoID: string
-        isBehindRemote: boolean
+        remoteRefs: {[name: string]: string}
     }
 }
 
-export type IFetchRepoIsBehindRemoteFailedAction = FailedAction<RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE_FAILED>
+export type IFetchRemoteRefsFailedAction = FailedAction<RepoActionType.FETCH_REMOTE_REFS_FAILED>
 
 export interface IFetchRepoSharedUsersAction {
     type: RepoActionType.FETCH_REPO_SHARED_USERS
@@ -312,9 +332,9 @@ export type IRepoAction =
     IFetchRepoSharedUsersSuccessAction |
     IFetchRepoSharedUsersFailedAction |
 
-    IFetchRepoIsBehindRemoteAction |
-    IFetchRepoIsBehindRemoteSuccessAction |
-    IFetchRepoIsBehindRemoteFailedAction |
+    IFetchRemoteRefsAction |
+    IFetchRemoteRefsSuccessAction |
+    IFetchRemoteRefsFailedAction |
 
     ISelectRepoAction |
     IWatchRepoAction |
@@ -341,7 +361,8 @@ export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchF
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
 export const fetchRepoSharedUsers = (payload: IFetchRepoSharedUsersAction['payload']): IFetchRepoSharedUsersAction => ({ type: RepoActionType.FETCH_REPO_SHARED_USERS, payload })
-export const fetchRepoIsBehindRemote = (payload: IFetchRepoIsBehindRemoteAction['payload']): IFetchRepoIsBehindRemoteAction => ({ type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE, payload })
+export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
+export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
 
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
 

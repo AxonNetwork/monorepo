@@ -10,7 +10,7 @@ const initialState = {
 }
 
 export interface IRepoState {
-    repos: { [folderPath: string]: IRepo & { behindRemote: boolean } }
+    repos: { [folderPath: string]: IRepo }
     selectedRepo: string | null
     selectedFile: {
         file: string

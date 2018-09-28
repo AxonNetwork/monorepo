@@ -3,8 +3,9 @@ export interface IRepo {
     repoID: string
     sharedUsers: string[]
     files: {[name: string]: IRepoFile}
+    localRefs: {[name: string]: string}
+    remoteRefs: {[name: string]: string}
     timeline: ITimelineEvent[]
-    behindRemote: boolean
 }
 
 export interface ISharedRepoInfo {

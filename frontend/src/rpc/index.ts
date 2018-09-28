@@ -22,8 +22,9 @@ interface IRPCClient {
         message: string
         timestamp: number
     }[] }>
-    getRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>
-    getAllRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
+    getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
+    getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>
+    getAllRemoteRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
 
     // @@TODO: convert to enum
     UserType: {
@@ -61,13 +62,13 @@ export function initClient() {
             })
         }
 
-        client.getAllRefsAsync = async (repoID: string): Promise<{[refName: string]: string}> => {
+        client.getAllRemoteRefsAsync = async (repoID: string): Promise<{[refName: string]: string}> => {
             const REF_PAGE_SIZE = 10
             let page = 0
             let refMap = {} as {[refName: string]: string}
 
             while (true) {
-                const { total, refs } = await client.getRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
+                const { total, refs } = await client.getRemoteRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
                 for (let ref of refs) {
                     refMap[ref.refName] = ref.commitHash
                 }
@@ -75,7 +76,6 @@ export function initClient() {
                 if (total <= page * REF_PAGE_SIZE) {
                     break
                 }
-
                 page++
             }
             return refMap

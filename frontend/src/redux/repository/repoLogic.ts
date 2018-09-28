@@ -15,11 +15,13 @@ import { RepoActionType,
     IFetchRepoTimelineSuccessAction,
     IFetchRepoSharedUsersAction,
     IFetchRepoSharedUsersSuccessAction,
-    IFetchRepoIsBehindRemoteAction,
-    IFetchRepoIsBehindRemoteSuccessAction,
+    IFetchLocalRefsAction,
+    IFetchLocalRefsSuccessAction,
+    IFetchRemoteRefsAction,
+    IFetchRemoteRefsSuccessAction,
     ISelectRepoAction,
     ISelectRepoSuccessAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchRepoIsBehindRemote, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
@@ -91,7 +93,8 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(getCommentsForRepo({ repoID }))
         dispatch(getDiscussions({ repoID }))
         dispatch(fetchRepoSharedUsers({ repoID }))
-        dispatch(fetchRepoIsBehindRemote({ path, repoID }))
+        dispatch(fetchLocalRefs({ path, repoID }))
+        dispatch(fetchRemoteRefs({ repoID }))
         return {}
     }
 })
@@ -137,13 +140,23 @@ const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchR
     }
 })
 
-const fetchRepoIsBehindRemoteLogic = makeLogic<IFetchRepoIsBehindRemoteAction, IFetchRepoIsBehindRemoteSuccessAction>({
-    type: RepoActionType.FETCH_REPO_IS_BEHIND_REMOTE,
+const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSuccessAction>({
+    type: RepoActionType.FETCH_LOCAL_REFS,
     async process({ action }) {
-        // YOU DONT NEED THIS
-        // JUST CALL noderpcClient.getAllRefsAsync()
-        // AND DO THE COMPARISON IN THE COMPONENTS
-        return
+        const { repoID, path } = action.payload
+        const rpcClient = rpc.initClient()
+        const resp = await rpcClient.getLocalRefsAsync({ repoID, path })
+        return { path: resp.path, localRefs: resp.localRefs }
+    }
+})
+
+const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction>({
+    type: RepoActionType.FETCH_REMOTE_REFS,
+    async process({ action }) {
+        const { repoID } = action.payload
+        const rpcClient = rpc.initClient()
+        const remoteRefs = await rpcClient.getAllRemoteRefsAsync(repoID)
+        return { repoID, remoteRefs }
     }
 })
 
@@ -222,7 +235,8 @@ export default [
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
     fetchRepoSharedUsersLogic,
-    fetchRepoIsBehindRemoteLogic,
+    fetchLocalRefsLogic,
+    fetchRemoteRefsLogic,
     checkpointRepoLogic,
     pullRepoLogic,
     getDiffLogic,
