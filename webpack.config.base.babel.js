@@ -177,4 +177,8 @@ export default {
             '.scss',
         ],
     },
+    node: {
+        __dirname: false,
+        __filename: false,
+    },
 };
