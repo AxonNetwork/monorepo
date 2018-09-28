@@ -50,6 +50,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     }
                 }
             }
+
         case RepoActionType.FETCHED_TIMELINE:
             return {
                 ...state,
@@ -60,8 +61,8 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         timeline: action.timeline
                     }
                 }
-
             }
+
         case RepoActionType.GET_DIFF_SUCCESS:
             const updatedTimeline = state.repos[action.folderPath].timeline.map(e => {
                 let diffs = {

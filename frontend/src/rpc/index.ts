@@ -1,4 +1,5 @@
 import Promise from 'bluebird'
+import { ILocalRepo } from '../common'
 
 const PROTO_PATH = __dirname + '/noderpc.proto'
 
@@ -9,10 +10,22 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {})
 const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
 const noderpc = packageObject.noderpc
 
-var client = null
+interface IRPCClient {
+    initRepoAsync: any
+    getLocalRepos: any
+    getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
+    // @@TODO: convert to enum
+    UserType: {
+        ADMIN: 0,
+        PULLER: 1,
+        PUSHER: 2,
+    }
+}
+
+var client: IRPCClient
 
 export function initClient() {
-    if (client === null) {
+    if (client === undefined) {
         client = new noderpc.NodeRPC(process.env.NODE_RPC, grpcLibrary.credentials.createInsecure())
         client = Promise.promisifyAll(client, { suffix: 'Async' })
 
@@ -21,6 +34,20 @@ export function initClient() {
             ADMIN: 0,
             PULLER: 1,
             PUSHER: 2,
+        }
+
+        // @@TODO: this invalidates the whole purpose of streaming the response.  redo this later.
+        client.getLocalReposAsync = (params: any = {}) => {
+            return new Promise<ILocalRepo[]>((resolve, reject) => {
+                const emitter = client.getLocalRepos(params)
+                let repos = [] as ILocalRepo[]
+                emitter.on('data', (repo: ILocalRepo) => {
+                    repos.push(repo)
+                })
+                emitter.on('end', () => {
+                    resolve(repos)
+                })
+            })
         }
     }
     return client

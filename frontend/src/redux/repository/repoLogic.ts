@@ -1,58 +1,71 @@
 import { makeLogic } from '../reduxUtils'
 import { createLogic } from 'redux-logic'
+import { ILocalRepo } from '../../common'
 import { RepoActionType,
     // IFetchFullRepoAction,
-    // ICreateRepoAction,
-    // ICreateRepoSuccessAction,
+    ICreateRepoAction,
+    ICreateRepoSuccessAction,
+    IGetLocalReposAction,
+    IGetLocalReposSuccessAction,
+    ISelectRepoAction,
+    ISelectRepoSuccessAction,
     selectRepo, fetchedRepo, fetchFullRepo, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { FETCH_SHARED_REPOS } from '../sharedRepos/sharedReposActions'
 import { GET_DISCUSSIONS } from '../discussion/discussionActions'
 import UserData from '../../lib/UserData'
 import ConscienceRelay from '../../lib/ConscienceRelay'
 import ServerRelay from '../../lib/ServerRelay'
-import to from 'await-to-js'
+import * as rpc from '../../rpc'
 
-const createRepoLogic = createLogic({
+const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
-    async process({ getState, action }, dispatch) {
-        // @@TODO: UserData.conscienceLocation should live in a config or something
-        const repo = await ConscienceRelay.createRepo(action.repoID, UserData.conscienceLocation)
-        await ServerRelay.createRepo(repo.repoID)
+    async process({ action }, dispatch) {
+        const rpcClient = rpc.initClient()
+        await rpcClient.initRepoAsync({ repoID: action.payload.repoID })
+        await ServerRelay.createRepo(action.payload.repoID)
         await dispatch(selectRepo({ repo }))
+        return { repo }
     }
 })
 
-const fetchReposLogic = createLogic({
-    type: RepoActionType.FETCH_REPOS,
-    async process({ getState, action }, dispatch, done) {
-        const repos = (await ConscienceRelay.getRepos()) || []
-        repos.forEach(async (repo) => {
-            await dispatch(fetchedRepo({ repo }))
-            await dispatch(watchRepo({ repoID: repo.repoID, folderPath: repo.folderPath }))
-        })
-        if (repos.length > 0) {
-            await dispatch(selectRepo({ repo: repos[0] }))
+const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccessAction>({
+    type: RepoActionType.GET_LOCAL_REPOS,
+    async process({ action }, dispatch) {
+        const rpcClient = rpc.initClient()
+        const repoList: ILocalRepo[] = await rpcClient.getLocalReposAsync()
+        let repos = {} as {[path: string]: ILocalRepo}
+
+        for (let repo of repoList) {
+            // await dispatch(fetchedRepo({ repo }))
+            // @@TODO: make sure we're not already watching a given repo
+            dispatch(watchRepo({ repoID: repo.repoID, folderPath: repo.path }))
+            repos[repo.path] = repo
         }
-        await dispatch({ type: FETCH_SHARED_REPOS })
-        done()
+
+        // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
+        if (repoList.length > 0) {
+            const { repoID, path } = repoList[0]
+            await dispatch(selectRepo({ repoID, path }))
+        }
+        // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
+        // await dispatch({ type: FETCH_SHARED_REPOS })
+
+        return { repos }
     }
 })
 
-const selectRepoLogic = createLogic({
+const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     type: RepoActionType.SELECT_REPO,
-    async process({ getState, action }, dispatch, done) {
-        let repo = action.repo
-        if (repo !== undefined) {
-          await dispatch(fetchFullRepo({ repoID: repo.repoID, folderPath: repo.folderPath }))
-        }
-        done()
+    async process({ action }, dispatch) {
+        const { repoID, path } = action.payload
+        await dispatch(fetchFullRepo({ repoID, folderPath: path }))
+        return {}
     }
 })
 
 const fetchFullRepoLogic = createLogic({
     type: RepoActionType.FETCH_FULL_REPO,
     async process({ getState, action }, dispatch, done) {
-        // @@TODO: maybe don't use `to` here, not much benefit
         const repo = await ConscienceRelay.fetchRepo(action.repoID, action.folderPath)
         const sharedUsers = await ServerRelay.getSharedUsers(repo.repoID)
 
@@ -143,7 +156,7 @@ const watchRepoLogic = createLogic({
 
 export default [
     createRepoLogic,
-    fetchReposLogic,
+    getLocalReposLogic,
     selectRepoLogic,
     fetchFullRepoLogic,
     checkpointRepoLogic,

@@ -22,7 +22,7 @@ export function makeLogic
                 dispatch({ type: opts.type + '_FAILED', error: true, payload: err })
             }
             done()
-        }
+        },
     })
 }
 

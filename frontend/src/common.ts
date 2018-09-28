@@ -12,6 +12,11 @@ export interface ISharedRepoInfo {
     repoID: string
 }
 
+export interface ILocalRepo {
+    repoID: string
+    path: string
+}
+
 export interface IRepoFile {
     path: string
     name: string

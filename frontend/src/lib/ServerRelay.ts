@@ -20,12 +20,14 @@ const ServerRelay = {
             name: string
             token: string
         }
+
         let response
-        try{
+        try {
             response = await axios.post<Response>(API_URL + '/login', { email, password })
-        }catch(err){
+        } catch (err) {
             throw err.response.data.error
         }
+
         ServerRelay.setJWT(response.data.token)
         return {
             email: email,
@@ -38,12 +40,14 @@ const ServerRelay = {
         interface Response {
             token: string
         }
+
         let response
-        try{
+        try {
             response = await axios.post<Response>(API_URL + '/create-user', { name, email, password })
-        }catch(err){
+        } catch (err) {
             throw err.response.data.error
         }
+
         ServerRelay.setJWT(response.data.token)
         return {
             email,
@@ -67,6 +71,7 @@ const ServerRelay = {
 
     async createRepo(repoID: string) {
         interface Response {}
+
         await axios.post<Response>(API_URL + '/create-repo', { repoID })
     },
 
@@ -83,6 +88,7 @@ const ServerRelay = {
         interface Response {
             sharedUsers: { name: string, email: string }[]
         }
+
         const response = await axios.get<Response>(API_URL+'/shared-users?repoID='+repoID)
         return response.data.sharedUsers
     },
@@ -105,6 +111,7 @@ const ServerRelay = {
         interface Response {
             discussions: IDiscussion[]
         }
+
         const response = await axios.get<Response>(API_URL+'/discussion?repoID='+repoID)
         return response.data.discussions
     },
@@ -113,6 +120,7 @@ const ServerRelay = {
         interface Response {
             comments: IComment[]
         }
+
         const response = await axios.get<Response>(API_URL+'/all-comments?repoID='+repoID)
         return response.data.comments
     },
@@ -122,6 +130,7 @@ const ServerRelay = {
             comment: IComment
             discussion: IDiscussion
         }
+
         const response = await axios.post<Response>(API_URL+'/discussion', { repoID, subject, commentText })
         return response.data
     },
@@ -130,11 +139,8 @@ const ServerRelay = {
         interface Response {
             newComment: IComment
         }
-        const response = await axios.post<Response>(API_URL+'/create-comment', {
-            repoID: repoID,
-            text: text,
-            attachedTo: attachedTo
-        })
+
+        const response = await axios.post<Response>(API_URL+'/create-comment', { repoID, text, attachedTo })
         return response.data.newComment
     },
 
