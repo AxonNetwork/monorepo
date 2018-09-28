@@ -92,12 +92,8 @@ message GetLocalRefsRequest {
 }
 
 message GetLocalRefsResponse {
-<<<<<<< HEAD
     string path = 1;
     repeated Ref refs = 2;
-=======
-    repeated Ref refs = 1;
->>>>>>> fixed component errors and fetch files&timeline
 }
 
 message GetRemoteRefsRequest {
