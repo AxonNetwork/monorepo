@@ -7,11 +7,18 @@ import { RepoActionType,
     ICreateRepoSuccessAction,
     IGetLocalReposAction,
     IGetLocalReposSuccessAction,
+    IFetchFullRepoAction,
+    IFetchFullRepoSuccessAction,
+    IFetchRepoFilesAction,
+    IFetchRepoFilesSuccessAction,
+    IFetchRepoTimelineAction,
+    IFetchRepoTimelineSuccessAction,
     ISelectRepoAction,
     ISelectRepoSuccessAction,
-    selectRepo, fetchedRepo, fetchFullRepo, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
+    selectRepo, fetchedRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
 import { FETCH_SHARED_REPOS } from '../sharedRepos/sharedReposActions'
-import { GET_DISCUSSIONS } from '../discussion/discussionActions'
+import { getDiscussions } from '../discussion/discussionActions'
+import { getCommentsForRepo } from '../comment/commentActions'
 import UserData from '../../lib/UserData'
 import ConscienceRelay from '../../lib/ConscienceRelay'
 import ServerRelay from '../../lib/ServerRelay'
@@ -61,26 +68,40 @@ const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     type: RepoActionType.SELECT_REPO,
     async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
+        // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
         if (getState().repository.repos[repoID] === undefined) {
-            await dispatch(fetchFullRepo({ repoID, folderPath: path }))
+            await dispatch(fetchFullRepo({ repoID, path }))
         }
         return {}
     }
 })
 
-const fetchFullRepoLogic = createLogic({
+const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccessAction>({
     type: RepoActionType.FETCH_FULL_REPO,
-    async process({ getState, action }, dispatch, done) {
-        const repo = await ConscienceRelay.fetchRepo(action.repoID, action.folderPath)
-        const sharedUsers = await ServerRelay.getSharedUsers(repo.repoID)
+    async process({ action }, dispatch) {
+        const { path, repoID } = action.payload
 
+        dispatch(fetchRepoFiles({ path, repoID }))
+        dispatch(fetchRepoTimeline({ path, repoID }))
+        dispatch(getCommentsForRepo({ repoID }))
+        dispatch(getDiscussions({ repoID }))
+
+        // const repo = await ConscienceRelay.fetchRepo(action.repoID, action.folderPath)
+        const sharedUsers = await ServerRelay.getSharedUsers(repoID)
         repo.sharedUsers = (sharedUsers || []).map(user => user.name || user.email)
-        dispatch({
-            type: GET_DISCUSSIONS,
-            repoID: repo.repoID,
-        })
-        await dispatch(fetchedRepo({ repo }))
-        done()
+        return { repo }
+    }
+})
+
+const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
+    type: RepoActionType.FETCH_REPO_FILES,
+    async process({ action }) {
+        const { path, repoID } = action.payload
+
+        const rpcClient = rpc.initClient()
+        const files = await rpcClient.getRepoFilesAsync({ path, repoID })
+
+        return { repoID, path, files }
     }
 })
 
@@ -164,6 +185,7 @@ export default [
     getLocalReposLogic,
     selectRepoLogic,
     fetchFullRepoLogic,
+    fetchRepoFilesLogic,
     checkpointRepoLogic,
     pullRepoLogic,
     getDiffLogic,

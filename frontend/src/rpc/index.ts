@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import { ILocalRepo } from '../common'
+import { IRepo, ILocalRepo } from '../common'
 
 const PROTO_PATH = __dirname + '/noderpc.proto'
 
@@ -14,6 +14,8 @@ interface IRPCClient {
     initRepoAsync: (params: { repoID: string, path?: string }) => Promise<{ path: string }>
     getLocalRepos: any
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
+    getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise<{ repo: IRepo }>
+
     // @@TODO: convert to enum
     UserType: {
         ADMIN: 0,

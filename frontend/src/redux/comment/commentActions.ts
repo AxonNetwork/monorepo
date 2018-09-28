@@ -53,5 +53,5 @@ export type ICommentAction =
     ICreateCommentSuccessAction |
     ICreateCommentFailedAction
 
-export const getComments = (payload: IGetCommentsForRepoAction['payload']): IGetCommentsForRepoAction => ({ type: CommentActionType.GET_COMMENTS_FOR_REPO, payload })
+export const getCommentsForRepo = (payload: IGetCommentsForRepoAction['payload']): IGetCommentsForRepoAction => ({ type: CommentActionType.GET_COMMENTS_FOR_REPO, payload })
 export const createComment = (payload: ICreateCommentAction['payload']): ICreateCommentAction => ({ type: CommentActionType.CREATE_COMMENT, payload })

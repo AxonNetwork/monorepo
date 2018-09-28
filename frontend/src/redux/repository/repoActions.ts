@@ -10,8 +10,19 @@ export enum RepoActionType {
     GET_LOCAL_REPOS_SUCCESS = 'GET_LOCAL_REPOS_SUCCESS',
     GET_LOCAL_REPOS_FAILED = 'GET_LOCAL_REPOS_FAILED',
 
-    FETCHED_REPO = 'FETCHED_REPO',
     FETCH_FULL_REPO = 'FETCH_FULL_REPO',
+    FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
+    FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
+
+    FETCH_REPO_FILES = 'FETCH_REPO_FILES',
+    FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
+    FETCH_REPO_FILES_FAILED = 'FETCH_REPO_FILES_FAILED',
+
+    FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
+    FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
+    FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
+
+    FETCHED_REPO = 'FETCHED_REPO',
     WATCH_REPO = 'WATCH_REPO',
 
     SELECT_REPO = 'SELECT_REPO',
@@ -68,16 +79,56 @@ export interface IGetLocalReposSuccessAction {
 
 export type IGetLocalReposFailedAction = FailedAction<RepoActionType.GET_LOCAL_REPOS_FAILED>
 
-export interface IFetchReposSuccessAction {
-    type: RepoActionType.FETCHED_REPO
-    repo: IRepo
-}
-
 export interface IFetchFullRepoAction {
     type: RepoActionType.FETCH_FULL_REPO
-    folderPath: string
-    repoID: string
+    payload: {
+        path: string
+        repoID: string
+    }
 }
+
+export interface IFetchFullRepoSuccessAction {
+    type: RepoActionType.FETCH_FULL_REPO_SUCCESS
+    payload: {
+        repo: IRepo
+    }
+}
+
+export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
+
+export interface IFetchRepoFilesAction {
+    type: RepoActionType.FETCH_REPO_FILES
+    payload: {
+        path: string
+        repoID: string
+    }
+}
+
+export interface IFetchRepoFilesSuccessAction {
+    type: RepoActionType.FETCH_REPO_FILES_SUCCESS
+    payload: {
+        repoID: string
+        path: string
+        files: IRepoFile[]
+    }
+}
+
+export type IFetchRepoFilesFailedAction = FailedAction<RepoActionType.FETCH_REPO_FILES_FAILED>
+
+export interface IFetchRepoTimelineAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE
+    payload: {
+        path: string
+        repoID: string
+    }
+}
+
+export interface IFetchRepoTimelineSuccessAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE_SUCCESS
+    payload: { asdf: 'todo!' }
+}
+
+export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
 
 export interface ISelectRepoAction {
     type: RepoActionType.SELECT_REPO
@@ -186,11 +237,23 @@ export type IRepoAction =
     ICreateRepoAction |
     ICreateRepoSuccessAction |
     ICreateRepoFailedAction |
+
     IGetLocalReposAction |
     IGetLocalReposSuccessAction |
     IGetLocalReposFailedAction |
-    IFetchedReposAction |
+
     IFetchFullRepoAction |
+    IFetchFullRepoSuccessAction |
+    IFetchFullRepoFailedAction |
+
+    IFetchRepoFilesAction |
+    IFetchRepoFilesSuccessAction |
+    IFetchRepoFilesFailedAction |
+
+    IFetchRepoTimelineAction |
+    IFetchRepoTimelineSuccessAction |
+    IFetchRepoTimelineFailedAction |
+
     ISelectRepoAction |
     IWatchRepoAction |
     ICheckpointRepoAction |
@@ -209,11 +272,13 @@ export type IRepoAction =
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IGetLocalReposAction => ({ type: RepoActionType.GET_LOCAL_REPOS, payload })
+export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
+export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
+export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
 
-export const fetchedRepo = (params: { repo: IRepo }): IFetchedReposAction => ({ type: RepoActionType.FETCHED_REPO, ...params })
-export const fetchFullRepo = (params: { repoID: string, folderPath: string }): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, ...params })
-export const watchRepo = (params: { repoID: string, folderPath: string }): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, ...params })
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
+
+export const watchRepo = (params: { repoID: string, folderPath: string }): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, ...params })
 export const checkpointRepo = (params: { folderPath: string, repoID: string, message: string }): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, ...params })
 export const pullRepo = (params: { folderPath: string, repoID: string }): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, ...params })
 export const selectFile = (params: { file: string, isFolder: boolean }): ISelectFileAction => {
