@@ -6,11 +6,11 @@ const watching:{[path: string]:{repoID: string, path: string, mtime: number}|und
 
 const RepoWatcher = {
     watch(repoID: string, path: string) {
-        watching[path]={ path, repoID, mtime: 0}
+        watching[path] = { path, repoID, mtime: 0 }
     },
 
-    unwatch(path: string){
-        watching[path] = undefined
+    unwatch(path: string) {
+        delete watching[path]
     }
 }
 
@@ -25,23 +25,23 @@ function loop(){
 }
 
 async function checkForChange(path: string){
-        const repo = watching[path]
-        if(repo === undefined){
-            return
-        }
-        const mtime = fs.statSync(repo.path).mtimeMs
-        if(mtime > repo.mtime && repo.mtime !== 0){
-            // TODO: Get new file
-            // console.log(repo.path + " CHANGED")
-            // try{
-            //     const files = await rpcClient.getRepoFilesAsync({repoID: repo.repoID, path: repo.path})
-            //     console.log("Files: ", files)
-            // }catch(err){
-            //     console.log(err)
-            // }
-        }
-        repo.mtime = mtime
-        watching[path] = repo
+    const repo = watching[path]
+    if(repo === undefined){
+        return
+    }
+    const mtime = fs.statSync(repo.path).mtimeMs
+    if(mtime > repo.mtime && repo.mtime !== 0){
+        // TODO: Get new file
+        // console.log(repo.path + " CHANGED")
+        // try{
+        //     const files = await rpcClient.getRepoFilesAsync({repoID: repo.repoID, path: repo.path})
+        //     console.log("Files: ", files)
+        // }catch(err){
+        //     console.log(err)
+        // }
+    }
+    repo.mtime = mtime
+    watching[path] = repo
 }
 
 async function checkBehindRemote(path: string){

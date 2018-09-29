@@ -34,7 +34,6 @@ export enum RepoActionType {
     FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
     FETCH_REPO_SHARED_USERS_FAILED = 'FETCH_REPO_SHARED_USERS_FAILED',
 
-    FETCHED_REPO = 'FETCHED_REPO',
     WATCH_REPO = 'WATCH_REPO',
     WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
 
@@ -42,11 +41,18 @@ export enum RepoActionType {
     SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
 
     CHECKPOINT_REPO = 'CHECKPOINT_REPO',
+    CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
+    CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
+
     PULL_REPO = 'PULL_REPO',
+    PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
+    PULL_REPO_FAILED = 'PULL_REPO_FAILED',
+
+    FETCHED_REPO = 'FETCHED_REPO',
     SELECT_FILE = 'SELECT_FILE',
     ADD_COLLABORATOR = 'ADD_COLLABORATOR',
     ADD_COLLABORATOR_SUCCESS = 'ADD_COLLABORATOR_SUCCESS',
-    ADD_HYPOTHESIS = 'ADD_HYPOTHESIS',
+    // ADD_HYPOTHESIS = 'ADD_HYPOTHESIS',
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
     REVERT_FILES = 'REVERT_FILES',
@@ -102,7 +108,9 @@ export interface IFetchFullRepoAction {
 
 export interface IFetchFullRepoSuccessAction {
     type: RepoActionType.FETCH_FULL_REPO_SUCCESS
-    payload: {}
+    payload: {
+        path: string
+    }
 }
 
 export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
@@ -118,9 +126,9 @@ export interface IFetchRepoFilesAction {
 export interface IFetchRepoFilesSuccessAction {
     type: RepoActionType.FETCH_REPO_FILES_SUCCESS
     payload: {
-        repoID: string
         path: string
-        files: IRepoFile[]
+        repoID: string
+        files: {[path: string]: IRepoFile}
     }
 }
 
@@ -207,7 +215,10 @@ export interface ISelectRepoAction {
 
 export interface ISelectRepoSuccessAction {
     type: RepoActionType.SELECT_REPO_SUCCESS
-    payload: {}
+    payload: {
+        repoID: string
+        path: string
+    }
 }
 
 export interface IWatchRepoAction {
@@ -225,86 +236,100 @@ export interface IWatchRepoSuccessAction {
 
 export interface ICheckpointRepoAction {
     type: RepoActionType.CHECKPOINT_REPO
-    folderPath: string
-    repoID: string
-    message: string
+    payload: {
+        folderPath: string
+        repoID: string
+        message: string
+    }
 }
+
+export interface ICheckpointRepoSuccessAction {
+    type: RepoActionType.CHECKPOINT_REPO_SUCCESS
+    payload: {}
+}
+
+export type ICheckpointRepoFailedAction = FailedAction<RepoActionType.CHECKPOINT_REPO_FAILED>
 
 export interface IPullRepoAction {
     type: RepoActionType.PULL_REPO
-    folderPath: string
-    repoID: string
+    payload: {
+        folderPath: string
+        repoID: string
+    }
 }
+
+export interface IPullRepoSuccessAction {
+    type: RepoActionType.PULL_REPO_SUCCESS
+    payload: {}
+}
+
+export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED>
 
 export interface ISelectFileAction {
     type: RepoActionType.SELECT_FILE
-    file: string
-    isFolder: boolean
+    payload: {
+        file: string
+        isFolder: boolean
+    }
 }
 
 export interface IAddCollaboratorAction {
     type: RepoActionType.ADD_COLLABORATOR
-    folderPath: string
-    repoID: string
-    email: string
+    payload: {
+        folderPath: string
+        repoID: string
+        email: string
+    }
 }
 
 export interface IAddCollaboratorSuccessAction {
     type: RepoActionType.ADD_COLLABORATOR_SUCCESS
-    folderPath: string
-    repoID: string
-    email: string
+    payload: {
+        folderPath: string
+        repoID: string
+        email: string
+    }
 }
 
-export interface IAddHypothesisAction {
-    type: RepoActionType.ADD_HYPOTHESIS
-    folderPath: string
-    hypothesis: string
-}
+// export interface IAddHypothesisAction {
+//     type: RepoActionType.ADD_HYPOTHESIS
+//     payload: {
+//         folderPath: string
+//         hypothesis: string
+//     }
+// }
 
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
-    folderPath: string
-    filename: string
-    commit: string
+    payload: {
+        folderPath: string
+        filename: string
+        commit: string
+    }
 }
 
 export interface IGetDiffSuccessAction {
     type: RepoActionType.GET_DIFF_SUCCESS
-    diff: string
-    folderPath: string
-    filename: string
-    commit: string
+    payload: {
+        diff: string
+        folderPath: string
+        filename: string
+        commit: string
+    }
 }
 
 export interface IRevertFilesAction {
     type: RepoActionType.REVERT_FILES
-    folderPath: string
-    files: string
-    commit: string
+    payload: {
+        folderPath: string
+        files: string
+        commit: string
+    }
 }
 
 export interface IRevertFilesSuccessAction {
     type: RepoActionType.REVERT_FILES_SUCCESS
-    folderPath: string
-    filename: string
-}
-
-export interface IFetchedFilesAction {
-    type: RepoActionType.FETCHED_FILES
-    folderPath: string
-    files: IRepoFile[]
-}
-
-export interface IFetchedTimelineAction {
-    type: RepoActionType.FETCHED_TIMELINE
-    folderPath: string
-    timeline: ITimelineEvent[]
-}
-
-export interface ISetIsBehindRemoteAction {
-    type: RepoActionType.BEHIND_REMOTE
-    folderPath: string
+    payload: {}
 }
 
 export type IRepoAction =
@@ -337,23 +362,21 @@ export type IRepoAction =
     IFetchRemoteRefsFailedAction |
 
     ISelectRepoAction |
+    ISelectRepoSuccessAction |
+
     IWatchRepoAction |
     IWatchRepoSuccessAction |
 
-    ISelectRepoAction |
     ICheckpointRepoAction |
     IPullRepoAction |
     ISelectFileAction |
     IAddCollaboratorAction |
     IAddCollaboratorSuccessAction |
-    IAddHypothesisAction |
+    // IAddHypothesisAction |
     IGetDiffAction |
     IGetDiffSuccessAction |
     IRevertFilesAction |
-    IRevertFilesSuccessAction |
-    IFetchedFilesAction |
-    IFetchedTimelineAction |
-    ISetIsBehindRemoteAction
+    IRevertFilesSuccessAction
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IGetLocalReposAction => ({ type: RepoActionType.GET_LOCAL_REPOS, payload })
@@ -365,19 +388,12 @@ export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetc
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
 
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
-
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
-export const checkpointRepo = (params: { folderPath: string, repoID: string, message: string }): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, ...params })
-export const pullRepo = (params: { folderPath: string, repoID: string }): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, ...params })
-export const selectFile = (params: { file: string, isFolder: boolean }): ISelectFileAction => {
-    console.log(params)
-    return{ type: RepoActionType.SELECT_FILE, ...params }
-}
-export const addCollaborator = (params: { folderPath: string, repoID: string, email: string }): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, ...params })
-export const addHypothesis = (params: { folderPath: string, hypothesis: string }): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, ...params })
-export const getDiff = (params: { folderPath: string, filename: string, commit: string }): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, ...params })
-export const revertFiles = (params: { folderPath: string, files: string, commit: string }): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, ...params })
-export const fetchedFiles = (params: { folderPath: string, files: IRepoFile[] }): IFetchedFilesAction => ({ type: RepoActionType.FETCHED_FILES, ...params })
-export const fetchedTimeline = (params: { folderPath: string, timeline: ITimelineEvent[] }): IFetchedTimelineAction => ({ type: RepoActionType.FETCHED_TIMELINE, ...params })
-export const setIsBehindRemote = (params: { folderPath: string }): ISetIsBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, ...params })
+export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
+export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
+export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAction => ({ type: RepoActionType.SELECT_FILE, payload })
+export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
+// export const addHypothesis = (payload: IAddHypothesisAction['payload']): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, payload })
+export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
+export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, payload })
 

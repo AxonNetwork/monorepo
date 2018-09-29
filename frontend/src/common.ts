@@ -1,11 +1,14 @@
+
 export interface IRepo {
-    folderPath: string
+    path: string
     repoID: string
-    sharedUsers: string[]
-    files: {[name: string]: IRepoFile}
-    localRefs: {[name: string]: string}
-    remoteRefs: {[name: string]: string}
-    timeline: ITimelineEvent[]
+    hasBeenFetched?: boolean
+
+    sharedUsers?: string[]
+    files?: {[name: string]: IRepoFile}
+    localRefs?: {[name: string]: string}
+    remoteRefs?: {[name: string]: string}
+    timeline?: ITimelineEvent[]
 }
 
 export interface ISharedRepoInfo {
@@ -19,7 +22,6 @@ export interface ILocalRepo {
 }
 
 export interface IRepoFile {
-    path: string
     name: string
     size: number
     modified: Date
@@ -32,7 +34,7 @@ export interface ITimelineEvent {
     version: number
     commit: string
     user: string
-    time: number
+    time: Date
     message: string
     files: string[]
     diffs: {[commit: string]: string}
@@ -62,6 +64,7 @@ export interface IUser {
     email: string
     name: string
     repos: string[]
+    sharedRepos: {[repoID: string]: ISharedRepoInfo}
 }
 
 export interface IRef {

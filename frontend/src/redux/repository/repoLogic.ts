@@ -1,35 +1,30 @@
 import { makeLogic } from '../reduxUtils'
-import { createLogic } from 'redux-logic'
+import { keyBy } from 'lodash'
 import { ILocalRepo, ITimelineEvent } from '../../common'
 import { RepoActionType,
-    // IFetchFullRepoAction,
-    ICreateRepoAction,
-    ICreateRepoSuccessAction,
-    IGetLocalReposAction,
-    IGetLocalReposSuccessAction,
-    IFetchFullRepoAction,
-    IFetchFullRepoSuccessAction,
-    IFetchRepoFilesAction,
-    IFetchRepoFilesSuccessAction,
-    IFetchRepoTimelineAction,
-    IFetchRepoTimelineSuccessAction,
-    IFetchRepoSharedUsersAction,
-    IFetchRepoSharedUsersSuccessAction,
-    IFetchLocalRefsAction,
-    IFetchLocalRefsSuccessAction,
-    IFetchRemoteRefsAction,
-    IFetchRemoteRefsSuccessAction,
-    ISelectRepoAction,
-    ISelectRepoSuccessAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, fetchedFiles, fetchedTimeline, setIsBehindRemote } from './repoActions'
+    ICreateRepoAction, ICreateRepoSuccessAction,
+    IGetLocalReposAction, IGetLocalReposSuccessAction,
+    IFetchFullRepoAction, IFetchFullRepoSuccessAction,
+    IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
+    IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
+    IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction,
+    IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
+    IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
+    ISelectRepoAction, ISelectRepoSuccessAction,
+    ICheckpointRepoAction, ICheckpointRepoSuccessAction,
+    IGetDiffAction, IGetDiffSuccessAction,
+    IRevertFilesAction, IRevertFilesSuccessAction,
+    IPullRepoAction, IPullRepoSuccessAction,
+    IWatchRepoAction, IWatchRepoSuccessAction,
+    IAddCollaboratorAction, IAddCollaboratorSuccessAction,
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
-
-
 import * as rpc from '../../rpc'
+
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -42,12 +37,12 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
 
         await dispatch(selectRepo({ repoID, path }))
         return { repoID, path }
-    }
+    },
 })
 
 const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccessAction>({
     type: RepoActionType.GET_LOCAL_REPOS,
-    async process({ action }, dispatch) {
+    async process(_, dispatch) {
         const rpcClient = rpc.initClient()
         const repoList: ILocalRepo[] = await rpcClient.getLocalReposAsync()
         let repos = {} as {[path: string]: ILocalRepo}
@@ -68,7 +63,7 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
         // await dispatch({ type: FETCH_SHARED_REPOS })
 
         return { repos }
-    }
+    },
 })
 
 const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
@@ -76,11 +71,11 @@ const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
         // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
-        if (getState().repository.repos[repoID] === undefined) {
+        if (!(getState().repository.repos[repoID] || {}).hasBeenFetched) {
             await dispatch(fetchFullRepo({ repoID, path }))
         }
-        return {}
-    }
+        return { repoID, path }
+    },
 })
 
 const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccessAction>({
@@ -95,8 +90,8 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(fetchRepoSharedUsers({ repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))
         dispatch(fetchRemoteRefs({ repoID }))
-        return {}
-    }
+        return { path }
+    },
 })
 
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
@@ -105,10 +100,11 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const { path, repoID } = action.payload
 
         const rpcClient = rpc.initClient()
-        const files = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
+        const filesList = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
+        const files = keyBy(filesList, 'name')
 
         return { repoID, path, files }
-    }
+    },
 })
 
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
@@ -122,7 +118,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             version: 0,
             commit: event.commitHash,
             user: event.author,
-            time: new Date(event.timestamp.toNumber()*1000),
+            time: new Date(event.timestamp*1000),
             message: event.message,
             files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
             diffs: {},
@@ -130,7 +126,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
         console.log("TIMELINE: ", timeline)
 
         return { repoID, path, timeline }
-    }
+    },
 })
 
 const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
@@ -139,7 +135,7 @@ const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchR
         const { repoID } = action.payload
         const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.email)
         return { repoID, sharedUsers }
-    }
+    },
 })
 
 const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSuccessAction>({
@@ -148,8 +144,12 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
         const { repoID, path } = action.payload
         const rpcClient = rpc.initClient()
         const resp = await rpcClient.getLocalRefsAsync({ repoID, path })
-        return { path: resp.path, localRefs: resp.localRefs }
-    }
+        const localRefs = {} as {[refName: string]: string}
+        for (let ref of resp.refs) {
+            localRefs[ref.refName] = ref.commitHash
+        }
+        return { path: resp.path, localRefs }
+    },
 })
 
 const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction>({
@@ -159,73 +159,62 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
         const rpcClient = rpc.initClient()
         const remoteRefs = await rpcClient.getAllRemoteRefsAsync(repoID)
         return { repoID, remoteRefs }
-    }
+    },
 })
 
-const checkpointRepoLogic = createLogic({
+const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSuccessAction>({
     type: RepoActionType.CHECKPOINT_REPO,
-    async process({ getState, action }, dispatch, done) {
-        const [err, version] = await to(ConscienceRelay.checkpointRepo(action.folderPath, action.message))
-        if (err) {
-            done(err)
-            return
-        }
-        await dispatch(fetchFullRepo({ repoID: action.repoID, folderPath: action.folderPath }))
-        done()
-    }
+    async process({ action }, dispatch) {
+        const { repoID, folderPath, message } = action.payload
+        await ConscienceRelay.checkpointRepo(folderPath, message)
+        await dispatch(fetchFullRepo({ repoID, path: folderPath }))
+        return {}
+    },
 })
 
-const getDiffLogic = createLogic({
+const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
-    async process({ getState, action }, dispatch, done) {
-        const diff = await ConscienceRelay.getDiff(action.folderPath, action.filename, action.commit)
-        const { folderPath, filename, commit } = action
-        await dispatch(getDiffSuccess({ diff, folderPath, filename, commit }))
-        done()
-    }
+    async process({ action }) {
+        const { folderPath, filename, commit } = action.payload
+        const diff = await ConscienceRelay.getDiff(folderPath, filename, commit)
+        return { diff, folderPath, filename, commit }
+    },
 })
 
-const revertFilesLogic = createLogic({
+const revertFilesLogic = makeLogic<IRevertFilesAction, IRevertFilesSuccessAction>({
     type: RepoActionType.REVERT_FILES,
-    async process({ getState, action }, dispatch, done) {
-        const [success, err] = await to(ConscienceRelay.revertFiles(action.folderPath, action.files, action.commit))
-        if (err) {
-            done(err)
-            return
-        }
-        await dispatch(revertFilesSuccess({ folderPath: action.folderPath, filename: action.filename }))
-        done()
-    }
+    async process({ action }) {
+        const { folderPath, files, commit } = action.payload
+        await ConscienceRelay.revertFiles(folderPath, files, commit)
+        return {}
+    },
 })
 
-const pullRepoLogic = createLogic({
+const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
     type: RepoActionType.PULL_REPO,
-    async process({ getState, action }, dispatch, done) {
-        await ConscienceRelay.pullRepo(action.folderPath)
-        await dispatch(fetchFullRepo({ folderPath: action.folderPath, repoID: action.repoID }))
-        done()
-    }
+    async process({ action }, dispatch) {
+        const { folderPath, repoID } = action.payload
+        await ConscienceRelay.pullRepo(folderPath)
+        await dispatch(fetchFullRepo({ path: folderPath, repoID }))
+        return {}
+    },
 })
 
-const addCollaboratorLogic = createLogic({
+const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
     type: RepoActionType.ADD_COLLABORATOR,
-    async process({ getState, action }, dispatch, done) {
-        console.log(action)
-        const response = await ServerRelay.shareRepo(action.repoID, action.email)
-        if (response.status === 200) {
-            const { folderPath, repoID, email } = action
-            await dispatch(addCollaboratorSuccess({ folderPath, repoID, email }))
-        }
-        done()
-    }
+    async process({ action }) {
+        const { repoID, email, folderPath } = action.payload
+        await ServerRelay.shareRepo(repoID, email)
+        return { folderPath, repoID, email }
+    },
 })
 
 const watchRepoLogic = makeLogic<IWatchRepoAction, IWatchRepoSuccessAction>({
     type: RepoActionType.WATCH_REPO,
-    async process({ getState, action }, dispatch, done) {
+    async process({ action }) {
         const { repoID, path } = action.payload
         RepoWatcher.watch(repoID, path)
-        return{}
+        return {}
     }
 })
 
@@ -240,9 +229,9 @@ export default [
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,
     checkpointRepoLogic,
-    pullRepoLogic,
     getDiffLogic,
     revertFilesLogic,
+    pullRepoLogic,
     addCollaboratorLogic,
     watchRepoLogic,
 ]

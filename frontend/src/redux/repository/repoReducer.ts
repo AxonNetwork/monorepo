@@ -3,136 +3,163 @@ import { IRepo } from '../../common'
 
 const initialState = {
     repos: {},
-    selectedRepo: null,
-    selectedFile: null,
+    selectedRepo: undefined,
+    selectedFile: undefined,
     checkpointed: false,
-    hypothesis: null,
+    // hypothesis: null,
 }
 
 export interface IRepoState {
     repos: { [folderPath: string]: IRepo }
-    selectedRepo: string | null
+    selectedRepo: string | undefined
     selectedFile: {
         file: string
         isFolder: boolean
-    } | null
+    } | undefined
     checkpointed: boolean
-    hypothesis: string | null
+    // hypothesis: string | null
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.CREATE_REPO_SUCCESS:
+        case RepoActionType.CREATE_REPO_SUCCESS: {
+            const { repoID, path } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [action.repo.folderPath]: action.repo,
+                    [path]: {
+                        ...(state.repos[path] || {}),
+                        path,
+                        repoID,
+                    },
+                },
+            }
+        }
+
+        case RepoActionType.GET_LOCAL_REPOS_SUCCESS: {
+            const { repos } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    ...repos,
+                },
+            }
+        }
+
+        case RepoActionType.SELECT_REPO_SUCCESS: {
+            const { path } = action.payload
+            return {
+                ...state,
+                selectedRepo: path,
+                selectedFile: undefined,
+            }
+        }
+
+        case RepoActionType.FETCH_FULL_REPO_SUCCESS: {
+            const { path } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [path]: {
+                        ...(state.repos[path] || {}),
+                        hasBeenFetched: true,
+                    },
                 }
             }
+        }
 
-        case RepoActionType.SELECT_REPO:
-            return {
-                ...state,
-                selectedRepo: action.payload.path,
-                selectedFile: null,
-            }
-
-        case RepoActionType.FETCHED_FILES:
+        case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
+            const { path, files } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [action.folderPath]: {
-                        ...state.repos[action.folderPath],
-                        files: action.files,
+                    [path]: {
+                        ...state.repos[path],
+                        files,
                     }
                 }
             }
+        }
 
-        case RepoActionType.FETCHED_TIMELINE:
+        case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
+            const { path, timeline } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [action.folderPath]: {
-                        ...state.repos[action.folderPath],
-                        timeline: action.timeline
+                    [path]: {
+                        ...state.repos[path],
+                        timeline,
                     }
                 }
             }
+        }
 
-        case RepoActionType.GET_DIFF_SUCCESS:
-            const updatedTimeline = state.repos[action.folderPath].timeline.map(e => {
-                let diffs = {
-                    ...e.diffs,
+        case RepoActionType.GET_DIFF_SUCCESS: {
+            const { commit, diff, filename, folderPath } = action.payload
+            const timeline = ((state.repos[folderPath] || {}).timeline || []).map(e => {
+                let diffs = { ...e.diffs }
+                if (e.commit === commit) {
+                    diffs[filename] = diff
                 }
-                if (e.commit === action.commit) {
-                    diffs[action.filename] = action.diff
-                }
-                return {
-                    ...e,
-                    diffs,
-                }
+                return { ...e, diffs }
             })
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [action.folderPath]: {
-                        ...state.repos[action.folderPath],
-                        timeline: updatedTimeline,
-                    }
-                }
+                    [folderPath]: {
+                        ...state.repos[folderPath],
+                        timeline,
+                    },
+                },
             }
+        }
 
-        case RepoActionType.CHECKPOINT_REPO:
+        case RepoActionType.CHECKPOINT_REPO: {
             return {
                 ...state,
-                checkpointed: false
+                checkpointed: false,
             }
+        }
 
-        case RepoActionType.SELECT_FILE:
+        case RepoActionType.SELECT_FILE: {
+            const { file, isFolder } = action.payload
             return {
                 ...state,
                 selectedFile: {
-                    file: action.file,
-                    isFolder: action.isFolder
-                }
+                    file,
+                    isFolder,
+                },
             }
+        }
 
-        case RepoActionType.BEHIND_REMOTE:
+        // case RepoActionType.ADD_HYPOTHESIS: {
+        //     return {
+        //         ...state,
+        //         hypothesis: action.hypothesis
+        //     }
+
+        case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
+            const { folderPath, email } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [action.folderPath]: {
-                        ...state.repos[action.folderPath],
-                        behindRemote: true
-                    }
-                }
-            }
-
-        case RepoActionType.ADD_HYPOTHESIS:
-            return {
-                ...state,
-                hypothesis: action.hypothesis
-            }
-
-        case RepoActionType.ADD_COLLABORATOR_SUCCESS:
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [action.folderPath]: {
-                        ...(state.repos[action.folderPath] || {}),
+                    [folderPath]: {
+                        ...(state.repos[folderPath] || {}),
                         sharedUsers: [
-                            ...((state.repos[action.folderPath] || {}).sharedUsers || []),
-                            action.email,
+                            ...((state.repos[folderPath] || {}).sharedUsers || []),
+                            email,
                         ]
                     }
                 }
             }
+        }
 
         default:
             return state

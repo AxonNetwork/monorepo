@@ -1,3 +1,4 @@
+import { keyBy } from 'lodash'
 import { makeLogic } from '../reduxUtils'
 import { IComment } from '../../common'
 import { CommentActionType, IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction, ICreateCommentAction, ICreateCommentSuccessAction } from './commentActions'
@@ -8,13 +9,7 @@ const getCommentsForRepoLogic = makeLogic<IGetCommentsForRepoAction, IGetComment
     async process({ action }) {
         const { repoID } = action.payload
         const commentsList = await ServerRelay.getCommentsForRepo(repoID)
-
-        // Convert to an object
-        const comments = commentsList.reduce((into, each) => {
-            into[`${each.attachedTo.type}/${each.attachedTo.subject}`] = each
-            return into
-        }, {} as {[id: string]: IComment})
-
+        const comments = keyBy(commentsList, (comment) => `${comment.attachedTo.type}/${comment.attachedTo.subject}`)
         return { repoID, comments }
     }
 })

@@ -1,3 +1,4 @@
+import { keyBy } from 'lodash'
 import { makeLogic } from '../reduxUtils'
 import { DiscussionActionType, IGetDiscussionsAction, IGetDiscussionsSuccessAction, ICreateDiscussionAction, ICreateDiscussionSuccessAction, getDiscussions } from './discussionActions'
 import { IDiscussion } from '../../common'
@@ -8,13 +9,7 @@ const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSucc
     async process({ action }) {
         const { repoID } = action.payload
         const discussionsList = await ServerRelay.getDiscussionsForRepo(action.payload.repoID)
-
-        // Convert to an object
-        const discussions = discussionsList.reduce((into, each) => {
-            into[`${each.created}`] = each
-            return into
-        }, {} as {[id: string]: IDiscussion})
-
+        const discussions = keyBy(discussionsList, 'created') as {[created: number]: IDiscussion}
         return { repoID, discussions }
     }
 })

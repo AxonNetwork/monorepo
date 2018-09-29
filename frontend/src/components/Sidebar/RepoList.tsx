@@ -41,13 +41,13 @@ class RepoList extends React.Component<RepoListProps>
                                     (name) => files[name].status === '*modified' || files[name].status === '*added',
                                 )
                             }
-                            let isSelected = currentPage === 'repo' && repo.folderPath === selectedRepo
+                            const isSelected = currentPage === 'repo' && repo.path === selectedRepo
                             return (
-                                <React.Fragment key={repo.folderPath}>
+                                <React.Fragment key={repo.path}>
                                     <ListItem
                                         button
                                         className={classnames({ [classes.selected]: isSelected })}
-                                        onClick={() => this.props.selectRepo({repo: repo})}
+                                        onClick={() => this.props.selectRepo({ path: repo.path, repoID: repo.repoID })}
                                     >
                                     { isChanged &&
                                          <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">

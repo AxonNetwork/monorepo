@@ -45,7 +45,7 @@ export async function pullRepo(folderPath){
     return true
 }
 
-export async function cloneRepo(repoID, location){
+export async function cloneRepo(repoID, location) {
     const message = {
         type: 'CLONE_REPO',
         repoID: repoID,
@@ -56,7 +56,7 @@ export async function cloneRepo(repoID, location){
     if(response.response === "ERROR"){
         throw Error(response.error)
     }
-	return response.repo
+	return response.repo as { repoID: string, folderPath: string }
 }
 
 export async function getDiff(folderPath, filename, commit){

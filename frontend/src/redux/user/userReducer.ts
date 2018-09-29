@@ -1,16 +1,16 @@
 import { UserActionType, IUserAction } from './userActions'
-import { IUser } from '../../common'
+import { IUser, ISharedRepoInfo } from '../../common'
 
 const initialState = {
     users: {},
-    currentUser: null,
-    error: null,
+    currentUser: undefined,
+    error: undefined,
 }
 
 export interface IUserState {
     users: { [name: string]: IUser }
-    currentUser: string | null
-    error: Error | null
+    currentUser: string | undefined
+    error: Error | undefined
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -37,8 +37,40 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 error: action.payload,
-                currentUser: null,
+                currentUser: undefined,
             }
+
+        case UserActionType.FETCH_SHARED_REPOS_SUCCESS: {
+            const { email, sharedRepos } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [email]: {
+                        ...(state.users[email] || {}),
+                        sharedRepos,
+                    },
+                },
+            }
+        }
+
+        case UserActionType.IGNORE_SHARED_REPO_SUCCESS: {
+            const { repoID, email } = action.payload
+            if (email === undefined) { return state }
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [email]: {
+                        ...(state.users[email] || {}),
+                        sharedRepos: {
+                            ...((state.users[email] || {}).sharedRepos || {}),
+                            [repoID]: { repoID, ignored: true },
+                        },
+                    },
+                },
+            }
+        }
 
         default:
             return state

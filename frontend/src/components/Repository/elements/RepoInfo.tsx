@@ -32,7 +32,7 @@ function RepoInfo(props: RepoInfoProps)
     const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
     return (
         <React.Fragment>
-            <OpenFolderButton folderPath={repo.folderPath} />
+            <OpenFolderButton folderPath={repo.path} />
             <Typography variant="headline" className={classes.headline}>
                 {repo.repoID}
             </Typography>
@@ -41,14 +41,14 @@ function RepoInfo(props: RepoInfoProps)
             </Typography>
             <Sharing
                 sharedUsers={repo.sharedUsers || []}
-                folderPath={repo.folderPath}
+                folderPath={repo.path}
                 repoID={repo.repoID}
                 addCollaborator={addCollaborator}
             />
             {repo.behindRemote &&
                 <PullButton
                     pullRepo={pullRepo}
-                    folderPath={repo.folderPath}
+                    folderPath={repo.path}
                     repoID={repo.repoID}
                 />
             }
@@ -77,7 +77,7 @@ const mapStateToProps=(state: IGlobalState) =>{
     const selected = state.repository.selectedRepo || ""
     const repo = state.repository.repos[selected]
     return {
-        repo: repo
+        repo,
     }
 }
 

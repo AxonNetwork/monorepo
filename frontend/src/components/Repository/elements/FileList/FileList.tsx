@@ -10,17 +10,10 @@ import Breadcrumbs from './Breadcrumbs'
 import { IRepoFile } from '../../../../common'
 
 
-export interface FileListProps {
-    folderPath: string
-    files: {[name: string]: IRepoFile}
-    selectedFolder: string|undefined
-    selectFile: Function
-    classes: any
-}
-
-class FileList extends React.Component<FileListProps> {
+class FileList extends React.Component<Props>
+{
     render() {
-        let {classes, files, selectedFolder} = this.props
+        let { classes, files, selectedFolder } = this.props
         if (selectedFolder !== undefined) {
             files = filterSubfolder(files, selectedFolder)
         }
@@ -55,6 +48,14 @@ class FileList extends React.Component<FileListProps> {
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    folderPath: string
+    files: {[name: string]: IRepoFile}
+    selectedFolder: string|undefined
+    selectFile: Function
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({

@@ -6,27 +6,17 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 
-import { addSharedRepo, ignoreRepo } from '../../redux/sharedRepos/sharedReposActions'
+import { cloneSharedRepo, ignoreSharedRepo } from '../../redux/user/userActions'
 import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
 
-export interface SharedReposDialogProps {
-    sharedRepo: IRepo
-    addSharedRepo: Function
-    ignoreRepo: Function
-}
-
-export interface SharedReposDialogState {
-    open: boolean
-}
-
-class SharedReposDialog extends React.Component<SharedReposDialogProps, SharedReposDialogState>
+class SharedReposDialog extends React.Component<Props, State>
 {
-    state={
-        open: true
+    state = {
+        open: true,
     }
 
-    componentWillReceiveProps(nextProps: SharedReposDialogProps) {
+    componentWillReceiveProps(nextProps: Props) {
         if (nextProps.sharedRepo !== this.props.sharedRepo) {
             this.setState({ open: true })
         }
@@ -38,12 +28,12 @@ class SharedReposDialog extends React.Component<SharedReposDialogProps, SharedRe
 
     addRepo = () => {
         this.handleClose()
-        this.props.addSharedRepo(this.props.sharedRepo.repoID)
+        this.props.cloneSharedRepo(this.props.sharedRepo.repoID)
     }
 
-    ignoreRepo = () => {
+    ignoreSharedRepo = () => {
         this.handleClose()
-        this.props.ignoreRepo(this.props.sharedRepo.repoID)
+        this.props.ignoreSharedRepo(this.props.sharedRepo.repoID)
     }
 
     render() {
@@ -65,7 +55,7 @@ class SharedReposDialog extends React.Component<SharedReposDialogProps, SharedRe
                     <Button onClick={this.addRepo} color="secondary">
                         Add
                     </Button>
-                    <Button onClick={this.ignoreRepo} color="secondary" autoFocus>
+                    <Button onClick={this.ignoreSharedRepo} color="secondary" autoFocus>
                         Ignore
                     </Button>
                 </DialogActions>
@@ -74,20 +64,31 @@ class SharedReposDialog extends React.Component<SharedReposDialogProps, SharedRe
     }
 }
 
+interface Props {
+    sharedRepo: IRepo
+    cloneSharedRepo: Function
+    ignoreSharedRepo: Function
+}
+
+interface State {
+    open: boolean
+}
+
 const mapStateToProps = (state: IGlobalState) => {
-    let toPrompt = state.sharedRepos.filter(repo => !repo.ignored)
+    const sharedReposObj = (state.user.users[ state.user.currentUser || '' ] || {}).sharedRepos || {}
+    let toPrompt = Object.keys(sharedReposObj).filter(repoID => !sharedReposObj[repoID].ignored)
     let sharedRepo
     if (toPrompt.length > 0) {
         sharedRepo = toPrompt[0]
     }
     return {
-        sharedRepo: sharedRepo,
+        sharedRepo,
     }
 }
 
 const mapDispatchToProps = {
-    addSharedRepo,
-    ignoreRepo,
+    cloneSharedRepo,
+    ignoreSharedRepo,
 }
 
 const SharedReposDialogContainer = connect(

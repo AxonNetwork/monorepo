@@ -1,23 +1,38 @@
-import { IUser } from '../../common'
+import { IUser, ISharedRepoInfo } from '../../common'
 import { FailedAction } from '../reduxUtils'
 
 export enum UserActionType {
     LOGIN = 'LOGIN',
     LOGIN_SUCCESS = 'LOGIN_SUCCESS',
     LOGIN_FAILED = 'LOGIN_FAILED',
+
     SIGNUP = 'SIGNUP',
     SIGNUP_SUCCESS = 'SIGNUP_SUCCESS',
     SIGNUP_FAILED = 'SIGNUP_FAILED',
+
     FETCH_USER_DATA = 'FETCH_USER_DATA',
     FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS',
     FETCH_USER_DATA_FAILED = 'FETCH_USER_DATA_FAILED',
+
     LOGOUT = 'LOGOUT',
     LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
     LOGOUT_FAILED = 'LOGOUT_FAILED',
-    FETCHED_OTHER_USER_INFO = 'FETCHED_OTHER_USER_INFO',
+
     CHECK_LOCAL_USER = 'CHECK_LOCAL_USER',
     CHECK_LOCAL_USER_SUCCESS = 'CHECK_LOCAL_USER_SUCCESS',
     CHECK_LOCAL_USER_FAILED = 'CHECK_LOCAL_USER_FAILED',
+
+    FETCH_SHARED_REPOS = 'FETCH_SHARED_REPOS',
+    FETCH_SHARED_REPOS_SUCCESS = 'FETCH_SHARED_REPOS_SUCCESS',
+    FETCH_SHARED_REPOS_FAILED = 'FETCH_SHARED_REPOS_FAILED',
+
+    CLONE_SHARED_REPO = 'CLONE_SHARED_REPO',
+    CLONE_SHARED_REPO_SUCCESS = 'CLONE_SHARED_REPO_SUCCESS',
+    CLONE_SHARED_REPO_FAILED = 'CLONE_SHARED_REPO_FAILED',
+
+    IGNORE_SHARED_REPO = 'IGNORE_SHARED_REPO',
+    IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
+    IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
 }
 
 export interface ILoginAction {
@@ -100,6 +115,54 @@ export interface ICheckLocalUserSuccessAction {
 
 export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCAL_USER_FAILED>
 
+export interface IGetSharedReposAction {
+    type: UserActionType.FETCH_SHARED_REPOS
+    payload: {
+        email: string
+    }
+}
+
+export interface IGetSharedReposSuccessAction {
+    type: UserActionType.FETCH_SHARED_REPOS_SUCCESS
+    payload: {
+        email: string
+        sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    }
+}
+
+export type IGetSharedReposFailedAction = FailedAction<UserActionType.FETCH_SHARED_REPOS_FAILED>
+
+export interface ICloneSharedRepoAction {
+    type: UserActionType.CLONE_SHARED_REPO
+    payload: {
+        repoID: string
+    }
+}
+
+export interface ICloneSharedRepoSuccessAction {
+    type: UserActionType.CLONE_SHARED_REPO_SUCCESS
+    payload: {}
+}
+
+export type ICloneSharedRepoFailedAction = FailedAction<UserActionType.CLONE_SHARED_REPO_FAILED>
+
+export interface IIgnoreSharedRepoAction {
+    type: UserActionType.IGNORE_SHARED_REPO
+    payload: {
+        repoID: string
+    }
+}
+
+export interface IIgnoreSharedRepoSuccessAction {
+    type: UserActionType.IGNORE_SHARED_REPO_SUCCESS
+    payload: {
+        repoID: string
+        email: string|undefined
+    }
+}
+
+export type IIgnoreSharedRepoFailedAction = FailedAction<UserActionType.IGNORE_SHARED_REPO_FAILED>
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -115,7 +178,16 @@ export type IUserAction =
     IFetchUserDataFailedAction |
     ICheckLocalUserAction |
     ICheckLocalUserSuccessAction |
-    ICheckLocalUserFailedAction
+    ICheckLocalUserFailedAction |
+    IGetSharedReposAction |
+    IGetSharedReposSuccessAction |
+    IGetSharedReposFailedAction |
+    ICloneSharedRepoAction |
+    ICloneSharedRepoSuccessAction |
+    ICloneSharedRepoFailedAction |
+    IIgnoreSharedRepoAction |
+    IIgnoreSharedRepoSuccessAction |
+    IIgnoreSharedRepoFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -123,3 +195,6 @@ export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ t
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, payload: {}})
 
+export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
+export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })
+export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): IIgnoreSharedRepoAction => ({ type: UserActionType.IGNORE_SHARED_REPO, payload })

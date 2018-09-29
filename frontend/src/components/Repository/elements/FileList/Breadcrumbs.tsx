@@ -4,52 +4,45 @@ import Typography from '@material-ui/core/Typography'
 import path from 'path'
 import autobind from '../../../../utils/autobind'
 
-export interface BreadcrumbsProps {
-    folderPath: string
-    selectedFolder: string|undefined
-    selectFile: Function
-    classes:{
-        crumb: string
-    }
-}
-
 @autobind
-class Breadcrumbs extends React.Component<BreadcrumbsProps>
+class Breadcrumbs extends React.Component<Props>
 {
-
-    state ={
-        showBasePath: false
+    state = {
+        showBasePath: false,
     }
 
-    componentWillReceiveProps(props: BreadcrumbsProps) {
+    componentWillReceiveProps(props: Props) {
         if (props.folderPath !== this.props.folderPath) {
-            this.setState({showBasePath: false})
+            this.setState({ showBasePath: false })
         }
     }
 
-    showBasePath(){
-        this.setState({showBasePath: true})
+    showBasePath() {
+        this.setState({ showBasePath: true })
     }
 
-    selectCrumb(index: number){
+    selectCrumb(index: number) {
         const parts = this.getParts(this.props.folderPath, this.props.selectedFolder)
         const dir = path.dirname(this.props.folderPath)
         const toSelect = parts.slice(0, index + 1).join('/')
-        this.props.selectFile({file: path.join(dir, toSelect), isFolder: true})
+        this.props.selectFile({ file: path.join(dir, toSelect), isFolder: true })
     }
 
-    getParts(folderPath: string, selectedFolder: string|undefined){
+    getParts(folderPath: string, selectedFolder: string|undefined) {
         const basePath = path.dirname(folderPath)
-        let parts = [path.basename(folderPath)]
+        let parts = [ path.basename(folderPath) ]
         if (selectedFolder !== undefined) {
-            const selected = selectedFolder.replace(basePath + '/', '')
-            parts = selected.split('/')
+            parts = selectedFolder.replace(basePath + '/', '').split('/')
         }
         return parts
     }
 
     render() {
         const { folderPath, selectedFolder, classes } = this.props
+        if (folderPath === undefined) {
+            return null
+        }
+
         const basePath = path.dirname(folderPath)
         const parts = this.getParts(folderPath, selectedFolder)
 
@@ -77,6 +70,15 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps>
                 })}
             </Typography>
         )
+    }
+}
+
+interface Props {
+    folderPath: string
+    selectedFolder: string|undefined
+    selectFile: Function
+    classes: {
+        crumb: string
     }
 }
 

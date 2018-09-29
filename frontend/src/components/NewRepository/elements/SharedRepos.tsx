@@ -10,7 +10,7 @@ import { ISharedRepoInfo } from 'common'
 
 export interface SharedReposProps {
     sharedRepos: ISharedRepoInfo[]
-    addSharedRepo: Function
+    cloneSharedRepo: Function
 }
 
 class SharedRepos extends React.Component<SharedReposProps>
@@ -28,7 +28,7 @@ class SharedRepos extends React.Component<SharedReposProps>
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
                                 <ListItemSecondaryAction>
-                                    <IconButton onClick={() => this.props.addSharedRepo(repo.repoID)}>
+                                    <IconButton onClick={() => this.props.cloneSharedRepo(repo.repoID)}>
                                         <ControlPointIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>

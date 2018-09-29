@@ -11,45 +11,38 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 
 import Thread from './Discussion/Thread'
 import CreateDiscussion from './Discussion/CreateDiscussion'
-import { getDiscussions, selectDiscussion, createDiscussion, createComment } from 'redux/discussion/discussionActions'
+import { getDiscussions, selectDiscussion, createDiscussion } from 'redux/discussion/discussionActions'
+import { createComment } from 'redux/comment/commentActions'
 import { IGlobalState } from 'redux/store'
 import { IDiscussion, IComment } from 'common'
 
-export interface RepoDiscussionPageProps {
-    repoID: string
-    discussions: IDiscussion[]
-    comments: IComment[]
-    user: string
-    selected: number|undefined
-    getDiscussions: Function
-    selectDiscussion: Function
-    createDiscussion: Function
-    createComment: Function
-    classes: any
-}
 
-class RepoDiscussionPage extends React.Component<RepoDiscussionPageProps>
+class RepoDiscussionPage extends React.Component<Props>
 {
     componentWillMount() {
-        this.props.getDiscussions({repoID: this.props.repoID})
+        this.props.getDiscussions({ repoID: this.props.repoID })
     }
 
     render() {
         const classes = this.props.classes
-        const discussions = this.props.discussions || []
+        const discussions = this.props.discussions || {}
+
         let selected: IDiscussion|undefined
         let newDiscussion = false
         if (this.props.selected !== undefined) {
-            selected = discussions.find(d => d.created === this.props.selected)
+            selected = discussions[this.props.selected]
             if (selected === undefined) {
                 newDiscussion = true
             }
         }
 
+        // @@TODO: probably better to sort these in the reducer or something
+        const discussionsList = Object.keys(discussions).sort().map(created => discussions[parseInt(created, 10)]) // this sucks
+
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
-                    {discussions.map(d => (
+                    {discussionsList.map(d => (
                         <React.Fragment key={d.created}>
                             <ListItem button className={classes.listItem} key={d.created} onClick={() => this.props.selectDiscussion(d.created)}>
                                 {selected === undefined &&
@@ -101,6 +94,19 @@ class RepoDiscussionPage extends React.Component<RepoDiscussionPageProps>
     }
 }
 
+interface Props {
+    repoID: string
+    discussions: {[created: number]: IDiscussion}
+    comments: IComment[]
+    user: string
+    selected: number|undefined
+    getDiscussions: Function
+    selectDiscussion: Function
+    createDiscussion: Function
+    createComment: Function
+    classes: any
+}
+
 const styles = (theme: Theme) => createStyles({
     discussionPage: {
         position: 'relative',
@@ -130,12 +136,12 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ""
-    const repoID = state.repository.repos[selected].repoID
+    const selected = state.repository.selectedRepo || ''
+    const repoID = (state.repository.repos[selected] || {}).repoID || ''
     return {
         repoID: repoID,
-        discussions: state.discussion.discussions,
-        comments: state.discussion.comments,
+        discussions: state.discussion.discussions[repoID] || {},
+        comments: state.comment.comments,
         selected: state.discussion.selected,
         user: state.user.name,
     }

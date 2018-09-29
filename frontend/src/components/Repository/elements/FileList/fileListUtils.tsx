@@ -1,10 +1,11 @@
+import path from 'path'
 import { IRepoFile } from '../../../../common'
 
 export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFolder: string) {
     files = Object.keys(files).reduce((acc: {[name: string]: IRepoFile}, curr: string) => {
         const file = files[curr]
-        if (file.path.indexOf(selectedFolder) > -1) {
-            const relPath = file.path.replace(selectedFolder + '/', '')
+        if (file.name.indexOf(selectedFolder) > -1) {
+            const relPath = path.relative(selectedFolder, file.name)
             acc[relPath] = file
         }
         return acc
@@ -13,7 +14,8 @@ export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFold
 }
 
 export function mergeFolders(files: {[name: string]: IRepoFile}) {
-    const merged = Object.keys(files).reduce((acc: {[name: string]: IRepoFile}, curr: string) => {
+    const filenames = Object.keys(files)
+    const merged = filenames.reduce((acc, curr) => {
         const parts = curr.split('/')
         const file = files[curr]
         if (parts.length === 1) {
@@ -21,11 +23,11 @@ export function mergeFolders(files: {[name: string]: IRepoFile}) {
         }else {
             const folder = parts[0]
             if (acc[folder] === undefined) {
-                const folderPath = file.path.replace(curr, '') + folder
+                // const folderPath = file.name.replace(curr, '') + folder
                 acc[folder] = {
                     name: folder,
                     type: 'folder',
-                    path: folderPath,
+                    // path: folderPath,
                     status: '',
                     size: 0,
                     modified: new Date(0),
@@ -41,7 +43,7 @@ export function mergeFolders(files: {[name: string]: IRepoFile}) {
             }
         }
         return acc
-    }, {})
+    }, {} as {[name: string]: IRepoFile})
     return merged
 }
 

@@ -9,32 +9,19 @@ import Button from '@material-ui/core/Button'
 import SharedRepos from './elements/SharedRepos'
 import { IGlobalState } from 'redux/store'
 import { createRepo} from 'redux/repository/repoActions'
-import { addSharedRepo } from 'redux/sharedRepos/sharedReposActions'
+import { cloneSharedRepo } from 'redux/user/userActions'
 import { ISharedRepoInfo } from 'common'
 import autobind from 'utils/autobind'
 
-export interface NewRepositoryProps {
-    createRepo: Function
-    sharedRepos: ISharedRepoInfo[]
-    addSharedRepo: Function
-    classes: any
-}
-
-export interface NewRepositoryState {
-    repoName: string
-}
-
 @autobind
-class NewRepository extends React.Component<NewRepositoryProps, NewRepositoryState>
+class NewRepository extends React.Component<Props, State>
 {
     state = {
-        repoName : ''
+        repoName : '',
     }
 
     handleChange(event: React.ChangeEvent<HTMLInputElement>){
-        this.setState({
-            repoName: event.target.value,
-        })
+        this.setState({ repoName: event.target.value })
     }
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -65,13 +52,24 @@ class NewRepository extends React.Component<NewRepositoryProps, NewRepositorySta
                 </Grid>
                 <Grid item className={classes.column} xs={12} sm={6}>
                     <SharedRepos
-                        sharedRepos = {this.props.sharedRepos}
-                        addSharedRepo = {this.props.addSharedRepo}
+                        sharedRepos={this.props.sharedRepos}
+                        cloneSharedRepo={this.props.cloneSharedRepo}
                     />
                 </Grid>
             </Grid>
         )
     }
+}
+
+interface Props {
+    createRepo: Function
+    sharedRepos: ISharedRepoInfo[]
+    cloneSharedRepo: Function
+    classes: any
+}
+
+interface State {
+    repoName: string
 }
 
 const styles = createStyles({
@@ -90,7 +88,7 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     createRepo,
-    addSharedRepo,
+    cloneSharedRepo,
 }
 
 export default connect(

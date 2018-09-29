@@ -1,5 +1,5 @@
 import * as π from 'pants'
-import functionsIn from 'lodash/functionsIn'
+import { functionsIn } from 'lodash'
 
 /**
      All React components that aren't created via React.createClass() need this decorator to bind `this` to all of the

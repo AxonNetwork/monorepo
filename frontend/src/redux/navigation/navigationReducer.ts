@@ -1,31 +1,34 @@
-import { NAVIGATE_NEW_REPO, NAVIGATE_SETTINGS } from './navigationActions'
-import { RepoActionType } from '../repository/repoActions'
+import { RepoActionType, IRepoAction } from '../repository/repoActions'
+import { NavigationActionType, INavigationAction } from './navigationActions'
 
 const initialState = {
-    currentPage: 'new'
+    currentPage: 'new',
 }
 
-export interface INavigationState{
+export interface INavigationState {
     currentPage: string
 }
 
-const navigationReducer = (state = initialState, action) => {
+const navigationReducer = (state: INavigationState = initialState, action: INavigationAction|IRepoAction): INavigationState => {
     switch(action.type){
-        case NAVIGATE_NEW_REPO:
+        case NavigationActionType.NAVIGATE_NEW_REPO:
             return {
                 ...state,
-                currentPage: 'new'
+                currentPage: 'new',
             }
-        case NAVIGATE_SETTINGS:
+
+        case NavigationActionType.NAVIGATE_SETTINGS:
             return {
                 ...state,
-                currentPage: 'settings'
+                currentPage: 'settings',
             }
+
         case RepoActionType.SELECT_REPO:
             return {
                 ...state,
-                currentPage: 'repo'
+                currentPage: 'repo',
             }
+
         default:
             return state
     }

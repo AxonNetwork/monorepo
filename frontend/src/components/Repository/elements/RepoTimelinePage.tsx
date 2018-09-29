@@ -8,20 +8,8 @@ import { getDiff, revertFiles } from 'redux/repository/repoActions'
 import { ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 
-export interface RepoTimelinePageProps {
-    folderPath: string
-    timeline: ITimelineEvent[]
-    getDiff: Function
-    revertFiles: Function
-    classes: any
-}
-
-export interface RepoTimelinePageState {
-    selected: number|undefined
-}
-
 @autobind
-class RepoTimelinePage extends React.Component<RepoTimelinePageProps, RepoTimelinePageState>
+class RepoTimelinePage extends React.Component<Props, State>
 {
     state = {
         selected: undefined,
@@ -59,6 +47,18 @@ class RepoTimelinePage extends React.Component<RepoTimelinePageProps, RepoTimeli
     }
 }
 
+interface Props {
+    folderPath: string
+    timeline: ITimelineEvent[]
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+interface State {
+    selected: number|undefined
+}
+
 const styles = (theme: Theme) => createStyles({
     infoContainer: {
         display: 'flex',
@@ -84,20 +84,12 @@ const styles = (theme: Theme) => createStyles({
 
 })
 
-export interface RepoTimelinePageProps {
-    folderPath: string
-    timeline: ITimelineEvent[]
-    getDiff: Function
-    revertFiles: Function
-    classes: any
-}
-
-const mapStateToProps=(state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ""
-    const repo = state.repository.repos[selected]
+const mapStateToProps = (state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ''
+    const repo = state.repository.repos[selected] || {}
     return {
-        folderPath: repo.folderPath,
-        timeline: repo.timeline
+        folderPath: repo.path,
+        timeline: repo.timeline || [],
     }
 }
 

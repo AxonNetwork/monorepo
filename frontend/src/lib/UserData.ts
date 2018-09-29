@@ -4,9 +4,13 @@ const fs = (window as any).require('fs')
 
 export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
 
+export interface IUserDataContents {
+    jwt?: string
+}
+
 const UserData = {
     async readAll() {
-        return new Promise<{[name: string]: any}>((resolve, reject) => {
+        return new Promise<IUserDataContents>((resolve, reject) => {
             fs.readFile(CONFIG_PATH, (err: Error, bytes: string) => {
                 if (err) {
                     return reject(err)
@@ -17,16 +21,16 @@ const UserData = {
         })
     },
 
-    async get(key: string) {
+    async get(key: keyof IUserDataContents) {
         const data = await UserData.readAll()
         return data[key]
     },
 
-    async set(key: string, value: any) {
-        let data: any
-        try{
+    async set(key: keyof IUserDataContents, value: any) {
+        let data: IUserDataContents
+        try {
             data = await UserData.readAll()
-        }catch(err){
+        } catch (err) {
             data = {}
         }
         data[key] = value
@@ -63,7 +67,7 @@ const UserData = {
 //     await UserData.settings.writeAsync('user', {})
 // }
 
-// UserData.ignoreRepo = async function(pubkey){
+// UserData.ignoreSharedRepo = async function(pubkey){
 //     let ignored = await UserData.settings.readAsync('ignored')
 //     if(ignored === undefined){
 //         ignored = []

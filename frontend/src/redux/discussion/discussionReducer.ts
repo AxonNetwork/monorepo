@@ -3,16 +3,16 @@ import { IDiscussion } from '../../common'
 
 const initialState = {
     discussions: {},
-    selected: null,
+    selected: undefined,
 }
 
 export interface IDiscussionState {
     discussions: {
         [repoID: string]: {
-            [id: string]: IDiscussion
+            [created: number]: IDiscussion
         }
     }
-    selected: number | null
+    selected: number | undefined
 }
 
 const discussionReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {

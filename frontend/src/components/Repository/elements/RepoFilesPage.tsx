@@ -8,27 +8,14 @@ import { IRepo, ITimelineEvent } from 'common'
 import { IGlobalState } from 'redux/store'
 import { checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
 
-export interface RepoFilesPageProps {
-    repo: IRepo
-    selectedFile?: {
-        file: string
-        isFolder: boolean
-    }
-    checkpointRepo: Function
-    selectFile: Function
-    getDiff: Function
-    revertFiles: Function
-    classes: any
-}
-
-class RepoFilesPage extends React.Component<RepoFilesPageProps>
+class RepoFilesPage extends React.Component<Props>
 {
-
     render() {
         const { repo, selectedFile, classes } = this.props
-        if(repo === undefined){
-            return <div></div>
+        if (repo === undefined) {
+            return null
         }
+
         const files = repo.files || {}
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]
@@ -36,15 +23,15 @@ class RepoFilesPage extends React.Component<RepoFilesPageProps>
         })
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
-            const relPath = selectedFile.file.replace(repo.folderPath + '/', '')
-            let timeline: Array<ITimelineEvent> = []
+            const relPath = selectedFile.file.replace(repo.path + '/', '')
+            let timeline = [] as ITimelineEvent[]
             if (repo.timeline !== undefined) {
                 timeline = repo.timeline.filter(e => e.files.indexOf(relPath) > -1)
             }
             return (
                 <FileInfo
                     file={files[relPath]}
-                    folderPath={this.props.repo.folderPath}
+                    folderPath={repo.path}
                     timeline={timeline}
                     selectFile={this.props.selectFile}
                     getDiff={this.props.getDiff}
@@ -52,12 +39,12 @@ class RepoFilesPage extends React.Component<RepoFilesPageProps>
                 />
             )
         } else {
-            const selectedFolder = (selectedFile !== undefined) ? selectedFile.file : undefined
+            const selectedFolder = selectedFile !== undefined ? selectedFile.file : undefined
             return (
                 <div className={classes.fileListContainer}>
                     <div className={classes.fileList}>
                         <FileList
-                            folderPath={this.props.repo.folderPath}
+                            folderPath={repo.path}
                             files={files}
                             selectedFolder={selectedFolder}
                             selectFile={this.props.selectFile}
@@ -67,8 +54,8 @@ class RepoFilesPage extends React.Component<RepoFilesPageProps>
                         <div className={classes.checkpoint}>
                             <Checkpoint
                                 checkpointRepo={this.props.checkpointRepo}
-                                folderPath={this.props.repo.folderPath}
-                                repoID={this.props.repo.repoID}
+                                folderPath={repo.path}
+                                repoID={repo.repoID}
                             />
                         </div>
                     }
@@ -77,6 +64,17 @@ class RepoFilesPage extends React.Component<RepoFilesPageProps>
         }
     }
 }
+
+interface Props {
+    repo: IRepo | undefined
+    selectedFile: { file: string, isFolder: boolean } | undefined
+    checkpointRepo: Function
+    selectFile: Function
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
 
 const styles = createStyles({
     fileListContainer: {
@@ -96,13 +94,17 @@ const styles = createStyles({
     },
 })
 
-const mapStateToProps=(state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ""
-    const repo = state.repository.repos[selected]
+const mapStateToProps = (state: IGlobalState) => {
     const selectedFile = state.repository.selectedFile
+    const selectedRepo = state.repository.selectedRepo
+
+    let repo: IRepo|undefined = undefined
+    if (selectedRepo !== null && selectedRepo !== undefined) {
+        repo = state.repository.repos[selectedRepo] || undefined
+    }
     return {
-        repo: repo,
-        selectedFile: selectedFile,
+        repo,
+        selectedFile,
     }
 }
 
