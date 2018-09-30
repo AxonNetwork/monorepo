@@ -58,6 +58,8 @@ const styles = (theme: Theme) => createStyles({
     headline: {
         marginRight: '8px',
         display: 'inline-block',
+        fontSize: '2rem',
+        color: 'rgba(0, 0, 0, 0.7)',
     },
     version: {
         display: 'inline-block',

@@ -8,46 +8,29 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import CancelIcon from '@material-ui/icons/Cancel'
 import autobind from 'utils/autobind'
 
-export interface CreateDiscussionProps {
-    repoID: string
-    createDiscussion: Function
-    unselect: Function
-    classes: any
-}
-
-export interface CreateDiscussionState {
-    error: string
-    subject: string
-    comment: string
-}
 
 @autobind
-class CreateDiscussion extends React.Component<CreateDiscussionProps, CreateDiscussionState>
+class CreateDiscussion extends React.Component<Props, State>
 {
-    state={
+    state = {
         error: '',
-        subject: '',
-        comment: '',
     }
 
-    handleChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState((current)=>({
-            ...current,
-            [name]: event.target.value,
-        }))
-    }
+    _inputSubject!: HTMLInputElement
+    _inputComment!: HTMLInputElement
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault()
-        const valid = this.state.comment.length > 0 && this.state.subject.length > 0
-        this.setState({error: 'Oops! You need both a subject and a comment.'})
+        const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
         if (valid) {
-            this.setState({
-                subject: '',
-                comment: '',
-                error: '',
+            this.setState({ error: '' })
+            this.props.createDiscussion({
+                repoID: this.props.repoID,
+                subject: this._inputSubject.value,
+                commentText: this._inputComment.value,
             })
-            this.props.createDiscussion(this.props.repoID, this.state.subject, this.state.comment)
+        } else {
+            this.setState({ error: 'Oops! You need both a subject and a comment.' })
         }
     }
 
@@ -67,20 +50,18 @@ class CreateDiscussion extends React.Component<CreateDiscussionProps, CreateDisc
                     <TextField
                         id="subject"
                         label="Subject"
-                        value={this.state.subject}
                         className={classes.textField}
                         fullWidth
-                        onChange={this.handleChange('subject')}
+                        inputRef={x => this._inputSubject = x}
                     />
                     <TextField
                         id="comment"
                         label="Comment"
-                        value={this.state.comment}
                         className={classes.textField}
                         fullWidth
                         multiline
                         rows={3}
-                        onChange={this.handleChange('comment')}
+                        inputRef={x => this._inputComment = x}
                     />
                     <Button color="secondary" variant="contained" type="submit">
                         Create
@@ -90,6 +71,17 @@ class CreateDiscussion extends React.Component<CreateDiscussionProps, CreateDisc
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    repoID: string
+    createDiscussion: Function
+    unselect: Function
+    classes: any
+}
+
+interface State {
+    error: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -105,7 +97,7 @@ const styles = (theme: Theme) => createStyles({
     },
     form: {
         width: '100%',
-        padding: theme.spacing.unit,
+        padding: '16px 36px',
     },
     textField: {
         display: 'block',

@@ -29,15 +29,17 @@ class Repository extends React.Component<Props, State>
         return(
             <React.Fragment>
                 <RepoInfo />
-                {this.state.page === 0 &&
-                    <RepoFilesPage />
-                }
-                {this.state.page === 1 &&
-                    <RepoTimelinePage />
-                }
-                {this.state.page === 2 &&
-                    <RepoDiscussionPage />
-                }
+                <div className={classes.mainContent}>
+                    {this.state.page === 0 &&
+                        <RepoFilesPage />
+                    }
+                    {this.state.page === 1 &&
+                        <RepoTimelinePage />
+                    }
+                    {this.state.page === 2 &&
+                        <RepoDiscussionPage />
+                    }
+                </div>
                 <BottomNavigation
                     value={this.state.page}
                     onChange={this.handleChange}
@@ -64,6 +66,9 @@ interface State {
 
 
 const styles = (theme: Theme) => createStyles({
+    mainContent: {
+        marginTop: 30,
+    },
     bottomNav: {
         position: 'fixed',
         bottom: 0,

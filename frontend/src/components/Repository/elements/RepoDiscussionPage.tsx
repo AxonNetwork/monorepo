@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
@@ -44,7 +45,7 @@ class RepoDiscussionPage extends React.Component<Props>
                 <List className={classes.list}>
                     {discussionsList.map(d => (
                         <React.Fragment key={d.created}>
-                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.props.selectDiscussion({ created: d.created })}>
+                            <ListItem button className={classnames(classes.listItem, {[classes.selectedDiscussion]: d.created === this.props.selected})} key={d.created} onClick={() => this.props.selectDiscussion({ created: d.created })}>
                                 {selected === undefined &&
                                     <React.Fragment>
                                         <ListItemText primary={d.subject} secondary={d.email}/>
@@ -131,6 +132,9 @@ const styles = (theme: Theme) => createStyles({
         height: '100%',
         width: '100%',
         flexGrow: 5,
+    },
+    selectedDiscussion: {
+        backgroundColor: '#cee2f1',
     },
 })
 

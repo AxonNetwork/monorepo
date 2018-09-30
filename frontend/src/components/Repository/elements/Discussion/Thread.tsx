@@ -50,6 +50,19 @@ class Thread extends React.Component<Props, State>
         this.setState({comment: ''})
     }
 
+    strToColor(str: string) {
+        let hash = 0
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash)
+        }
+        let colour = '#'
+        for (let i = 0; i < 3; i++) {
+            let value = (hash >> (i * 8)) & 0xFF
+            colour += ('00' + value.toString(16)).substr(-2)
+        }
+        return colour
+    }
+
     render() {
         const { classes, title, comments } = this.props
         const commentsList = values(comments).filter(c => c.attachedTo.type === this.props.type && c.attachedTo.subject === this.props.subject)
@@ -72,18 +85,19 @@ class Thread extends React.Component<Props, State>
                         }
                         {commentsList.map(c => {
                             const username = (this.props.users[c.user] || {}).name || c.user
-                            const userInitials = username.split(' ').map(x => x.substring(0, 1)).join('')
+                            const userInitials = username.split(' ').map(x => x.substring(0, 1)).map(x => x.toUpperCase()).join('')
+                            const color = this.strToColor(username)
                             return (
                                 <div className={classes.commentRow} key={c.created}>
                                     <div className={classes.commentAvatar}>
-                                        <Avatar>{userInitials}</Avatar>
+                                        <Avatar style={{ backgroundColor: color }}>{userInitials}</Avatar>
                                     </div>
 
                                     <div className={classes.comment}>
                                         <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
                                         <div className={classes.commentBody}>
                                             {c.text.split('\n').map((p, i) => (
-                                                <Typography className={classes.commentText} key={i}>{p}</Typography>
+                                                <Typography className={classes.commentText} element="p" key={i}>{p}</Typography>
                                             ))}
                                         </div>
                                     </div>
@@ -183,6 +197,10 @@ const styles = (theme: Theme) => createStyles({
     },
     commentBody: {
         padding: theme.spacing.unit * 2,
+
+        '& p': {
+            paddingBottom: 6,
+        },
     },
     text: {
         paddingBottom: theme.spacing.unit * 0.25,
