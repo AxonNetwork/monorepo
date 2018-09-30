@@ -109,8 +109,7 @@ interface Props {
 
 const styles = (theme: Theme) => createStyles({
     discussionPage: {
-        position: 'relative',
-        height: 'calc(100% - 84px)',
+        maxHeight: 'calc(100% - 84px)',
         border: '1px solid',
         borderColor: theme.palette.grey[300],
         display: 'flex',

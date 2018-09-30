@@ -12,6 +12,7 @@ import DiffViewer from './DiffViewer/DiffViewer'
 import Thread from './Discussion/Thread'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
+import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/repository/repoActions'
 
 
 @autobind
@@ -71,9 +72,9 @@ interface Props {
     file: IRepoFile
     timeline: ITimelineEvent[]
     repoRoot: string
-    selectFile: Function
-    getDiff: Function
-    revertFiles: Function
+    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
+    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
+    selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
     classes: any
 }
 

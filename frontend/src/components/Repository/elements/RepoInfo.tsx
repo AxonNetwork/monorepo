@@ -24,7 +24,7 @@ function RepoInfo(props: {
     }
     const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
     return (
-        <React.Fragment>
+        <div className={classes.repoInfo}>
             <OpenFolderButton folderPath={repo.path} />
             <Typography variant="headline" className={classes.headline}>
                 {repo.repoID}
@@ -46,11 +46,14 @@ function RepoInfo(props: {
                     repoID={repo.repoID}
                 />
             }
-        </React.Fragment>
+        </div>
     )
 }
 
 const styles = (theme: Theme) => createStyles({
+    repoInfo: {
+
+    },
     locationLink: {
         color: theme.palette.secondary.main,
         cursor: 'pointer',

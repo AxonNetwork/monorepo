@@ -40,6 +40,9 @@ export enum RepoActionType {
     SELECT_REPO = 'SELECT_REPO',
     SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
 
+    SELECT_FILE = 'SELECT_FILE',
+    SELECT_COMMIT = 'SELECT_COMMIT',
+
     CHECKPOINT_REPO = 'CHECKPOINT_REPO',
     CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
     CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
@@ -49,7 +52,6 @@ export enum RepoActionType {
     PULL_REPO_FAILED = 'PULL_REPO_FAILED',
 
     FETCHED_REPO = 'FETCHED_REPO',
-    SELECT_FILE = 'SELECT_FILE',
     ADD_COLLABORATOR = 'ADD_COLLABORATOR',
     ADD_COLLABORATOR_SUCCESS = 'ADD_COLLABORATOR_SUCCESS',
     // ADD_HYPOTHESIS = 'ADD_HYPOTHESIS',
@@ -272,6 +274,13 @@ export interface ISelectFileAction {
     }
 }
 
+export interface ISelectCommitAction {
+    type: RepoActionType.SELECT_COMMIT
+    payload: {
+        selectedCommit: string | undefined
+    }
+}
+
 export interface IAddCollaboratorAction {
     type: RepoActionType.ADD_COLLABORATOR
     payload: {
@@ -366,9 +375,11 @@ export type IRepoAction =
     IWatchRepoAction |
     IWatchRepoSuccessAction |
 
+    ISelectFileAction |
+    ISelectCommitAction |
+
     ICheckpointRepoAction |
     IPullRepoAction |
-    ISelectFileAction |
     IAddCollaboratorAction |
     IAddCollaboratorSuccessAction |
     // IAddHypothesisAction |
@@ -387,10 +398,11 @@ export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetc
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
 
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
+export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAction => ({ type: RepoActionType.SELECT_FILE, payload })
+export const selectCommit = (payload: ISelectCommitAction['payload']): ISelectCommitAction => ({ type: RepoActionType.SELECT_COMMIT, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
-export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAction => ({ type: RepoActionType.SELECT_FILE, payload })
 export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
 // export const addHypothesis = (payload: IAddHypothesisAction['payload']): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })

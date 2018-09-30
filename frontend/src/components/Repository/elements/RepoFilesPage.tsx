@@ -6,7 +6,8 @@ import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
 import { IRepo, ITimelineEvent } from 'common'
 import { IGlobalState } from 'redux/store'
-import { checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
+import { ICheckpointRepoAction, IGetDiffAction, IRevertFilesAction, ISelectFileAction,
+    checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
 
 
 class RepoFilesPage extends React.Component<Props>
@@ -69,10 +70,10 @@ class RepoFilesPage extends React.Component<Props>
 interface Props {
     repo: IRepo | undefined
     selectedFile: { file: string, isFolder: boolean } | undefined
-    checkpointRepo: Function
-    selectFile: Function
-    getDiff: Function
-    revertFiles: Function
+    checkpointRepo: (payload: ICheckpointRepoAction['payload']) => ICheckpointRepoAction
+    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
+    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
+    selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
     classes: any
 }
 
@@ -81,8 +82,6 @@ const styles = createStyles({
     fileListContainer: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
-        paddingBottom: 120,
     },
     fileList: {
         flexGrow: 1,

@@ -5,6 +5,7 @@ const initialState = {
     repos: {},
     selectedRepo: undefined,
     selectedFile: undefined,
+    selectedCommit: undefined,
     checkpointed: false,
     // hypothesis: null,
 }
@@ -16,6 +17,7 @@ export interface IRepoState {
         file: string
         isFolder: boolean
     } | undefined
+    selectedCommit: string | undefined
     checkpointed: boolean
     // hypothesis: string | null
 }
@@ -132,6 +134,15 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             return {
                 ...state,
                 selectedFile,
+            }
+        }
+
+        case RepoActionType.SELECT_COMMIT: {
+            console.log('select commit!', action)
+            const { selectedCommit } = action.payload
+            return {
+                ...state,
+                selectedCommit,
             }
         }
 

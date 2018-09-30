@@ -101,6 +101,7 @@ const styles = (theme: Theme) => createStyles({
     mainUIContentWrapper: {
         flexGrow: 1,
         padding: '24px 32px 72px 32px',
+        display: 'flex',
     },
 
 })

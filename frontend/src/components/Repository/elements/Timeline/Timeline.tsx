@@ -4,6 +4,7 @@ import TimelineEvent from './TimelineEvent'
 
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
+import { ISelectCommitAction, IGetDiffAction, IRevertFilesAction } from 'redux/repository/repoActions'
 
 
 @autobind
@@ -14,9 +15,9 @@ class Timeline extends React.Component<Props, State>
         rowsPerPage: 10,
     }
 
-    selectEvent(version: number) {
-        if (!!this.props.selectEvent) {
-            this.props.selectEvent(version)
+    selectCommit(commit: string) {
+        if (!!this.props.selectCommit) {
+            this.props.selectCommit({ selectedCommit: commit })
         }
     }
 
@@ -39,7 +40,7 @@ class Timeline extends React.Component<Props, State>
                 {
                     timelinePage.map((event) => {
                         return (
-                            <div key={event.commit} onClick={() => this.selectEvent(event.version)}>
+                            <div key={event.commit} onClick={() => this.selectCommit(event.commit)}>
                                 <TimelineEvent
                                     repoRoot={repoRoot}
                                     event={event}
@@ -72,9 +73,9 @@ class Timeline extends React.Component<Props, State>
 interface Props {
     repoRoot: string
     timeline: ITimelineEvent[]
-    getDiff: Function
-    revertFiles: Function
-    selectEvent?: Function
+    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
+    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
+    selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
 }
 
 interface State {

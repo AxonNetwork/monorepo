@@ -104,7 +104,6 @@
     "node-sass": "^4.9.3",
     "nodemon": "^1.18.4",
     "offline-plugin": "^5.0.5",
-    "pants": "^2.7.1",
     "parse-diff": "^0.4.2",
     "pg": "^7.4.3",
     "postcss": "^7.0.2",

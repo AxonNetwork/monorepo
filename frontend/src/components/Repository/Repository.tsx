@@ -9,7 +9,7 @@ import CommentIcon from '@material-ui/icons/Comment'
 
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
-import RepoTimelinePage from './elements/RepoTimelinePage'
+import RepoHistoryPage from './elements/RepoHistoryPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import autobind from 'utils/autobind'
 
@@ -26,20 +26,22 @@ class Repository extends React.Component<Props, State>
 
     render() {
         const classes = this.props.classes
-        return(
-            <React.Fragment>
+        return (
+            <div className={classes.repoWrapper}>
                 <RepoInfo />
-                <div className={classes.mainContent}>
+
+                <div className={classes.repoMainContent}>
                     {this.state.page === 0 &&
                         <RepoFilesPage />
                     }
                     {this.state.page === 1 &&
-                        <RepoTimelinePage />
+                        <RepoHistoryPage />
                     }
                     {this.state.page === 2 &&
                         <RepoDiscussionPage />
                     }
                 </div>
+
                 <BottomNavigation
                     value={this.state.page}
                     onChange={this.handleChange}
@@ -50,7 +52,7 @@ class Repository extends React.Component<Props, State>
                     <BottomNavigationAction label="History" icon={<HistoryIcon />} />
                     <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
                 </BottomNavigation>
-            </React.Fragment>
+            </div>
         )
     }
 }
@@ -66,8 +68,21 @@ interface State {
 
 
 const styles = (theme: Theme) => createStyles({
-    mainContent: {
+    repoWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        maxHeight: '100%',
+        flexGrow: 1,
+    },
+    repoMainContent: {
         marginTop: 30,
+        overflowY: 'hidden',
+        display: 'flex',
+        flexGrow: 1,
+
+        '& > *': {
+            flexGrow: 1,
+        },
     },
     bottomNav: {
         position: 'fixed',
