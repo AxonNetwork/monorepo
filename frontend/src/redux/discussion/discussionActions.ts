@@ -31,7 +31,7 @@ export type IGetDiscussionsFailedAction = FailedAction<DiscussionActionType.GET_
 export interface ISelectDiscussionAction {
     type: DiscussionActionType.SELECT_DISCUSSION
     payload: {
-        created: number
+        created: number|undefined
     }
 }
 

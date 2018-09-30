@@ -44,7 +44,7 @@ class RepoDiscussionPage extends React.Component<Props>
                 <List className={classes.list}>
                     {discussionsList.map(d => (
                         <React.Fragment key={d.created}>
-                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.props.selectDiscussion(d.created)}>
+                            <ListItem button className={classes.listItem} key={d.created} onClick={() => this.props.selectDiscussion({ created: d.created })}>
                                 {selected === undefined &&
                                     <React.Fragment>
                                         <ListItemText primary={d.subject} secondary={d.email}/>
@@ -60,7 +60,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             <Divider />
                         </React.Fragment>
                     ))}
-                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion(0)}>
+                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ created: -1 })}>
                         <ListItemText primary={'New Discussion'} />
                         {selected === undefined &&
                             <ListItemIcon>
@@ -75,7 +75,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             <CreateDiscussion
                                 repoID={this.props.repoID}
                                 createDiscussion={this.props.createDiscussion}
-                                unselect={() => this.props.selectDiscussion(undefined)}
+                                unselect={() => this.props.selectDiscussion({ created: undefined })}
                             />
                     </div>
                 }
@@ -85,7 +85,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             title={(selected as IDiscussion).subject}
                             type="discussion"
                             subject={(selected as IDiscussion).created}
-                            unselect={() => this.props.selectDiscussion(undefined)}
+                            unselect={() => this.props.selectDiscussion({ created: undefined })}
                         />
                     </div>
                 }
@@ -100,7 +100,7 @@ interface Props {
     comments: {[id: number]: IComment}
     selected: number|undefined
     getDiscussions: Function
-    selectDiscussion: Function
+    selectDiscussion: typeof selectDiscussion
     createDiscussion: Function
     createComment: Function
     classes: any
@@ -117,7 +117,7 @@ const styles = (theme: Theme) => createStyles({
     list: {
         height: '100%',
         padding: 0,
-        overflow: 'scroll',
+        overflow: 'auto',
         flexGrow: 1,
         width: 350,
     },

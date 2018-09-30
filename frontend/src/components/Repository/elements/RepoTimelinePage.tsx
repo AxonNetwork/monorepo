@@ -70,7 +70,7 @@ const styles = (theme: Theme) => createStyles({
         width: 0,
         marginRight: 32,
         overflowX: 'hidden',
-        overflowY: 'scroll',
+        overflowY: 'auto',
     },
     thread: {
         marginTop: theme.spacing.unit * 4,

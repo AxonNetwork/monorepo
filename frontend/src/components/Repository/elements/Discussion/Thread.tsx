@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ButtonBase from '@material-ui/core/ButtonBase'
 import SendIcon from '@material-ui/icons/Send'
 import CancelIcon from '@material-ui/icons/Cancel'
+import Avatar from '@material-ui/core/Avatar'
 import moment from 'moment'
 
 import { createComment } from '../../../../redux/comment/commentActions'
@@ -71,12 +72,21 @@ class Thread extends React.Component<Props, State>
                         }
                         {commentsList.map(c => {
                             const username = (this.props.users[c.user] || {}).name || c.user
+                            const userInitials = username.split(' ').map(x => x.substring(0, 1)).join('')
                             return (
-                                <div className={classes.comment} key={c.created}>
-                                    <Typography><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
-                                    {c.text.split('\n').map((p, i) => (
-                                        <Typography className={classes.text} key={i}>{p}</Typography>
-                                    ))}
+                                <div className={classes.commentRow} key={c.created}>
+                                    <div className={classes.commentAvatar}>
+                                        <Avatar>{userInitials}</Avatar>
+                                    </div>
+
+                                    <div className={classes.comment}>
+                                        <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
+                                        <div className={classes.commentBody}>
+                                            {c.text.split('\n').map((p, i) => (
+                                                <Typography className={classes.commentText} key={i}>{p}</Typography>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             )
                         })}
@@ -142,11 +152,37 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     comments: {
-        overflow: 'scroll',
+        overflow: 'auto',
         flexGrow: 1,
+        backgroundColor: '#f7f7f76b',
+    },
+    commentRow: {
+        display: 'flex',
+    },
+    commentAvatar: {
+        flexGrow: 0,
+        flexShrink: 0,
+        padding: '24px 0 10px 16px',
+        '& div': {
+            backgroundColor: '#006ea2',
+        },
     },
     comment: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing.unit * 2,
+        padding: 0,
+        border: '1px solid #e2e2e2',
+        borderRadius: 6,
+        backgroundColor: 'white',
+        flexGrow: 1,
+    },
+    commentHeader: {
+        backgroundColor: '#f1f1f1',
+        padding: '8px 12px',
+        borderBottom: '1px solid #e2e2e2',
+        color: '#545454',
+    },
+    commentBody: {
+        padding: theme.spacing.unit * 2,
     },
     text: {
         paddingBottom: theme.spacing.unit * 0.25,

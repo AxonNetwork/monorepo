@@ -13,17 +13,8 @@ import RepoTimelinePage from './elements/RepoTimelinePage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import autobind from 'utils/autobind'
 
-export interface RepositoryProps {
-    sidebarOpen: boolean
-    classes:any
-}
-
-export interface RepositoryState {
-    page: number
-}
-
 @autobind
-class Repository extends React.Component<RepositoryProps, RepositoryState>
+class Repository extends React.Component<Props, State>
 {
     state = {
         page: 0
@@ -61,6 +52,16 @@ class Repository extends React.Component<RepositoryProps, RepositoryState>
         )
     }
 }
+
+interface Props {
+    sidebarOpen: boolean
+    classes:any
+}
+
+interface State {
+    page: number
+}
+
 
 const styles = (theme: Theme) => createStyles({
     bottomNav: {
