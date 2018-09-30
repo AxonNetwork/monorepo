@@ -2,48 +2,55 @@ import path from 'path'
 import { IRepoFile } from '../../../../common'
 
 export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFolder: string) {
-    files = Object.keys(files).reduce((acc: {[name: string]: IRepoFile}, curr: string) => {
-        const file = files[curr]
-        if (file.name.indexOf(selectedFolder) > -1) {
-            const relPath = path.relative(selectedFolder, file.name)
-            acc[relPath] = file
+    const filtered = {} as {[name: string]: IRepoFile}
+
+    for (let filepath of Object.keys(files)) {
+        let file = files[filepath]
+
+        if (file.name.indexOf(selectedFolder) === 0) {
+            // const relPath = path.relative(selectedFolder, file.name)
+            filtered[filepath] = file
         }
-        return acc
-    }, {})
-    return files
+    }
+
+    return filtered
 }
 
-export function mergeFolders(files: {[name: string]: IRepoFile}) {
-    const filenames = Object.keys(files)
-    const merged = filenames.reduce((acc, curr) => {
-        const parts = curr.split('/')
-        const file = files[curr]
+export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder: string|undefined) {
+    const merged = {} as {[filepath: string]: IRepoFile}
+
+    for (let filepath of Object.keys(files)) {
+        const file = files[filepath]
+
+        const relpath = selectedFolder === undefined
+            ? file.name
+            : path.relative(selectedFolder, file.name)
+
+        const parts = relpath.split('/')
+
         if (parts.length === 1) {
-            acc[curr] = file
-        }else {
-            const folder = parts[0]
-            if (acc[folder] === undefined) {
-                // const folderPath = file.name.replace(curr, '') + folder
-                acc[folder] = {
-                    name: folder,
-                    type: 'folder',
-                    // path: folderPath,
-                    status: '',
-                    size: 0,
-                    modified: new Date(0),
-                    diff: "",
-                }
+            merged[file.name] = file
+        } else {
+            const folderName = parts[0]
+            merged[folderName] = {
+                name: selectedFolder === undefined ? folderName : path.join(selectedFolder, folderName),
+                type: 'folder',
+                status: '',
+                size: 0,
+                modified: new Date(0),
+                diff: '',
+                ...(merged[folderName] || {}),
             }
+
             if (file.status === '*modified' || file.status === '*added') {
-                acc[folder].status = '*modified'
+                merged[folderName].status = '*modified'
             }
-            acc[folder].size += file.size
-            if(acc[folder].modified > file.modified){
-                acc[folder].modified = file.modified
+            merged[folderName].size += file.size
+            if (merged[folderName].modified < file.modified) {
+                merged[folderName].modified = file.modified
             }
         }
-        return acc
-    }, {} as {[name: string]: IRepoFile})
+    }
     return merged
 }
 

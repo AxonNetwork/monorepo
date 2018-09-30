@@ -97,8 +97,7 @@ class RepoDiscussionPage extends React.Component<Props>
 interface Props {
     repoID: string
     discussions: {[created: number]: IDiscussion}
-    comments: IComment[]
-    user: string
+    comments: {[id: number]: IComment}
     selected: number|undefined
     getDiscussions: Function
     selectDiscussion: Function
@@ -141,9 +140,8 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         repoID: repoID,
         discussions: state.discussion.discussions[repoID] || {},
-        comments: state.comment.comments,
+        comments: state.comment.comments[repoID] || {},
         selected: state.discussion.selected,
-        user: state.user.name,
     }
 }
 

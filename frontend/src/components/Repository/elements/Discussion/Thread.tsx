@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { values } from 'lodash'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -9,61 +10,48 @@ import SendIcon from '@material-ui/icons/Send'
 import CancelIcon from '@material-ui/icons/Cancel'
 import moment from 'moment'
 
-import { createComment } from '../../../../redux/discussion/discussionActions'
-import { IComment } from '../../../../common'
+import { createComment } from '../../../../redux/comment/commentActions'
+import { IUser, IComment } from '../../../../common'
 import autobind from 'utils/autobind'
 import { IGlobalState } from 'redux/store'
 
-export interface ThreadProps {
-    title: string
-    type: string
-    subject: number|string
-    repoID: string
-    user: string
-    comments: IComment[]
-    unselect?: Function
-    createComment: Function
-    classes: any
-}
-
-export interface ThreadState {
-    comment: string
-}
-
 @autobind
-class Thread extends React.Component<ThreadProps, ThreadState>
+class Thread extends React.Component<Props, State>
 {
     state = {
         comment: '',
     }
 
-    handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>){
+    handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Enter' && event.shiftKey) {
             this.handleSubmit(event)
         }
     }
 
-    handleChange(event:  React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>){
+    handleChange(event:  React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>) {
         this.setState({comment: event.target.value})
     }
 
-    handleSubmit(event: React.KeyboardEvent<HTMLDivElement>|React.FormEvent<HTMLFormElement>){
+    async handleSubmit(event: React.KeyboardEvent<HTMLDivElement>|React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         if (this.state.comment.length === 0) {
             return
         }
-        this.props.createComment(
-            this.props.repoID,
-            this.state.comment,
-            {type: this.props.type, subject: this.props.subject},
-            this.props.user,
-        )
+        await this.props.createComment({
+            repoID: this.props.repoID,
+            text: this.state.comment,
+            attachedTo: {
+                type: this.props.type,
+                subject: this.props.subject,
+            },
+        })
 
         this.setState({comment: ''})
     }
 
     render() {
-        const {classes, title, comments} = this.props
+        const { classes, title, comments } = this.props
+        const commentsList = values(comments).filter(c => c.attachedTo.type === this.props.type && c.attachedTo.subject === this.props.subject)
 
         return (
             <div className={classes.threadContainer}>
@@ -78,13 +66,14 @@ class Thread extends React.Component<ThreadProps, ThreadState>
                 <Typography variant="title" className={classes.title}>{title}</Typography>
                 <div className={classes.thread}>
                     <div className={classes.comments}>
-                        {comments.length === 0 &&
+                        {commentsList.length === 0 &&
                             <Typography className={classes.comment}>No comments yet. Start the discussion!</Typography>
                         }
-                        {comments.map(c => {
+                        {commentsList.map(c => {
+                            const username = (this.props.users[c.user] || {}).name || c.user
                             return (
                                 <div className={classes.comment} key={c.created}>
-                                    <Typography><strong>{c.name || c.user}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
+                                    <Typography><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
                                     {c.text.split('\n').map((p, i) => (
                                         <Typography className={classes.text} key={i}>{p}</Typography>
                                     ))}
@@ -112,6 +101,22 @@ class Thread extends React.Component<ThreadProps, ThreadState>
             </div>
         )
     }
+}
+
+interface Props {
+    title: string
+    type: string
+    subject: number|string
+    repoID: string
+    users: {[id: string]: IUser}
+    comments: {[id: string]: IComment}
+    unselect?: Function
+    createComment: Function
+    classes: any
+}
+
+interface State {
+    comment: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -171,14 +176,13 @@ const styles = (theme: Theme) => createStyles({
 })
 
 
-const mapStateToProps = (state: IGlobalState, ownProps: Partial<ThreadProps>) => {
-    const selected = state.repository.selectedRepo || ""
-    const repoID = state.repository.repos[selected].repoID
-    const comments = state.discussion.comments.filter(c => c.attachedTo.subject === ownProps.subject)
+const mapStateToProps = (state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ''
+    const repoID = (state.repository.repos[selected] || {}).repoID
     return {
-        repoID: repoID,
-        comments: comments,
-        user: state.user.name,
+        repoID,
+        comments: state.comment.comments[repoID] || {},
+        users: state.user.users,
     }
 }
 

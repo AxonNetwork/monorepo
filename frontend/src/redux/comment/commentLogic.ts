@@ -1,6 +1,5 @@
 import { keyBy } from 'lodash'
 import { makeLogic } from '../reduxUtils'
-import { IComment } from '../../common'
 import { CommentActionType, IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction, ICreateCommentAction, ICreateCommentSuccessAction } from './commentActions'
 import ServerRelay from '../../lib/ServerRelay'
 
@@ -9,7 +8,7 @@ const getCommentsForRepoLogic = makeLogic<IGetCommentsForRepoAction, IGetComment
     async process({ action }) {
         const { repoID } = action.payload
         const commentsList = await ServerRelay.getCommentsForRepo(repoID)
-        const comments = keyBy(commentsList, (comment) => `${comment.attachedTo.type}/${comment.attachedTo.subject}`)
+        const comments = keyBy(commentsList, (comment) => `${comment.attachedTo.type}/${comment.attachedTo.subject}/${comment.created}`)
         return { repoID, comments }
     }
 })

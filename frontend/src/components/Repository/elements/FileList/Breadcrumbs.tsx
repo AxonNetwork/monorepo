@@ -12,7 +12,7 @@ class Breadcrumbs extends React.Component<Props>
     }
 
     componentWillReceiveProps(props: Props) {
-        if (props.folderPath !== this.props.folderPath) {
+        if (props.repoRoot !== this.props.repoRoot) {
             this.setState({ showBasePath: false })
         }
     }
@@ -22,29 +22,32 @@ class Breadcrumbs extends React.Component<Props>
     }
 
     selectCrumb(index: number) {
-        const parts = this.getParts(this.props.folderPath, this.props.selectedFolder)
-        const dir = path.dirname(this.props.folderPath)
-        const toSelect = parts.slice(0, index + 1).join('/')
-        this.props.selectFile({ file: path.join(dir, toSelect), isFolder: true })
+        if (index === 0) {
+            this.props.selectFile({ selectedFile: undefined })
+            return
+        }
+
+        const { repoRoot, selectedFolder } = this.props
+        const parts = this.getParts(repoRoot, selectedFolder)
+        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true } })
     }
 
-    getParts(folderPath: string, selectedFolder: string|undefined) {
-        const basePath = path.dirname(folderPath)
-        let parts = [ path.basename(folderPath) ]
+    getParts(repoRoot: string, selectedFolder: string|undefined) {
+        let parts = [ path.basename(repoRoot) ]
         if (selectedFolder !== undefined) {
-            parts = selectedFolder.replace(basePath + '/', '').split('/')
+            parts = parts.concat(selectedFolder.split('/'))
         }
         return parts
     }
 
     render() {
-        const { folderPath, selectedFolder, classes } = this.props
-        if (folderPath === undefined) {
+        const { repoRoot, selectedFolder, classes } = this.props
+        if (repoRoot === undefined) {
             return null
         }
 
-        const basePath = path.dirname(folderPath)
-        const parts = this.getParts(folderPath, selectedFolder)
+        const basePath = path.dirname(repoRoot)
+        const parts = this.getParts(repoRoot, selectedFolder)
 
         return (
             <Typography>
@@ -57,7 +60,7 @@ class Breadcrumbs extends React.Component<Props>
                 }
                 <span> / </span>
                 {parts.map((p, i) => {
-                    return(
+                    return (
                         <React.Fragment key={p + i}>
                             <span className={classes.crumb} onClick={() => this.selectCrumb(i)}>
                                 {p}
@@ -74,18 +77,17 @@ class Breadcrumbs extends React.Component<Props>
 }
 
 interface Props {
-    folderPath: string
+    repoRoot: string
     selectedFolder: string|undefined
     selectFile: Function
-    classes: {
-        crumb: string
-    }
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
     crumb: {
         color: theme.palette.secondary.main,
         textDecoration: 'underline',
+        cursor: 'pointer',
     },
 })
 

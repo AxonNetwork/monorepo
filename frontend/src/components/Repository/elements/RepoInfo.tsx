@@ -11,23 +11,16 @@ import { IRepo } from '../../../common'
 import { IGlobalState } from '../../../redux/store'
 import { pullRepo, addCollaborator } from '../../../redux/repository/repoActions'
 
-export interface RepoInfoProps {
-    repo: IRepo
+function RepoInfo(props: {
+    repo: IRepo|undefined
     addCollaborator: Function
     pullRepo: Function
-    classes:{
-        locationLink: string
-        headline: string
-        version: string
-        caption: string
-    }
-}
-
-function RepoInfo(props: RepoInfoProps)
+    classes: any
+})
 {
     const { repo, addCollaborator, pullRepo, classes } = props
-    if(repo === undefined){
-        return <div></div>
+    if (repo === undefined){
+        return null
     }
     const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
     return (
@@ -45,7 +38,8 @@ function RepoInfo(props: RepoInfoProps)
                 repoID={repo.repoID}
                 addCollaborator={addCollaborator}
             />
-            {repo.behindRemote &&
+            {/* @@TODO: behindRemote doesn't exist */
+                (repo as any).behindRemote &&
                 <PullButton
                     pullRepo={pullRepo}
                     folderPath={repo.path}
@@ -73,8 +67,8 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps=(state: IGlobalState) =>{
-    const selected = state.repository.selectedRepo || ""
+const mapStateToProps=(state: IGlobalState) => {
+    const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected]
     return {
         repo,

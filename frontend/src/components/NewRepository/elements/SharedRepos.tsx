@@ -1,4 +1,5 @@
 import React from 'react'
+import { values } from 'lodash'
 import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -8,12 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import { ISharedRepoInfo } from 'common'
 
-export interface SharedReposProps {
-    sharedRepos: ISharedRepoInfo[]
-    cloneSharedRepo: Function
-}
-
-class SharedRepos extends React.Component<SharedReposProps>
+class SharedRepos extends React.Component<Props>
 {
     render() {
         const { sharedRepos } = this.props
@@ -24,7 +20,7 @@ class SharedRepos extends React.Component<SharedReposProps>
                 </Typography>
                 <List>
                     {
-                        sharedRepos.map(repo => (
+                        values(sharedRepos).map(repo => (
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
                                 <ListItemSecondaryAction>
@@ -39,6 +35,11 @@ class SharedRepos extends React.Component<SharedReposProps>
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    cloneSharedRepo: Function
 }
 
 export default SharedRepos

@@ -5,21 +5,9 @@ import TimelineEvent from './TimelineEvent'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
 
-export interface TimelineProps {
-    folderPath: string
-    timeline: ITimelineEvent[]
-    getDiff: Function
-    revertFiles: Function
-    selectEvent?: Function
-}
-
-export interface TimelineState {
-    page: number
-    rowsPerPage: number
-}
 
 @autobind
-class Timeline extends React.Component<TimelineProps, TimelineState>
+class Timeline extends React.Component<Props, State>
 {
     state = {
         page: 0,
@@ -43,7 +31,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState>
 
     render() {
         const { page, rowsPerPage } = this.state
-        const { timeline, folderPath, getDiff, revertFiles } = this.props
+        const { timeline, repoRoot, getDiff, revertFiles } = this.props
         const timelinePage = (timeline || []).slice(page * rowsPerPage, (page + 1) * rowsPerPage)
         return (
             <div>
@@ -53,7 +41,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState>
                         return (
                             <div key={event.commit} onClick={() => this.selectEvent(event.version)}>
                                 <TimelineEvent
-                                    folderPath={folderPath}
+                                    repoRoot={repoRoot}
                                     event={event}
                                     getDiff={getDiff}
                                     revertFiles={revertFiles}
@@ -79,6 +67,19 @@ class Timeline extends React.Component<TimelineProps, TimelineState>
             </div>
         )
     }
+}
+
+interface Props {
+    repoRoot: string
+    timeline: ITimelineEvent[]
+    getDiff: Function
+    revertFiles: Function
+    selectEvent?: Function
+}
+
+interface State {
+    page: number
+    rowsPerPage: number
 }
 
 export default Timeline

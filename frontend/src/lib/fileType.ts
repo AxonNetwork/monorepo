@@ -1,8 +1,8 @@
 import path from 'path'
 
-function fileType(fileName){
-    const extension = path.extname(fileName).substr(1)
-    switch(extension){
+function fileType(filename: string) {
+    const extension = path.extname(filename).substr(1)
+    switch (extension) {
         case 'csv':
         case 'xls':
             return 'data'

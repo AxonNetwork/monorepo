@@ -8,6 +8,7 @@ import { IRepo, ITimelineEvent } from 'common'
 import { IGlobalState } from 'redux/store'
 import { checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
 
+
 class RepoFilesPage extends React.Component<Props>
 {
     render() {
@@ -31,7 +32,7 @@ class RepoFilesPage extends React.Component<Props>
             return (
                 <FileInfo
                     file={files[relPath]}
-                    folderPath={repo.path}
+                    repoRoot={repo.path}
                     timeline={timeline}
                     selectFile={this.props.selectFile}
                     getDiff={this.props.getDiff}
@@ -44,7 +45,7 @@ class RepoFilesPage extends React.Component<Props>
                 <div className={classes.fileListContainer}>
                     <div className={classes.fileList}>
                         <FileList
-                            folderPath={repo.path}
+                            repoRoot={repo.path}
                             files={files}
                             selectedFolder={selectedFolder}
                             selectFile={this.props.selectFile}

@@ -184,8 +184,8 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 const revertFilesLogic = makeLogic<IRevertFilesAction, IRevertFilesSuccessAction>({
     type: RepoActionType.REVERT_FILES,
     async process({ action }) {
-        const { folderPath, files, commit } = action.payload
-        await ConscienceRelay.revertFiles(folderPath, files, commit)
+        const { repoRoot, files, commit } = action.payload
+        await ConscienceRelay.revertFiles(repoRoot, files, commit)
         return {}
     },
 })

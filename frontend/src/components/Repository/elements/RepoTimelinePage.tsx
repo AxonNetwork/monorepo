@@ -20,12 +20,12 @@ class RepoTimelinePage extends React.Component<Props, State>
     }
 
     render() {
-        const { folderPath, timeline, getDiff, revertFiles, classes } = this.props
+        const { repoRoot, timeline, getDiff, revertFiles, classes } = this.props
         return (
             <div className={classes.infoContainer}>
                 <div className={classes.timeline}>
                     <Timeline
-                        folderPath={folderPath}
+                        repoRoot={repoRoot}
                         timeline={timeline}
                         getDiff={getDiff}
                         revertFiles={revertFiles}
@@ -48,7 +48,7 @@ class RepoTimelinePage extends React.Component<Props, State>
 }
 
 interface Props {
-    folderPath: string
+    repoRoot: string
     timeline: ITimelineEvent[]
     getDiff: Function
     revertFiles: Function
@@ -88,7 +88,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected] || {}
     return {
-        folderPath: repo.path,
+        repoRoot: repo.path,
         timeline: repo.timeline || [],
     }
 }

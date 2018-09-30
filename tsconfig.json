@@ -10,6 +10,7 @@
       "dom",
       "dom.iterable",
       "es2015",
+      "ES2016.Array.Include",
     ],
     "jsx": "react",
     "allowSyntheticDefaultImports": true, // FIXME: workaround for immutable.js
@@ -19,7 +20,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "removeComments": true
   },
   "exclude": [
     "node_modules",

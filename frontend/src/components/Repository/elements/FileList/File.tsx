@@ -15,25 +15,20 @@ const shell = (window as any).require('electron').shell
 import autobind from 'utils/autobind'
 import { IRepoFile } from '../../../../common'
 
-export interface FileProps {
-    file: IRepoFile
-    selectFile?: Function
-    classes: any
-}
 
 @autobind
-class File extends React.Component<FileProps>
+class File extends React.Component<Props>
 {
     selectFile() {
         if (!!this.props.selectFile) {
             const isFolder = this.props.file.type === 'folder'
-            this.props.selectFile({file: this.props.file.path, isFolder: isFolder})
+            this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: isFolder} })
         }
     }
 
     openItem(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        shell.openItem(this.props.file.path)
+        shell.openItem(this.props.file.name)
     }
 
     render() {
@@ -60,6 +55,12 @@ class File extends React.Component<FileProps>
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    file: IRepoFile
+    selectFile?: Function
+    classes: any
 }
 
 const styles = createStyles({

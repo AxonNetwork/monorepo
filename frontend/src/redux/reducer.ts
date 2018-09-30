@@ -9,7 +9,7 @@ import discussionReducer from './discussion/discussionReducer'
 
 import { IGlobalState } from './store'
 // @@TODO: is this necessary?
-import { UserActionType } from './user/userActions'
+// import { UserActionType } from './user/userActions'
 
 const appReducer = combineReducers({
     // routing: routerReducer,
@@ -20,7 +20,7 @@ const appReducer = combineReducers({
     discussion: discussionReducer,
 })
 
-const rootReducer = (state: IGlobalState, action: {type: string}) => {
+const rootReducer = (state: IGlobalState|undefined, action: {type: string}): IGlobalState => {
     // @@TODO: is this necessary?
     // if (action.type === UserActionType.LOGOUT_SUCCESS) {
     //     state = undefined

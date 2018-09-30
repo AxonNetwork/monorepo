@@ -1,3 +1,4 @@
+import { toPairs } from 'lodash'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
@@ -13,48 +14,30 @@ import Button from '@material-ui/core/Button'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
 
-export interface RevertFilesDialogProps {
-    event: ITimelineEvent
-    folderPath: string
-    revertFiles: Function
-    onClose: Function
-    open: boolean
-    classes: any
-}
-
-export interface RevertFilesDialogState {
-    checked: string[]
-}
 
 @autobind
-class RevertFilesDialog extends React.Component<RevertFilesDialogProps, RevertFilesDialogState>
+class RevertFilesDialog extends React.Component<Props, State>
 {
-    state={
-        checked: ([] as string[])
+    state = {
+        selectedFiles: {} as {[filename: string]: boolean},
     }
 
-    handleClose(){
+    handleClose() {
         this.props.onClose()
     }
 
-    handleToggle = (file: string) => {
-        const { checked } = this.state
-        const currentIndex = checked.indexOf(file)
-        const newChecked = [...checked]
-
-        if (currentIndex === -1) {
-            newChecked.push(file)
-        } else {
-            newChecked.splice(currentIndex, 1)
-        }
-
+    handleToggle(file: string) {
         this.setState({
-            checked: newChecked,
+            selectedFiles: {
+                ...this.state.selectedFiles,
+                [file]: !this.state.selectedFiles[file],
+            },
         })
     }
 
-    revertFiles = () => {
-        this.props.revertFiles(this.props.folderPath, this.state.checked, this.props.event.commit)
+    revertFiles() {
+        const files = toPairs(this.state.selectedFiles).filter(pair => !!pair[1]).map(pair => pair[0])
+        this.props.revertFiles({ repoRoot: this.props.repoRoot, files, commit: this.props.event.commit })
         this.handleClose()
     }
 
@@ -70,11 +53,11 @@ class RevertFilesDialog extends React.Component<RevertFilesDialogProps, RevertFi
                             return(
                                 <ListItem
                                     key={file}
-                                    onClick={() => {this.handleToggle(file)}}
+                                    onClick={() => this.handleToggle(file)}
                                     className={classes.listItem}
                                 >
                                     <Checkbox
-                                        checked={this.state.checked.indexOf(file) !== -1}
+                                        checked={!!this.state.selectedFiles[file]}
                                         tabIndex={-1}
                                         disableRipple
                                     />
@@ -92,6 +75,19 @@ class RevertFilesDialog extends React.Component<RevertFilesDialogProps, RevertFi
             </Dialog>
         )
     }
+}
+
+interface Props {
+    event: ITimelineEvent
+    repoRoot: string
+    revertFiles: Function
+    onClose: Function
+    open: boolean
+    classes: any
+}
+
+interface State {
+    selectedFiles: {[filename: string]: boolean}
 }
 
 const styles = (theme: Theme) => createStyles({

@@ -25,7 +25,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
 
         // Login and set the JWT
         const resp = await ServerRelay.login(email, password)
-        await UserData.set('jwt', resp.jwt)
+        await UserData.setJWT(resp.jwt)
 
         // Fetch the user's data
         await dispatch(fetchUserData({ emails: [ email ] }))
@@ -68,7 +68,7 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
 const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSuccessAction>({
     type: UserActionType.CHECK_LOCAL_USER,
     async process(_, dispatch) {
-        const jwt = await UserData.get('jwt')
+        const jwt = await UserData.getJWT()
         if (!jwt || jwt === '') {
             throw new Error('Not logged in')
         }
@@ -82,7 +82,7 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
     type: UserActionType.LOGOUT,
     async process() {
         ServerRelay.removeJWT()
-        await UserData.set('jwt', null)
+        await UserData.setJWT(undefined)
         return {}
     },
 })

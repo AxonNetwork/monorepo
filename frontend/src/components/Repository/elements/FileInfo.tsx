@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
@@ -5,32 +6,28 @@ import TableBody from '@material-ui/core/TableBody'
 import Button from '@material-ui/core/Button'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
-import path from 'path'
-
 import File from './FileList/File'
 import Timeline from './Timeline/Timeline'
 import DiffViewer from './DiffViewer/DiffViewer'
 import Thread from './Discussion/Thread'
 import { IRepoFile, ITimelineEvent } from 'common'
+import autobind from 'utils/autobind'
 
-export interface FileInfoProps {
-    file: IRepoFile
-    timeline: ITimelineEvent[]
-    folderPath: string
-    selectFile: Function
-    getDiff: Function
-    revertFiles: Function
-    classes: any
-}
 
-class FileInfo extends React.Component<FileInfoProps> {
-    goUpOneDir = () => {
-        const dir = path.dirname(this.props.file.path)
-        this.props.selectFile({file: dir, isFolder: true})
+@autobind
+class FileInfo extends React.Component<Props>
+{
+    goUpOneDir() {
+        const dir = path.dirname(this.props.file.name)
+        if (dir === '.') {
+            this.props.selectFile({ selectedFile: undefined })
+        } else {
+            this.props.selectFile({ selectedFile: { file: dir, isFolder: true } })
+        }
     }
 
     render() {
-        const {classes, file} = this.props
+        const { classes, file } = this.props
 
         return (
             <React.Fragment>
@@ -45,13 +42,13 @@ class FileInfo extends React.Component<FileInfoProps> {
                 </Table>
                 <div className={classes.infoContainer}>
                     <div className={classes.timeline}>
-                        {file.diff.length > 0 &&
+                        {(file.diff || '').length > 0 &&
                             <DiffViewer
                                 diff={file.diff}
                                 type={file.type}/>
                         }
                         <Timeline
-                            folderPath={this.props.folderPath}
+                            repoRoot={this.props.repoRoot}
                             timeline={this.props.timeline}
                             getDiff={this.props.getDiff}
                             revertFiles={this.props.revertFiles}
@@ -68,6 +65,16 @@ class FileInfo extends React.Component<FileInfoProps> {
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    file: IRepoFile
+    timeline: ITimelineEvent[]
+    repoRoot: string
+    selectFile: Function
+    getDiff: Function
+    revertFiles: Function
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({

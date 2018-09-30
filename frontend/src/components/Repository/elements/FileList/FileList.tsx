@@ -17,12 +17,12 @@ class FileList extends React.Component<Props>
         if (selectedFolder !== undefined) {
             files = filterSubfolder(files, selectedFolder)
         }
-        files = mergeFolders(files)
+        files = mergeFolders(files, selectedFolder)
         const names = sortFolders(files)
         return (
             <React.Fragment>
                 <Breadcrumbs
-                    folderPath={this.props.folderPath}
+                    repoRoot={this.props.repoRoot}
                     selectedFolder={selectedFolder}
                     selectFile={this.props.selectFile}
                 />
@@ -51,7 +51,7 @@ class FileList extends React.Component<Props>
 }
 
 interface Props {
-    folderPath: string
+    repoRoot: string
     files: {[name: string]: IRepoFile}
     selectedFolder: string|undefined
     selectFile: Function

@@ -12,22 +12,9 @@ import { login, signup } from '../../redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 
-export interface LoginPageProps {
-    error: Error|null
-    login: Function
-    signup: Function
-    classes: any
-}
-
-export interface LoginPageState {
-    displaySignup: boolean
-    name: string
-    password: string
-    email: string
-}
 
 @autobind
-class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
+class LoginPage extends React.Component<Props, State> {
 
     state = {
         displaySignup: false,
@@ -61,7 +48,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     }
 
     render() {
-        const {error, classes } = this.props
+        const { error, classes } = this.props
         return (
             <div className={classes.loginContainer}>
                 <div>
@@ -78,7 +65,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                     value={this.state.name}
                                     onChange={this.handleChange('name')}
                                     className={classes.textField}
-                                    error={error !== null}
+                                    error={!!error}
                                 />
                             }
                             <TextField
@@ -87,7 +74,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                 value={this.state.email}
                                 onChange={this.handleChange('email')}
                                 className={classes.textField}
-                                error={error !== null}
+                                error={!!error}
                             />
                             <TextField
                                 id="password"
@@ -96,7 +83,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                                 value={this.state.password}
                                 onChange={this.handleChange('password')}
                                 className={classes.textField}
-                                error={error !== null}
+                                error={!!error}
                             />
                             {error !== undefined &&
                                 <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
@@ -106,8 +93,8 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                             </Button>
                         </form>
                         <ToggleText
-                            displaySignup = {this.state.displaySignup}
-                            toggleView = {this.toggleView}
+                            displaySignup={this.state.displaySignup}
+                            toggleView={this.toggleView}
                             className={classes.button}
                         />
                 </div>
@@ -116,22 +103,30 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     }
 }
 
-interface ToggleTextProps{
-    displaySignup: boolean
-    toggleView: Function
-    className: string
+interface Props {
+    error: Error|undefined
+    login: Function
+    signup: Function
+    classes: any
 }
 
-function ToggleText(props: ToggleTextProps) {
+interface State {
+    displaySignup: boolean
+    name: string
+    password: string
+    email: string
+}
+
+function ToggleText(props: { displaySignup: boolean, toggleView: Function, className: string }) {
     if (props.displaySignup) {
-        return(
+        return (
             <Typography>
                 Already have an account?&nbsp;
                 <a href="" className="link" onClick={props.toggleView as any}>Login</a>
             </Typography>
         )
-    }else {
-        return(
+    } else {
+        return (
             <Typography>
                 Don't have an account?&nbsp;
                 <a href="" className="link" onClick={props.toggleView as any}>Signup</a>
@@ -139,6 +134,7 @@ function ToggleText(props: ToggleTextProps) {
         )
     }
 }
+
 
 const styles = (theme: Theme) => createStyles({
     loginContainer: {

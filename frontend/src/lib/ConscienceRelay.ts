@@ -1,5 +1,3 @@
-import events from 'events'
-import fs from 'fs'
 // const fs = window.require('fs')
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -8,23 +6,23 @@ const ipcRenderer = window.require('electron').ipcRenderer
 
 ipcRenderer.setMaxListeners(100)
 
-async function sendMessage(message){
-    return new Promise((resolve, reject) => {
+async function sendMessage(message: any) {
+    return new Promise<any>((resolve) => {
         const messageId = Math.floor(Math.random()*1000000).toString(16)
         message.id = messageId
         ipcRenderer.send('message', message);
-        const cb = (event, res)=>{
+        const cb = (_: any, res: string) => {
             let response = JSON.parse(res)
             if(response.id === messageId){
                 ipcRenderer.removeListener('message', cb)
                 resolve(response)
             }
         }
-        ipcRenderer.on('message',cb)
+        ipcRenderer.on('message', cb)
     })
 }
 
-export async function checkpointRepo(folderPath, commitMessage){
+export async function checkpointRepo(folderPath: string, commitMessage: string) {
     const message = {
         type: 'CHECKPOINT_REPO',
         folderPath: folderPath,
@@ -32,10 +30,10 @@ export async function checkpointRepo(folderPath, commitMessage){
     }
 	const response = await sendMessage(message)
     console.log('ConscienceManager.checkpointRepo ~>', response)
-    return response.version
+    return response.version as number
 }
 
-export async function pullRepo(folderPath){
+export async function pullRepo(folderPath: string) {
     const message = {
         type: 'PULL_REPO',
         folderPath: folderPath,
@@ -45,7 +43,7 @@ export async function pullRepo(folderPath){
     return true
 }
 
-export async function cloneRepo(repoID, location) {
+export async function cloneRepo(repoID: string, location: string) {
     const message = {
         type: 'CLONE_REPO',
         repoID: repoID,
@@ -59,7 +57,7 @@ export async function cloneRepo(repoID, location) {
 	return response.repo as { repoID: string, folderPath: string }
 }
 
-export async function getDiff(folderPath, filename, commit){
+export async function getDiff(folderPath: string, filename: string, commit: string) {
     const message = {
         type: 'GET_DIFF',
         folderPath: folderPath,
@@ -68,10 +66,10 @@ export async function getDiff(folderPath, filename, commit){
     }
 	const response = await sendMessage(message)
 	console.log('consciencemanager.getDiff ~>', response)
-	return response.diff
+	return response.diff as string
 }
 
-export async function revertFiles(folderPath, files, commit){
+export async function revertFiles(folderPath: string, files: string, commit: string) {
     const message = {
         type: 'REVERT_FILES',
         folderPath: folderPath,
@@ -83,40 +81,10 @@ export async function revertFiles(folderPath, files, commit){
 	return true
 }
 
-function watchRepo(repoID, folderPath){
-    const emitter = new events.EventEmitter()
-    let lastMtime = fs.statSync(folderPath).mtimeMs
-    const checkMTime = async ()=>{
-        const mtime = fs.statSync(folderPath).mtimeMs
-        if(mtime > lastMtime){
-            const [files, timeline] = await Promise.all([
-                getFiles(folderPath),
-                getTimeline(folderPath)
-            ])
-            emitter.emit('file_change', files, timeline)
-            lastMtime = mtime
-        }
-        setTimeout(checkMTime, 5000)
-    }
-    checkMTime()
-
-    const checkBehindRemote = async()=>{
-        const behind = await isBehindRemote(repoID, folderPath)
-        if(behind){
-            emitter.emit('behind_remote')
-        }
-        setTimeout(checkBehindRemote, 5000)
-    }
-    checkBehindRemote()
-
-    return emitter
-}
-
 export default {
     checkpointRepo,
     pullRepo,
     cloneRepo,
     getDiff,
     revertFiles,
-    watchRepo,
 }

@@ -63,7 +63,7 @@ class NewRepository extends React.Component<Props, State>
 
 interface Props {
     createRepo: Function
-    sharedRepos: ISharedRepoInfo[]
+    sharedRepos: {[repoID: string]: ISharedRepoInfo}
     cloneSharedRepo: Function
     classes: any
 }
@@ -82,7 +82,7 @@ const styles = createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        sharedRepos: state.sharedRepos,
+        sharedRepos: (state.user.users[ state.user.currentUser || '' ] || {}).sharedRepos || {},
     }
 }
 

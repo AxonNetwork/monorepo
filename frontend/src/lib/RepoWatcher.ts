@@ -1,7 +1,5 @@
 const fs = (window as any).require('fs')
 
-import * as rpc from '../rpc'
-
 const watching:{[path: string]:{repoID: string, path: string, mtime: number}|undefined} = {}
 
 const RepoWatcher = {

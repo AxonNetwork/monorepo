@@ -16,21 +16,9 @@ import DiffViewer from '../DiffViewer/DiffViewer'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
 
-export interface TimelineEventProps {
-    event: ITimelineEvent
-    folderPath: string
-    getDiff: Function
-    revertFiles: Function
-    classes: any
-}
-
-export interface TimelineEventState {
-    openDialog: boolean
-    showDiff: boolean
-}
 
 @autobind
-class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventState>
+class TimelineEvent extends React.Component<Props, State>
 {
     state = {
         openDialog: false,
@@ -49,7 +37,7 @@ class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventSta
         const event = this.props.event
         for (let i = 0; i < event.files.length; i++) {
             this.props.getDiff({
-                folderPath: this.props.folderPath,
+                repoRoot: this.props.repoRoot,
                 filename: event.files[i],
                 commit: event.commit
             })
@@ -119,7 +107,7 @@ class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventSta
 
             <RevertFilesDialog
                 event={this.props.event}
-                folderPath={this.props.folderPath}
+                repoRoot={this.props.repoRoot}
                 revertFiles={this.props.revertFiles}
                 open={this.state.openDialog}
                 onClose={this.handleClose}
@@ -127,6 +115,19 @@ class TimelineEvent extends React.Component<TimelineEventProps, TimelineEventSta
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    event: ITimelineEvent
+    repoRoot: string
+    getDiff: Function
+    revertFiles: Function
+    classes: any
+}
+
+interface State {
+    openDialog: boolean
+    showDiff: boolean
 }
 
 const styles = (theme: Theme) => createStyles({

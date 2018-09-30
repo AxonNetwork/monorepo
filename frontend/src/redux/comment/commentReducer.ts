@@ -34,7 +34,7 @@ const commentReducer = (state: ICommentState = initialState, action: ICommentAct
                 comments: {
                     [repoID]: {
                         ...(state.comments[repoID] || {}),
-                        [`${comment.attachedTo.type}/${comment.attachedTo.subject}`]: comment,
+                        [`${comment.attachedTo.type}/${comment.attachedTo.subject}/${comment.created}`]: comment,
                     },
                 }
             }

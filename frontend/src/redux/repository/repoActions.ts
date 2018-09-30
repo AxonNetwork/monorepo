@@ -268,8 +268,7 @@ export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED
 export interface ISelectFileAction {
     type: RepoActionType.SELECT_FILE
     payload: {
-        file: string
-        isFolder: boolean
+        selectedFile: { file: string, isFolder: boolean } | undefined
     }
 }
 
@@ -321,7 +320,7 @@ export interface IGetDiffSuccessAction {
 export interface IRevertFilesAction {
     type: RepoActionType.REVERT_FILES
     payload: {
-        folderPath: string
+        repoRoot: string
         files: string
         commit: string
     }

@@ -128,13 +128,10 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.SELECT_FILE: {
-            const { file, isFolder } = action.payload
+            const { selectedFile } = action.payload
             return {
                 ...state,
-                selectedFile: {
-                    file,
-                    isFolder,
-                },
+                selectedFile,
             }
         }
 

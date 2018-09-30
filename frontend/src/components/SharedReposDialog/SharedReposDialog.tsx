@@ -7,9 +7,11 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 
 import { cloneSharedRepo, ignoreSharedRepo } from '../../redux/user/userActions'
-import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
+import autobind from 'utils/autobind'
 
+
+@autobind
 class SharedReposDialog extends React.Component<Props, State>
 {
     state = {
@@ -17,30 +19,29 @@ class SharedReposDialog extends React.Component<Props, State>
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        if (nextProps.sharedRepo !== this.props.sharedRepo) {
+        if (nextProps.sharedRepoID !== this.props.sharedRepoID) {
             this.setState({ open: true })
         }
     }
 
-    handleClose = () => {
+    handleClose() {
         this.setState({ open: false })
     }
 
-    addRepo = () => {
+    cloneRepo() {
         this.handleClose()
-        this.props.cloneSharedRepo(this.props.sharedRepo.repoID)
+        this.props.cloneSharedRepo({ repoID: this.props.sharedRepoID })
     }
 
-    ignoreSharedRepo = () => {
+    ignoreSharedRepo() {
         this.handleClose()
-        this.props.ignoreSharedRepo(this.props.sharedRepo.repoID)
+        this.props.ignoreSharedRepo({ repoID: this.props.sharedRepoID })
     }
 
     render() {
-        if (this.props.sharedRepo === undefined) {
+        if (this.props.sharedRepoID === undefined) {
             return null
         }
-        const repoID = this.props.sharedRepo.repoID
         return (
             <Dialog
                 open={this.state.open}
@@ -48,11 +49,11 @@ class SharedReposDialog extends React.Component<Props, State>
             >
                 <DialogContent>
                     <DialogContentText>
-                        Repository "{repoID}" has been shared with you. Add to Conscience?
+                        Repository "{this.props.sharedRepoID}" has been shared with you. Add to Conscience?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.addRepo} color="secondary">
+                    <Button onClick={this.cloneRepo} color="secondary">
                         Add
                     </Button>
                     <Button onClick={this.ignoreSharedRepo} color="secondary" autoFocus>
@@ -65,7 +66,7 @@ class SharedReposDialog extends React.Component<Props, State>
 }
 
 interface Props {
-    sharedRepo: IRepo
+    sharedRepoID: string|undefined
     cloneSharedRepo: Function
     ignoreSharedRepo: Function
 }
@@ -77,12 +78,12 @@ interface State {
 const mapStateToProps = (state: IGlobalState) => {
     const sharedReposObj = (state.user.users[ state.user.currentUser || '' ] || {}).sharedRepos || {}
     let toPrompt = Object.keys(sharedReposObj).filter(repoID => !sharedReposObj[repoID].ignored)
-    let sharedRepo
+    let sharedRepoID: string|undefined
     if (toPrompt.length > 0) {
-        sharedRepo = toPrompt[0]
+        sharedRepoID = toPrompt[0]
     }
     return {
-        sharedRepo,
+        sharedRepoID,
     }
 }
 

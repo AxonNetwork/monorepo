@@ -1,5 +1,5 @@
 import { UserActionType, IUserAction } from './userActions'
-import { IUser, ISharedRepoInfo } from '../../common'
+import { IUser } from '../../common'
 
 const initialState = {
     users: {},
@@ -8,7 +8,7 @@ const initialState = {
 }
 
 export interface IUserState {
-    users: { [name: string]: IUser }
+    users: {[id: string]: IUser}
     currentUser: string | undefined
     error: Error | undefined
 }
