@@ -4,12 +4,14 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
+import DescriptionIcon from '@material-ui/icons/Description'
 import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
 
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoHistoryPage from './elements/RepoHistoryPage'
+import RepoManuscriptPage from './elements/RepoManuscriptPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import autobind from 'utils/autobind'
 
@@ -35,9 +37,12 @@ class Repository extends React.Component<Props, State>
                         <RepoFilesPage />
                     }
                     {this.state.page === 1 &&
-                        <RepoHistoryPage />
+                        <RepoManuscriptPage />
                     }
                     {this.state.page === 2 &&
+                        <RepoHistoryPage />
+                    }
+                    {this.state.page === 3 &&
                         <RepoDiscussionPage />
                     }
                 </div>
@@ -49,6 +54,7 @@ class Repository extends React.Component<Props, State>
                     className={classnames(classes.bottomNav, { [classes.bottomNavSidebarOpen]: this.props.sidebarOpen })}
                 >
                     <BottomNavigationAction label="Files" icon={<FolderOpenIcon />} />
+                    <BottomNavigationAction label="Manuscript" icon={<DescriptionIcon />} />
                     <BottomNavigationAction label="History" icon={<HistoryIcon />} />
                     <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
                 </BottomNavigation>

@@ -122,7 +122,6 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             message: event.message,
             files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
         } as ITimelineEvent))
-        console.log("TIMELINE: ", timeline)
 
         return { repoID, path, timeline }
     },

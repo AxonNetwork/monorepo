@@ -97,7 +97,7 @@ class Thread extends React.Component<Props, State>
                                         <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
                                         <div className={classes.commentBody}>
                                             {c.text.split('\n').map((p, i) => (
-                                                <Typography className={classes.commentText} element="p" key={i}>{p}</Typography>
+                                                <Typography className={classes.commentText} key={i}>{p}</Typography>
                                             ))}
                                         </div>
                                     </div>
