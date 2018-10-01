@@ -63,11 +63,9 @@ class RepoDiscussionPage extends React.Component<Props>
                     ))}
                     <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ created: -1 })}>
                         <ListItemText primary={'New Discussion'} />
-                        {selected === undefined &&
-                            <ListItemIcon>
-                                <ControlPointIcon />
-                            </ListItemIcon>
-                        }
+                        <ListItemIcon>
+                            <ControlPointIcon />
+                        </ListItemIcon>
                     </ListItem>
                     <Divider />
                 </List>
