@@ -3,52 +3,33 @@ import { connect } from 'react-redux'
 import { values } from 'lodash'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
-import ButtonBase from '@material-ui/core/ButtonBase'
-import SendIcon from '@material-ui/icons/Send'
 import CancelIcon from '@material-ui/icons/Cancel'
 import Avatar from '@material-ui/core/Avatar'
 
 import { createComment } from '../../../../redux/comment/commentActions'
-import { IUser, IComment } from '../../../../common'
+import { IUser, IComment, IRepoFile } from '../../../../common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
 import CommentText from './CommentText'
+import CreateComment from './CreateComment'
 
 @autobind
-class Thread extends React.Component<Props, State>
+class Thread extends React.Component<Props>
 {
-    state = {
-        comment: '',
-    }
-
-    handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
-        if (event.key === 'Enter' && event.shiftKey) {
-            this.handleSubmit(event)
-        }
-    }
-
-    handleChange(event:  React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>) {
-        this.setState({comment: event.target.value})
-    }
-
-    async handleSubmit(event: React.KeyboardEvent<HTMLDivElement>|React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        if (this.state.comment.length === 0) {
+    async handleSubmit(comment: string) {
+        if (comment.length === 0) {
             return
         }
         await this.props.createComment({
             repoID: this.props.repoID,
-            text: this.state.comment,
+            text: comment,
             attachedTo: {
                 type: this.props.type,
                 subject: this.props.subject,
             },
         })
-
-        this.setState({comment: ''})
     }
 
 
@@ -91,23 +72,11 @@ class Thread extends React.Component<Props, State>
                             )
                         })}
                     </div>
-                    <form onSubmit={this.handleSubmit} className={classes.reply}>
-                        <TextField
-                            id="comment"
-                            value={this.state.comment}
-                            placeholder="Comment (Shift + Enter to send)"
-                            multiline
-                            rows={2}
-                            rowsMax={8}
-                            onChange={this.handleChange}
-                            onKeyUp={this.handleKeyPress}
-                            className={classes.textField}
-                        />
-                        <ButtonBase type="submit" className={classes.submit}>
-                            <SendIcon className={classes.icon}/>
-                        </ButtonBase>
-                    </form>
                 </div>
+                <CreateComment
+                    files={this.props.files}
+                    onSubmit={this.handleSubmit}
+                />
             </div>
         )
     }
@@ -120,13 +89,10 @@ interface Props {
     repoID: string
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
+    files:{[name: string]: IRepoFile}
     unselect?: Function
     createComment: Function
     classes: any
-}
-
-interface State {
-    comment: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -167,34 +133,18 @@ const styles = (theme: Theme) => createStyles({
             backgroundColor: '#006ea2',
         },
     },
-    reply: {
-        display: 'flex',
-        alignSelf: 'flex-end',
-        width: '100%',
-        borderTop: '1px solid',
-        borderColor: theme.palette.grey[300],
-    },
-    textField: {
-        flexGrow: 1,
-        padding: theme.spacing.unit,
-    },
-    submit: {
-        padding: theme.spacing.unit,
-        borderRadius: 4,
-    },
-    icon: {
-        color: theme.palette.grey[700],
-    },
 })
 
 
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repoID = (state.repository.repos[selected] || {}).repoID
+    const files = (state.repository.repos[selected] || {}).files
     return {
         repoID,
         comments: state.comment.comments[repoID] || {},
         users: state.user.users,
+        files: files
     }
 }
 

@@ -6,7 +6,7 @@ import FileLink from './FileLink'
 
 function replaceLinks(text: string){
     let index = 0
-    index = text.indexOf('[conscience://')
+    index = text.indexOf('@file:[')
     if(index < 0){
         return <span>{text}</span>
     }

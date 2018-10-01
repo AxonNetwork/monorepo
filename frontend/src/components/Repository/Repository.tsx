@@ -59,7 +59,7 @@ class Repository extends React.Component<Props, State>
                     className={classnames(classes.bottomNav, { [classes.bottomNavSidebarOpen]: this.props.sidebarOpen })}
                 >
                     <BottomNavigationAction label="Files" icon={<FolderOpenIcon />} />
-                    <BottomNavigationAction label="Manuscript" icon={<DescriptionIcon />} />
+                    <BottomNavigationAction label="Editor" icon={<DescriptionIcon />} />
                     <BottomNavigationAction label="History" icon={<HistoryIcon />} />
                     <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
                     <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
