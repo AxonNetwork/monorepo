@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
@@ -19,6 +20,7 @@ class TextDiff extends React.Component<Props, State>
     }
 
     handleChange(_: any, expanded: boolean) {
+        console.log('handleChange', expanded)
         this.setState({ expanded })
     }
 
@@ -30,13 +32,13 @@ class TextDiff extends React.Component<Props, State>
         //     return acc
         // }, {add: 0, del: 0})
         return (
-            <ExpansionPanel onChange={this.handleChange}>
+            <ExpansionPanel className={classnames({ [classes.panelOpen]: this.state.expanded })} onChange={this.handleChange}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{ root: classes.summaryRoot }}>
                     <Typography className={classes.filename}>{filename /*+ ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart*/}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
                     {this.state.expanded &&
-                        chunks.map(chunk => (
+                        chunks.map((chunk, i) => (
                             <React.Fragment>
                                 <div>
                                     {type === 'text' &&
@@ -48,7 +50,9 @@ class TextDiff extends React.Component<Props, State>
                                         <SheetChunkContent chunk={chunk} />
                                     }
                                 </div>
-                                <div className={classes.diffBreakMarker}>...</div>
+                                {i < chunks.length - 1 &&
+                                    <div className={classes.diffBreakMarker}>...</div>
+                                }
                             </React.Fragment>
                         ))
                     }
@@ -70,6 +74,9 @@ interface State {
 }
 
 const styles = () => createStyles({
+    panelOpen: {
+        margin: '10px 0',
+    },
     row: {
         height: '24px',
         border: 0,

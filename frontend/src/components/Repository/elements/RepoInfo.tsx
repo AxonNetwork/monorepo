@@ -4,21 +4,19 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
 import OpenFolderButton from './RepoInfo/OpenFolderButton'
-import Sharing from './RepoInfo/Sharing'
 import PullButton from './RepoInfo/PullButton'
 import { IRepo } from '../../../common'
 
 import { IGlobalState } from '../../../redux/store'
-import { pullRepo, addCollaborator } from '../../../redux/repository/repoActions'
+import { pullRepo } from '../../../redux/repository/repoActions'
 
 function RepoInfo(props: {
     repo: IRepo|undefined
-    addCollaborator: Function
     pullRepo: Function
     classes: any
 })
 {
-    const { repo, addCollaborator, pullRepo, classes } = props
+    const { repo, pullRepo, classes } = props
     if (repo === undefined) {
         return null
     }
@@ -32,12 +30,6 @@ function RepoInfo(props: {
             <Typography className={classes.version}>
                 {version}
             </Typography>
-            <Sharing
-                sharedUsers={repo.sharedUsers || []}
-                folderPath={repo.path}
-                repoID={repo.repoID}
-                addCollaborator={addCollaborator}
-            />
             {/* @@TODO: behindRemote doesn't exist */
                 (repo as any).behindRemote &&
                 <PullButton
@@ -83,7 +75,6 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     pullRepo,
-    addCollaborator,
 }
 
 export default connect(

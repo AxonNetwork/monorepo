@@ -88,7 +88,7 @@ interface State {
 const styles = createStyles({
     root: {
         // margin: '16px 0 1px 0',
-        margin: '0 8px',
+        // margin: '0 8px',
     },
 })
 

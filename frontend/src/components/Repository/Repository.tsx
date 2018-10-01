@@ -7,12 +7,14 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import DescriptionIcon from '@material-ui/icons/Description'
 import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
+import SettingsIcon from '@material-ui/icons/Settings'
 
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoHistoryPage from './elements/RepoHistoryPage'
 import RepoManuscriptPage from './elements/RepoManuscriptPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
+import RepoSettingsPage from './elements/RepoSettingsPage'
 import autobind from 'utils/autobind'
 
 @autobind
@@ -45,6 +47,9 @@ class Repository extends React.Component<Props, State>
                     {this.state.page === 3 &&
                         <RepoDiscussionPage />
                     }
+                    {this.state.page === 4 &&
+                        <RepoSettingsPage />
+                    }
                 </div>
 
                 <BottomNavigation
@@ -57,6 +62,7 @@ class Repository extends React.Component<Props, State>
                     <BottomNavigationAction label="Manuscript" icon={<DescriptionIcon />} />
                     <BottomNavigationAction label="History" icon={<HistoryIcon />} />
                     <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
+                    <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
                 </BottomNavigation>
             </div>
         )

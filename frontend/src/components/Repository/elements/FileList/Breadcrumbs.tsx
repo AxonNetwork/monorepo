@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import path from 'path'
@@ -62,7 +63,7 @@ class Breadcrumbs extends React.Component<Props>
                 {parts.map((p, i) => {
                     return (
                         <React.Fragment key={p + i}>
-                            <span className={classes.crumb} onClick={() => this.selectCrumb(i)}>
+                            <span className={classnames({ [classes.crumb]: i < parts.length - 1 })} onClick={() => this.selectCrumb(i)}>
                                 {p}
                             </span>
                             {(i < parts.length - 1) &&

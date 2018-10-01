@@ -13,18 +13,8 @@ import Repository from './Repository/Repository'
 import autobind from 'utils/autobind'
 import { IGlobalState } from 'redux/store'
 
-export interface MainUIProps {
-    loggedIn: boolean
-    currentPage: string
-    classes: any
-}
-
-export interface MainUIState {
-    sidebarOpen: boolean
-}
-
 @autobind
-class MainUI extends React.Component<MainUIProps, MainUIState>
+class MainUI extends React.Component<Props, State>
 {
     state = { sidebarOpen: true }
 
@@ -34,8 +24,8 @@ class MainUI extends React.Component<MainUIProps, MainUIState>
 
     render() {
         const { currentPage, loggedIn, classes } = this.props
-        if(!loggedIn){
-            return(
+        if (!loggedIn) {
+            return (
                 <Login />
             )
         }
@@ -68,6 +58,16 @@ class MainUI extends React.Component<MainUIProps, MainUIState>
             </div>
         )
     }
+}
+
+interface Props {
+    loggedIn: boolean
+    currentPage: string
+    classes: any
+}
+
+interface State {
+    sidebarOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({

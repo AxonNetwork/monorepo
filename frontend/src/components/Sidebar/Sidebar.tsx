@@ -20,21 +20,9 @@ import { IRepo, IUser } from 'common'
 import { IGlobalState } from 'redux/store'
 import { selectRepo } from 'redux/repository/repoActions'
 import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
+import { strToColor } from 'utils'
 
-export interface SidebarProps {
-    user: IUser
-    repos: {[folderPath: string]: IRepo}
-    selectedRepo?: string|null
-    currentPage: string
-    toggleSidebar: Function
-    selectRepo: Function
-    navigateNewRepo: Function
-    navigateSettings: Function
-    open: boolean
-    classes: any
-}
-
-class Sidebar extends React.Component<SidebarProps>
+class Sidebar extends React.Component<Props>
 {
     render(){
         const { user, open, classes } = this.props
@@ -54,7 +42,7 @@ class Sidebar extends React.Component<SidebarProps>
                 </div>
                 <Divider />
                 <div className={classes.avatarWrapper}>
-                    <Avatar>{userInitials}</Avatar>
+                    <Avatar style={{ backgroundColor: strToColor(user.name) }}>{userInitials}</Avatar>
                     <Typography className={classes.avatarName} classes={{ root: classes.sidebarItemText }}>{this.props.user.name}</Typography>
                 </div>
 
@@ -98,6 +86,19 @@ class Sidebar extends React.Component<SidebarProps>
             </Drawer>
         )
     }
+}
+
+interface Props {
+    user: IUser
+    repos: {[folderPath: string]: IRepo}
+    selectedRepo?: string|null
+    currentPage: string
+    toggleSidebar: Function
+    selectRepo: Function
+    navigateNewRepo: Function
+    navigateSettings: Function
+    open: boolean
+    classes: any
 }
 
 const drawerWidth = 200

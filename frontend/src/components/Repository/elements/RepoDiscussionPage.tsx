@@ -21,6 +21,7 @@ import { IDiscussion, IComment } from 'common'
 class RepoDiscussionPage extends React.Component<Props>
 {
     componentWillMount() {
+        // @@TODO: intelligent caching
         this.props.getDiscussions({ repoID: this.props.repoID })
     }
 
