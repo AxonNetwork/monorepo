@@ -21,6 +21,7 @@ class RepoHistoryPage extends React.Component<Props>
                         commit={commits[ selectedCommit ]}
                         repoRoot={repoRoot}
                         getDiff={getDiff}
+                        selectCommit={selectCommit}
                     />
                 }
                 {selectedCommit === undefined &&
@@ -47,7 +48,7 @@ interface Props {
     selectedCommit: string | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
-    selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
     classes: any
 }
 

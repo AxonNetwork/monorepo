@@ -14,6 +14,7 @@ import moment from 'moment'
 import { createComment } from '../../../../redux/comment/commentActions'
 import { IUser, IComment } from '../../../../common'
 import autobind from 'utils/autobind'
+import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
 
 @autobind
@@ -50,18 +51,6 @@ class Thread extends React.Component<Props, State>
         this.setState({comment: ''})
     }
 
-    strToColor(str: string) {
-        let hash = 0
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash)
-        }
-        let colour = '#'
-        for (let i = 0; i < 3; i++) {
-            let value = (hash >> (i * 8)) & 0xFF
-            colour += ('00' + value.toString(16)).substr(-2)
-        }
-        return colour
-    }
 
     render() {
         const { classes, title, comments } = this.props
@@ -86,7 +75,7 @@ class Thread extends React.Component<Props, State>
                         {commentsList.map(c => {
                             const username = (this.props.users[c.user] || {}).name || c.user
                             const userInitials = username.split(' ').map(x => x.substring(0, 1)).map(x => x.toUpperCase()).join('')
-                            const color = this.strToColor(username)
+                            const color = strToColor(username)
                             return (
                                 <div className={classes.commentRow} key={c.created}>
                                     <div className={classes.commentAvatar}>

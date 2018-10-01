@@ -38,3 +38,5 @@ dist/
 # Redis data
 backend/redis-data/*
 !backend/redis-data/.gitkeep
+
+.env

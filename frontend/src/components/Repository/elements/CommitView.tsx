@@ -2,7 +2,7 @@ import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import DiffViewer from './DiffViewer/DiffViewer'
-import { IGetDiffAction } from 'redux/repository/repoActions'
+import { IGetDiffAction, ISelectCommitAction } from 'redux/repository/repoActions'
 import { ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 
@@ -21,6 +21,10 @@ class CommitView extends React.Component<Props>
         }
     }
 
+    onClickBack() {
+        this.props.selectCommit({ selectedCommit: undefined })
+    }
+
     render() {
         const { classes } = this.props
         const commit = this.props.commit || {} as ITimelineEvent
@@ -28,23 +32,20 @@ class CommitView extends React.Component<Props>
         return (
             <div>
                 <Typography>
-                    Location: <span className={classes.temp}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
+                    Location: <span className={classes.breadcrumbRoot} onClick={this.onClickBack}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
                 </Typography>
 
-                <Typography variant="headline">
+                <Typography variant="headline" className={classes.commitMessage}>
                     {/*Revision <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>*/}
                     {commit.message}
                 </Typography>
 
                 {Object.keys(diffs).map(filename => (
-                    <div className={classes.file}>
-                        <Typography>{filename}</Typography>
-                        <DiffViewer
-                            key={filename}
-                            diff={diffs[filename]}
-                            type="text"
-                        />
-                    </div>
+                    <DiffViewer
+                        key={filename}
+                        diff={diffs[filename]}
+                        type="text"
+                    />
                 ))}
             </div>
         )
@@ -55,6 +56,7 @@ interface Props {
     commit: ITimelineEvent | undefined
     repoRoot: string
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
+    selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
     classes: any
 }
 
@@ -62,14 +64,18 @@ const styles = () => createStyles({
     file: {
         padding: '30px 12px',
     },
-    temp: {
+    breadcrumbRoot: {
         color: '#fd6314', //theme.palette.secondary.main,
         textDecoration: 'underline',
+        cursor: 'pointer',
     },
     titleCommitHash: {
         fontFamily: 'Consolas, Menlo, "Courier New", Courier, monospace',
         color: '#fd6314',
         textDecoration: 'underline',
+    },
+    commitMessage: {
+        marginBottom: 24,
     },
 })
 

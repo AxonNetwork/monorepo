@@ -1,20 +1,13 @@
 import React from 'react'
+import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
-import IconButton from '@material-ui/core/IconButton'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
 
-import moment from 'moment'
-
-import EventTitle from './EventTitle'
 import RevertFilesDialog from './RevertFilesDialog'
-import DiffViewer from '../DiffViewer/DiffViewer'
-
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
+import { removeEmail, getUserInitials, strToColor } from 'utils'
 
 
 @autobind
@@ -22,7 +15,6 @@ class TimelineEvent extends React.Component<Props, State>
 {
     state = {
         openDialog: false,
-        showDiff: false,
     }
 
     handleClick() {
@@ -33,85 +25,34 @@ class TimelineEvent extends React.Component<Props, State>
         this.setState({ openDialog: false })
     }
 
-    toggleDiff() {
-        const event = this.props.event
-        for (let i = 0; i < event.files.length; i++) {
-            this.props.getDiff({
-                repoRoot: this.props.repoRoot,
-                filename: event.files[i],
-                commit: event.commit
-            })
-        }
-        this.setState({showDiff: !this.state.showDiff})
-    }
-
     render() {
         const { event, classes } = this.props
-        const diffs = event.diffs || {}
-        const userInitials = event.user.split(' ').map(x => x.substring(0, 1)).join('')
+        const username = removeEmail(event.user)
+        const avatarColor = strToColor(event.user)
         return (
             <React.Fragment>
                 <div className={classes.event}>
-                    <IconButton className={classes.menuButton} onClick={this.handleClick}>
+                    {/*<IconButton className={classes.menuButton} onClick={this.handleClick}>
                         <MoreVertIcon />
-                    </IconButton>
+                    </IconButton>*/}
                     <div className={classes.topline}></div>
                     <div className={classes.eventIconContainer}>
-                        <Avatar className={classes.avatar}>{userInitials}</Avatar>
+                        <Avatar style={{ backgroundColor: avatarColor }} className={classes.avatar}>{getUserInitials(username)}</Avatar>
                     </div>
                     <div className={classes.eventDescription}>
-                        <Typography className={classes.title}>
-                            <EventTitle
-                                version={event.version}
-                                user={event.user}
-                                files={event.files}
-                            />
-                        </Typography>
-                        <Typography className={classes.date}>
-                            {moment(event.time).calendar()}
-                        </Typography>
-                        <Typography className={classes.message}>
-                            {event.message}
-                        </Typography>
-                        <Typography className={classes.seeDiff} onClick={this.toggleDiff}>
-                            {!this.state.showDiff &&
-                                <span>Show differences (from current version) <ArrowDropDownIcon className={classes.arrowIcon}/></span>
-                            }
-                            {this.state.showDiff &&
-                                <span>Hide differences <ArrowDropUpIcon className={classes.arrowIcon}/></span>
-                            }
-                        </Typography>
-
+                        <Typography className={classes.commitMessage}>{event.message}</Typography>
+                        <Typography className={classes.date}>{moment(event.time).calendar()}</Typography>
+                        <Typography className={classes.username}>{event.user}</Typography>
                     </div>
-                    {this.state.showDiff &&
-                        <div className={classes.diffContainer}>
-                            {Object.keys(diffs).length == 0 &&
-                                <Typography>Loading...</Typography>
-                            }
-                            {Object.keys(diffs).length > 0 && !Object.keys(diffs).some(d => diffs[d] !== '') &&
-                                <Typography>No differences</Typography>
-                            }
-                            {Object.keys(diffs).map(((d: string, i: number) => {
-                                return (
-                                    <DiffViewer
-                                        key={i}
-                                        diff={diffs[d]}
-                                        type="text"
-                                    />
-                                )
-
-                            }).bind(this))}
-                        </div>
-                    }
                 </div>
 
-            <RevertFilesDialog
-                event={this.props.event}
-                repoRoot={this.props.repoRoot}
-                revertFiles={this.props.revertFiles}
-                open={this.state.openDialog}
-                onClose={this.handleClose}
-            />
+                <RevertFilesDialog
+                    event={this.props.event}
+                    repoRoot={this.props.repoRoot}
+                    revertFiles={this.props.revertFiles}
+                    open={this.state.openDialog}
+                    onClose={this.handleClose}
+                />
             </React.Fragment>
         )
     }
@@ -127,7 +68,6 @@ interface Props {
 
 interface State {
     openDialog: boolean
-    showDiff: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -150,9 +90,9 @@ const styles = (theme: Theme) => createStyles({
         zIndex: 1,
     },
     avatar: {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.secondary.main,
-        border: '2px solid',
+        // backgroundColor: theme.palette.background.default,
+        // color: theme.palette.secondary.main,
+        // border: '2px solid',
     },
     eventDescription: {
         position: 'relative',
@@ -160,8 +100,9 @@ const styles = (theme: Theme) => createStyles({
         left: 56,
         width: 'calc(100% - 56px)',
     },
-    title: {
-        fontsize: '12pt',
+    commitMessage: {
+        fontSize: '11pt',
+        fontWeight: 'bold',
     },
     filename: {
         color: theme.palette.primary.main,
@@ -171,11 +112,12 @@ const styles = (theme: Theme) => createStyles({
     date: {
         fontSize: '8pt',
     },
-    message: {
-        paddingLeft: '16px',
-        borderLeft: '2px solid',
-        borderLeftColor: theme.palette.grey[300],
-        color: theme.palette.text.secondary,
+    username: {
+        fontSize: '8pt',
+        // paddingLeft: '16px',
+        // borderLeft: '2px solid',
+        // borderLeftColor: theme.palette.grey[300],
+        // color: theme.palette.text.secondary,
     },
     seeDiff: {
         color: theme.palette.secondary.main,
@@ -185,11 +127,6 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: -6,
         marginLeft: -6,
     },
-    diffContainer: {
-        position: 'relative',
-        left: 48,
-        width: '90%',
-    },
     menuButton: {
         position: 'absolute',
         top: 28,
@@ -198,5 +135,26 @@ const styles = (theme: Theme) => createStyles({
         height: 40,
     },
 })
+
+// function EventTitle(props: {
+//     version: number
+//     user: string
+//     files: string[] | string
+// }) {
+//     const user = props.user || 'Someone'
+//     const { files, version } = props
+//     let filesString
+//     if (typeof files === 'string') {
+//         filesString = files
+//     }else {
+//         filesString = files.reduce((acc: JSX.Element[], curr: string, i: number) => {
+//             acc.push(<code key={i}>{curr}</code>)
+//             if (files.length - i > 2) { acc.push(<span>, </span>) }
+//             if (files.length - i == 2) { acc.push(<span> and </span>) }
+//             return acc
+//         }, [])
+//     }
+//     return <span><strong>v{version}: {user}</strong> edited {filesString}</span>
+// }
 
 export default withStyles(styles)(TimelineEvent)

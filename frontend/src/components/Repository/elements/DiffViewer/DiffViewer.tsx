@@ -1,7 +1,8 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Chunk from './Chunk'
+// import Chunk from './Chunk'
+import TextDiff from './TextDiff'
 import BinaryDiff from './BinaryDiff'
 
 import parse from 'parse-diff'
@@ -36,11 +37,12 @@ class DiffViewer extends React.Component<Props, State>
             return <Typography>{diff}</Typography>
         }
         const files = this.state.files || []
-        const type = this.props.type || 'text'
         if (files.length < 1) {
-            return <div></div>
+            return null
         }
-        switch (type){
+
+        const type = this.props.type || 'text'
+        switch (type) {
             case 'image':
             case 'binary':
                 return (
@@ -52,22 +54,19 @@ class DiffViewer extends React.Component<Props, State>
                         ))}
                     </div>
                 )
+
             case 'data':
             case 'text':
             default:
                 return (
                     <div className={classes.root}>
-                        {files.map((file:any, i:number) => (
-                            <React.Fragment key={i}>
-                                {file.chunks.map((chunk:any) => (
-                                    <Chunk
-                                        key={chunk.newStart}
-                                        chunk={chunk}
-                                        filename={file.to}
-                                        type={type}
-                                    />
-                                ))}
-                            </React.Fragment>
+                        {files.map((file:any) => (
+                            <TextDiff
+                                key={file.to}
+                                chunks={file.chunks}
+                                filename={file.to}
+                                type={type}
+                            />
                         ))}
                     </div>
                 )
@@ -82,13 +81,14 @@ interface Props {
 }
 
 interface State {
-    files: parse.File[]|undefined
+    files: parse.File[] | undefined
 }
 
 
 const styles = createStyles({
     root: {
-        margin: '16px 0 1px 0',
+        // margin: '16px 0 1px 0',
+        margin: '0 8px',
     },
 })
 
