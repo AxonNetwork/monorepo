@@ -121,7 +121,6 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             time: new Date(event.timestamp*1000),
             message: event.message,
             files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
-            diffs: {},
         } as ITimelineEvent))
         console.log("TIMELINE: ", timeline)
 
@@ -175,9 +174,34 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }) {
-        const { folderPath, filename, commit } = action.payload
-        const diff = await ConscienceRelay.getDiff(folderPath, filename, commit)
-        return { diff, folderPath, filename, commit }
+        const { repoRoot, commit } = action.payload
+        const diffBlob = await ConscienceRelay.getDiff(repoRoot, commit)
+
+        const lines = diffBlob.split('\n')
+        let filename = ''
+        let skipLines = 0
+        let pastHeader = false
+        let diffs = {} as {[filename: string]: string}
+        for (let line of lines) {
+            if (line.indexOf('diff ') === 0) {
+                const parts = line.split(' ')
+                filename = parts[2].replace('a/', '')
+                skipLines = 3
+                pastHeader = true
+            }
+            if (skipLines > 0) {
+                skipLines--
+                continue
+            }
+            if (!pastHeader) {
+                continue
+            }
+            diffs[filename] = (diffs[filename] || '') + line + '\n'
+        }
+
+        console.log('diffs ~>', diffs)
+
+        return { diffs, repoRoot, filename, commit }
     },
 })
 

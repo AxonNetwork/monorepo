@@ -6,19 +6,9 @@ import BinaryDiff from './BinaryDiff'
 
 import parse from 'parse-diff'
 
-export interface DiffViewerProps {
-    diff: string
-    type: string
-    classes: any
-}
-
-export interface DiffViewerState {
-    files: parse.File[]|undefined
-}
-
-class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
+class DiffViewer extends React.Component<Props, State>
 {
-    constructor(props: DiffViewerProps) {
+    constructor(props: Props) {
         super(props)
         this.state = {
             files: DiffViewer.parseDiff(props.diff),
@@ -32,7 +22,7 @@ class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
         return parse(diff)
     }
 
-    componentDidUpdate(prevProps: DiffViewerProps) {
+    componentDidUpdate(prevProps: Props) {
         if (prevProps.diff !== this.props.diff) {
             this.setState({
                 files: DiffViewer.parseDiff(this.props.diff),
@@ -41,7 +31,7 @@ class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
     }
 
     render() {
-        const { diff, classes } = this.props.classes
+        const { diff, classes } = this.props
         if (diff.startsWith('Deleted')) {
             return <Typography>{diff}</Typography>
         }
@@ -82,9 +72,19 @@ class DiffViewer extends React.Component<DiffViewerProps, DiffViewerState>
                     </div>
                 )
         }
-
     }
 }
+
+interface Props {
+    diff: string
+    type: string
+    classes: any
+}
+
+interface State {
+    files: parse.File[]|undefined
+}
+
 
 const styles = createStyles({
     root: {

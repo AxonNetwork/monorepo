@@ -27,9 +27,9 @@ async function processMessage(message) {
         } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
     case GET_DIFF:
         try {
-            const diff = await ConscienceManager.getDiff(message.folderPath, message.filename, message.commit);
+            const diff = await ConscienceManager.getDiff(message.repoRoot, message.commit);
             return { response: 'SUCCESS', id: message.id, diff };
-        } catch (err) { return { response: 'ERROR', id: message.id, error: err }; }
+        } catch (err) { return { response: 'ERROR', id: message.id, error: err.toString() }; }
     case REVERT_FILES:
         try {
             await ConscienceManager.revertFiles(message.folderPath, message.files, message.commit);

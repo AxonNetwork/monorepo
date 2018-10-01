@@ -19,10 +19,10 @@ function RepoInfo(props: {
 })
 {
     const { repo, addCollaborator, pullRepo, classes } = props
-    if (repo === undefined){
+    if (repo === undefined) {
         return null
     }
-    const version = (repo.timeline !== undefined) ? 'v' + Object.keys(repo.timeline).length : ''
+    const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
     return (
         <div className={classes.repoInfo}>
             <OpenFolderButton folderPath={repo.path} />
@@ -72,7 +72,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps=(state: IGlobalState) => {
+const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected]
     return {

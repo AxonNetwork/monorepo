@@ -2,6 +2,7 @@ import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import Timeline from './Timeline/Timeline'
+import CommitView from './CommitView'
 import { IGlobalState } from 'redux/store'
 import { selectCommit, getDiff, revertFiles } from 'redux/repository/repoActions'
 import { ISelectCommitAction, IGetDiffAction, IRevertFilesAction } from 'redux/repository/repoActions'
@@ -12,17 +13,22 @@ import autobind from 'utils/autobind'
 class RepoHistoryPage extends React.Component<Props>
 {
     render() {
-        const { repoRoot, timeline, selectCommit, getDiff, revertFiles, classes } = this.props
+        const { repoRoot, selectCommit, getDiff, revertFiles, commits, commitList, selectedCommit, classes } = this.props
         return (
             <div className={classes.timelinePage}>
-                {this.props.selectedCommit &&
-                    <div>you selected commit {this.props.selectedCommit}, nice work</div>
+                {selectedCommit &&
+                    <CommitView
+                        commit={commits[ selectedCommit ]}
+                        repoRoot={repoRoot}
+                        getDiff={getDiff}
+                    />
                 }
-                {this.props.selectedCommit === undefined &&
+                {selectedCommit === undefined &&
                     <div className={classes.timeline}>
                         <Timeline
                             repoRoot={repoRoot}
-                            timeline={timeline}
+                            commits={commits}
+                            commitList={commitList}
                             getDiff={getDiff}
                             revertFiles={revertFiles}
                             selectCommit={selectCommit}
@@ -36,8 +42,9 @@ class RepoHistoryPage extends React.Component<Props>
 
 interface Props {
     repoRoot: string
-    timeline: ITimelineEvent[]
-    selectedCommit: string|undefined
+    commits: {[commit: string]: ITimelineEvent}
+    commitList: string[]
+    selectedCommit: string | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
@@ -69,7 +76,8 @@ const mapStateToProps = (state: IGlobalState) => {
     const selectedCommit = state.repository.selectedCommit
     return {
         repoRoot: repo.path,
-        timeline: repo.timeline || [],
+        commits: repo.commits || {},
+        commitList: repo.commitList || [],
         selectedCommit,
     }
 }

@@ -8,7 +8,8 @@ export interface IRepo {
     files?: {[name: string]: IRepoFile}
     localRefs?: {[name: string]: string}
     remoteRefs?: {[name: string]: string}
-    timeline?: ITimelineEvent[]
+    commits?: {[commitHash: string]: ITimelineEvent}
+    commitList?: string[]
 }
 
 export interface ISharedRepoInfo {
@@ -37,7 +38,7 @@ export interface ITimelineEvent {
     time: Date
     message: string
     files: string[]
-    diffs: {[commit: string]: string}
+    diffs?: {[commit: string]: string}
 }
 
 export interface IComment {

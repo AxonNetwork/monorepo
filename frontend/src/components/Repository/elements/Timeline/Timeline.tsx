@@ -32,8 +32,10 @@ class Timeline extends React.Component<Props, State>
 
     render() {
         const { page, rowsPerPage } = this.state
-        const { timeline, repoRoot, getDiff, revertFiles } = this.props
-        const timelinePage = (timeline || []).slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+        const commitList = this.props.commitList || []
+        const commits = this.props.commits || {}
+
+        const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(c => commits[c])
         return (
             <div>
                 <div>
@@ -42,10 +44,10 @@ class Timeline extends React.Component<Props, State>
                         return (
                             <div key={event.commit} onClick={() => this.selectCommit(event.commit)}>
                                 <TimelineEvent
-                                    repoRoot={repoRoot}
+                                    repoRoot={this.props.repoRoot}
                                     event={event}
-                                    getDiff={getDiff}
-                                    revertFiles={revertFiles}
+                                    getDiff={this.props.getDiff}
+                                    revertFiles={this.props.revertFiles}
                                 />
                             </div>
                         )
@@ -53,10 +55,10 @@ class Timeline extends React.Component<Props, State>
                 }
                 </div>
 
-                {timeline.length > this.state.rowsPerPage &&
+                {commitList.length > this.state.rowsPerPage &&
                     <TablePagination
                         component="div"
-                        count={timeline.length}
+                        count={commitList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         backIconButtonProps={{ 'aria-label': 'Previous Page' }}
@@ -72,7 +74,9 @@ class Timeline extends React.Component<Props, State>
 
 interface Props {
     repoRoot: string
-    timeline: ITimelineEvent[]
+    // timeline: ITimelineEvent[]
+    commits: {[commit: string]: ITimelineEvent} | undefined
+    commitList: string[] | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction

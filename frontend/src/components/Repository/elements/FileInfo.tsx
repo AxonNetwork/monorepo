@@ -50,7 +50,8 @@ class FileInfo extends React.Component<Props>
                         }
                         <Timeline
                             repoRoot={this.props.repoRoot}
-                            timeline={this.props.timeline}
+                            commits={this.props.commits}
+                            commitList={this.props.commitList}
                             getDiff={this.props.getDiff}
                             revertFiles={this.props.revertFiles}
                         />
@@ -70,7 +71,8 @@ class FileInfo extends React.Component<Props>
 
 interface Props {
     file: IRepoFile
-    timeline: ITimelineEvent[]
+    commits: {[commit: string]: ITimelineEvent} | undefined
+    commitList: string[]
     repoRoot: string
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction

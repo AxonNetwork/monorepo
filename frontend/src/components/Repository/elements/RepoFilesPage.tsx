@@ -1,10 +1,11 @@
+import { get } from 'lodash'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import FileList from './FileList/FileList'
 import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
-import { IRepo, ITimelineEvent } from 'common'
+import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
 import { ICheckpointRepoAction, IGetDiffAction, IRevertFilesAction, ISelectFileAction,
     checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
@@ -26,15 +27,16 @@ class RepoFilesPage extends React.Component<Props>
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             const relPath = selectedFile.file.replace(repo.path + '/', '')
-            let timeline = [] as ITimelineEvent[]
-            if (repo.timeline !== undefined) {
-                timeline = repo.timeline.filter(e => e.files.indexOf(relPath) > -1)
+            let commitList = [] as string[]
+            if (repo.commitList !== undefined && repo.commits !== undefined) {
+                commitList = repo.commitList.filter(c => get(repo, ['commits', c, 'files'], []).includes(relPath))
             }
             return (
                 <FileInfo
                     file={files[relPath]}
                     repoRoot={repo.path}
-                    timeline={timeline}
+                    commitList={commitList}
+                    commits={repo.commits}
                     selectFile={this.props.selectFile}
                     getDiff={this.props.getDiff}
                     revertFiles={this.props.revertFiles}

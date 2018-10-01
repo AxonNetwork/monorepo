@@ -310,8 +310,7 @@ export interface IAddCollaboratorSuccessAction {
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
     payload: {
-        folderPath: string
-        filename: string
+        repoRoot: string
         commit: string
     }
 }
@@ -319,9 +318,8 @@ export interface IGetDiffAction {
 export interface IGetDiffSuccessAction {
     type: RepoActionType.GET_DIFF_SUCCESS
     payload: {
-        diff: string
-        folderPath: string
-        filename: string
+        diffs: {[filename: string]: string}
+        repoRoot: string
         commit: string
     }
 }

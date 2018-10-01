@@ -118,19 +118,11 @@ async function cloneRepo(repoID, location) {
     }
 }
 
-async function getDiff(folderPath, filename, commit) {
-    const exists = fs.existsSync(path.join(folderPath, filename))
-    if (!exists) {
-        return (`Deleted: ${filename}`)
-    }
-
-    let cmd = 'git diff'
-    if (commit !== undefined) { cmd += ` ${commit}` }
-    if (filename !== undefined) { cmd += ` ${filename}` }
-
+async function getDiff(repoRoot, commit) {
+    let cmd = 'git show ' + commit
     let diff
     try {
-        diff = await execCmd(cmd, folderPath)
+        diff = await execCmd(cmd, repoRoot)
     } catch (err) {
         console.log('ERROR running ConscienceManager.getDiff ~>', err)
     }

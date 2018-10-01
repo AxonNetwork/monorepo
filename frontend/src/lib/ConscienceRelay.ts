@@ -57,12 +57,11 @@ export async function cloneRepo(repoID: string, location: string) {
 	return response.repo as { repoID: string, folderPath: string }
 }
 
-export async function getDiff(folderPath: string, filename: string, commit: string) {
+export async function getDiff(repoRoot: string, commit: string) {
     const message = {
         type: 'GET_DIFF',
-        folderPath: folderPath,
-        filename: filename,
-        commit: commit
+        repoRoot: repoRoot,
+        commit: commit,
     }
 	const response = await sendMessage(message)
 	console.log('consciencemanager.getDiff ~>', response)

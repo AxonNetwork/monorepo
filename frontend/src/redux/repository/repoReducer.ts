@@ -1,5 +1,5 @@
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepo } from '../../common'
+import { IRepo, ITimelineEvent } from '../../common'
 
 const initialState = {
     repos: {},
@@ -80,7 +80,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 repos: {
                     ...state.repos,
                     [path]: {
-                        ...state.repos[path],
+                        ...(state.repos[path] || {}),
                         files,
                     }
                 }
@@ -89,34 +89,45 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
             const { path, timeline } = action.payload
+            const commits = {} as {[commit: string]: ITimelineEvent}
+            const commitList = [] as string[]
+            for (let commit of timeline) {
+                commits[commit.commit] = commit
+                commitList.push(commit.commit)
+            }
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     [path]: {
-                        ...state.repos[path],
-                        timeline,
+                        ...(state.repos[path] || {}),
+                        // timeline,
+                        commits,
+                        commitList,
                     }
                 }
             }
         }
 
         case RepoActionType.GET_DIFF_SUCCESS: {
-            const { commit, diff, filename, folderPath } = action.payload
-            const timeline = ((state.repos[folderPath] || {}).timeline || []).map(e => {
-                let diffs = { ...e.diffs }
-                if (e.commit === commit) {
-                    diffs[filename] = diff
-                }
-                return { ...e, diffs }
-            })
+            const { commit, diffs, repoRoot } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [folderPath]: {
-                        ...state.repos[folderPath],
-                        timeline,
+                    [repoRoot]: {
+                        ...(state.repos[repoRoot] || {}),
+                        commits: {
+                            ...((state.repos[repoRoot] || {}).commits || {}),
+                            [commit]: {
+                                ...(((state.repos[repoRoot] || {}).commits || {})[commit] || {}),
+                                diffs,
+                                // diffs: {
+                                //     ...((((state.repos[repoRoot] || {}).commits || {})[commit] || {}).diffs),
+                                //     [filename]: diff,
+                                // },
+                            },
+                        },
                     },
                 },
             }
@@ -138,7 +149,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.SELECT_COMMIT: {
-            console.log('select commit!', action)
             const { selectedCommit } = action.payload
             return {
                 ...state,

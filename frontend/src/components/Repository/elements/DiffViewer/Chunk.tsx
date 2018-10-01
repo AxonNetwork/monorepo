@@ -1,5 +1,6 @@
 import React from 'react'
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
@@ -10,26 +11,15 @@ import SheetChunkContent from './SheetChunkContent'
 import autobind from 'utils/autobind'
 import parse from 'parse-diff'
 
-export interface ChunkProps {
-    filename: string
-    type: string
-    chunk: parse.Chunk
-    classes: any
-}
-
-export interface ChunkState {
-    expanded: boolean
-}
-
 @autobind
-class Chunk extends React.Component<ChunkProps, ChunkState>
+class Chunk extends React.Component<Props, State>
 {
     state = {
-        expanded: false
+        expanded: true,
     }
 
-    handleChange = (_: any, expanded: boolean) => {
-        this.setState({expanded: expanded})
+    handleChange(_: any, expanded: boolean) {
+        this.setState({ expanded })
     }
 
     render() {
@@ -41,9 +31,9 @@ class Chunk extends React.Component<ChunkProps, ChunkState>
         }, {add: 0, del: 0})
         return (
             <React.Fragment>
-                <ExpansionPanel onChange={this.handleChange}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{root: classes.summaryRoot}}>
-                        <code>{filename + ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart}</code>
+                <ExpansionPanel onChange={this.handleChange} defaultExpanded>
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{ root: classes.summaryRoot }}>
+                        <Typography>{filename + ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart}</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
                         {this.state.expanded &&
@@ -65,14 +55,25 @@ class Chunk extends React.Component<ChunkProps, ChunkState>
     }
 }
 
-const styles = (theme: Theme) => createStyles({
+interface Props {
+    filename: string
+    type: string
+    chunk: parse.Chunk
+    classes: any
+}
+
+interface State {
+    expanded: boolean
+}
+
+const styles = () => createStyles({
     row: {
         height: '24px',
         border: 0,
     },
     summaryRoot: {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.secondary.main,
+        // backgroundColor: theme.palette.background.default,
+        // color: theme.palette.secondary.main,
         fontWeight: 'bold',
     },
     detailsRoot: {
