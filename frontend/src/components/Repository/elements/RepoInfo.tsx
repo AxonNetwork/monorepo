@@ -52,7 +52,8 @@ function RepoInfo(props: {
 
 const styles = (theme: Theme) => createStyles({
     repoInfo: {
-
+        borderBottom: '1px solid #e4e4e4',
+        paddingBottom: 20,
     },
     locationLink: {
         color: theme.palette.secondary.main,

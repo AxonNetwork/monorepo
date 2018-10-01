@@ -27,7 +27,14 @@ class CommitView extends React.Component<Props>
         const diffs = commit.diffs || {}
         return (
             <div>
-                <Typography variant="headline">{commit.commit || ''}</Typography>
+                <Typography>
+                    Location: <span className={classes.temp}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
+                </Typography>
+
+                <Typography variant="headline">
+                    {/*Revision <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>*/}
+                    {commit.message}
+                </Typography>
 
                 {Object.keys(diffs).map(filename => (
                     <div className={classes.file}>
@@ -54,6 +61,15 @@ interface Props {
 const styles = () => createStyles({
     file: {
         padding: '30px 12px',
+    },
+    temp: {
+        color: '#fd6314', //theme.palette.secondary.main,
+        textDecoration: 'underline',
+    },
+    titleCommitHash: {
+        fontFamily: 'Consolas, Menlo, "Courier New", Courier, monospace',
+        color: '#fd6314',
+        textDecoration: 'underline',
     },
 })
 
