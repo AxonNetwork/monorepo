@@ -46,20 +46,18 @@ class DiffViewer extends React.Component<Props, State>
             case 'image':
             case 'binary':
                 return (
-                    <div className={classes.root}>
+                    <React.Fragment>
                         {files.map((file:any, i:number) => (
-                            <React.Fragment key={i}>
-                                <BinaryDiff file={file} />
-                            </React.Fragment>
+                            <BinaryDiff key={file.name} file={file} />
                         ))}
-                    </div>
+                    </React.Fragment>
                 )
 
             case 'data':
             case 'text':
             default:
                 return (
-                    <div className={classes.root}>
+                    <React.Fragment>
                         {files.map((file:any) => (
                             <TextDiff
                                 key={file.to}
@@ -68,7 +66,7 @@ class DiffViewer extends React.Component<Props, State>
                                 type={type}
                             />
                         ))}
-                    </div>
+                    </React.Fragment>
                 )
         }
     }

@@ -32,7 +32,7 @@ class TextDiff extends React.Component<Props, State>
         //     return acc
         // }, {add: 0, del: 0})
         return (
-            <ExpansionPanel className={classnames({ [classes.panelOpen]: this.state.expanded })} onChange={this.handleChange}>
+            <ExpansionPanel className={classnames(classes.panel, { [classes.panelOpen]: this.state.expanded })} onChange={this.handleChange}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{ root: classes.summaryRoot }}>
                     <Typography className={classes.filename}>{filename /*+ ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart*/}</Typography>
                 </ExpansionPanelSummary>
@@ -74,8 +74,13 @@ interface State {
 }
 
 const styles = () => createStyles({
+    panel: {
+        '&:before': {
+            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        },
+    },
     panelOpen: {
-        margin: '10px 0',
+        margin: '20px 0',
     },
     row: {
         height: '24px',
@@ -85,6 +90,7 @@ const styles = () => createStyles({
         // backgroundColor: theme.palette.background.default,
         // color: theme.palette.secondary.main,
         fontWeight: 'bold',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
     },
     filename: {
         fontFamily: 'Consolas, Menlo, "Courier New", Courier, monospace',
