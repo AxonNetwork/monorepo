@@ -89,7 +89,7 @@ interface Props {
     repoID: string
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
-    files:{[name: string]: IRepoFile}
+    files:{[name: string]: IRepoFile}|undefined
     unselect?: Function
     createComment: Function
     classes: any

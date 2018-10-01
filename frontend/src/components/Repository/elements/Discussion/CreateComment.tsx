@@ -58,7 +58,7 @@ class CreateComment extends React.Component<Props, State>
 
     render(){
         const { files, classes } = this.props
-        const fileNames = Object.keys(files)
+        const fileNames = Object.keys(files||{})
 
         return (
             <form onSubmit={this.handleSubmit} className={classes.reply}>
@@ -98,7 +98,7 @@ class CreateComment extends React.Component<Props, State>
 }
 
 export interface Props {
-    files:{[name: string]: IRepoFile}
+    files:{[name: string]: IRepoFile}|undefined
     onSubmit:(comment:string)=>void
     classes: any
 }
