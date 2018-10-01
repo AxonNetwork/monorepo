@@ -9,13 +9,13 @@ import ButtonBase from '@material-ui/core/ButtonBase'
 import SendIcon from '@material-ui/icons/Send'
 import CancelIcon from '@material-ui/icons/Cancel'
 import Avatar from '@material-ui/core/Avatar'
-import moment from 'moment'
 
 import { createComment } from '../../../../redux/comment/commentActions'
 import { IUser, IComment } from '../../../../common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
+import CommentText from './CommentText'
 
 @autobind
 class Thread extends React.Component<Props, State>
@@ -81,15 +81,12 @@ class Thread extends React.Component<Props, State>
                                     <div className={classes.commentAvatar}>
                                         <Avatar style={{ backgroundColor: color }}>{userInitials}</Avatar>
                                     </div>
+                                    <CommentText
+                                        username={username}
+                                        created={c.created}
+                                        text={c.text}
+                                    />
 
-                                    <div className={classes.comment}>
-                                        <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(c.created).fromNow()})</small></Typography>
-                                        <div className={classes.commentBody}>
-                                            {c.text.split('\n').map((p, i) => (
-                                                <Typography className={classes.commentText} key={i}>{p}</Typography>
-                                            ))}
-                                        </div>
-                                    </div>
                                 </div>
                             )
                         })}
@@ -169,34 +166,6 @@ const styles = (theme: Theme) => createStyles({
         '& div': {
             backgroundColor: '#006ea2',
         },
-    },
-    comment: {
-        margin: theme.spacing.unit * 2,
-        padding: 0,
-        border: '1px solid #e2e2e2',
-        borderRadius: 6,
-        backgroundColor: 'white',
-        flexGrow: 1,
-    },
-    commentHeader: {
-        backgroundColor: '#f1f1f1',
-        padding: '8px 12px',
-        borderBottom: '1px solid #e2e2e2',
-        color: '#545454',
-    },
-    commentBody: {
-        padding: theme.spacing.unit * 2,
-
-        '& p': {
-            paddingBottom: 6,
-        },
-    },
-    text: {
-        paddingBottom: theme.spacing.unit * 0.25,
-        marginLeft: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit * 0.5,
-        borderLeft: '2px solid',
-        borderColor: theme.palette.grey[400],
     },
     reply: {
         display: 'flex',
