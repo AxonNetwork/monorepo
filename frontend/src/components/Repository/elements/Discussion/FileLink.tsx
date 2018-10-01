@@ -3,12 +3,10 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 function FileLink(props: Props) {
     const { fileRef, classes } = props
-    const parts = fileRef.split("[")
-    const filename = parts[1]
 
     return (
        <a className={classes.link}>
-            {filename}
+            {fileRef}
         </a>
     )
 }

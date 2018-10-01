@@ -5,20 +5,25 @@ import moment from 'moment'
 import FileLink from './FileLink'
 
 function replaceLinks(text: string){
-    let index = 0
-    index = text.indexOf('@file:[')
-    if(index < 0){
-        return <span>{text}</span>
-    }
-    const endIndex = text.indexOf(']', index)
-    const reference = text.substring(index+1, endIndex)
-    const beforeText = text.substring(0, index)
-    const afterText = text.substring(endIndex+1)
-    return (
-        <React.Fragment>
-            <span>{beforeText}</span>
+    let parts = text.split('@file:[')
+    let elems = []
+    elems.push(
+        <span>{parts[0]}</span>
+    )
+    for(var i=1; i<parts.length; i++){
+        const part = parts[i]
+        const endIndex = part.indexOf(']')
+        const reference = part.substring(0, endIndex)
+        elems.push(
             <FileLink fileRef={reference} />
-            <span>{afterText}</span>
+        )
+        elems.push(
+            <span>{part.substring(endIndex+1)}</span>
+        )
+    }
+    return(
+        <React.Fragment>
+            {elems}
         </React.Fragment>
     )
 }
