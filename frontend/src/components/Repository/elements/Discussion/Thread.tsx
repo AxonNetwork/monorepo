@@ -74,6 +74,7 @@ class Thread extends React.Component<Props>
                                         created={c.created}
                                         text={c.text}
                                         goToFile={this.goToFile}
+                                        repoRoot={this.props.repo.path}
                                     />
 
                                 </div>
@@ -95,6 +96,7 @@ interface Props {
     type: string
     subject: number|string
     repoID: string
+    repo: IRepo
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
     files:{[name: string]: IRepoFile}|undefined
@@ -148,13 +150,15 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
-    const repoID = (state.repository.repos[selected] || {}).repoID
-    const files = (state.repository.repos[selected] || {}).files
+    const repo = state.repository.repos[selected] || {}
+    const repoID = repo.repoID
+    const files = repo.files
     return {
         repoID,
         comments: state.comment.comments[repoID] || {},
         users: state.user.users,
-        files: files
+        files: files,
+        repo,
     }
 }
 

@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -7,7 +8,7 @@ import FileLink from './FileLink'
 class CommentText extends React.Component<Props>
 {
     replaceLinks(text: string){
-        let parts = text.split('@file:[')
+        let parts = text.split('@image:[')
         let elems = []
         elems.push(
             <span>{parts[0]}</span>
@@ -17,10 +18,11 @@ class CommentText extends React.Component<Props>
             const endIndex = part.indexOf(']')
             const reference = part.substring(0, endIndex)
             elems.push(
-                <FileLink
-                    fileRef={reference}
-                    goToFile={this.props.goToFile}
-                />
+                // <FileLink
+                //     fileRef={reference}
+                //     goToFile={this.props.goToFile}
+                // />
+                <img src={'file://' + path.join(this.props.repoRoot, reference)} className={this.props.classes.embeddedImage} />
             )
             elems.push(
                 <span>{part.substring(endIndex+1)}</span>
@@ -52,12 +54,13 @@ class CommentText extends React.Component<Props>
     }
 }
 
-export interface Props {
+interface Props {
     username: string
     created: number
     text: string
     classes: any
     goToFile: Function
+    repoRoot: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -81,6 +84,9 @@ const styles = (theme: Theme) => createStyles({
         '& p': {
             paddingBottom: 6,
         },
+    },
+    embeddedImage: {
+        maxWidth: '100%',
     },
 })
 

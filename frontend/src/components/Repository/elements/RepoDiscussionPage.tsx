@@ -87,6 +87,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             subject={(selected as IDiscussion).created}
                             unselect={() => this.props.selectDiscussion({ created: undefined })}
                             switchToPage={this.props.switchToPage}
+                            files={(this.props.repo || {}).files || []}
                         />
                     </div>
                 }
@@ -97,6 +98,7 @@ class RepoDiscussionPage extends React.Component<Props>
 
 interface Props {
     repoID: string
+    repo: IRepo|undefined
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number|undefined
@@ -140,8 +142,10 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
-    const repoID = (state.repository.repos[selected] || {}).repoID || ''
+    const repo = state.repository.repos[selected] || {}
+    const repoID = repo.repoID || ''
     return {
+        repo,
         repoID: repoID,
         discussions: state.discussion.discussions[repoID] || {},
         comments: state.comment.comments[repoID] || {},

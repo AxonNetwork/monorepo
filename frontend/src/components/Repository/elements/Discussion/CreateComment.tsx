@@ -1,3 +1,4 @@
+import { endsWith } from 'lodash'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -11,10 +12,11 @@ import { IRepoFile } from 'common'
 @autobind
 class CreateComment extends React.Component<Props, State>
 {
-    state= {
+    state = {
         comment: '',
         anchorEl: null,
-        position: 0
+        embedType: null,
+        position: 0,
     }
 
     handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
@@ -25,11 +27,35 @@ class CreateComment extends React.Component<Props, State>
     }
 
     handleChange(event:  React.ChangeEvent<HTMLTextAreaElement>) {
+        const text = event.target.value
         const cursor = event.target.selectionStart
-        if(event.target.value.substring(cursor-5, cursor) === '@file'){
+
+        let lastToken = ''
+        for (let i = text.length - 1; i >= 0; i--) {
+            if (text[i] === ' ') {
+                break
+            } else {
+                lastToken = text[i] + lastToken
+            }
+        }
+
+        if (lastToken === '@file') {
             this.setState({
                 anchorEl: event.target,
-                position: cursor-5
+                position: cursor-5,
+                embedType: '@file',
+            })
+        } else if (lastToken === '@image') {
+            this.setState({
+                anchorEl: event.target,
+                position: cursor-6,
+                embedType: '@image',
+            })
+        } else {
+            this.setState({
+                anchorEl: null,
+                position: 0,
+                embedType: null,
             })
         }
         this.setState({comment: event.target.value})
@@ -41,24 +67,25 @@ class CreateComment extends React.Component<Props, State>
         this.setState({comment:''})
     }
 
-    handleClose(file: string){
+    handleClose(embedType: string, refTarget: string){
         this.setState({
-            anchorEl:null,
-            position: 0
+            anchorEl: null,
+            position: 0,
+            embedType: null,
         })
-        if(file.length === 0){
+        if (refTarget.length === 0) {
             return
         }
-        const fileRef = "@file:["+file+"] "
+        const ref = embedType+":["+refTarget+"] "
         const position = this.state.position
         let comment = this.state.comment
-        comment = comment.substring(0, position) + fileRef + comment.substring(position + 5)
+        comment = comment.substring(0, position) + ref + comment.substring(position + 5)
         this.setState({comment: comment})
     }
 
     render(){
         const { files, classes } = this.props
-        const fileNames = Object.keys(files||{})
+        const fileNames = Object.keys(files || {})
 
         return (
             <form onSubmit={this.handleSubmit} className={classes.reply}>
@@ -76,12 +103,20 @@ class CreateComment extends React.Component<Props, State>
                 <Menu
                     id="simple-menu"
                     anchorEl={this.state.anchorEl}
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={()=>this.handleClose("")}
+                    open={this.state.embedType !== null}
+                    onClose={()=>this.handleClose('')}
                 >
-                    {fileNames.map((file: string)=>(
+                    {this.state.embedType === '@file' && fileNames.map((file: string)=>(
                         <MenuItem
-                            onClick={()=>this.handleClose(file)}
+                            onClick={()=>this.handleClose('@file', file)}
+                            classes={{root:classes.menuItem}}
+                        >
+                            {file}
+                        </MenuItem>
+                    ))}
+                    {this.state.embedType === '@image' && fileNames.filter((f: string) => endsWith(f, '.jpg')).map((file: string)=>(
+                        <MenuItem
+                            onClick={()=>this.handleClose('@image', file)}
                             classes={{root:classes.menuItem}}
                         >
                             {file}
@@ -107,6 +142,7 @@ export interface State {
     comment: string
     anchorEl: any
     position: number
+    embedType: string|null
 }
 
 const styles = (theme: Theme) => createStyles({
