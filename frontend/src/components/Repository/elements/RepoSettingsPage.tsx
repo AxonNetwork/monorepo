@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { IGlobalState } from 'redux/store'
 import Sharing from './RepoInfo/Sharing'
@@ -30,9 +29,10 @@ class RepoSettingsPage extends React.Component<Props>
 interface Props {
     classes: any
     repo: IRepo
+    addCollaborator: Function
 }
 
-const styles = (theme: Theme) => createStyles({
+const styles = (_: Theme) => createStyles({
     settingsPage: {
         display: 'flex',
     },

@@ -32,7 +32,7 @@ class DiffViewer extends React.Component<Props, State>
     }
 
     render() {
-        const { diff, classes } = this.props
+        const { diff } = this.props
         if (diff.startsWith('Deleted')) {
             return <Typography>{diff}</Typography>
         }
@@ -47,7 +47,7 @@ class DiffViewer extends React.Component<Props, State>
             case 'binary':
                 return (
                     <React.Fragment>
-                        {files.map((file:any, i:number) => (
+                        {files.map((file:any) => (
                             <BinaryDiff key={file.name} file={file} />
                         ))}
                     </React.Fragment>
