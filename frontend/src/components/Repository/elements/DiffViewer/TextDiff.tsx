@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
@@ -71,14 +71,22 @@ interface State {
     expanded: boolean
 }
 
-const styles = () => createStyles({
+const styles = (theme: Theme) => createStyles({
     panel: {
         '&:before': {
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
         },
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     panelOpen: {
         margin: '20px 0',
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     row: {
         height: '24px',

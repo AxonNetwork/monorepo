@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import DiffViewer from './DiffViewer/DiffViewer'
@@ -29,16 +30,20 @@ class CommitView extends React.Component<Props>
         const { classes } = this.props
         const commit = this.props.commit || {} as ITimelineEvent
         const diffs = commit.diffs || {}
+        const user = commit.user
         return (
             <div>
                 <Typography>
                     Location: <span className={classes.breadcrumbRoot} onClick={this.onClickBack}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
                 </Typography>
-
-                <Typography variant="headline" className={classes.commitMessage}>
+                <Typography variant="headline">
                     {/*Revision <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>*/}
                     {commit.message}
                 </Typography>
+                <div className={classes.commitInfo}>
+                    <Typography>{commit.user || commit.email}</Typography>
+                    <Typography>{moment(commit.time).calendar()}</Typography>
+                </div>
 
                 {Object.keys(diffs).map(filename => (
                     <DiffViewer
@@ -74,7 +79,7 @@ const styles = () => createStyles({
         color: '#fd6314',
         textDecoration: 'underline',
     },
-    commitMessage: {
+    commitInfo: {
         marginBottom: 24,
     },
 })
