@@ -10,7 +10,53 @@ import Divider from '@material-ui/core/Divider'
 import { IRepo } from 'common'
 import autobind from 'utils/autobind'
 
-export interface RepoListProps {
+
+@autobind
+class RepoList extends React.Component<Props>
+{
+    render() {
+        const { repos, selectedRepo, currentPage, classes } = this.props
+        return (
+            <List>
+                {
+                    Object.keys(repos).sort().map((folderPath: string) => {
+                        let repo = repos[folderPath]
+                        let isChanged = false
+                        const files = repo.files
+                        if (files !== undefined) {
+                            isChanged = Object.keys(files).some(
+                                (name) => files[name].status === '*modified' || files[name].status === '*added',
+                            )
+                        }
+                        const isSelected = currentPage === 'repo' && repo.path === selectedRepo
+                        return (
+                            <React.Fragment key={repo.path}>
+                                <ListItem
+                                    button
+                                    dense
+                                    className={classnames({ [classes.selected]: isSelected })}
+                                    onClick={() => this.props.selectRepo({ path: repo.path, repoID: repo.repoID })}
+                                >
+                                { isChanged &&
+                                     <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
+                                        <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                    </Badge>
+                                }
+                                { !isChanged &&
+                                    <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                }
+                                </ListItem>
+                                <Divider />
+                            </React.Fragment>
+                        )
+                    })
+                }
+            </List>
+        )
+    }
+}
+
+interface Props {
     repos: {[folderPath: string]: IRepo}
     selectedRepo?: string|null
     currentPage: string
@@ -18,68 +64,7 @@ export interface RepoListProps {
     classes: any
 }
 
-@autobind
-class RepoList extends React.Component<RepoListProps>
-{
-    componentDidMount() {
-        // this.props.fetchRepos()
-    }
-
-    render() {
-        const { repos, selectedRepo, currentPage, classes } = this.props
-
-        return (
-            <div className={classes.sidebarWrapper}>
-                <List className={classes.repoList}>
-                    {
-                        Object.keys(repos).sort().map((folderPath: string) => {
-                            let repo = repos[folderPath]
-                            let isChanged = false
-                            const files = repo.files
-                            if (files !== undefined) {
-                                isChanged = Object.keys(files).some(
-                                    (name) => files[name].status === '*modified' || files[name].status === '*added',
-                                )
-                            }
-                            const isSelected = currentPage === 'repo' && repo.path === selectedRepo
-                            return (
-                                <React.Fragment key={repo.path}>
-                                    <ListItem
-                                        button
-                                        className={classnames({ [classes.selected]: isSelected })}
-                                        onClick={() => this.props.selectRepo({ path: repo.path, repoID: repo.repoID })}
-                                    >
-                                    { isChanged &&
-                                         <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
-                                            <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                        </Badge>
-                                    }
-                                    { !isChanged &&
-                                        <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                    }
-                                    </ListItem>
-                                    <Divider />
-                                </React.Fragment>
-                            )
-                        })
-                    }
-                </List>
-            </div>
-        )
-    }
-}
-
 const styles = (theme: Theme) => createStyles({
-    sidebarWrapper: {
-        backgroundColor: '#383840',
-        width: 200,
-    },
-    repoList: {
-        height: '100%',
-        padding: 0,
-        borderRight: '1px solid',
-        borderRightColor: theme.palette.grey[300],
-    },
     selected: {
         backgroundColor: theme.palette.action.hover,
     },

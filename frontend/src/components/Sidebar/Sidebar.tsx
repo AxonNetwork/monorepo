@@ -12,19 +12,26 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
+import Collapse from '@material-ui/core/Collapse'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
-
+import ExpandLess from '@material-ui/icons/ExpandLess'
+import ExpandMore from '@material-ui/icons/ExpandMore'
 import RepoList from './RepoList'
 import { IRepo, IUser } from 'common'
 import { IGlobalState } from 'redux/store'
 import { selectRepo } from 'redux/repository/repoActions'
 import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
 import { strToColor } from 'utils'
+import autobind from 'utils/autobind'
 
-class Sidebar extends React.Component<Props>
+
+@autobind
+class Sidebar extends React.Component<Props, State>
 {
-    render(){
+    state = { open: false }
+
+    render() {
         const { user, open, classes } = this.props
         const userInitials = user.name.split(' ').map(x => x.substring(0, 1)).join('')
         return(
@@ -36,7 +43,7 @@ class Sidebar extends React.Component<Props>
                 open={open}
             >
                 <div className={classes.sidebarToggle}>
-                    <IconButton onClick={this.props.toggleSidebar as (event: any) => void}>
+                    <IconButton onClick={this.props.toggleSidebar}>
                         <MenuIcon />
                     </IconButton>
                 </div>
@@ -47,12 +54,21 @@ class Sidebar extends React.Component<Props>
                 </div>
 
                 <Divider />
-                <RepoList
-                    repos={this.props.repos}
-                    selectedRepo={this.props.selectedRepo}
-                    currentPage={this.props.currentPage}
-                    selectRepo={this.props.selectRepo}
-                />
+
+                <List>
+                    <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
+                        <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                        {this.state.open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                    <Collapse in={this.state.open} timeout="auto" unmountOnExit>
+                        <RepoList
+                            repos={this.props.repos}
+                            selectedRepo={this.props.selectedRepo}
+                            currentPage={this.props.currentPage}
+                            selectRepo={this.props.selectRepo}
+                        />
+                    </Collapse>
+                </List>
 
                 <div className={classes.sidebarSpacer}></div>
 
@@ -86,6 +102,10 @@ class Sidebar extends React.Component<Props>
             </Drawer>
         )
     }
+
+    onClickExpandRepositories() {
+        this.setState({ open: !this.state.open })
+    }
 }
 
 interface Props {
@@ -93,12 +113,16 @@ interface Props {
     repos: {[folderPath: string]: IRepo}
     selectedRepo?: string|null
     currentPage: string
-    toggleSidebar: Function
+    toggleSidebar: () => void
     selectRepo: Function
     navigateNewRepo: Function
     navigateSettings: Function
     open: boolean
     classes: any
+}
+
+interface State {
+    open: boolean
 }
 
 const drawerWidth = 200

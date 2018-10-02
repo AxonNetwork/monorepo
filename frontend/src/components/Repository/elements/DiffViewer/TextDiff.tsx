@@ -42,9 +42,7 @@ class TextDiff extends React.Component<Props, State>
                             <React.Fragment>
                                 <div>
                                     {type === 'text' &&
-                                        <div className={classes.overflow}>
-                                            <LineChunkContent chunk={chunk} />
-                                        </div>
+                                        <LineChunkContent chunk={chunk} />
                                     }
                                     {type === 'data' &&
                                         <SheetChunkContent chunk={chunk} />

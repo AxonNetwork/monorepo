@@ -25,16 +25,14 @@ class RepoHistoryPage extends React.Component<Props>
                     />
                 }
                 {selectedCommit === undefined &&
-                    <div className={classes.timeline}>
-                        <Timeline
-                            repoRoot={repoRoot}
-                            commits={commits}
-                            commitList={commitList}
-                            getDiff={getDiff}
-                            revertFiles={revertFiles}
-                            selectCommit={selectCommit}
-                        />
-                    </div>
+                    <Timeline
+                        repoRoot={repoRoot}
+                        commits={commits}
+                        commitList={commitList}
+                        getDiff={getDiff}
+                        revertFiles={revertFiles}
+                        selectCommit={selectCommit}
+                    />
                 }
             </div>
         )
@@ -55,10 +53,6 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     timelinePage: {
         overflowY: 'auto',
-    },
-    timeline: {
-        flexGrow: 1,
-        marginRight: 32,
     },
     thread: {
         marginTop: theme.spacing.unit * 4,
