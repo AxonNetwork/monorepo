@@ -29,7 +29,7 @@ import autobind from 'utils/autobind'
 @autobind
 class Sidebar extends React.Component<Props, State>
 {
-    state = { open: false }
+    state = { open: true }
 
     render() {
         const { user, open, classes } = this.props

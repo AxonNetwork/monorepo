@@ -21,7 +21,7 @@ export interface Props {
 }
 
 const styles = (theme: Theme) => createStyles({
-    link:{
+    link: {
         color: theme.palette.secondary.main,
         textDecoration: 'underline'
     }

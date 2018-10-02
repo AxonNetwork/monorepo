@@ -1,53 +1,27 @@
 import path from 'path'
 import React from 'react'
+import ReactMarkdown from 'react-markdown'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import moment from 'moment'
-import FileLink from './FileLink'
+import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
+import autobind from 'utils/autobind'
 
+
+@autobind
 class CommentText extends React.Component<Props>
 {
-    replaceLinks(text: string){
-        let parts = text.split('@image:[')
-        let elems = []
-        elems.push(
-            <span>{parts[0]}</span>
-        )
-        for(var i=1; i<parts.length; i++){
-            const part = parts[i]
-            const endIndex = part.indexOf(']')
-            const reference = part.substring(0, endIndex)
-            elems.push(
-                // <FileLink
-                //     fileRef={reference}
-                //     goToFile={this.props.goToFile}
-                // />
-                <img src={'file://' + path.join(this.props.repoRoot, reference)} className={this.props.classes.embeddedImage} />
-            )
-            elems.push(
-                <span>{part.substring(endIndex+1)}</span>
-            )
-        }
-        return(
-            <React.Fragment>
-                {elems}
-            </React.Fragment>
-        )
-    }
-
-    render(){
-        const { username, created, text, classes } = this.props
-        let displayText = text
-
+    render() {
+        const { username, created, text, repoRoot, classes } = this.props
         return (
             <div className={classes.comment}>
                 <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(created).fromNow()})</small></Typography>
                 <div className={classes.commentBody}>
-                    {displayText.split('\n').map((p, i) => (
-                        <Typography className={classes.commentText} key={i}>
-                            {this.replaceLinks(p)}
-                        </Typography>
-                    ))}
+                    <RenderMarkdown
+                        text={text}
+                        basePath={repoRoot}
+                        goToFile={this.props.goToFile}
+                    />
                 </div>
             </div>
         )
@@ -84,9 +58,6 @@ const styles = (theme: Theme) => createStyles({
         '& p': {
             paddingBottom: 6,
         },
-    },
-    embeddedImage: {
-        maxWidth: '100%',
     },
 })
 
