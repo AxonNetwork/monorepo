@@ -86,6 +86,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             type="discussion"
                             subject={(selected as IDiscussion).created}
                             unselect={() => this.props.selectDiscussion({ created: undefined })}
+                            switchToPage={this.props.switchToPage}
                         />
                     </div>
                 }
@@ -103,6 +104,7 @@ interface Props {
     selectDiscussion: typeof selectDiscussion
     createDiscussion: Function
     createComment: Function
+    switchToPage: Function
     classes: any
 }
 

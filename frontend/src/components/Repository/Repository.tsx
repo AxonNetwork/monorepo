@@ -28,6 +28,14 @@ class Repository extends React.Component<Props, State>
         this.setState({ page })
     }
 
+    switchToPage(page:string){
+        switch(page){
+            case "files":
+                this.setState({ page: 0 })
+                break
+        }
+    }
+
     render() {
         const classes = this.props.classes
         return (
@@ -45,7 +53,7 @@ class Repository extends React.Component<Props, State>
                         <RepoHistoryPage />
                     }
                     {this.state.page === 3 &&
-                        <RepoDiscussionPage />
+                        <RepoDiscussionPage switchToPage={this.switchToPage}/>
                     }
                     {this.state.page === 4 &&
                         <RepoSettingsPage />

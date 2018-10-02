@@ -7,8 +7,9 @@ import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
 import Avatar from '@material-ui/core/Avatar'
 
-import { createComment } from '../../../../redux/comment/commentActions'
-import { IUser, IComment, IRepoFile } from '../../../../common'
+import { createComment } from 'redux/comment/commentActions'
+import { selectFile } from 'redux/repository/repoActions'
+import { IUser, IComment, IRepoFile } from 'common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
@@ -32,6 +33,12 @@ class Thread extends React.Component<Props>
         })
     }
 
+    goToFile(filename: string){
+        this.props.selectFile({selectedFile:{file:filename, isFolder: false}})
+        if(this.props.switchToPage !== undefined){
+            this.props.switchToPage("files")
+        }
+    }
 
     render() {
         const { classes, title, comments } = this.props
@@ -66,6 +73,7 @@ class Thread extends React.Component<Props>
                                         username={username}
                                         created={c.created}
                                         text={c.text}
+                                        goToFile={this.goToFile}
                                     />
 
                                 </div>
@@ -92,6 +100,8 @@ interface Props {
     files:{[name: string]: IRepoFile}|undefined
     unselect?: Function
     createComment: Function
+    selectFile: Function
+    switchToPage?: Function
     classes: any
 }
 
@@ -150,6 +160,7 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     createComment,
+    selectFile,
 }
 
 const ThreadContainer = connect(

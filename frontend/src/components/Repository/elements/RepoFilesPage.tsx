@@ -32,15 +32,17 @@ class RepoFilesPage extends React.Component<Props>
                 commitList = repo.commitList.filter(c => get(repo, ['commits', c, 'files'], []).includes(relPath))
             }
             return (
-                <FileInfo
-                    file={files[relPath]}
-                    repoRoot={repo.path}
-                    commitList={commitList}
-                    commits={repo.commits}
-                    selectFile={this.props.selectFile}
-                    getDiff={this.props.getDiff}
-                    revertFiles={this.props.revertFiles}
-                />
+                <div className={classes.fileInfoContainer}>
+                    <FileInfo
+                        file={files[relPath]}
+                        repoRoot={repo.path}
+                        commitList={commitList}
+                        commits={repo.commits}
+                        selectFile={this.props.selectFile}
+                        getDiff={this.props.getDiff}
+                        revertFiles={this.props.revertFiles}
+                    />
+                </div>
             )
         } else {
             const selectedFolder = selectedFile !== undefined ? selectedFile.file : undefined

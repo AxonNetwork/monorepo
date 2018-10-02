@@ -1,11 +1,9 @@
-import path from 'path'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
-import Button from '@material-ui/core/Button'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
+import Breadcrumbs from './FileList/Breadcrumbs'
 import File from './FileList/File'
 import Timeline from './Timeline/Timeline'
 import DiffViewer from './DiffViewer/DiffViewer'
@@ -18,24 +16,16 @@ import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/rep
 @autobind
 class FileInfo extends React.Component<Props>
 {
-    goUpOneDir() {
-        const dir = path.dirname(this.props.file.name)
-        if (dir === '.') {
-            this.props.selectFile({ selectedFile: undefined })
-        } else {
-            this.props.selectFile({ selectedFile: { file: dir, isFolder: true } })
-        }
-    }
-
     render() {
         const { classes, file } = this.props
 
         return (
             <React.Fragment>
-                <Button className={classes.button} onClick={this.goUpOneDir} color="secondary">
-                    <ArrowBackIcon />
-                    Back
-                </Button>
+                <Breadcrumbs
+                    repoRoot={this.props.repoRoot}
+                    selectedFolder={file.name}
+                    selectFile={this.props.selectFile}
+                />
                 <Table className={classes.table}>
                     <TableBody>
                         <File file={file} />
@@ -98,14 +88,8 @@ const styles = (theme: Theme) => createStyles({
         borderColor: theme.palette.grey[300],
         height: '100%',
     },
-    button: {
-        textTransform: 'none',
-        fontSize: '12pt',
-        padding: '5px 16px',
-        minHeight: 0,
-        height: '32px',
-    },
     table: {
+        marginTop: theme.spacing.unit,
         borderTop: '1px solid rgba(224, 224, 224, 1)',
     },
 })

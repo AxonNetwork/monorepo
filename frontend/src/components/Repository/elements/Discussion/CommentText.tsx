@@ -4,28 +4,52 @@ import Typography from '@material-ui/core/Typography'
 import moment from 'moment'
 import FileLink from './FileLink'
 
-function replaceLinks(text: string){
-    let parts = text.split('@file:[')
-    let elems = []
-    elems.push(
-        <span>{parts[0]}</span>
-    )
-    for(var i=1; i<parts.length; i++){
-        const part = parts[i]
-        const endIndex = part.indexOf(']')
-        const reference = part.substring(0, endIndex)
+class CommentText extends React.Component<Props>
+{
+    replaceLinks(text: string){
+        let parts = text.split('@file:[')
+        let elems = []
         elems.push(
-            <FileLink fileRef={reference} />
+            <span>{parts[0]}</span>
         )
-        elems.push(
-            <span>{part.substring(endIndex+1)}</span>
+        for(var i=1; i<parts.length; i++){
+            const part = parts[i]
+            const endIndex = part.indexOf(']')
+            const reference = part.substring(0, endIndex)
+            elems.push(
+                <FileLink
+                    fileRef={reference}
+                    goToFile={this.props.goToFile}
+                />
+            )
+            elems.push(
+                <span>{part.substring(endIndex+1)}</span>
+            )
+        }
+        return(
+            <React.Fragment>
+                {elems}
+            </React.Fragment>
         )
     }
-    return(
-        <React.Fragment>
-            {elems}
-        </React.Fragment>
-    )
+
+    render(){
+        const { username, created, text, classes } = this.props
+        let displayText = text
+
+        return (
+            <div className={classes.comment}>
+                <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(created).fromNow()})</small></Typography>
+                <div className={classes.commentBody}>
+                    {displayText.split('\n').map((p, i) => (
+                        <Typography className={classes.commentText} key={i}>
+                            {this.replaceLinks(p)}
+                        </Typography>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 }
 
 export interface Props {
@@ -33,24 +57,7 @@ export interface Props {
     created: number
     text: string
     classes: any
-}
-
-function CommentText(props: Props) {
-    const { username, created, text, classes } = props
-    let displayText = text
-
-    return (
-        <div className={classes.comment}>
-            <Typography className={classes.commentHeader}><strong>{username}</strong> <small>({moment(created).fromNow()})</small></Typography>
-            <div className={classes.commentBody}>
-                {displayText.split('\n').map((p, i) => (
-                    <Typography className={classes.commentText} key={i}>
-                        {replaceLinks(p)}
-                    </Typography>
-                ))}
-            </div>
-        </div>
-    )
+    goToFile: Function
 }
 
 const styles = (theme: Theme) => createStyles({

@@ -5,7 +5,10 @@ function FileLink(props: Props) {
     const { fileRef, classes } = props
 
     return (
-       <a className={classes.link}>
+        <a
+            className={classes.link}
+            onClick={()=>props.goToFile(fileRef)}
+        >
             {fileRef}
         </a>
     )
@@ -13,6 +16,7 @@ function FileLink(props: Props) {
 
 export interface Props {
     fileRef: string
+    goToFile: Function
     classes: any
 }
 
