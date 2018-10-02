@@ -25,7 +25,7 @@ export interface ILocalRepo {
 export interface IRepoFile {
     name: string
     size: number
-    modified: Date
+    modified: number
     type: string
     status: string
     diff: string

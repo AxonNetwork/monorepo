@@ -45,7 +45,7 @@ class File extends React.Component<Props>
                         </div>
                     </TableCell>
                     <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
-                    <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
+                    <TableCell className={classes.tableCell}>{moment(file.modified*1000).fromNow()}</TableCell>
                     <TableCell className={classes.tableCell}>
                         <IconButton onClick={this.openItem} className={classes.editIconButton}>
                             <EditIcon />
