@@ -7,6 +7,7 @@ import { INavigationState } from './navigation/navigationReducer'
 import { ICommentState } from './comment/commentReducer'
 import { IDiscussionState } from './discussion/discussionReducer'
 import { IUserState } from './user/userReducer'
+import { IEditorState } from './editor/editorReducer'
 
 // Redux DevTools
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -31,4 +32,5 @@ export interface IGlobalState {
     comment: ICommentState
     discussion: IDiscussionState
     user: IUserState
+    editor: IEditorState
 }

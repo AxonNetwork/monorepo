@@ -6,6 +6,7 @@ import repoReducer from './repository/repoReducer'
 import navigationReducer from './navigation/navigationReducer'
 import commentReducer from './comment/commentReducer'
 import discussionReducer from './discussion/discussionReducer'
+import editorReducer from './editor/editorReducer'
 
 import { IGlobalState } from './store'
 // @@TODO: is this necessary?
@@ -18,6 +19,7 @@ const appReducer = combineReducers({
     navigation: navigationReducer,
     comment: commentReducer,
     discussion: discussionReducer,
+    editor: editorReducer,
 })
 
 const rootReducer = (state: IGlobalState|undefined, action: {type: string}): IGlobalState => {

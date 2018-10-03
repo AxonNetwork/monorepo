@@ -14,10 +14,10 @@ import { CustomToolbar, ImageBlot, FileLink } from './Editor/QuillUtils'
 import { IRepoFile } from 'common'
 import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-
+import { loadTextContent } from 'redux/editor/editorActions'
 
 @autobind
-class RepoManuscriptPage extends React.Component<Props, State>
+class RepoEditorPage extends React.Component<Props, State>
 {
     quill = React.createRef<ReactQuill>()
 
@@ -36,6 +36,21 @@ class RepoManuscriptPage extends React.Component<Props, State>
                 'file': () => this.fileHandler()
             }
         }
+    }
+
+    constructor(props: Props){
+        super(props)
+        this.setup(props)
+    }
+
+    componentWillReceiveProps(props: Props){
+        if(props.folderPath != this.props.folderPath){
+            this.setup(props)
+        }
+    }
+
+    setup(props: Props){
+        props.loadTextContent({repoRoot: props.folderPath, file: 'manuscript'})
     }
 
     imageHandler(){
@@ -88,32 +103,35 @@ class RepoManuscriptPage extends React.Component<Props, State>
         })
     }
 
-    handleChange(value: string) {
+    handleChange(value: string, delta: any) {
+        console.log("DELTA: ", delta)
         this.setState({ text: value })
     }
 
     render() {
-        const { classes } = this.props
+        const { loaded, classes } = this.props
+        if(!loaded){
+            return <div></div>
+        }
         ImageBlot.folderPath = this.props.folderPath
-        ImageBlot.className = classes.imageBlot
         Quill.register(ImageBlot)
         FileLink.onClick=(file: string)=>{
             this.props.selectFile({selectedFile:{file: file, isFolder: false}})
             this.props.navigateRepoPage({ repoPage: RepoPage.Files })
         }
-        FileLink.className = classes.fileLink
         Quill.register(FileLink)
 
+        console.log(this.props.content)
         console.log(this.state.text)
+
         return (
             <div className={classes.editorPage}>
                 <div className={classes.editor} id="editor-parent">
                     <CustomToolbar />
                     <ReactQuill
                         className={classes.quill}
-                        defaultValue={this.state.text}
+                        defaultValue={this.props.content}
                         modules={this.modules}
-                        // formats={formats}
                         onChange={this.handleChange}
                         bounds="#editor-parent"
                         ref={this.quill}
@@ -142,7 +160,11 @@ class RepoManuscriptPage extends React.Component<Props, State>
 interface Props {
     files: {[name: string]: IRepoFile}
     folderPath: string
-    selectFile: Function
+    content: string
+    loaded: boolean
+    selectFile: typeof selectFile
+    navigateRepoPage: typeof navigateRepoPage
+    loadTextContent: typeof loadTextContent
     classes: any
 }
 
@@ -183,18 +205,23 @@ const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ""
     const files = state.repository.repos[selected].files || {}
     const folderPath = state.repository.repos[selected].path || ""
+    const content = (state.editor.content[selected]||{})['manuscript']
+    const loaded = state.editor.loaded
     return {
         files: files,
-        folderPath: folderPath
+        folderPath: folderPath,
+        content: content,
+        loaded: loaded,
     }
 }
 
 const mapDispatchToProps = {
     selectFile,
     navigateRepoPage,
+    loadTextContent,
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withStyles(styles)(RepoManuscriptPage))
+)(withStyles(styles)(RepoEditorPage))

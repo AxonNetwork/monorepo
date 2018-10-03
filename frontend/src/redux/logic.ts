@@ -3,11 +3,13 @@ import repoLogic from './repository/repoLogic'
 import navigationLogic from './navigation/navigationLogic'
 import commentLogic from './comment/commentLogic'
 import discussionLogic from './discussion/discussionLogic'
+import editorLogic from './editor/editorLogic'
 
 export default [
     ...userLogic,
     ...repoLogic,
     ...navigationLogic,
     ...commentLogic,
-    ...discussionLogic
+    ...discussionLogic,
+    ...editorLogic
 ]

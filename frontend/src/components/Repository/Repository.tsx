@@ -13,7 +13,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoHistoryPage from './elements/RepoHistoryPage'
-import RepoManuscriptPage from './elements/RepoManuscriptPage'
+import RepoEditorPage from './elements/RepoEditorPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import RepoSettingsPage from './elements/RepoSettingsPage'
 import autobind from 'utils/autobind'
@@ -35,7 +35,7 @@ class Repository extends React.Component<Props>
                         <RepoFilesPage />
                     }
                     {this.props.repoPage === RepoPage.Manuscript &&
-                        <RepoManuscriptPage />
+                        <RepoEditorPage />
                     }
                     {this.props.repoPage === RepoPage.History &&
                         <RepoHistoryPage />
