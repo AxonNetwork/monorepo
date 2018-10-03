@@ -1,5 +1,5 @@
 import React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { IGlobalState } from 'redux/store'
 import ReactQuill, { Quill } from 'react-quill'
@@ -61,18 +61,11 @@ class RepoManuscriptPage extends React.Component<Props, State>
         const ref = this.quill.current
         if(ref === null) return
         const quill = ref.getEditor()
-        console.log(quill)
         const cb = (file: string)=>{
             const selection = quill.getSelection()
             if(selection === null) return
             const cursor = selection.index
-            quill.insertEmbed(cursor, 'conscience-file', file)
-            quill.setSelection(cursor+file.length+1, 0)
-            // const text = "@file:["+file+"]"
-            // quill.insertText(cursor, file, 'file')
-            // quill.insertText(cursor, file, 'file', file)
-            // const newCursor = cursor + text.length + 1
-            // quill.setSelection(newCursor, 0)
+            quill.insertText(cursor, file, 'conscience-file', file)
         }
         this.setState({
             type: 'file',
@@ -107,8 +100,10 @@ class RepoManuscriptPage extends React.Component<Props, State>
             this.props.selectFile({selectedFile:{file: file, isFolder: false}})
             this.props.switchToPage('files')
         }
+        FileLink.className = classes.fileLink
         Quill.register(FileLink)
 
+        console.log(this.state.text)
         return (
             <div className={classes.editorPage}>
                 <div className={classes.editor} id="editor-parent">
@@ -158,7 +153,7 @@ interface State {
     cb?: Function
 }
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     editor:{
         height: '100%',
         width: '60%',
@@ -177,6 +172,10 @@ const styles = createStyles({
     imageBlot:{
         width: '50%',
         margin: '0 auto'
+    },
+    fileLink: {
+        // override quilljs
+        color: theme.palette.secondary.main + "!important"
     }
 })
 

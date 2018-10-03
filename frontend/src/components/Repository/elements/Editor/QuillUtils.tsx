@@ -21,16 +21,15 @@ ImageBlot.tagName = 'img'
 ImageBlot.className='inline-image'
 export { ImageBlot }
 
-class FileLink extends BlockEmbed {
+const Inline = Quill.import('blots/inline')
+class FileLink extends Inline {
     static create(file: string) {
         const node = super.create()
         node.setAttribute("href", "#")
-        node.innerHTML = file
         node.onclick=()=>FileLink.onClick(file)
         return node
     }
-
-    static value(node: any){
+    static formats(node: any){
         return node.innerHTML
     }
 }
