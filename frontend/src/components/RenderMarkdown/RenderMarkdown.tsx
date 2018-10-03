@@ -3,8 +3,8 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import moment from 'moment'
 import FileLink from './FileLink'
+import DiscussionLink from './DiscussionLink'
 import shortcodes from './remark-references'
 import autobind from 'utils/autobind'
 
@@ -27,11 +27,15 @@ class RenderMarkdown extends React.Component<Props>
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
 
+        console.log('node ~>', node)
+
         switch (identifier) {
         case 'image':
             return <img src={'file://' + path.join(this.props.basePath, contents)} className={this.props.classes.embeddedImage} />
         case 'file':
-            return <FileLink fileRef={contents} goToFile={this.props.goToFile} />
+            return <FileLink fileRef={contents} />
+        case 'discussion':
+            return <DiscussionLink discussionID={parseInt(contents, 10)} />
         default:
             return <span>@{identifier}:[{contents}]</span>
         }
@@ -42,7 +46,6 @@ interface Props {
     text: string
     classes: any
     basePath: string
-    goToFile: Function
 }
 
 const styles = (theme: Theme) => createStyles({

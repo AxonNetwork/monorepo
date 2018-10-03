@@ -1,22 +1,32 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
+import { RepoPage } from 'redux/repository/repoReducer'
+import autobind from 'utils/autobind'
 
-function FileLink(props: Props) {
-    const { fileRef, classes } = props
+@autobind
+class FileLink extends React.Component<Props>
+{
+    render() {
+        const { fileRef, classes } = this.props
+        return (
+            <a className={classes.link} onClick={this.goToFile}>
+                {fileRef}
+            </a>
+        )
+    }
 
-    return (
-        <a
-            className={classes.link}
-            onClick={()=>props.goToFile(fileRef)}
-        >
-            {fileRef}
-        </a>
-    )
+    goToFile() {
+        this.props.selectFile({ selectedFile: { file: this.props.fileRef, isFolder: false } })
+        this.props.navigateRepoPage({ repoPage: RepoPage.Files })
+    }
 }
 
-export interface Props {
+interface Props {
     fileRef: string
-    goToFile: Function
+    navigateRepoPage: typeof navigateRepoPage
+    selectFile: typeof selectFile
     classes: any
 }
 
@@ -27,4 +37,14 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-export default withStyles(styles)(FileLink)
+const mapDispatchToProps = {
+    selectFile,
+    navigateRepoPage,
+}
+
+const FileLinkContainer = connect(
+    null,
+    mapDispatchToProps,
+)(withStyles(styles)(FileLink))
+
+export default FileLinkContainer

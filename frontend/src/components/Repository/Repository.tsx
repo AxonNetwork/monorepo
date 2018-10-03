@@ -1,5 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
+import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
@@ -16,26 +17,13 @@ import RepoManuscriptPage from './elements/RepoManuscriptPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import RepoSettingsPage from './elements/RepoSettingsPage'
 import autobind from 'utils/autobind'
+import { RepoPage } from 'redux/repository/repoReducer'
+import { navigateRepoPage } from 'redux/repository/repoActions'
+
 
 @autobind
-class Repository extends React.Component<Props, State>
+class Repository extends React.Component<Props>
 {
-    state = {
-        page: 0
-    }
-
-    handleChange(_:any, page: number) {
-        this.setState({ page })
-    }
-
-    switchToPage(page:string){
-        switch(page){
-            case "files":
-                this.setState({ page: 0 })
-                break
-        }
-    }
-
     render() {
         const classes = this.props.classes
         return (
@@ -43,26 +31,26 @@ class Repository extends React.Component<Props, State>
                 <RepoInfo />
 
                 <div className={classes.repoMainContent}>
-                    {this.state.page === 0 &&
+                    {this.props.repoPage === RepoPage.Files &&
                         <RepoFilesPage />
                     }
-                    {this.state.page === 1 &&
-                        <RepoManuscriptPage switchToPage={this.switchToPage}/>
+                    {this.props.repoPage === RepoPage.Manuscript &&
+                        <RepoManuscriptPage />
                     }
-                    {this.state.page === 2 &&
+                    {this.props.repoPage === RepoPage.History &&
                         <RepoHistoryPage />
                     }
-                    {this.state.page === 3 &&
-                        <RepoDiscussionPage switchToPage={this.switchToPage}/>
+                    {this.props.repoPage === RepoPage.Discussion &&
+                        <RepoDiscussionPage />
                     }
-                    {this.state.page === 4 &&
+                    {this.props.repoPage === RepoPage.Settings &&
                         <RepoSettingsPage />
                     }
                 </div>
 
                 <BottomNavigation
-                    value={this.state.page}
-                    onChange={this.handleChange}
+                    value={this.props.repoPage as number}
+                    onChange={this.onNavigateRepoPage}
                     showLabels
                     className={classnames(classes.bottomNav, { [classes.bottomNavSidebarOpen]: this.props.sidebarOpen })}
                 >
@@ -75,17 +63,18 @@ class Repository extends React.Component<Props, State>
             </div>
         )
     }
+
+    onNavigateRepoPage(_: any, i: number) {
+        this.props.navigateRepoPage({ repoPage: i as RepoPage })
+    }
 }
 
 interface Props {
     sidebarOpen: boolean
-    classes:any
+    repoPage: RepoPage
+    navigateRepoPage: typeof navigateRepoPage
+    classes: any
 }
-
-interface State {
-    page: number
-}
-
 
 const styles = (theme: Theme) => createStyles({
     repoWrapper: {
@@ -127,4 +116,19 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(Repository)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        repoPage: state.repository.repoPage,
+    }
+}
+
+const mapDispatchToProps = {
+    navigateRepoPage,
+}
+
+const RepositoryContainer = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(Repository))
+
+export default withStyles(styles)(RepositoryContainer)

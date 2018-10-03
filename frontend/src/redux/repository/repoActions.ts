@@ -1,5 +1,6 @@
 import { IRepoFile, ITimelineEvent } from '../../common'
 import { FailedAction } from '../reduxUtils'
+import { RepoPage } from './repoReducer'
 
 export enum RepoActionType {
     CREATE_REPO = 'CREATE_REPO',
@@ -50,6 +51,8 @@ export enum RepoActionType {
     PULL_REPO = 'PULL_REPO',
     PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
     PULL_REPO_FAILED = 'PULL_REPO_FAILED',
+
+    NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
 
     FETCHED_REPO = 'FETCHED_REPO',
     ADD_COLLABORATOR = 'ADD_COLLABORATOR',
@@ -236,6 +239,13 @@ export interface IWatchRepoSuccessAction {
     payload: {}
 }
 
+export interface INavigateRepoPageAction {
+    type: RepoActionType.NAVIGATE_REPO_PAGE,
+    payload: {
+        repoPage: RepoPage
+    }
+}
+
 export interface ICheckpointRepoAction {
     type: RepoActionType.CHECKPOINT_REPO
     payload: {
@@ -376,6 +386,8 @@ export type IRepoAction =
     ISelectFileAction |
     ISelectCommitAction |
 
+    INavigateRepoPageAction |
+
     ICheckpointRepoAction |
     IPullRepoAction |
     IAddCollaboratorAction |
@@ -398,6 +410,7 @@ export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFe
 export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: RepoActionType.SELECT_REPO, payload })
 export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAction => ({ type: RepoActionType.SELECT_FILE, payload })
 export const selectCommit = (payload: ISelectCommitAction['payload']): ISelectCommitAction => ({ type: RepoActionType.SELECT_COMMIT, payload })
+export const navigateRepoPage = (payload: INavigateRepoPageAction['payload']): INavigateRepoPageAction => ({ type: RepoActionType.NAVIGATE_REPO_PAGE, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })

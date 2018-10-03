@@ -7,7 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import ButtonBase from '@material-ui/core/ButtonBase'
 import SendIcon from '@material-ui/icons/Send'
 import autobind from 'utils/autobind'
-import { IRepoFile } from 'common'
+import { IDiscussion, IRepoFile } from 'common'
 
 @autobind
 class CreateComment extends React.Component<Props, State>
@@ -50,6 +50,12 @@ class CreateComment extends React.Component<Props, State>
                 anchorEl: event.target,
                 position: cursor-6,
                 embedType: '@image',
+            })
+        } else if (lastToken === '@discussion') {
+            this.setState({
+                anchorEl: event.target,
+                position: cursor-11,
+                embedType: '@discussion',
             })
         } else {
             this.setState({
@@ -122,6 +128,14 @@ class CreateComment extends React.Component<Props, State>
                             {file}
                         </MenuItem>
                     ))}
+                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: number)=>(
+                        <MenuItem
+                            onClick={()=>this.handleClose('@discussion', created)}
+                            classes={{root:classes.menuItem}}
+                        >
+                            {this.props.discussions[created].subject}
+                        </MenuItem>
+                    ))}
                 </Menu>
                 <ButtonBase type="submit" className={classes.submit}>
                     <SendIcon className={classes.icon}/>
@@ -132,13 +146,14 @@ class CreateComment extends React.Component<Props, State>
     }
 }
 
-export interface Props {
-    files:{[name: string]: IRepoFile}|undefined
+interface Props {
+    files: {[name: string]: IRepoFile}|undefined
+    discussions: {[created: number]: IDiscussion}|undefined
     onSubmit:(comment:string)=>void
     classes: any
 }
 
-export interface State {
+interface State {
     comment: string
     anchorEl: any
     position: number

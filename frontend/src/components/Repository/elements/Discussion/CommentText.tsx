@@ -20,7 +20,6 @@ class CommentText extends React.Component<Props>
                     <RenderMarkdown
                         text={text}
                         basePath={repoRoot}
-                        goToFile={this.props.goToFile}
                     />
                 </div>
             </div>
@@ -33,7 +32,6 @@ interface Props {
     created: number
     text: string
     classes: any
-    goToFile: Function
     repoRoot: string
 }
 

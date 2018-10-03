@@ -12,27 +12,28 @@ import ListItemText from '@material-ui/core/ListItemText'
 import autobind from 'utils/autobind'
 import { CustomToolbar, ImageBlot, FileLink } from './Editor/QuillUtils'
 import { IRepoFile } from 'common'
-import { selectFile } from 'redux/repository/repoActions'
+import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
+import { RepoPage } from 'redux/repository/repoReducer'
 
 
 @autobind
 class RepoManuscriptPage extends React.Component<Props, State>
 {
-    quill=React.createRef<ReactQuill>()
+    quill = React.createRef<ReactQuill>()
 
-    state={
+    state = {
         text: '',
         options: [],
         type: '',
         cb: undefined
     }
 
-    modules= {
+    modules = {
         toolbar: {
             container: '#toolbar',
             handlers: {
-                'image': ()=>this.imageHandler(),
-                'file': ()=>this.fileHandler()
+                'image': () => this.imageHandler(),
+                'file': () => this.fileHandler()
             }
         }
     }
@@ -98,7 +99,7 @@ class RepoManuscriptPage extends React.Component<Props, State>
         Quill.register(ImageBlot)
         FileLink.onClick=(file: string)=>{
             this.props.selectFile({selectedFile:{file: file, isFolder: false}})
-            this.props.switchToPage('files')
+            this.props.navigateRepoPage({ repoPage: RepoPage.Files })
         }
         FileLink.className = classes.fileLink
         Quill.register(FileLink)
@@ -142,7 +143,6 @@ interface Props {
     files: {[name: string]: IRepoFile}
     folderPath: string
     selectFile: Function
-    switchToPage: Function
     classes: any
 }
 
@@ -190,7 +190,8 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    selectFile
+    selectFile,
+    navigateRepoPage,
 }
 
 export default connect(

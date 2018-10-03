@@ -1,8 +1,18 @@
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepo, ITimelineEvent } from '../../common'
 
+export enum RepoPage {
+    Files,
+    Manuscript,
+    History,
+    Discussion,
+    Settings
+}
+
+
 const initialState = {
     repos: {},
+    repoPage: RepoPage.Files,
     selectedRepo: undefined,
     selectedFile: undefined,
     selectedCommit: undefined,
@@ -13,6 +23,7 @@ const initialState = {
 export interface IRepoState {
     repos: { [folderPath: string]: IRepo }
     selectedRepo: string | undefined
+    repoPage: RepoPage
     selectedFile: {
         file: string
         isFolder: boolean
@@ -122,10 +133,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                             [commit]: {
                                 ...(((state.repos[repoRoot] || {}).commits || {})[commit] || {}),
                                 diffs,
-                                // diffs: {
-                                //     ...((((state.repos[repoRoot] || {}).commits || {})[commit] || {}).diffs),
-                                //     [filename]: diff,
-                                // },
                             },
                         },
                     },
@@ -153,6 +160,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             return {
                 ...state,
                 selectedCommit,
+            }
+        }
+
+        case RepoActionType.NAVIGATE_REPO_PAGE: {
+            const { repoPage } = action.payload
+            return {
+                ...state,
+                repoPage,
             }
         }
 

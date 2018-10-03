@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar'
 
 import { createComment } from 'redux/comment/commentActions'
 import { selectFile } from 'redux/repository/repoActions'
-import { IUser, IComment, IRepoFile } from 'common'
+import { IUser, IComment, IRepoFile, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
@@ -31,13 +31,6 @@ class Thread extends React.Component<Props>
                 subject: this.props.subject,
             },
         })
-    }
-
-    goToFile(filename: string){
-        this.props.selectFile({selectedFile:{file:filename, isFolder: false}})
-        if(this.props.switchToPage !== undefined){
-            this.props.switchToPage("files")
-        }
     }
 
     render() {
@@ -73,7 +66,6 @@ class Thread extends React.Component<Props>
                                         username={username}
                                         created={c.created}
                                         text={c.text}
-                                        goToFile={this.goToFile}
                                         repoRoot={this.props.repo.path}
                                     />
 
@@ -84,6 +76,7 @@ class Thread extends React.Component<Props>
                 </div>
                 <CreateComment
                     files={this.props.files}
+                    discussions={this.props.discussions}
                     onSubmit={this.handleSubmit}
                 />
             </div>
@@ -99,7 +92,8 @@ interface Props {
     repo: IRepo
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
-    files:{[name: string]: IRepoFile}|undefined
+    files: {[name: string]: IRepoFile}|undefined
+    discussions: {[created: number]: IDiscussion}|undefined
     unselect?: Function
     createComment: Function
     selectFile: Function
@@ -153,12 +147,14 @@ const mapStateToProps = (state: IGlobalState) => {
     const repo = state.repository.repos[selected] || {}
     const repoID = repo.repoID
     const files = repo.files
+    const discussions = state.discussion.discussions[repoID] || {}
     return {
         repoID,
         comments: state.comment.comments[repoID] || {},
         users: state.user.users,
         files: files,
         repo,
+        discussions,
     }
 }
 
