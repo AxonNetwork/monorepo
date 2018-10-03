@@ -44,13 +44,25 @@ class RepoEditorPage extends React.Component<Props, State>
     }
 
     componentWillReceiveProps(props: Props){
-        if(props.folderPath != this.props.folderPath){
+        if(props.content != this.props.content){
             this.setup(props)
         }
     }
 
     setup(props: Props){
         props.loadTextContent({repoRoot: props.folderPath, file: 'manuscript'})
+        this.setState({
+            text: props.content
+        })
+
+        ImageBlot.folderPath = this.props.folderPath
+        Quill.register(ImageBlot)
+        FileLink.onClick=(file: string)=>{
+            console.log('selected: ', file)
+            // this.props.selectFile({selectedFile:{file: file, isFolder: false}})
+            // this.props.navigateRepoPage({ repoPage: RepoPage.Files })
+        }
+        Quill.register(FileLink)
     }
 
     imageHandler(){
@@ -82,6 +94,7 @@ class RepoEditorPage extends React.Component<Props, State>
             if(selection === null) return
             const cursor = selection.index
             quill.insertText(cursor, file, 'conscience-file', file)
+            quill.setSelection(cursor + file.length + 2, 0)
         }
         this.setState({
             type: 'file',
@@ -103,8 +116,7 @@ class RepoEditorPage extends React.Component<Props, State>
         })
     }
 
-    handleChange(value: string, delta: any) {
-        console.log("DELTA: ", delta)
+    handleChange(value: string) {
         this.setState({ text: value })
     }
 
@@ -113,16 +125,6 @@ class RepoEditorPage extends React.Component<Props, State>
         if(!loaded){
             return <div></div>
         }
-        ImageBlot.folderPath = this.props.folderPath
-        Quill.register(ImageBlot)
-        FileLink.onClick=(file: string)=>{
-            this.props.selectFile({selectedFile:{file: file, isFolder: false}})
-            this.props.navigateRepoPage({ repoPage: RepoPage.Files })
-        }
-        Quill.register(FileLink)
-
-        console.log(this.props.content)
-        console.log(this.state.text)
 
         return (
             <div className={classes.editorPage}>
@@ -130,7 +132,7 @@ class RepoEditorPage extends React.Component<Props, State>
                     <CustomToolbar />
                     <ReactQuill
                         className={classes.quill}
-                        defaultValue={this.props.content}
+                        defaultValue={this.state.text}
                         modules={this.modules}
                         onChange={this.handleChange}
                         bounds="#editor-parent"

@@ -32,15 +32,20 @@ const Inline = Quill.import('blots/inline')
 class FileLink extends Inline {
     static create(file: string) {
         const node = super.create()
-        node.onclick=()=>FileLink.onClick(file)
+        node.onclick=(e: Event)=>{
+            e.preventDefault()
+            FileLink.onClick(file)
+        }
+        node.setAttribute('href', '#')
         node.setAttribute("style", "color: red; text-decoration: underline;")
         return node
     }
+
     static formats(node: any){
         return node.innerHTML
     }
 }
-FileLink.tagName = 'span'
+FileLink.tagName = 'A'
 FileLink.blotName = 'conscience-file'
 FileLink.className='conscience-file'
 export { FileLink }
