@@ -1,6 +1,7 @@
 import { makeLogic } from '../reduxUtils'
 import { keyBy } from 'lodash'
-import { ILocalRepo, ITimelineEvent } from '../../common'
+import fileType from 'utils/fileType'
+import { ILocalRepo, IRepoFile, ITimelineEvent } from '../../common'
 import { RepoActionType,
     ICreateRepoAction, ICreateRepoSuccessAction,
     IGetLocalReposAction, IGetLocalReposSuccessAction,
@@ -100,7 +101,14 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const { path, repoID } = action.payload
 
         const rpcClient = rpc.initClient()
-        const filesList = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
+        const filesListRaw = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
+        const filesList = filesListRaw.map(file=> ({
+            name: file.name,
+            size: file.size,
+            modified: new Date(file.modified*1000),
+            type: fileType(file.name),
+            status: file.status
+        } as IRepoFile))
         const files = keyBy(filesList, 'name')
 
         return { repoID, path, files }

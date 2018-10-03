@@ -16,7 +16,12 @@ interface IRPCClient {
     initRepoAsync: (params: { repoID: string, path?: string }) => Promise<{ path: string }>
     getLocalRepos: any
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
-    getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise< { files: IRepoFile[] } >
+    getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise< { files: {
+        name: string,
+        size: number,
+        modified: number,
+        status: string
+    }[] } >
     getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: {
         commitHash: string
         author: string

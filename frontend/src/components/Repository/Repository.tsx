@@ -47,7 +47,7 @@ class Repository extends React.Component<Props, State>
                         <RepoFilesPage />
                     }
                     {this.state.page === 1 &&
-                        <RepoManuscriptPage />
+                        <RepoManuscriptPage switchToPage={this.switchToPage}/>
                     }
                     {this.state.page === 2 &&
                         <RepoHistoryPage />
