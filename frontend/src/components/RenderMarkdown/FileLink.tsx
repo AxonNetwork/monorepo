@@ -33,8 +33,9 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     link: {
         color: theme.palette.secondary.main,
-        textDecoration: 'underline'
-    }
+        textDecoration: 'underline',
+        cursor: 'pointer',
+    },
 })
 
 const mapDispatchToProps = {

@@ -27,8 +27,6 @@ class RenderMarkdown extends React.Component<Props>
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
 
-        console.log('node ~>', node)
-
         switch (identifier) {
         case 'image':
             return <img src={'file://' + path.join(this.props.basePath, contents)} className={this.props.classes.embeddedImage} />

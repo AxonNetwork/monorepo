@@ -35,16 +35,14 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     link: {
         color: theme.palette.secondary.main,
-        textDecoration: 'underline'
-    }
+        textDecoration: 'underline',
+        cursor: 'pointer',
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const repoPath = state.repository.selectedRepo || ''
     const repoID = (state.repository.repos[repoPath] || {}).repoID || ''
-    console.log('repoID ~>', repoID)
-    console.log('ownProps.discussionID ~>', ownProps.discussionID)
-    console.log('discussion ~>', (((state.discussion.discussions[ repoID ] || {})[ ownProps.discussionID ]) || {}))
     const discussionSubject = (((state.discussion.discussions[ repoID ] || {})[ ownProps.discussionID ]) || {}).subject
     return {
         discussionSubject,
