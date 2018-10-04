@@ -9,7 +9,6 @@ class ImageBlot extends BlockEmbed {
     static create(img: string) {
         const node = super.create()
         node.setAttribute('img', img)
-        node.setAttribute('style', 'text-align: center;')
         const imgNode = document.createElement("img")
         imgNode.setAttribute('src', "file://" + path.join(ImageBlot.folderPath, node.getAttribute('img')))
         imgNode.setAttribute('style', 'max-width: 400px;')

@@ -4,17 +4,12 @@ import { connect } from 'react-redux'
 import { IGlobalState } from 'redux/store'
 import ReactQuill, { Quill } from 'react-quill'
 import 'quill/dist/quill.snow.css'
-import Dialog from '@material-ui/core/Dialog'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
 import autobind from 'utils/autobind'
 import { CustomToolbar, ImageBlot, FileLink } from './Editor/QuillUtils'
 import { IRepoFile } from 'common'
-import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
-import { RepoPage } from 'redux/repository/repoReducer'
+import { selectFile } from 'redux/repository/repoActions'
 import { loadTextContent, saveTextContent } from 'redux/editor/editorActions'
+import EditorSidebar from './Editor/EditorSidebar'
 
 @autobind
 class RepoEditorPage extends React.Component<Props, State>
@@ -26,7 +21,7 @@ class RepoEditorPage extends React.Component<Props, State>
         saved: true,
         options: [],
         type: '',
-        cb: undefined,
+        cb: (_:string)=>{},
     }
 
     modules = {
@@ -65,8 +60,6 @@ class RepoEditorPage extends React.Component<Props, State>
         Quill.register(ImageBlot)
         FileLink.onClick=(file: string)=>{
             console.log('selected: ', file)
-            // this.props.selectFile({selectedFile:{file: file, isFolder: false}})
-            // this.props.navigateRepoPage({ repoPage: RepoPage.Files })
         }
         Quill.register(FileLink)
     }
@@ -85,7 +78,7 @@ class RepoEditorPage extends React.Component<Props, State>
         const files = this.props.files
         const images = Object.keys(files).filter(f=>files[f].type==='image')
         this.setState({
-            type: 'image',
+            type: 'Images',
             options: images,
             cb: cb
         })
@@ -100,10 +93,10 @@ class RepoEditorPage extends React.Component<Props, State>
             if(selection === null) return
             const cursor = selection.index
             quill.insertText(cursor, file, 'conscience-file', file)
-            quill.setSelection(cursor + file.length + 2, 0)
+            quill.setSelection(cursor + file.length + 1, 0)
         }
         this.setState({
-            type: 'file',
+            type: 'Files',
             options: Object.keys(this.props.files),
             cb: cb
         })
@@ -126,24 +119,19 @@ class RepoEditorPage extends React.Component<Props, State>
         }
     }
 
-    handleClose(option: string){
-        const cb = this.state.cb as Function|undefined
-        if(cb !== undefined && option.length > 0){
-            cb(option)
-        }
-
-        this.setState({
-            type: '',
-            options: [],
-            cb: (_: string)=>{}
-        })
-    }
-
     handleChange(value: string) {
         const saved = value == this.props.content
         this.setState({
             text: value,
             saved: saved
+        })
+    }
+
+    closeSidebar(){
+        this.setState({
+            type: '',
+            options: [],
+            cb: (_: string)=>{}
         })
     }
 
@@ -170,21 +158,12 @@ class RepoEditorPage extends React.Component<Props, State>
                         <div className={classes.saveIndicator} />
                     }
                 </div>
-                <Dialog onClose={()=>this.handleClose("")} open={this.state.options.length > 0}>
-                    <DialogTitle id="simple-dialog-title">
-                        {this.state.type==='file' && <span>Select File</span>}
-                        {this.state.type==='image' && <span>Select Image</span>}
-                    </DialogTitle>
-                    <div>
-                        <List>
-                            {this.state.options.map((option: string) => (
-                                <ListItem button onClick={() => this.handleClose(option)} key={option}>
-                                    <ListItemText primary={option} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </div>
-                </Dialog>
+                <EditorSidebar
+                    type={this.state.type}
+                    options={this.state.options}
+                    onInsert={this.state.cb}
+                    onClose={this.closeSidebar}
+                />
             </div>
         )
     }
@@ -196,7 +175,6 @@ interface Props {
     content: string
     loaded: boolean
     selectFile: typeof selectFile
-    navigateRepoPage: typeof navigateRepoPage
     loadTextContent: typeof loadTextContent
     saveTextContent: typeof saveTextContent
     classes: any
@@ -207,20 +185,26 @@ interface State {
     saved: boolean
     options: string[]
     type: string
-    cb?: Function
+    cb: Function
 }
 
 const styles = (theme: Theme) => createStyles({
+    editorPage:{
+        display: 'flex'
+    },
     editor:{
         height: '100%',
-        width: '70%',
-        position: 'relative'
+        position: 'relative',
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column'
     },
     quill:{
         height: '100%',
+        flexGrow: 1,
 
         '& > .ql-container': {
-            height: '90%',
+            height: '100%',
             overflowY: 'scroll'
         },
     },
@@ -262,7 +246,6 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     selectFile,
-    navigateRepoPage,
     loadTextContent,
     saveTextContent
 }
