@@ -104,8 +104,13 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const filesListRaw = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
         const filesList = filesListRaw.map(file => ({
             name: file.name,
+<<<<<<< HEAD
             size: file.size,
             modified: new Date(file.modified * 1000),
+=======
+            size: file.size ? file.size.toNumber() :  0,
+            modified: new Date(file.modified*1000),
+>>>>>>> display file size
             type: fileType(file.name),
             status: file.stagedStatus,
         } as IRepoFile))

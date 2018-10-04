@@ -18,7 +18,7 @@ interface IRPCClient {
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
     getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise< { files: {
         name: string,
-        size: number,
+        size: Long,
         modified: number,
         stagedStatus: string,
     }[] } >
