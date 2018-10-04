@@ -1,4 +1,4 @@
-import { makeLogic } from '../reduxUtils'
+import { makeLogic, makeContinuousLogic } from '../reduxUtils'
 import { keyBy } from 'lodash'
 import fileType from 'utils/fileType'
 import { ILocalRepo, IRepoFile, ITimelineEvent } from '../../common'
@@ -25,7 +25,7 @@ import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import * as rpc from '../../rpc'
-
+import { doesNotReject } from 'assert';
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -240,12 +240,18 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
     },
 })
 
-const watchRepoLogic = makeLogic<IWatchRepoAction, IWatchRepoSuccessAction>({
+const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     type: RepoActionType.WATCH_REPO,
-    async process({ action }) {
+    async process({ action }, dispatch, done) {
         const { repoID, path } = action.payload
-        RepoWatcher.watch(repoID, path)
-        return {}
+        const watcher = RepoWatcher.watch(repoID, path)
+        watcher.on('file_change', ()=>{
+            console.log('here')
+            dispatch(fetchRepoFiles({ path, repoID }))
+        })
+        watcher.on('end', ()=>{
+            done()
+        })
     }
 })
 

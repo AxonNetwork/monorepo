@@ -1,13 +1,32 @@
+import events from 'events'
 const fs = (window as any).require('fs')
 
-const watching:{[path: string]:{repoID: string, path: string, mtime: number}|undefined} = {}
+const watching:{
+    [path: string]:{
+        repoID: string,
+        path: string,
+        mtime: number,
+        emitter: events.EventEmitter
+    }|undefined
+} = {}
 
 const RepoWatcher = {
     watch(repoID: string, path: string) {
-        watching[path] = { path, repoID, mtime: 0 }
+        const emitter = new events.EventEmitter()
+        watching[path] = {
+            path,
+            repoID,
+            mtime: 0,
+            emitter: emitter
+        }
+        return emitter
     },
 
     unwatch(path: string) {
+        const toDelete = watching[path]
+        if(toDelete !== undefined){
+            toDelete.emitter.emit('end')
+        }
         delete watching[path]
     }
 }
@@ -29,14 +48,7 @@ async function checkForChange(path: string){
     }
     const mtime = fs.statSync(repo.path).mtimeMs
     if(mtime > repo.mtime && repo.mtime !== 0){
-        // TODO: Get new file
-        // console.log(repo.path + " CHANGED")
-        // try{
-        //     const files = await rpcClient.getRepoFilesAsync({repoID: repo.repoID, path: repo.path})
-        //     console.log("Files: ", files)
-        // }catch(err){
-        //     console.log(err)
-        // }
+        repo.emitter.emit('file_change')
     }
     repo.mtime = mtime
     watching[path] = repo
