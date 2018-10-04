@@ -20,7 +20,7 @@ const syntaxStyle = {
     border: 'none',
     boxShadow: 'none',
     // lineHeight: 'normal',
-    height: '1rem',
+    // height: '1rem',
     tabSize: 4,
 }
 

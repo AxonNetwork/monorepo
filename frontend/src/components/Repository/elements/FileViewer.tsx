@@ -33,6 +33,7 @@ class FileViewer extends React.Component<Props, State>
         case 'go':
         case 'js':
         case 'jsx':
+        case 'json':
         case 'ts':
         case 'tsx':
         case 'py':
@@ -77,13 +78,22 @@ class FileViewer extends React.Component<Props, State>
     }
 
     isTextFile(filename: string) {
-        const extension = path.extname(filename).toLowerCase()
+        const extension = path.extname(filename).toLowerCase().substring(1)
         return [
-            '.md',
-            '.txt',
-            '.js',
-            '.py',
-            '.go',
+            'md',
+            'go',
+            'js',
+            'jsx',
+            'json',
+            'ts',
+            'tsx',
+            'py',
+            'proto',
+            'tex',
+            'rb',
+            'rs',
+            'r',
+            'txt',
         ].includes(extension)
     }
 }

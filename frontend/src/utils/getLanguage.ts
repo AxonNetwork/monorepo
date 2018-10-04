@@ -3,6 +3,7 @@
 export default function getLanguage(ext: string) {
     switch (ext) {
     case 'js':
+    case 'json':
         return 'javascript'
     case 'ts':
     return 'typescript'
