@@ -1,6 +1,7 @@
 import React from 'react'
 import { Quill } from 'react-quill'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
+import SaveIcon from '@material-ui/icons/Save'
 import path from 'path'
 
 const BlockEmbed = Quill.import('blots/block/embed')
@@ -8,22 +9,19 @@ class ImageBlot extends BlockEmbed {
     static create(img: string) {
         const node = super.create()
         node.setAttribute('img', img)
-        node.setAttribute('src', "file://" + path.join(ImageBlot.folderPath, node.getAttribute('img')))
+        node.setAttribute('style', 'text-align: center;')
+        const imgNode = document.createElement("img")
+        imgNode.setAttribute('src', "file://" + path.join(ImageBlot.folderPath, node.getAttribute('img')))
+        imgNode.setAttribute('style', 'max-width: 400px;')
+        node.appendChild(imgNode)
         return node
     }
 
     static value(node: any){
-        console.log('here')
         return node.getAttribute('img')
     }
-
-    static formats(node: any){
-        console.log('here')
-        console.log(node)
-        return node.getAttribute('img').length > 0
-    }
 }
-ImageBlot.tagName = 'img'
+ImageBlot.tagName = 'div'
 ImageBlot.blotName = 'conscience-image'
 ImageBlot.className='conscience-image'
 export { ImageBlot }
@@ -51,6 +49,7 @@ FileLink.className='conscience-file'
 export { FileLink }
 
 const FolderButton = () => <span><FolderOpenIcon/></span>
+const SaveButton = () => <span><SaveIcon /></span>
 const CustomToolbar = () => (
     <div id="toolbar">
         <span className="ql-formats">
@@ -84,6 +83,11 @@ const CustomToolbar = () => (
         </span>
         <span className="ql-formats">
             <button className="ql-clean"></button>
+        </span>
+        <span className="ql-formats">
+            <button className="ql-save">
+                <SaveButton />
+            </button>
         </span>
     </div>
 )

@@ -14,7 +14,7 @@ import { CustomToolbar, ImageBlot, FileLink } from './Editor/QuillUtils'
 import { IRepoFile } from 'common'
 import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-import { loadTextContent } from 'redux/editor/editorActions'
+import { loadTextContent, saveTextContent } from 'redux/editor/editorActions'
 
 @autobind
 class RepoEditorPage extends React.Component<Props, State>
@@ -23,9 +23,10 @@ class RepoEditorPage extends React.Component<Props, State>
 
     state = {
         text: '',
+        saved: true,
         options: [],
         type: '',
-        cb: undefined
+        cb: undefined,
     }
 
     modules = {
@@ -33,7 +34,8 @@ class RepoEditorPage extends React.Component<Props, State>
             container: '#toolbar',
             handlers: {
                 'image': () => this.imageHandler(),
-                'file': () => this.fileHandler()
+                'file': () => this.fileHandler(),
+                'save': () => this.saveHandler(),
             }
         }
     }
@@ -52,7 +54,8 @@ class RepoEditorPage extends React.Component<Props, State>
     setup(props: Props){
         props.loadTextContent({repoRoot: props.folderPath, file: 'manuscript'})
         this.setState({
-            text: props.content
+            text: props.content,
+            saved: true
         })
 
         ImageBlot.folderPath = this.props.folderPath
@@ -103,6 +106,23 @@ class RepoEditorPage extends React.Component<Props, State>
         })
     }
 
+    saveHandler(){
+        this.props.saveTextContent({
+            repoRoot: this.props.folderPath,
+            file: 'manuscript',
+            content: this.state.text
+        })
+        this.setState({
+            saved: true
+        })
+    }
+
+    handleKeyPress(event: React.KeyboardEvent){
+        if(event.key === 's' && event.ctrlKey){
+            this.saveHandler()
+        }
+    }
+
     handleClose(option: string){
         const cb = this.state.cb as Function|undefined
         if(cb !== undefined && option.length > 0){
@@ -117,7 +137,10 @@ class RepoEditorPage extends React.Component<Props, State>
     }
 
     handleChange(value: string) {
-        this.setState({ text: value })
+        this.setState({
+            text: value,
+            saved: false
+        })
     }
 
     render() {
@@ -135,9 +158,13 @@ class RepoEditorPage extends React.Component<Props, State>
                         defaultValue={this.state.text}
                         modules={this.modules}
                         onChange={this.handleChange}
+                        onKeyUp={this.handleKeyPress}
                         bounds="#editor-parent"
                         ref={this.quill}
                     />
+                    {!this.state.saved &&
+                        <div className={classes.saveIndicator} />
+                    }
                 </div>
                 <Dialog onClose={()=>this.handleClose("")} open={this.state.options.length > 0}>
                     <DialogTitle id="simple-dialog-title">
@@ -167,11 +194,13 @@ interface Props {
     selectFile: typeof selectFile
     navigateRepoPage: typeof navigateRepoPage
     loadTextContent: typeof loadTextContent
+    saveTextContent: typeof saveTextContent
     classes: any
 }
 
 interface State {
     text: string
+    saved: boolean
     options: string[]
     type: string
     cb?: Function
@@ -181,6 +210,7 @@ const styles = (theme: Theme) => createStyles({
     editor:{
         height: '100%',
         width: '60%',
+        position: 'relative'
     },
     quill:{
         height: '100%',
@@ -200,6 +230,15 @@ const styles = (theme: Theme) => createStyles({
     fileLink: {
         // override quilljs
         color: theme.palette.secondary.main + "!important"
+    },
+    saveIndicator: {
+        width: 12,
+        height: 12,
+        backgroundColor: theme.palette.secondary.main,
+        borderRadius: "50%",
+        position: 'absolute',
+        top: 8,
+        right: 8,
     }
 })
 
@@ -221,6 +260,7 @@ const mapDispatchToProps = {
     selectFile,
     navigateRepoPage,
     loadTextContent,
+    saveTextContent
 }
 
 export default connect(

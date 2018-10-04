@@ -1,6 +1,7 @@
 import { makeLogic } from '../reduxUtils'
 import { EditorActionType,
-    ILoadTextContentAction, ILoadTextContentSuccessAction
+    ILoadTextContentAction, ILoadTextContentSuccessAction,
+    ISaveTextContentAction, ISaveTextContentSuccessAction
 } from './editorActions'
 const fs = (window as any).require('fs')
 import path from 'path'
@@ -19,6 +20,19 @@ const loadTextContentLogic = makeLogic<ILoadTextContentAction, ILoadTextContentS
         return { repoRoot, file, content}
     }
 })
+
+const saveTextContentLogic = makeLogic<ISaveTextContentAction, ISaveTextContentSuccessAction>({
+    type: EditorActionType.SAVE_TEXT_CONTENT,
+    async process({ action }) {
+        console.log(action)
+        const { repoRoot, file, content } = action.payload
+    const fPath = path.join(repoRoot, file)
+        fs.writeFileSync(fPath, content)
+        return { repoRoot, file }
+    }
+})
+
 export default [
-    loadTextContentLogic
+    loadTextContentLogic,
+    saveTextContentLogic
 ]
