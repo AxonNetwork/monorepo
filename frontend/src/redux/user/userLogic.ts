@@ -11,6 +11,8 @@ import {
     IGetSharedReposAction, IGetSharedReposSuccessAction,
     ICloneSharedRepoAction, ICloneSharedRepoSuccessAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
+    IReadLocalConfigAction, IReadLocalConfigSuccessAction,
+    ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
     fetchUserData,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
@@ -75,7 +77,7 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
         const resp = await ServerRelay.whoami(jwt)
         await dispatch(fetchUserData({ emails: [ resp.email ] }))
         return { email: resp.email, name: resp.name }
-    }
+    },
 })
 
 const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
@@ -122,6 +124,25 @@ const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRe
     },
 })
 
+const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigSuccessAction>({
+    type: UserActionType.READ_LOCAL_CONFIG,
+    async process(_) {
+        console.log('local config 111')
+        const config = await UserData.readAll()
+        console.log('local config ~>', config)
+        return { config }
+    },
+})
+
+const setCodeColorSchemeLogic = makeLogic<ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction>({
+    type: UserActionType.SET_CODE_COLOR_SCHEME,
+    async process({ action }) {
+        const { codeColorScheme } = action.payload
+        await UserData.setCodeColorScheme(codeColorScheme)
+        return { codeColorScheme }
+    },
+})
+
 export default [
     loginLogic,
     signupLogic,
@@ -131,4 +152,6 @@ export default [
     getSharedReposLogic,
     cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
+    readLocalConfigLogic,
+    setCodeColorSchemeLogic,
 ]

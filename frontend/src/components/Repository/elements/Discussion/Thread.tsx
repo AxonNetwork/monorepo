@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar'
 
 import { createComment } from 'redux/comment/commentActions'
 import { selectFile } from 'redux/repository/repoActions'
-import { IUser, IComment, IRepo, IRepoFile, IDiscussion } from 'common'
+import { IUser, IComment, IRepo, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
@@ -24,7 +24,7 @@ class Thread extends React.Component<Props>
             return
         }
         await this.props.createComment({
-            repoID: this.props.repoID,
+            repoID: this.props.repo.repoID,
             text: comment,
             attachedTo: {
                 type: this.props.type,
@@ -75,7 +75,7 @@ class Thread extends React.Component<Props>
                     </div>
                 </div>
                 <CreateComment
-                    files={this.props.files}
+                    files={this.props.repo.files}
                     discussions={this.props.discussions}
                     onSubmit={this.handleSubmit}
                 />
@@ -86,19 +86,16 @@ class Thread extends React.Component<Props>
 
 interface Props {
     title: string
-    type: string
+    type: 'discussion' | 'file' | 'event'
     subject: number | string
-    repoID: string
     repo: IRepo
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
-    files: {[name: string]: IRepoFile} | undefined
-    discussions: {[created: number]: IDiscussion} | undefined
+    discussions: {[created: number]: IDiscussion}
     unselect?: Function
-    createComment: Function
-    selectFile: Function
-    switchToPage?: Function
-    classes: any
+    createComment: typeof createComment
+    selectFile: typeof selectFile
+    classes?: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -142,18 +139,11 @@ const styles = (theme: Theme) => createStyles({
 })
 
 
-const mapStateToProps = (state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ''
-    const repo = state.repository.repos[selected] || {}
-    const repoID = repo.repoID
-    const files = repo.files
-    const discussions = state.discussion.discussions[repoID] || {}
+const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+    const discussions = state.discussion.discussions[ownProps.repo.repoID] || {}
     return {
-        repoID,
-        comments: state.comment.comments[repoID] || {},
+        comments: state.comment.comments[ownProps.repo.repoID] || {},
         users: state.user.users,
-        files: files,
-        repo,
         discussions,
     }
 }

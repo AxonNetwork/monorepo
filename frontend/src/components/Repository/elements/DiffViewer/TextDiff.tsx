@@ -1,4 +1,6 @@
+import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -6,11 +8,13 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import parse from 'parse-diff'
 
 import LineChunkContent from './LineChunkContent'
 import SheetChunkContent from './SheetChunkContent'
 import autobind from 'utils/autobind'
-import parse from 'parse-diff'
+import getLanguage from 'utils/getLanguage'
+import { IGlobalState } from 'redux/store'
 
 @autobind
 class TextDiff extends React.Component<Props, State>
@@ -26,6 +30,7 @@ class TextDiff extends React.Component<Props, State>
 
     render() {
         const { filename, type, chunks, classes } = this.props
+        const language = getLanguage(path.extname(filename).toLowerCase().substring(1))
         // const changes = chunk.changes.reduce((acc:any, curr:parse.NormalChange|parse.AddChange|parse.DeleteChange) => {
         //     if (curr.content[0] === '+') { acc.add++ }
         //     if (curr.content[0] === '-') { acc.del++ }
@@ -42,7 +47,7 @@ class TextDiff extends React.Component<Props, State>
                             <React.Fragment>
                                 <div>
                                     {type === 'text' &&
-                                        <LineChunkContent chunk={chunk} />
+                                        <LineChunkContent chunk={chunk} codeColorScheme={this.props.codeColorScheme} language={language} />
                                     }
                                     {type === 'data' &&
                                         <SheetChunkContent chunk={chunk} />
@@ -64,6 +69,7 @@ interface Props {
     filename: string
     type: string
     chunks: parse.Chunk[]
+    codeColorScheme: string | undefined
     classes: any
 }
 
@@ -114,4 +120,18 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(TextDiff)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        codeColorScheme: state.user.codeColorScheme,
+    }
+}
+
+const mapDispatchToProps = {
+    // setCodeColorScheme,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(TextDiff))
+

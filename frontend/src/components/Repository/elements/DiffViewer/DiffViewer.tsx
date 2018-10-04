@@ -1,7 +1,6 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-// import Chunk from './Chunk'
 import TextDiff from './TextDiff'
 import BinaryDiff from './BinaryDiff'
 
@@ -47,7 +46,7 @@ class DiffViewer extends React.Component<Props, State>
             case 'binary':
                 return (
                     <React.Fragment>
-                        {files.map((file:any) => (
+                        {files.map((file: any) => (
                             <BinaryDiff key={file.name} file={file} />
                         ))}
                     </React.Fragment>
@@ -58,7 +57,7 @@ class DiffViewer extends React.Component<Props, State>
             default:
                 return (
                     <React.Fragment>
-                        {files.map((file:any) => (
+                        {files.map((file: any) => (
                             <TextDiff
                                 key={file.to}
                                 chunks={file.chunks}

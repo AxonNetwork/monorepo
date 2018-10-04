@@ -16,7 +16,7 @@ import { RepoActionType,
     IGetDiffAction, IGetDiffSuccessAction,
     IRevertFilesAction, IRevertFilesSuccessAction,
     IPullRepoAction, IPullRepoSuccessAction,
-    IWatchRepoAction, IWatchRepoSuccessAction,
+    IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
@@ -25,7 +25,7 @@ import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import * as rpc from '../../rpc'
-import { doesNotReject } from 'assert';
+
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -102,12 +102,12 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 
         const rpcClient = rpc.initClient()
         const filesListRaw = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
-        const filesList = filesListRaw.map(file=> ({
+        const filesList = filesListRaw.map(file => ({
             name: file.name,
             size: file.size,
-            modified: new Date(file.modified*1000),
+            modified: new Date(file.modified * 1000),
             type: fileType(file.name),
-            status: file.stagedStatus
+            status: file.stagedStatus,
         } as IRepoFile))
         const files = keyBy(filesList, 'name')
 
@@ -126,7 +126,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             version: 0,
             commit: event.commitHash,
             user: event.author,
-            time: new Date(event.timestamp*1000),
+            time: new Date(event.timestamp * 1000),
             message: event.message,
             files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
         } as ITimelineEvent))
@@ -245,14 +245,14 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     async process({ action }, dispatch, done) {
         const { repoID, path } = action.payload
         const watcher = RepoWatcher.watch(repoID, path)
-        watcher.on('file_change', ()=>{
+        watcher.on('file_change', () => {
             console.log('here')
             dispatch(fetchRepoFiles({ path, repoID }))
         })
-        watcher.on('end', ()=>{
+        watcher.on('end', () => {
             done()
         })
-    }
+    },
 })
 
 export default [

@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
@@ -6,56 +7,80 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
-import SyntaxHighlighter from 'react-syntax-highlighter'
-import { docco } from 'react-syntax-highlighter/styles/hljs'
+import SyntaxHighlighter from 'react-syntax-highlighter/prism'
 import parse from 'parse-diff'
 import tinycolor from 'tinycolor2'
-const schemes = require('react-syntax-highlighter/styles/hljs')
+const schemes = require('react-syntax-highlighter/styles/prism')
 
-export interface LineChunkContentProps {
-    chunk: parse.Chunk
-    classes: any
+const syntaxStyle = {
+    padding: 0,
+    margin: 0,
+    background: 'none',
+    textShadow: 'none',
+    border: 'none',
+    boxShadow: 'none',
+    // lineHeight: 'normal',
+    height: '1rem',
+    tabSize: 4,
 }
 
-class LineChunkContent extends React.Component<LineChunkContentProps>
+const codeTagProps = {
+    style: {
+        fontFamily: "Consolas, Menlo, Monaco, 'Courier New', sans-serif",
+        fontWeight: 500,
+        fontSize: '0.8rem',
+    },
+}
+
+class LineChunkContent extends React.Component<Props>
 {
     render() {
-        const {classes, chunk} = this.props
-        const syntaxStyle = {padding: 0, margin: 0, background: 'none'}
-        const codeTagProps = { style: { fontFamily: "Consolas, Monaco, 'Courier New', sans-serif", fontWeight: 500, fontSize: '0.7rem' } }
+        const { classes, language, chunk } = this.props
+
+        const scheme = schemes[this.props.codeColorScheme || Object.keys(schemes)[0]]
+        const schemeDefaults = scheme['pre[class*="language-"]']
+        const backgroundColor = (schemeDefaults || {}).background || '#ffffff'
+
         // @@TODO: cache these in State or maybe even map(schemes, () => add bgRed, bgGreen) -> memoize the schemes module
-        const bgRed = tinycolor.mix('#ff0000', schemes.agate.hljs.background, 90).toHexString()
-        const bgGreen = tinycolor.mix('#00ff00', schemes.agate.hljs.background, 90).toHexString()
+        let bgRed: string
+        let bgGreen: string
+        if (tinycolor(backgroundColor).isDark()) {
+            bgRed = tinycolor.mix('#ff0000', backgroundColor, 90).toHexString()
+            bgGreen = tinycolor.mix('#00ff00', backgroundColor, 90).toHexString()
+        } else {
+            bgRed = tinycolor.mix(red[100], backgroundColor, 50).toHexString()
+            bgGreen = tinycolor.mix(green[100], backgroundColor, 50).toHexString()
+        }
         return (
             <React.Fragment>
                 <Table>
                     <TableBody>
                         {chunk.changes.map((change: parse.Change, i: number) => {
                             switch (change.type) {
-                                case  'add':
+                                case 'add':
                                     return(
-                                        <TableRow key={i} className={classes.row + ' ' + classes.added}>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}></TableCell>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
-                                            <TableCell className={classes.cell}><code>+</code></TableCell>
+                                        <TableRow key={i} className={classnames(classes.row, classes.added)}>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumAdd, classes.constrainWidth)}></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumAdd, classes.constrainWidth)}><code>{change.ln}</code></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.constrainWidth)}><code>+</code></TableCell>
                                             <TableCell className={classes.cell}>
                                                 <div style={{ backgroundColor: bgGreen }}>
-                                                    <SyntaxHighlighter style={schemes.agate} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
+                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
                                                         {change.content.replace('+', ' ')}
                                                     </SyntaxHighlighter>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
                                     )
-                                case  'del':
+                                case 'del':
                                     return(
-                                        <TableRow key={i} className={classes.row + ' ' + classes.deleted}>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code>{change.ln}</code></TableCell>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code></code></TableCell>
-                                            <TableCell className={classes.cell}><code>-</code></TableCell>
+                                        <TableRow key={i} className={classnames(classes.row, classes.deleted)}>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumDel, classes.constrainWidth)}><code>{change.ln}</code></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumDel, classes.constrainWidth)}><code></code></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.constrainWidth)}><code>-</code></TableCell>
                                             <TableCell className={classes.cell}>
                                                 <div style={{ backgroundColor: bgRed }}>
-                                                    <SyntaxHighlighter style={schemes.agate} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
+                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
                                                         {change.content.replace('-', ' ')}
                                                     </SyntaxHighlighter>
                                                 </div>
@@ -65,12 +90,12 @@ class LineChunkContent extends React.Component<LineChunkContentProps>
                                 default:
                                     return(
                                         <TableRow key={i} className={classes.row}>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln1}</code></TableCell>
-                                            <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln2}</code></TableCell>
-                                            <TableCell className={classes.cell}></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.constrainWidth)}><code>{change.ln1}</code></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.lineNum, classes.constrainWidth)}><code>{change.ln2}</code></TableCell>
+                                            <TableCell className={classnames(classes.cell, classes.constrainWidth)}></TableCell>
                                             <TableCell className={classes.cell}>
-                                                <div style={{ backgroundColor: schemes.agate.hljs.background }}>
-                                                    <SyntaxHighlighter style={schemes.agate} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
+                                                <div style={{ backgroundColor }}>
+                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
                                                         {change.content}
                                                     </SyntaxHighlighter>
                                                 </div>
@@ -84,6 +109,13 @@ class LineChunkContent extends React.Component<LineChunkContentProps>
             </React.Fragment>
         )
     }
+}
+
+interface Props {
+    chunk: parse.Chunk
+    codeColorScheme: string | undefined
+    language: string | undefined
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -119,7 +151,10 @@ const styles = (theme: Theme) => createStyles({
     lineNumDel: {
         backgroundColor: red[100],
     },
-
+    constrainWidth: {
+        width: '1%',
+        minWidth: 50,
+    },
 })
 
 export default withStyles(styles)(LineChunkContent)

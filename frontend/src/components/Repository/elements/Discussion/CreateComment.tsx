@@ -73,13 +73,13 @@ class CreateComment extends React.Component<Props, State>
         this.setState({comment: ''})
     }
 
-    handleClose(embedType: string, refTarget: string) {
+    handleClose(embedType?: string, refTarget?: string) {
         this.setState({
             anchorEl: null,
             position: 0,
             embedType: null,
         })
-        if (refTarget.length === 0) {
+        if (embedType === undefined || refTarget === undefined) {
             return
         }
         const ref = embedType + ':[' + refTarget + '] '
@@ -110,7 +110,7 @@ class CreateComment extends React.Component<Props, State>
                     id="simple-menu"
                     anchorEl={this.state.anchorEl}
                     open={this.state.embedType !== null}
-                    onClose={() => this.handleClose('', '')}
+                    onClose={() => this.handleClose()}
                 >
                     {this.state.embedType === '@file' && fileNames.map((file: string) => (
                         <MenuItem
@@ -128,12 +128,12 @@ class CreateComment extends React.Component<Props, State>
                             {file}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: number) => (
+                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: string) => (
                         <MenuItem
                             onClick={() => this.handleClose('@discussion', created)}
                             classes={{root: classes.menuItem}}
                         >
-                            {this.props.discussions[created].subject}
+                            {this.props.discussions[parseInt(created, 10)].subject}
                         </MenuItem>
                     ))}
                 </Menu>
@@ -148,7 +148,7 @@ class CreateComment extends React.Component<Props, State>
 
 interface Props {
     files: {[name: string]: IRepoFile} | undefined
-    discussions: {[created: number]: IDiscussion} | undefined
+    discussions: {[created: number]: IDiscussion}
     onSubmit: (comment: string) => void
     classes: any
 }

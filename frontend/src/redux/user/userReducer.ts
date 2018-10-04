@@ -5,12 +5,14 @@ const initialState = {
     users: {},
     currentUser: undefined,
     error: undefined,
+    codeColorScheme: undefined,
 }
 
 export interface IUserState {
     users: {[id: string]: IUser}
     currentUser: string | undefined
     error: Error | undefined
+    codeColorScheme: string | undefined
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -69,6 +71,22 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                         },
                     },
                 },
+            }
+        }
+
+        case UserActionType.READ_LOCAL_CONFIG_SUCCESS: {
+            const { config } = action.payload
+            return {
+                ...state,
+                codeColorScheme: config.codeColorScheme,
+            }
+        }
+
+        case UserActionType.SET_CODE_COLOR_SCHEME_SUCCESS: {
+            const { codeColorScheme } = action.payload
+            return {
+                ...state,
+                codeColorScheme,
             }
         }
 

@@ -6,10 +6,11 @@ import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 import store from './redux/store'
-import { checkLocalUser } from 'redux/user/userActions'
+import { readLocalConfig, checkLocalUser } from 'redux/user/userActions'
 import { getLocalRepos } from 'redux/repository/repoActions'
 import { isProduction } from 'utils'
 
+store.dispatch(readLocalConfig())
 store.dispatch(checkLocalUser())
 store.dispatch(getLocalRepos())
 

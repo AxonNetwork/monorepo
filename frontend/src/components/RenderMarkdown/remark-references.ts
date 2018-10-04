@@ -7,14 +7,14 @@
 
 const REGEX = /@(\w+):\[([a-zA-Z0-9="',-:]+)\]/
 
-export default function shortcodes(options) {
+export default function shortcodes(this: any) {
     if (isRemarkParser(this.Parser)) {
         const parser = this.Parser.prototype
         parser.inlineTokenizers.shortcode = shortcodeTokenizer
         parser.inlineMethods.splice(
             parser.inlineMethods.indexOf('escape'),
             0,
-            'shortcode'
+            'shortcode',
         )
     }
     if (isRemarkCompiler(this.Compiler)) {
@@ -22,13 +22,13 @@ export default function shortcodes(options) {
         compiler.visitors.shortcode = shortcodeCompiler
     }
 
-    function locator(value, fromIndex) {
+    function locator(value: string, fromIndex: number) {
         return REGEX[Symbol.search](value)
     }
 
-    function shortcodeTokenizer(eat, value, silent) {
+    function shortcodeTokenizer(eat: any, value: string, silent: boolean) {
         let match = REGEX.exec(value)
-        if (!match || match.index !== 0) return
+        if (!match || match.index !== 0) { return }
 
         /* Exit with true in silent mode after successful parse - never used (yet) */
         /* istanbul ignore if */
@@ -44,21 +44,21 @@ export default function shortcodes(options) {
     }
     shortcodeTokenizer.locator = locator
 
-    function shortcodeCompiler(node) {
+    function shortcodeCompiler(node: any) {
         return `@${node.identifier}:[${node.contents}]`
     }
 }
 
-function isRemarkParser(parser) {
+function isRemarkParser(parser: any) {
     return Boolean(
         parser &&
             parser.prototype &&
             parser.prototype.inlineTokenizers &&
             parser.prototype.inlineTokenizers.break &&
-            parser.prototype.inlineTokenizers.break.locator
+            parser.prototype.inlineTokenizers.break.locator,
     )
 }
 
-function isRemarkCompiler(compiler) {
+function isRemarkCompiler(compiler: any) {
     return Boolean(compiler && compiler.prototype)
 }

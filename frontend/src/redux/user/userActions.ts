@@ -1,5 +1,6 @@
 import { IUser, ISharedRepoInfo } from '../../common'
 import { FailedAction } from '../reduxUtils'
+import { IUserDataContents } from 'lib/UserData'
 
 export enum UserActionType {
     LOGIN = 'LOGIN',
@@ -33,13 +34,21 @@ export enum UserActionType {
     IGNORE_SHARED_REPO = 'IGNORE_SHARED_REPO',
     IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
     IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
+
+    READ_LOCAL_CONFIG = 'READ_LOCAL_CONFIG',
+    READ_LOCAL_CONFIG_SUCCESS = 'READ_LOCAL_CONFIG_SUCCESS',
+    READ_LOCAL_CONFIG_FAILED = 'READ_LOCAL_CONFIG_FAILED',
+
+    SET_CODE_COLOR_SCHEME = 'SET_CODE_COLOR_SCHEME',
+    SET_CODE_COLOR_SCHEME_SUCCESS = 'SET_CODE_COLOR_SCHEME_SUCCESS',
+    SET_CODE_COLOR_SCHEME_FAILED = 'SET_CODE_COLOR_SCHEME_FAILED',
 }
 
 export interface ILoginAction {
     type: UserActionType.LOGIN
     payload: {
         email: string
-        password: string
+        password: string,
     }
 }
 
@@ -47,7 +56,7 @@ export interface ILoginSuccessAction {
     type: UserActionType.LOGIN_SUCCESS
     payload: {
         email: string
-        name: string
+        name: string,
     }
 }
 
@@ -70,7 +79,7 @@ export interface ISignupAction {
     payload: {
         name: string
         email: string
-        password: string
+        password: string,
     }
 }
 
@@ -78,7 +87,7 @@ export interface ISignupSuccessAction {
     type: UserActionType.SIGNUP_SUCCESS
     payload: {
         name: string
-        email: string
+        email: string,
     }
 }
 
@@ -87,14 +96,14 @@ export type ISignupFailedAction = FailedAction<UserActionType.SIGNUP_FAILED>
 export interface IFetchUserDataAction {
     type: UserActionType.FETCH_USER_DATA
     payload: {
-        emails: string[]
+        emails: string[],
     }
 }
 
 export interface IFetchUserDataSuccessAction {
     type: UserActionType.FETCH_USER_DATA_SUCCESS
     payload: {
-        users: { [email: string]: IUser }
+        users: { [email: string]: IUser },
     }
 }
 
@@ -109,7 +118,7 @@ export interface ICheckLocalUserSuccessAction {
     type: UserActionType.CHECK_LOCAL_USER_SUCCESS
     payload: {
         email: string
-        name: string
+        name: string,
     }
 }
 
@@ -118,7 +127,7 @@ export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCA
 export interface IGetSharedReposAction {
     type: UserActionType.FETCH_SHARED_REPOS
     payload: {
-        email: string
+        email: string,
     }
 }
 
@@ -126,7 +135,7 @@ export interface IGetSharedReposSuccessAction {
     type: UserActionType.FETCH_SHARED_REPOS_SUCCESS
     payload: {
         email: string
-        sharedRepos: {[repoID: string]: ISharedRepoInfo}
+        sharedRepos: {[repoID: string]: ISharedRepoInfo},
     }
 }
 
@@ -135,7 +144,7 @@ export type IGetSharedReposFailedAction = FailedAction<UserActionType.FETCH_SHAR
 export interface ICloneSharedRepoAction {
     type: UserActionType.CLONE_SHARED_REPO
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -149,7 +158,7 @@ export type ICloneSharedRepoFailedAction = FailedAction<UserActionType.CLONE_SHA
 export interface IIgnoreSharedRepoAction {
     type: UserActionType.IGNORE_SHARED_REPO
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -157,11 +166,41 @@ export interface IIgnoreSharedRepoSuccessAction {
     type: UserActionType.IGNORE_SHARED_REPO_SUCCESS
     payload: {
         repoID: string
-        email: string|undefined
+        email: string | undefined,
     }
 }
 
 export type IIgnoreSharedRepoFailedAction = FailedAction<UserActionType.IGNORE_SHARED_REPO_FAILED>
+
+export interface ISetCodeColorSchemeAction {
+    type: UserActionType.SET_CODE_COLOR_SCHEME
+    payload: {
+        codeColorScheme: string,
+    }
+}
+
+export interface ISetCodeColorSchemeSuccessAction {
+    type: UserActionType.SET_CODE_COLOR_SCHEME_SUCCESS
+    payload: {
+        codeColorScheme: string,
+    }
+}
+
+export type ISetCodeColorSchemeFailedAction = FailedAction<UserActionType.SET_CODE_COLOR_SCHEME_FAILED>
+
+export interface IReadLocalConfigAction {
+    type: UserActionType.READ_LOCAL_CONFIG
+    payload: {}
+}
+
+export interface IReadLocalConfigSuccessAction {
+    type: UserActionType.READ_LOCAL_CONFIG_SUCCESS
+    payload: {
+        config: IUserDataContents,
+    }
+}
+
+export type IReadLocalConfigFailedAction = FailedAction<UserActionType.READ_LOCAL_CONFIG_FAILED>
 
 export type IUserAction =
     ILoginAction |
@@ -187,7 +226,13 @@ export type IUserAction =
     ICloneSharedRepoFailedAction |
     IIgnoreSharedRepoAction |
     IIgnoreSharedRepoSuccessAction |
-    IIgnoreSharedRepoFailedAction
+    IIgnoreSharedRepoFailedAction |
+    IReadLocalConfigAction |
+    IReadLocalConfigSuccessAction |
+    IReadLocalConfigFailedAction |
+    ISetCodeColorSchemeAction |
+    ISetCodeColorSchemeSuccessAction |
+    ISetCodeColorSchemeFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -198,3 +243,9 @@ export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, pa
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
 export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })
 export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): IIgnoreSharedRepoAction => ({ type: UserActionType.IGNORE_SHARED_REPO, payload })
+
+export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {}): IReadLocalConfigAction => ({ type: UserActionType.READ_LOCAL_CONFIG, payload })
+export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']): ISetCodeColorSchemeAction => ({ type: UserActionType.SET_CODE_COLOR_SCHEME, payload })
+
+
+

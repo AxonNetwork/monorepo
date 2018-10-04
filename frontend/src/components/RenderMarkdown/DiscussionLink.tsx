@@ -30,7 +30,7 @@ interface Props {
     discussionSubject: string
     navigateRepoPage: typeof navigateRepoPage
     selectDiscussion: typeof selectDiscussion
-    classes: any
+    classes?: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -55,9 +55,7 @@ const mapDispatchToProps = {
     navigateRepoPage,
 }
 
-const DiscussionLinkContainer = connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(DiscussionLink))
-
-export default DiscussionLinkContainer

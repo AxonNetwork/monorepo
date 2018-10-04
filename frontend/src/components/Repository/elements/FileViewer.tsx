@@ -4,63 +4,48 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import autobind from 'utils/autobind'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import { IRepoFile } from 'common'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
-import SyntaxHighlighter from 'react-syntax-highlighter'
-import { docco, railscasts, zenburn, androidstudio, rainbow, atomOneDark } from 'react-syntax-highlighter/styles/hljs'
+import CodeViewer from './CodeViewer'
 const fs = (window as any).require('fs')
-const schemes = require('react-syntax-highlighter/styles/hljs')
 
-const codeColorSchemes = [
-    'railscasts',
-    'zenburn',
-    'androidstudio',
-    'rainbow',
-    'atom-one-dark',
-]
-
-console.log('schemes ~>', schemes)
 
 @autobind
 class FileViewer extends React.Component<Props, State>
 {
-    state = { fileContents: '', error: undefined, codeColorScheme: Object.keys(schemes)[0] }
+    state = {
+        fileContents: '',
+        error: undefined,
+    }
 
     render() {
         const { file, classes } = this.props
-        const extension = path.extname(file.name).toLowerCase()
+        const extension = path.extname(file.name).toLowerCase().substring(1)
 
         switch (extension) {
-        case '.md':
+        case 'md':
             return <RenderMarkdown text={this.state.fileContents || ''} basePath={this.props.repoRoot} />
-        case '.jpg':
+        case 'jpg':
+        case 'jpeg':
+        case 'gif':
+        case 'png':
+        case 'tif':
+        case 'tiff':
             return <img src={'file://' + path.join(this.props.repoRoot, file.name)} className={classes.imageEmbed} />
-        case '.go':
-            const syntaxStyle = { padding: 0, margin: 0, background: 'none' }
-            const codeTagProps = { style: { fontFamily: "Consolas, Monaco, 'Courier New', sans-serif", fontWeight: 500, fontSize: '0.7rem' } }
-            let color
-            return (
-                <div>
-                    <Select onChange={this.onChangeCodeColorScheme} value={this.state.codeColorScheme}>
-                        {Object.keys(schemes).map(scheme => (
-                            <MenuItem value={scheme}>{scheme}</MenuItem>
-                        ))}
-                    </Select>
-                    <div className={classes.codeContainer} style={{ backgroundColor: (schemes[this.state.codeColorScheme].hljs || {}).background }}>
-                        <SyntaxHighlighter style={schemes[this.state.codeColorScheme]} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
-                            {this.state.fileContents || ''}
-                        </SyntaxHighlighter>
-                    </div>
-                </div>
-            )
+        case 'go':
+        case 'js':
+        case 'jsx':
+        case 'ts':
+        case 'tsx':
+        case 'py':
+        case 'proto':
+        case 'tex':
+        case 'rb':
+        case 'rs':
+        case 'r':
+        case 'txt':
+            return <CodeViewer language={extension} contents={this.state.fileContents} showColorSelector />
         default:
             return <div>We don't have a viewer for this kind of file yet.</div>
         }
-    }
-
-    onChangeCodeColorScheme(evt: any) {
-        console.log('evt ~>', evt, evt.target.value)
-        this.setState({ codeColorScheme: evt.target.value })
     }
 
     componentDidMount() {
@@ -112,7 +97,6 @@ interface Props {
 interface State {
     fileContents: string
     error: Error | undefined
-    codeColorScheme: string
 }
 
 const styles = () => createStyles({

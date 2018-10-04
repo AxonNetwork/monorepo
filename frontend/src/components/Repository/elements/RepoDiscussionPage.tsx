@@ -82,11 +82,11 @@ class RepoDiscussionPage extends React.Component<Props>
                 {selected !== undefined &&
                     <div className={classes.threadPane}>
                         <Thread
+                            repo={this.props.repo}
                             title={(selected as IDiscussion).subject}
                             type="discussion"
                             subject={(selected as IDiscussion).created}
                             unselect={() => this.props.selectDiscussion({ created: undefined })}
-                            files={(this.props.repo || {}).files || []}
                         />
                     </div>
                 }
@@ -97,7 +97,7 @@ class RepoDiscussionPage extends React.Component<Props>
 
 interface Props {
     repoID: string
-    repo: IRepo | undefined
+    repo: IRepo
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number | undefined
