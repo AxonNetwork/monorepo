@@ -42,8 +42,8 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
                 ...(merged[folderName] || {}),
             }
 
-            if (file.status === '*modified' || file.status === '*added') {
-                merged[folderName].status = '*modified'
+            if (file.status === 'M' || file.status === '?') {
+                merged[folderName].status = 'M'
             }
             merged[folderName].size += file.size
             if (merged[folderName].modified < file.modified) {

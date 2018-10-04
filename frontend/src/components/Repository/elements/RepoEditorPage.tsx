@@ -46,8 +46,11 @@ class RepoEditorPage extends React.Component<Props, State>
     }
 
     componentWillReceiveProps(props: Props){
-        if(props.content != this.props.content){
+        if(props.content != this.props.content || props.folderPath != this.props.folderPath){
             this.setup(props)
+        }
+        if(this.state.text.length === 0 && props.content.length > 0){
+            this.setState({text: props.content})
         }
     }
 
@@ -137,9 +140,10 @@ class RepoEditorPage extends React.Component<Props, State>
     }
 
     handleChange(value: string) {
+        const saved = value == this.props.content
         this.setState({
             text: value,
-            saved: false
+            saved: saved
         })
     }
 
@@ -155,7 +159,7 @@ class RepoEditorPage extends React.Component<Props, State>
                     <CustomToolbar />
                     <ReactQuill
                         className={classes.quill}
-                        defaultValue={this.state.text}
+                        defaultValue={this.props.content}
                         modules={this.modules}
                         onChange={this.handleChange}
                         onKeyUp={this.handleKeyPress}
@@ -209,7 +213,7 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     editor:{
         height: '100%',
-        width: '60%',
+        width: '70%',
         position: 'relative'
     },
     quill:{
@@ -246,7 +250,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ""
     const files = state.repository.repos[selected].files || {}
     const folderPath = state.repository.repos[selected].path || ""
-    const content = (state.editor.content[selected]||{})['manuscript']
+    const content = (state.editor.content[selected]||{})['manuscript']||""
     const loaded = state.editor.loaded
     return {
         files: files,

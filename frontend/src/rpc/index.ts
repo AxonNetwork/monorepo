@@ -20,7 +20,7 @@ interface IRPCClient {
         name: string,
         size: number,
         modified: number,
-        status: string
+        stagedStatus: string
     }[] } >
     getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: {
         commitHash: string

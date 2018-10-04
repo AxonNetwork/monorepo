@@ -22,7 +22,7 @@ class RepoFilesPage extends React.Component<Props>
         const files = repo.files || {}
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]
-            return (file.status === '*modified' || file.status === '*added')
+            return (file.status === 'M' || file.status === '?')
         })
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
