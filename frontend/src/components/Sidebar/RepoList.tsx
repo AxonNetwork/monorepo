@@ -69,10 +69,10 @@ const styles = (theme: Theme) => createStyles({
         backgroundColor: theme.palette.action.hover,
     },
     badge: {
-        top: '8px',
-        width: ' 8px',
-        left: '-16px',
-        height: ' 8px',
+        top: 6,
+        width: 8,
+        left: -16,
+        height: 8,
     },
     sidebarItemText: {
         color: 'rgb(212, 212, 212)',

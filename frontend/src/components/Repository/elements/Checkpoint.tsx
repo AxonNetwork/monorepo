@@ -23,9 +23,10 @@ class Checkpoint extends React.Component<CheckpointProps, CheckpointState>
     }
 
     handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value
         this.setState((current)=>({
             ...current,
-            [name]: event.target.value,
+            [name]: value,
         }))
     }
 

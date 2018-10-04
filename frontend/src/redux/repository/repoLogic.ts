@@ -102,7 +102,6 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 
         const rpcClient = rpc.initClient()
         const filesListRaw = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
-        console.log(filesListRaw)
         const filesList = filesListRaw.map(file=> ({
             name: file.name,
             size: file.size,

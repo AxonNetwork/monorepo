@@ -54,9 +54,9 @@ function FileIcon(props: FileIconProps){
 
 const styles = createStyles({
     badge: {
-        top: -4,
+        top: -2,
         width:  8,
-        right: -4,
+        right: -2,
         height:  8,
     },
 })
