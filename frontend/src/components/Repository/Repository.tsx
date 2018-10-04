@@ -19,6 +19,7 @@ import RepoSettingsPage from './elements/RepoSettingsPage'
 import autobind from 'utils/autobind'
 import { RepoPage } from 'redux/repository/repoReducer'
 import { navigateRepoPage } from 'redux/repository/repoActions'
+import { IGlobalState } from 'redux/store'
 
 
 @autobind

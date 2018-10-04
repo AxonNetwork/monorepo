@@ -1,7 +1,7 @@
 import path from 'path'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import FileLink from './FileLink'
 import DiscussionLink from './DiscussionLink'
@@ -46,7 +46,7 @@ interface Props {
     basePath: string
 }
 
-const styles = (theme: Theme) => createStyles({
+const styles = () => createStyles({
     embeddedImage: {
         maxWidth: '100%',
     },

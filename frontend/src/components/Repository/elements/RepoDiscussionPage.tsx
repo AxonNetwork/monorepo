@@ -15,7 +15,7 @@ import CreateDiscussion from './Discussion/CreateDiscussion'
 import { getDiscussions, selectDiscussion, createDiscussion } from 'redux/discussion/discussionActions'
 import { createComment } from 'redux/comment/commentActions'
 import { IGlobalState } from 'redux/store'
-import { IDiscussion, IComment } from 'common'
+import { IRepo, IDiscussion, IComment } from 'common'
 
 
 class RepoDiscussionPage extends React.Component<Props>
@@ -29,7 +29,7 @@ class RepoDiscussionPage extends React.Component<Props>
         const classes = this.props.classes
         const discussions = this.props.discussions || {}
 
-        let selected: IDiscussion|undefined
+        let selected: IDiscussion | undefined
         let newDiscussion = false
         if (this.props.selected !== undefined) {
             selected = discussions[this.props.selected]
@@ -97,10 +97,10 @@ class RepoDiscussionPage extends React.Component<Props>
 
 interface Props {
     repoID: string
-    repo: IRepo|undefined
+    repo: IRepo | undefined
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
-    selected: number|undefined
+    selected: number | undefined
     getDiscussions: Function
     selectDiscussion: typeof selectDiscussion
     createDiscussion: Function

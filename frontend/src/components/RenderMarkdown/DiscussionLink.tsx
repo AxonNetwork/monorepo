@@ -4,6 +4,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { navigateRepoPage } from 'redux/repository/repoActions'
 import { selectDiscussion } from 'redux/discussion/discussionActions'
 import { RepoPage } from 'redux/repository/repoReducer'
+import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 
 @autobind

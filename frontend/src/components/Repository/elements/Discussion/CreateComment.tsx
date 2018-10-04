@@ -42,19 +42,19 @@ class CreateComment extends React.Component<Props, State>
         if (lastToken === '@file') {
             this.setState({
                 anchorEl: event.target,
-                position: cursor-5,
+                position: cursor - 5,
                 embedType: '@file',
             })
         } else if (lastToken === '@image') {
             this.setState({
                 anchorEl: event.target,
-                position: cursor-6,
+                position: cursor - 6,
                 embedType: '@image',
             })
         } else if (lastToken === '@discussion') {
             this.setState({
                 anchorEl: event.target,
-                position: cursor-11,
+                position: cursor - 11,
                 embedType: '@discussion',
             })
         } else {
@@ -67,13 +67,13 @@ class CreateComment extends React.Component<Props, State>
         this.setState({comment: event.target.value})
     }
 
-    handleSubmit(event: React.KeyboardEvent<HTMLDivElement>|React.FormEvent<HTMLFormElement>) {
+    handleSubmit(event: React.KeyboardEvent<HTMLDivElement> | React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         this.props.onSubmit(this.state.comment)
-        this.setState({comment:''})
+        this.setState({comment: ''})
     }
 
-    handleClose(embedType: string, refTarget: string){
+    handleClose(embedType: string, refTarget: string) {
         this.setState({
             anchorEl: null,
             position: 0,
@@ -82,14 +82,14 @@ class CreateComment extends React.Component<Props, State>
         if (refTarget.length === 0) {
             return
         }
-        const ref = embedType+":["+refTarget+"] "
+        const ref = embedType + ':[' + refTarget + '] '
         const position = this.state.position
         let comment = this.state.comment
         comment = comment.substring(0, position) + ref + comment.substring(position + 5)
         this.setState({comment: comment})
     }
 
-    render(){
+    render() {
         const { files, classes } = this.props
         const fileNames = Object.keys(files || {})
 
@@ -110,28 +110,28 @@ class CreateComment extends React.Component<Props, State>
                     id="simple-menu"
                     anchorEl={this.state.anchorEl}
                     open={this.state.embedType !== null}
-                    onClose={()=>this.handleClose('')}
+                    onClose={() => this.handleClose('', '')}
                 >
-                    {this.state.embedType === '@file' && fileNames.map((file: string)=>(
+                    {this.state.embedType === '@file' && fileNames.map((file: string) => (
                         <MenuItem
-                            onClick={()=>this.handleClose('@file', file)}
-                            classes={{root:classes.menuItem}}
+                            onClick={() => this.handleClose('@file', file)}
+                            classes={{root: classes.menuItem}}
                         >
                             {file}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@image' && fileNames.filter((f: string) => endsWith(f, '.jpg')).map((file: string)=>(
+                    {this.state.embedType === '@image' && fileNames.filter((f: string) => endsWith(f, '.jpg')).map((file: string) => (
                         <MenuItem
-                            onClick={()=>this.handleClose('@image', file)}
-                            classes={{root:classes.menuItem}}
+                            onClick={() => this.handleClose('@image', file)}
+                            classes={{root: classes.menuItem}}
                         >
                             {file}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: number)=>(
+                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: number) => (
                         <MenuItem
-                            onClick={()=>this.handleClose('@discussion', created)}
-                            classes={{root:classes.menuItem}}
+                            onClick={() => this.handleClose('@discussion', created)}
+                            classes={{root: classes.menuItem}}
                         >
                             {this.props.discussions[created].subject}
                         </MenuItem>
@@ -147,9 +147,9 @@ class CreateComment extends React.Component<Props, State>
 }
 
 interface Props {
-    files: {[name: string]: IRepoFile}|undefined
-    discussions: {[created: number]: IDiscussion}|undefined
-    onSubmit:(comment:string)=>void
+    files: {[name: string]: IRepoFile} | undefined
+    discussions: {[created: number]: IDiscussion} | undefined
+    onSubmit: (comment: string) => void
     classes: any
 }
 
@@ -157,7 +157,7 @@ interface State {
     comment: string
     anchorEl: any
     position: number
-    embedType: string|null
+    embedType: string | null
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -171,7 +171,7 @@ const styles = (theme: Theme) => createStyles({
     textField: {
         flexGrow: 1,
         padding: theme.spacing.unit,
-        minHeight: 64
+        minHeight: 64,
     },
     submit: {
         padding: theme.spacing.unit,
@@ -180,9 +180,9 @@ const styles = (theme: Theme) => createStyles({
     icon: {
         color: theme.palette.grey[700],
     },
-    menuItem:{
-        maxWidth: 300
-    }
+    menuItem: {
+        maxWidth: 300,
+    },
 })
 
 export default withStyles(styles)(CreateComment)

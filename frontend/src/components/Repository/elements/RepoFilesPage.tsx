@@ -87,6 +87,9 @@ const styles = createStyles({
         display: 'flex',
         flexDirection: 'column',
     },
+    fileInfoContainer: {
+        overflowY: 'auto',
+    },
     fileList: {
         flexGrow: 1,
         overflowX: 'hidden',
@@ -102,7 +105,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const selectedFile = state.repository.selectedFile
     const selectedRepo = state.repository.selectedRepo
 
-    let repo: IRepo|undefined = undefined
+    let repo: IRepo | undefined = undefined
     if (selectedRepo !== null && selectedRepo !== undefined) {
         repo = state.repository.repos[selectedRepo] || undefined
     }
@@ -121,5 +124,5 @@ const mapDispatchToProps = {
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(RepoFilesPage))

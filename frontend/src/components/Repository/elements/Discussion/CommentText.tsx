@@ -1,6 +1,4 @@
-import path from 'path'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import moment from 'moment'

@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar'
 
 import { createComment } from 'redux/comment/commentActions'
 import { selectFile } from 'redux/repository/repoActions'
-import { IUser, IComment, IRepoFile, IDiscussion } from 'common'
+import { IUser, IComment, IRepo, IRepoFile, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
 import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
@@ -87,13 +87,13 @@ class Thread extends React.Component<Props>
 interface Props {
     title: string
     type: string
-    subject: number|string
+    subject: number | string
     repoID: string
     repo: IRepo
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
-    files: {[name: string]: IRepoFile}|undefined
-    discussions: {[created: number]: IDiscussion}|undefined
+    files: {[name: string]: IRepoFile} | undefined
+    discussions: {[created: number]: IDiscussion} | undefined
     unselect?: Function
     createComment: Function
     selectFile: Function

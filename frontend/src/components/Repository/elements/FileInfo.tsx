@@ -1,16 +1,16 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-
+// import Table from '@material-ui/core/Table'
+// import TableBody from '@material-ui/core/TableBody'
+// import File from './FileList/File'
+// import DiffViewer from './DiffViewer/DiffViewer'
+// import Thread from './Discussion/Thread'
 import Breadcrumbs from './FileList/Breadcrumbs'
-import File from './FileList/File'
 import Timeline from './Timeline/Timeline'
-import DiffViewer from './DiffViewer/DiffViewer'
-import Thread from './Discussion/Thread'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/repository/repoActions'
+import FileViewer from './FileViewer'
 
 
 @autobind
@@ -26,18 +26,18 @@ class FileInfo extends React.Component<Props>
                     selectedFolder={file.name}
                     selectFile={this.props.selectFile}
                 />
-                <Table className={classes.table}>
+                {/*<Table className={classes.table}>
                     <TableBody>
                         <File file={file} />
                     </TableBody>
-                </Table>
+                </Table>*/}
+
                 <div className={classes.infoContainer}>
+                    <div className={classes.fileViewerContainer}>
+                        <FileViewer file={file} repoRoot={this.props.repoRoot} />
+                    </div>
+
                     <div className={classes.timeline}>
-                        {(file.diff || '').length > 0 &&
-                            <DiffViewer
-                                diff={file.diff}
-                                type={file.type}/>
-                        }
                         <Timeline
                             repoRoot={this.props.repoRoot}
                             commits={this.props.commits}
@@ -46,13 +46,7 @@ class FileInfo extends React.Component<Props>
                             revertFiles={this.props.revertFiles}
                         />
                     </div>
-                    <div className={classes.thread}>
-                        <Thread
-                            title={file.name}
-                            type="file"
-                            subject={file.name}
-                        />
-                    </div>
+
                 </div>
             </React.Fragment>
         )
@@ -73,6 +67,12 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     infoContainer: {
         display: 'flex',
+        flexDirection: 'column',
+        // alignItems: 'center',
+    },
+    fileViewerContainer: {
+        padding: 40,
+        fontSize: '1rem',
     },
     timeline: {
         flexGrow: 1,

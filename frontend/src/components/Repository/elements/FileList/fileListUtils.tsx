@@ -16,7 +16,7 @@ export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFold
     return filtered
 }
 
-export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder: string|undefined) {
+export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder: string | undefined) {
     const merged = {} as {[filepath: string]: IRepoFile}
 
     for (let filepath of Object.keys(files)) {

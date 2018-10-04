@@ -1,5 +1,5 @@
 import _Promise from 'bluebird'
-import { ILocalRepo, IRef, IRepoFile } from '../common'
+import { ILocalRepo, IRef } from '../common'
 
 // const PROTO_PATH = __dirname + '/noderpc.proto'
 // const PROTO_PATH = '/Users/daniel/Projects/conscience/desktop-app-v2/frontend/src/rpc/noderpc.proto'
@@ -20,13 +20,13 @@ interface IRPCClient {
         name: string,
         size: number,
         modified: number,
-        stagedStatus: string
+        stagedStatus: string,
     }[] } >
     getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: {
         commitHash: string
         author: string
         message: string
-        timestamp: number
+        timestamp: number,
     }[] }>
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
     getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>

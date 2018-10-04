@@ -30,7 +30,6 @@ class CommitView extends React.Component<Props>
         const { classes } = this.props
         const commit = this.props.commit || {} as ITimelineEvent
         const diffs = commit.diffs || {}
-        const user = commit.user
         return (
             <div>
                 <Typography>
