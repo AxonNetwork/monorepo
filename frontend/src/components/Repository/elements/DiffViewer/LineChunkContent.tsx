@@ -10,7 +10,7 @@ import TableRow from '@material-ui/core/TableRow'
 import SyntaxHighlighter from 'react-syntax-highlighter/prism'
 import parse from 'parse-diff'
 import tinycolor from 'tinycolor2'
-const schemes = require('react-syntax-highlighter/styles/prism')
+import schemes from 'utils/codeColorSchemes'
 
 const syntaxStyle = {
     padding: 0,

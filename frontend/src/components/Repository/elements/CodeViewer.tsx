@@ -5,7 +5,7 @@ import autobind from 'utils/autobind'
 import SyntaxHighlighter from 'react-syntax-highlighter/prism'
 import { IGlobalState } from 'redux/store'
 import getLanguage from 'utils/getLanguage'
-const schemes = require('react-syntax-highlighter/styles/prism')
+import schemes from 'utils/codeColorSchemes'
 
 const syntaxStyle = {
     padding: 0,
@@ -16,7 +16,7 @@ const syntaxStyle = {
     boxShadow: 'none',
     lineHeight: 1.1,
     tabSize: 4,
-    overflow: 'visible'
+    overflow: 'visible',
 }
 
 const codeTagProps = {
