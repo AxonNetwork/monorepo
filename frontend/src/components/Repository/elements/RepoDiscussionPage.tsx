@@ -82,9 +82,7 @@ class RepoDiscussionPage extends React.Component<Props>
                         </IconButton>
                         <Typography variant="title" className={classes.startNewDiscussionPrompt}>Start a new discussion</Typography>
                         <CreateDiscussion
-                            username={this.props.username}
-                            repoID={this.props.repoID}
-                            createDiscussion={this.props.createDiscussion}
+                            repoRoot={this.props.repo.path}
                         />
                     </div>
                 }
@@ -110,7 +108,6 @@ interface Props {
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number | undefined
-    username: string
     getDiscussions: Function
     selectDiscussion: typeof selectDiscussion
     createDiscussion: Function
@@ -162,11 +159,9 @@ const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected] || {}
     const repoID = repo.repoID || ''
-    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         repo,
         repoID,
-        username,
         discussions: state.discussion.discussions[repoID] || {},
         comments: state.comment.comments[repoID] || {},
         selected: state.discussion.selected,

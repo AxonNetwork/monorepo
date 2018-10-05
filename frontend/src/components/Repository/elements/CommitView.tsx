@@ -59,9 +59,7 @@ class CommitView extends React.Component<Props>
                     <Typography variant="headline">Start a discussion about these changes</Typography>
                     <div className={classes.startDiscussionFormWrapper}>
                         <CreateDiscussion
-                            repoID={this.props.repoID}
-                            createDiscussion={this.props.createDiscussion}
-                            username={this.props.username}
+                            repoRoot={this.props.repoRoot}
                             commentWrapperClasses={{ comment: classes.createDiscussionComment }}
                         />
                     </div>

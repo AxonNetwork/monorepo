@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -6,6 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { createDiscussion } from 'redux/discussion/discussionActions'
 import autobind from 'utils/autobind'
 import CommentWrapper from './CommentWrapper'
+import SmartTextarea from 'components/SmartTextarea'
 
 
 @autobind
@@ -18,8 +20,7 @@ class CreateDiscussion extends React.Component<Props, State>
     _inputSubject!: HTMLInputElement
     _inputComment!: HTMLInputElement
 
-    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
+    onSubmit() {
         const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
         if (valid) {
             this.setState({ error: '' })
@@ -41,7 +42,7 @@ class CreateDiscussion extends React.Component<Props, State>
                 username={this.props.username}
                 created={new Date().getTime()}
             >
-                <form className={classes.form} onSubmit={this.handleSubmit}>
+                <form className={classes.form} onSubmit={this.onSubmit}>
                     <TextField
                         id="subject"
                         label="Subject"
@@ -49,7 +50,16 @@ class CreateDiscussion extends React.Component<Props, State>
                         fullWidth
                         inputRef={x => this._inputSubject = x}
                     />
-                    <TextField
+                    <SmartTextarea
+                        label="Comment"
+                        className={classes.textField}
+                        rows={3}
+                        inputRef={x => this._inputComment = x}
+                        files={this.props.files}
+                        discussions={this.props.discussions}
+                        onSubmit={() => this.onSubmit()}
+                    />
+                    {/*<TextField
                         id="comment"
                         label="Comment"
                         className={classes.textField}
@@ -57,8 +67,8 @@ class CreateDiscussion extends React.Component<Props, State>
                         multiline
                         rows={3}
                         inputRef={x => this._inputComment = x}
-                    />
-                    <Button color="secondary" variant="contained" type="submit">
+                    />*/}
+                    <Button color="secondary" variant="contained" onClick={this.onSubmit}>
                         Create
                     </Button>
                     <FormHelperText error className={classes.error}>{this.state.error}</FormHelperText>
@@ -69,8 +79,12 @@ class CreateDiscussion extends React.Component<Props, State>
 }
 
 interface Props {
-    username: string | undefined
     repoID: string
+
+    username: string | undefined
+    files: {[name: string]: IRepoFile}
+    discussions: {[created: number]: IDiscussion}
+
     createDiscussion: typeof createDiscussion
     commentWrapperClasses?: any
     classes: any
@@ -92,4 +106,22 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(CreateDiscussion)
+const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+    const repo = state.repository.repos[ownProps.repoRoot] || {}
+    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
+    return {
+        username,
+        files: repo.files || {},
+        discussions: state.discussion.discussions[repo.repoID] || {},
+    }
+}
+
+const mapDispatchToProps = {
+    createDiscussion,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(CreateDiscussion))
+
