@@ -134,7 +134,6 @@ export interface IGetSharedReposAction {
 export interface IGetSharedReposSuccessAction {
     type: UserActionType.FETCH_SHARED_REPOS_SUCCESS
     payload: {
-        email: string
         sharedRepos: {[repoID: string]: ISharedRepoInfo},
     }
 }
@@ -166,7 +165,6 @@ export interface IIgnoreSharedRepoSuccessAction {
     type: UserActionType.IGNORE_SHARED_REPO_SUCCESS
     payload: {
         repoID: string
-        email: string | undefined,
     }
 }
 

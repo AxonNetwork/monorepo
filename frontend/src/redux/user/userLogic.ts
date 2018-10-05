@@ -13,7 +13,7 @@ import {
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
-    fetchUserData,
+    fetchUserData, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
@@ -31,6 +31,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
 
         // Fetch the user's data
         await dispatch(fetchUserData({ emails: [ email ] }))
+        dispatch(getSharedRepos({ email }))
         // @@TODO: remove payload now that we're calling fetchUserData?
         return { email: resp.email, name: resp.name }
     },
@@ -47,6 +48,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
 
         // Fetch the user's data
         await dispatch(fetchUserData({ emails: [ email ] }))
+        dispatch(getSharedRepos({ email }))
         // @@TODO: remove payload now that we're calling fetchUserData?
         return { name: resp.name, email: resp.email }
     },
@@ -76,6 +78,7 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
         }
         const resp = await ServerRelay.whoami(jwt)
         await dispatch(fetchUserData({ emails: [ resp.email ] }))
+        dispatch(getSharedRepos({ email: resp.email }))
         return { email: resp.email, name: resp.name }
     },
 })
@@ -100,7 +103,7 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
             ignored: ignoredList[i],
         }))
         const sharedRepos = keyBy(sharedReposList, 'repoID') as {[repoID: string]: ISharedRepoInfo}
-        return { sharedRepos, email }
+        return { sharedRepos }
       },
 })
 
@@ -116,11 +119,10 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
 
 const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction>({
     type: UserActionType.IGNORE_SHARED_REPO,
-    async process({ getState, action }) {
+    async process({ action }) {
         const { repoID } = action.payload
-        const email = getState().user.currentUser
         await UserData.ignoreSharedRepo(repoID)
-        return { repoID, email }
+        return { repoID }
     },
 })
 

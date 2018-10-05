@@ -1,18 +1,20 @@
 import { UserActionType, IUserAction } from './userActions'
-import { IUser } from '../../common'
+import { IUser, ISharedRepoInfo } from '../../common'
 
 const initialState = {
     users: {},
     currentUser: undefined,
     error: undefined,
+    sharedRepos: {},
     codeColorScheme: undefined,
-    checkedLocalUser: false
+    checkedLocalUser: false,
 }
 
 export interface IUserState {
     users: {[id: string]: IUser}
     currentUser: string | undefined
     error: Error | undefined
+    sharedRepos: {[repoID: string]: ISharedRepoInfo}
     codeColorScheme: string | undefined
     checkedLocalUser: boolean
 }
@@ -27,7 +29,6 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 email,
                 name,
                 repos: [],
-                sharedRepos: {}
             }
             return {
                 ...state,
@@ -63,34 +64,20 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
 
         case UserActionType.FETCH_SHARED_REPOS_SUCCESS: {
-            const { email, sharedRepos } = action.payload
+            const { sharedRepos } = action.payload
             return {
                 ...state,
-                users: {
-                    ...state.users,
-                    [email]: {
-                        ...(state.users[email] || {}),
-                        sharedRepos,
-                    },
-                },
+                sharedRepos,
             }
         }
 
         case UserActionType.IGNORE_SHARED_REPO_SUCCESS: {
-            const { repoID, email } = action.payload
-            if (email === undefined) { return state }
+            const { repoID } = action.payload
             return {
                 ...state,
-                users: {
-                    ...state.users,
-                    [email]: {
-                        ...(state.users[email] || {}),
-                        sharedRepos: {
-                            ...((state.users[email] || {}).sharedRepos || {}),
-                            [repoID]: { repoID, ignored: true },
-                        },
-                    },
-                },
+                sharedRepos: {
+                    [repoID]: { repoID, ignored: true}
+                }
             }
         }
 

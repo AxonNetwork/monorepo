@@ -91,7 +91,6 @@ const styles = createStyles({
     text: {
         marginTop: '12px',
         display: 'inline-block',
-
     },
     button: {
         width: '24px',

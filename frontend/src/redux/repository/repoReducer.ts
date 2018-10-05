@@ -173,7 +173,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS: {
-            const { path, repoID, sharedUsers } = action.payload
+            const { path, sharedUsers } = action.payload
             return {
                 ...state,
                 repos: {

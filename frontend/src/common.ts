@@ -66,7 +66,6 @@ export interface IUser {
     email: string
     name: string
     repos: string[]
-    sharedRepos: {[repoID: string]: ISharedRepoInfo}
 }
 
 export interface IRef {

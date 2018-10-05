@@ -24,7 +24,7 @@ class SharedRepos extends React.Component<Props>
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
                                 <ListItemSecondaryAction>
-                                    <IconButton onClick={() => this.props.cloneSharedRepo(repo.repoID)}>
+                                    <IconButton onClick={() => this.props.cloneSharedRepo({ repoID: repo.repoID })}>
                                         <ControlPointIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
