@@ -34,7 +34,7 @@ class FileInfo extends React.Component<Props>
 
                 <div className={classes.infoContainer}>
                     <div className={classes.fileViewerContainer}>
-                        <FileViewer file={file} repoRoot={this.props.repoRoot} />
+                        <FileViewer filename={file.name} repoRoot={this.props.repoRoot} />
                     </div>
 
                     <div className={classes.timeline}>

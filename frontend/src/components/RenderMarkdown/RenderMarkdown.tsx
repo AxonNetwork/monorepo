@@ -39,7 +39,7 @@ class RenderMarkdown extends React.Component<Props>
         case 'image':
             return <img src={'file://' + path.join(this.props.basePath, contents)} className={this.props.classes.embeddedImage} />
         case 'file':
-            return <FileLink fileRef={contents} />
+            return <FileLink filename={contents} basePath={this.props.basePath}/>
         case 'discussion':
             return <DiscussionLink discussionID={parseInt(contents, 10)} />
         default:

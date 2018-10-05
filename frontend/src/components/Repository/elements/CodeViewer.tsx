@@ -16,6 +16,7 @@ const syntaxStyle = {
     boxShadow: 'none',
     lineHeight: 1.1,
     tabSize: 4,
+    overflow: 'visible'
 }
 
 const codeTagProps = {
@@ -55,9 +56,6 @@ interface Props {
 }
 
 const styles = () => createStyles({
-    imageEmbed: {
-        maxWidth: '100%',
-    },
     codeContainer: {
         padding: 30,
     },

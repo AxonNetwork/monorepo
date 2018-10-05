@@ -3,7 +3,6 @@ import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import autobind from 'utils/autobind'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
-import { IRepoFile } from 'common'
 import CodeViewer from './CodeViewer'
 const fs = (window as any).require('fs')
 
@@ -17,8 +16,8 @@ class FileViewer extends React.Component<Props, State>
     }
 
     render() {
-        const { file, classes } = this.props
-        const extension = path.extname(file.name).toLowerCase().substring(1)
+        const { filename, classes } = this.props
+        const extension = path.extname(filename).toLowerCase().substring(1)
 
         switch (extension) {
         case 'md':
@@ -29,7 +28,7 @@ class FileViewer extends React.Component<Props, State>
         case 'png':
         case 'tif':
         case 'tiff':
-            return <img src={'file://' + path.join(this.props.repoRoot, file.name)} className={classes.imageEmbed} />
+            return <img src={'file://' + path.join(this.props.repoRoot, filename)} className={classes.imageEmbed} />
         case 'go':
         case 'js':
         case 'jsx':
@@ -50,8 +49,8 @@ class FileViewer extends React.Component<Props, State>
     }
 
     componentDidMount() {
-        if (this.isTextFile(this.props.file.name)) {
-            fs.readFile(path.join(this.props.repoRoot, this.props.file.name), 'utf8', (err: Error, contents: string) => {
+        if (this.isTextFile(this.props.filename)) {
+            fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
                 if (err) {
                     // @@TODO: display error in UI
                     console.error(err)
@@ -64,8 +63,8 @@ class FileViewer extends React.Component<Props, State>
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (prevProps.file.name !== this.props.file.name && this.isTextFile(this.props.file.name)) {
-            fs.readFile(path.join(this.props.repoRoot, this.props.file.name), 'utf8', (err: Error, contents: string) => {
+        if (prevProps.filename !== this.props.filename && this.isTextFile(this.props.filename)) {
+            fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
                 if (err) {
                     // @@TODO: display error in UI
                     console.error(err)
@@ -99,7 +98,7 @@ class FileViewer extends React.Component<Props, State>
 }
 
 interface Props {
-    file: IRepoFile
+    filename: string
     repoRoot: string
     classes: any
 }
