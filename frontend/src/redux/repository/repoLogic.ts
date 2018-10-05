@@ -18,6 +18,7 @@ import { RepoActionType,
     IPullRepoAction, IPullRepoSuccessAction,
     IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
+    IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
@@ -88,7 +89,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(fetchRepoTimeline({ path, repoID }))
         dispatch(getCommentsForRepo({ repoID }))
         dispatch(getDiscussions({ repoID }))
-        dispatch(fetchRepoSharedUsers({ repoID }))
+        dispatch(fetchRepoSharedUsers({ path, repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))
         dispatch(fetchRemoteRefs({ repoID }))
         return { path }
@@ -138,9 +139,9 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
 const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
     type: RepoActionType.FETCH_REPO_SHARED_USERS,
     async process({ action }) {
-        const { repoID } = action.payload
+        const { path, repoID } = action.payload
         const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.email)
-        return { repoID, sharedUsers }
+        return { path, repoID, sharedUsers }
     },
 })
 
@@ -240,13 +241,21 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
     },
 })
 
+const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
+    type: RepoActionType.REMOVE_COLLABORATOR,
+    async process({ action }) {
+        const { repoID, email, folderPath } = action.payload
+        await ServerRelay.unshareRepo(repoID, email)
+        return { folderPath, repoID, email }
+    },
+})
+
 const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     type: RepoActionType.WATCH_REPO,
     async process({ action }, dispatch, done) {
         const { repoID, path } = action.payload
         const watcher = RepoWatcher.watch(repoID, path)
         watcher.on('file_change', () => {
-            console.log('here')
             dispatch(fetchRepoFiles({ path, repoID }))
         })
         watcher.on('end', () => {
@@ -270,5 +279,6 @@ export default [
     revertFilesLogic,
     pullRepoLogic,
     addCollaboratorLogic,
+    removeCollaboratorLogic,
     watchRepoLogic,
 ]

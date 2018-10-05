@@ -171,11 +171,21 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        // case RepoActionType.ADD_HYPOTHESIS: {
-        //     return {
-        //         ...state,
-        //         hypothesis: action.hypothesis
-        //     }
+        case RepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS: {
+            const { path, repoID, sharedUsers } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [path]: {
+                        ...state.repos[path],
+                        sharedUsers: sharedUsers
+                    }
+
+
+                }
+            }
+        }
 
         case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
             const { folderPath, email } = action.payload
@@ -193,6 +203,22 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 }
             }
         }
+
+        case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
+            const { folderPath, email } = action.payload
+            const sharedUsers = ((state.repos[folderPath]||{}).sharedUsers||[]).filter(e=>e!==email)
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [folderPath]: {
+                        ...(state.repos[folderPath] || {}),
+                        sharedUsers: sharedUsers
+                    }
+                }
+            }
+        }
+
 
         default:
             return state

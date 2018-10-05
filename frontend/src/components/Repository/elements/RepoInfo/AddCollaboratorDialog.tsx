@@ -35,7 +35,11 @@ class AddCollaboratorDialog extends React.Component<AddCollaboratorDialogProps>
     handleSubmit(event: React.MouseEvent<HTMLElement>) {
         event.preventDefault()
         this.props.onClose()
-        this.props.addCollaborator(this.props.folderPath, this.props.repoID, this.state.email)
+        this.props.addCollaborator({
+            folderPath: this.props.folderPath,
+            repoID: this.props.repoID,
+            email: this.state.email
+        })
     }
 
     render() {

@@ -90,6 +90,13 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.LOGOUT_SUCCESS: {
+            return {
+                ...state,
+                currentUser: undefined
+            }
+        }
+
         default:
             return state
     }

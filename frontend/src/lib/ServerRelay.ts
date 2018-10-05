@@ -75,7 +75,9 @@ const ServerRelay = {
     },
 
     async shareRepo(repoID: string, email: string) {
-        interface IResponse { }
+        interface IResponse {
+            message: string
+        }
         await axios.post<IResponse>(API_URL + '/share-repo', { repoID, email })
     },
 
@@ -89,8 +91,9 @@ const ServerRelay = {
     },
 
     async unshareRepo(repoID: string, email: string) {
-        interface IResponse { }
-
+        interface IResponse {
+            message: string
+        }
         await axios.post<IResponse>(API_URL + '/unshare-repo', { repoID, email })
     },
 

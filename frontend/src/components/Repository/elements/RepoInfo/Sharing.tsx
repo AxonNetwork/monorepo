@@ -13,6 +13,7 @@ export interface SharingProps {
     folderPath: string
     repoID: string
     addCollaborator: Function
+    removeCollaborator: Function
     classes:{
         text: string
         button: string
@@ -33,6 +34,14 @@ class Sharing extends React.Component<SharingProps, SharingState>
         open: false
     }
 
+    handleDelete(collaborator: string){
+        this.props.removeCollaborator({
+            repoID: this.props.repoID,
+            folderPath: this.props.folderPath,
+            email: collaborator
+        })
+    }
+
     handleClickOpen(){
         this.setState({
             open: true,
@@ -47,6 +56,7 @@ class Sharing extends React.Component<SharingProps, SharingState>
 
     render() {
         const { sharedUsers, folderPath, repoID, addCollaborator, classes } = this.props
+        console.log(sharedUsers)
         return (
             <div>
                 <Typography className={classes.text}>
@@ -56,7 +66,12 @@ class Sharing extends React.Component<SharingProps, SharingState>
                     }
                 </Typography>
                 {sharedUsers.map(collaborator =>
-                    <Chip label={collaborator} key={collaborator} className={classes.chip} />,
+                    <Chip
+                        label={collaborator}
+                        key={collaborator}
+                        className={classes.chip}
+                        onDelete={()=>this.handleDelete(collaborator)}
+                    />,
                 )}
                 <IconButton className={classes.button} onClick={this.handleClickOpen} >
                     <ControlPointIcon className={classes.icon} />

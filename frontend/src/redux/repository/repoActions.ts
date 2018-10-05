@@ -55,9 +55,13 @@ export enum RepoActionType {
     NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
 
     FETCHED_REPO = 'FETCHED_REPO',
+
     ADD_COLLABORATOR = 'ADD_COLLABORATOR',
     ADD_COLLABORATOR_SUCCESS = 'ADD_COLLABORATOR_SUCCESS',
-    // ADD_HYPOTHESIS = 'ADD_HYPOTHESIS',
+
+    REMOVE_COLLABORATOR = 'REMOVE_COLLABORATOR',
+    REMOVE_COLLABORATOR_SUCCESS = 'REMOVE_COLLABORATOR_SUCCESS',
+
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
     REVERT_FILES = 'REVERT_FILES',
@@ -196,6 +200,7 @@ export type IFetchRemoteRefsFailedAction = FailedAction<RepoActionType.FETCH_REM
 export interface IFetchRepoSharedUsersAction {
     type: RepoActionType.FETCH_REPO_SHARED_USERS
     payload: {
+        path: string
         repoID: string
     }
 }
@@ -203,6 +208,7 @@ export interface IFetchRepoSharedUsersAction {
 export interface IFetchRepoSharedUsersSuccessAction {
     type: RepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS
     payload: {
+        path: string
         repoID: string
         sharedUsers: string[]
     }
@@ -309,13 +315,23 @@ export interface IAddCollaboratorSuccessAction {
     }
 }
 
-// export interface IAddHypothesisAction {
-//     type: RepoActionType.ADD_HYPOTHESIS
-//     payload: {
-//         folderPath: string
-//         hypothesis: string
-//     }
-// }
+export interface IRemoveCollaboratorAction {
+    type: RepoActionType.REMOVE_COLLABORATOR
+    payload: {
+        folderPath: string
+        repoID: string
+        email: string
+    }
+}
+
+export interface IRemoveCollaboratorSuccessAction {
+    type: RepoActionType.REMOVE_COLLABORATOR_SUCCESS
+    payload: {
+        folderPath: string
+        repoID: string
+        email: string
+    }
+}
 
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
@@ -390,9 +406,13 @@ export type IRepoAction =
 
     ICheckpointRepoAction |
     IPullRepoAction |
+
     IAddCollaboratorAction |
     IAddCollaboratorSuccessAction |
-    // IAddHypothesisAction |
+
+    IRemoveCollaboratorAction |
+    IRemoveCollaboratorSuccessAction |
+
     IGetDiffAction |
     IGetDiffSuccessAction |
     IRevertFilesAction |
@@ -415,7 +435,7 @@ export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoActio
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
 export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
-// export const addHypothesis = (payload: IAddHypothesisAction['payload']): IAddHypothesisAction => ({ type: RepoActionType.ADD_HYPOTHESIS, payload })
+export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, payload })
 
