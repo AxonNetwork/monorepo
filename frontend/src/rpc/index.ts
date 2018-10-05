@@ -31,6 +31,7 @@ interface IRPCClient {
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
     getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>
     getAllRemoteRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
+    isBehindRemoteAsync: (params: { repoID: string, path: string}) => Promise<{ path: string, isBehindRemote: boolean}>
 
     // @@TODO: convert to enum
     UserType: {

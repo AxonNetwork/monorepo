@@ -33,7 +33,8 @@ function PullButton(props: PullButtonProps) {
 
 const styles = (theme: Theme) => createStyles({
     button: {
-        marginTop: theme.spacing.unit,
+        marginTop: -1 * theme.spacing.unit,
+        marginLeft: 4 * theme.spacing.unit,
         textTransform: 'none',
     },
     icon: {

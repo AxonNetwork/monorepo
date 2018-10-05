@@ -19,14 +19,13 @@ import { RepoActionType,
     IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo } from './repoActions'
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { getCommentsForRepo } from '../comment/commentActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import * as rpc from '../../rpc'
-
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -257,6 +256,9 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
         const watcher = RepoWatcher.watch(repoID, path)
         watcher.on('file_change', () => {
             dispatch(fetchRepoFiles({ path, repoID }))
+        })
+        watcher.on('behind_remote', () => {
+            dispatch(behindRemote({path}))
         })
         watcher.on('end', () => {
             done()

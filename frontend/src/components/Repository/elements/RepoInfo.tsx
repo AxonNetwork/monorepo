@@ -30,8 +30,8 @@ function RepoInfo(props: {
             <Typography className={classes.version}>
                 {version}
             </Typography>
-            {/* @@TODO: behindRemote doesn't exist */
-                (repo as any).behindRemote &&
+            {
+                repo.behindRemote &&
                 <PullButton
                     pullRepo={pullRepo}
                     folderPath={repo.path}

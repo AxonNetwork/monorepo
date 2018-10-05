@@ -10,6 +10,7 @@ export interface IRepo {
     remoteRefs?: {[name: string]: string}
     commits?: {[commitHash: string]: ITimelineEvent}
     commitList?: string[]
+    behindRemote?: boolean
 }
 
 export interface ISharedRepoInfo {

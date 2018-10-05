@@ -23,17 +23,17 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.SIGNUP_SUCCESS:
         case UserActionType.CHECK_LOCAL_USER_SUCCESS:
             const { email, name } = action.payload
-            const user = state.users[email]
+            const user = state.users[email] || {
+                email,
+                name,
+                repos: [],
+                sharedRepos: {}
+            }
             return {
                 ...state,
                 users:{
                     ...state.users,
-                    [email]: {
-                        email:email,
-                        name:name,
-                        repos: user !== undefined ? user.repos : [],
-                        sharedRepos: user !== undefined ? user.sharedRepos : {}
-                    }
+                    [email]: user
                 },
                 currentUser: email,
                 checkedLocalUser: true

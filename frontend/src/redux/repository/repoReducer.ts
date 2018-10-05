@@ -219,6 +219,19 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.BEHIND_REMOTE: {
+            const { path } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [path]: {
+                        ...state.repos[path],
+                        behindRemote: true
+                    }
+                }
+            }
+        }
 
         default:
             return state

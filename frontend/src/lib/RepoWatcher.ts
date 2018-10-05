@@ -1,4 +1,5 @@
 import events from 'events'
+import * as rpc from 'rpc'
 const fs = (window as any).require('fs')
 
 const watching:{
@@ -59,11 +60,12 @@ async function checkBehindRemote(path: string){
     if(repo === undefined){
         return
     }
-    // const rpcClient = rpc.initClient()
-    // const remote = await rpcClient.getRemoteRefsAsync({repoID: repo.repoID, pageSize: 10, page: 0})
-    // const local = await rpcClient.getLocalRefsAsync({repoID: repo.repoID, path: repo.path})
-    // const remoteMaster = remote.refs.find(r=>r.refName="refs/heads/master").commitHash
-    // const localMaster = local.refs.find(r=>r.refName="refs/heads/master").commitHash
+    const rpcClient = rpc.initClient()
+    const res = await rpcClient.isBehindRemoteAsync({repoID: repo.repoID, path: repo.path})
+    const isBehind = res.isBehindRemote === true
+    if(isBehind){
+        repo.emitter.emit('behind_remote')
+    }
 }
 
 loop()

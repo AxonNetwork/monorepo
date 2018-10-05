@@ -364,6 +364,14 @@ export interface IRevertFilesSuccessAction {
     payload: {}
 }
 
+export interface IBehindRemoteAction{
+    type: RepoActionType.BEHIND_REMOTE
+    payload: {
+        path: string
+    }
+}
+
+
 export type IRepoAction =
     ICreateRepoAction |
     ICreateRepoSuccessAction |
@@ -416,7 +424,9 @@ export type IRepoAction =
     IGetDiffAction |
     IGetDiffSuccessAction |
     IRevertFilesAction |
-    IRevertFilesSuccessAction
+    IRevertFilesSuccessAction |
+
+    IBehindRemoteAction
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IGetLocalReposAction => ({ type: RepoActionType.GET_LOCAL_REPOS, payload })
@@ -438,4 +448,5 @@ export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAd
 export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, payload })
+export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction=> ({ type: RepoActionType.BEHIND_REMOTE, payload })
 

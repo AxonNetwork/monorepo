@@ -114,8 +114,6 @@ const mapStateToProps = (state: IGlobalState) => {
     const currentUser = state.user.currentUser||""
     const loggedIn = state.user.users[currentUser] !== undefined
     const checkedLocalUser = state.user.checkedLocalUser
-    console.log("logged: ", loggedIn)
-    console.log("checked: ", checkedLocalUser)
     return {
         loggedIn: loggedIn,
         checkedLocalUser: checkedLocalUser,
