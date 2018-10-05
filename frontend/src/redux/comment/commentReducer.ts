@@ -1,4 +1,5 @@
 import { CommentActionType, ICommentAction } from './commentActions'
+import { DiscussionActionType } from 'redux/discussion/discussionActions'
 import { IComment } from '../../common'
 
 const initialState = {
@@ -8,8 +9,8 @@ const initialState = {
 export interface ICommentState {
     comments: {
         [repoID: string]: {
-            [id: string]: IComment
-        }
+            [id: string]: IComment,
+        },
     }
 }
 
@@ -27,6 +28,7 @@ const commentReducer = (state: ICommentState = initialState, action: ICommentAct
             }
 
         case CommentActionType.CREATE_COMMENT_SUCCESS:
+        case DiscussionActionType.CREATE_DISCUSSION_SUCCESS:
             const { comment } = action.payload
             const repoID = comment.repoID
             return {
@@ -36,8 +38,9 @@ const commentReducer = (state: ICommentState = initialState, action: ICommentAct
                         ...(state.comments[repoID] || {}),
                         [`${comment.attachedTo.type}/${comment.attachedTo.subject}/${comment.created}`]: comment,
                     },
-                }
+                },
             }
+
 
         default:
             return state

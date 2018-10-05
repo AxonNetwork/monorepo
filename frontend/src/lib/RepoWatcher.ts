@@ -2,13 +2,13 @@ import events from 'events'
 import * as rpc from 'rpc'
 const fs = (window as any).require('fs')
 
-const watching:{
-    [path: string]:{
+const watching: {
+    [path: string]: {
         repoID: string,
         path: string,
         mtime: number,
-        emitter: events.EventEmitter
-    }|undefined
+        emitter: events.EventEmitter,
+    } | undefined,
 } = {}
 
 const RepoWatcher = {
@@ -18,23 +18,23 @@ const RepoWatcher = {
             path,
             repoID,
             mtime: 0,
-            emitter: emitter
+            emitter: emitter,
         }
         return emitter
     },
 
     unwatch(path: string) {
         const toDelete = watching[path]
-        if(toDelete !== undefined){
+        if (toDelete !== undefined) {
             toDelete.emitter.emit('end')
         }
         delete watching[path]
-    }
+    },
 }
 
-function loop(){
+function loop() {
     const repos = Object.keys(watching)
-    for(let i=0; i<repos.length; i++){
+    for (let i = 0; i < repos.length; i++) {
         const path = repos[i]
         checkForChange(path)
         checkBehindRemote(path)
@@ -42,29 +42,33 @@ function loop(){
     setTimeout(loop, 5000)
 }
 
-async function checkForChange(path: string){
+async function checkForChange(path: string) {
     const repo = watching[path]
-    if(repo === undefined){
+    if (repo === undefined) {
         return
     }
     const mtime = fs.statSync(repo.path).mtimeMs
-    if(mtime > repo.mtime && repo.mtime !== 0){
+    if (mtime > repo.mtime && repo.mtime !== 0) {
         repo.emitter.emit('file_change')
     }
     repo.mtime = mtime
     watching[path] = repo
 }
 
-async function checkBehindRemote(path: string){
+async function checkBehindRemote(path: string) {
     const repo = watching[path]
-    if(repo === undefined){
+    if (repo === undefined) {
         return
     }
     const rpcClient = rpc.initClient()
-    const res = await rpcClient.isBehindRemoteAsync({repoID: repo.repoID, path: repo.path})
-    const isBehind = res.isBehindRemote === true
-    if(isBehind){
-        repo.emitter.emit('behind_remote')
+    try {
+        const res = await rpcClient.isBehindRemoteAsync({repoID: repo.repoID, path: repo.path})
+        const isBehind = res.isBehindRemote === true
+        if (isBehind) {
+            repo.emitter.emit('behind_remote')
+        }
+    } catch (err) {
+        // no-op
     }
 }
 

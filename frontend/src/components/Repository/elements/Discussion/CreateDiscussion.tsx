@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import CancelIcon from '@material-ui/icons/Cancel'
+import { createDiscussion } from 'redux/discussion/discussionActions'
 import autobind from 'utils/autobind'
 
 
@@ -19,7 +20,7 @@ class CreateDiscussion extends React.Component<Props, State>
     _inputSubject!: HTMLInputElement
     _inputComment!: HTMLInputElement
 
-    handleSubmit(event: React.FormEvent<HTMLFormElement>){
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
         if (valid) {
@@ -36,15 +37,16 @@ class CreateDiscussion extends React.Component<Props, State>
 
     render() {
         const classes = this.props.classes
-
         return (
             <React.Fragment>
-                <IconButton
-                    onClick={this.props.unselect as any}
-                    className={classes.cancel}
-                >
-                    <CancelIcon />
-                </IconButton>
+                {this.props.unselect &&
+                    <IconButton
+                        onClick={this.props.unselect as any}
+                        className={classes.cancel}
+                    >
+                        <CancelIcon />
+                    </IconButton>
+                }
                 <Typography variant="title" className={classes.title}>Start a New Discussion</Typography>
                 <form className={classes.form} onSubmit={this.handleSubmit}>
                     <TextField
@@ -75,8 +77,8 @@ class CreateDiscussion extends React.Component<Props, State>
 
 interface Props {
     repoID: string
-    createDiscussion: Function
-    unselect: Function
+    createDiscussion: typeof createDiscussion
+    unselect?: () => void
     classes: any
 }
 

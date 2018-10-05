@@ -1,8 +1,11 @@
 import React from 'react'
 import moment from 'moment'
+import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import DiffViewer from './DiffViewer/DiffViewer'
+import CreateDiscussion from './Discussion/CreateDiscussion'
+import { createDiscussion } from 'redux/discussion/discussionActions'
 import { IGetDiffAction, ISelectCommitAction } from 'redux/repository/repoActions'
 import { ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
@@ -51,16 +54,26 @@ class CommitView extends React.Component<Props>
                         type="text"
                     />
                 ))}
+
+                <div>
+                    <Typography variant="headline">Start a discussion about these changes</Typography>
+                    <CreateDiscussion
+                        repoID={this.props.repoID}
+                        createDiscussion={this.props.createDiscussion}
+                    />
+                </div>
             </div>
         )
     }
 }
 
 interface Props {
-    commit: ITimelineEvent | undefined
+    repoID: string
     repoRoot: string
+    commit: ITimelineEvent | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    createDiscussion: typeof createDiscussion
     classes: any
 }
 
@@ -83,4 +96,11 @@ const styles = () => createStyles({
     },
 })
 
-export default withStyles(styles)(CommitView)
+const mapDispatchToProps = {
+    createDiscussion,
+}
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(withStyles(styles)(CommitView))

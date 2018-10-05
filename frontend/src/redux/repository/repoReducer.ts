@@ -6,7 +6,7 @@ export enum RepoPage {
     Manuscript,
     History,
     Discussion,
-    Settings
+    Settings,
 }
 
 
@@ -26,7 +26,7 @@ export interface IRepoState {
     repoPage: RepoPage
     selectedFile: {
         file: string
-        isFolder: boolean
+        isFolder: boolean,
     } | undefined
     selectedCommit: string | undefined
     checkpointed: boolean
@@ -80,7 +80,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         ...(state.repos[path] || {}),
                         hasBeenFetched: true,
                     },
-                }
+                },
             }
         }
 
@@ -93,8 +93,8 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     [path]: {
                         ...(state.repos[path] || {}),
                         files,
-                    }
-                }
+                    },
+                },
             }
         }
 
@@ -115,8 +115,8 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         // timeline,
                         commits,
                         commitList,
-                    }
-                }
+                    },
+                },
             }
         }
 
@@ -164,6 +164,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.NAVIGATE_REPO_PAGE: {
+            console.log('NAVIGATE REPO PAGE', action)
             const { repoPage } = action.payload
             return {
                 ...state,
@@ -179,11 +180,11 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     ...state.repos,
                     [path]: {
                         ...state.repos[path],
-                        sharedUsers: sharedUsers
-                    }
+                        sharedUsers: sharedUsers,
+                    },
 
 
-                }
+                },
             }
         }
 
@@ -198,24 +199,24 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         sharedUsers: [
                             ...((state.repos[folderPath] || {}).sharedUsers || []),
                             email,
-                        ]
-                    }
-                }
+                        ],
+                    },
+                },
             }
         }
 
         case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
             const { folderPath, email } = action.payload
-            const sharedUsers = ((state.repos[folderPath]||{}).sharedUsers||[]).filter(e=>e!==email)
+            const sharedUsers = ((state.repos[folderPath] || {}).sharedUsers || []).filter(e => e !== email)
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     [folderPath]: {
                         ...(state.repos[folderPath] || {}),
-                        sharedUsers: sharedUsers
-                    }
-                }
+                        sharedUsers: sharedUsers,
+                    },
+                },
             }
         }
 
@@ -227,9 +228,9 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     ...state.repos,
                     [path]: {
                         ...state.repos[path],
-                        behindRemote: true
-                    }
-                }
+                        behindRemote: true,
+                    },
+                },
             }
         }
 

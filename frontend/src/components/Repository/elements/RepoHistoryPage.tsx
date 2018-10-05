@@ -13,20 +13,33 @@ import autobind from 'utils/autobind'
 class RepoHistoryPage extends React.Component<Props>
 {
     render() {
-        const { repoRoot, selectCommit, getDiff, revertFiles, commits, commitList, selectedCommit, classes } = this.props
+        const { classes, repo } = this.props
+        if (repo === undefined) {
+            return (
+                <div className={classes.timelinePage}>
+                    Loading...
+                </div>
+            )
+        }
+
+        const { selectCommit, getDiff, revertFiles, selectedCommit, classes } = this.props
+        const repoRoot   = repo.path
+        const commits    = repo.commits
+        const commitList = repo.commitList
         return (
             <div className={classes.timelinePage}>
                 {selectedCommit &&
                     <CommitView
                         commit={commits[ selectedCommit ]}
-                        repoRoot={repoRoot}
+                        repoID={repo.repoID}
+                        repoRoot={repo.path}
                         getDiff={getDiff}
                         selectCommit={selectCommit}
                     />
                 }
                 {selectedCommit === undefined &&
                     <Timeline
-                        repoRoot={repoRoot}
+                        repoRoot={repo.path}
                         commits={commits}
                         commitList={commitList}
                         getDiff={getDiff}
@@ -40,13 +53,11 @@ class RepoHistoryPage extends React.Component<Props>
 }
 
 interface Props {
-    repoRoot: string
-    commits: {[commit: string]: ITimelineEvent}
-    commitList: string[]
+    repo: IRepo | undefined
     selectedCommit: string | undefined
-    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
-    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
-    selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    getDiff: typeof getDiff
+    revertFiles: typeof revertFiles
+    selectCommit: typeof selectCommit
     classes: any
 }
 
@@ -67,12 +78,10 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const selectedRepo = state.repository.selectedRepo || ''
-    const repo = state.repository.repos[selectedRepo] || {}
+    const repo = state.repository.repos[selectedRepo]
     const selectedCommit = state.repository.selectedCommit
     return {
-        repoRoot: repo.path,
-        commits: repo.commits || {},
-        commitList: repo.commitList || [],
+        repo,
         selectedCommit,
     }
 }
@@ -85,5 +94,5 @@ const mapDispatchToProps = {
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(RepoHistoryPage))
