@@ -11,9 +11,9 @@ import { createComment } from 'redux/comment/commentActions'
 import { selectFile } from 'redux/repository/repoActions'
 import { IUser, IComment, IRepo, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
-import { strToColor } from 'utils'
 import { IGlobalState } from 'redux/store'
-import CommentText from './CommentText'
+import CommentWrapper from './CommentWrapper'
+import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import CreateComment from './CreateComment'
 
 @autobind
@@ -55,21 +55,17 @@ class Thread extends React.Component<Props>
                         }
                         {commentsList.map(c => {
                             const username = (this.props.users[c.user] || {}).name || c.user
-                            const userInitials = username.split(' ').map(x => x.substring(0, 1)).map(x => x.toUpperCase()).join('')
-                            const color = strToColor(username)
                             return (
-                                <div className={classes.commentRow} key={c.created}>
-                                    <div className={classes.commentAvatar}>
-                                        <Avatar style={{ backgroundColor: color }}>{userInitials}</Avatar>
-                                    </div>
-                                    <CommentText
-                                        username={username}
-                                        created={c.created}
+                                <CommentWrapper
+                                    key={c.created}
+                                    username={username}
+                                    created={c.created}
+                                >
+                                    <RenderMarkdown
                                         text={c.text}
                                         repoRoot={this.props.repo.path}
                                     />
-
-                                </div>
+                                </CommentWrapper>
                             )
                         })}
                     </div>
@@ -125,17 +121,6 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'auto',
         flexGrow: 1,
         backgroundColor: '#f7f7f76b',
-    },
-    commentRow: {
-        display: 'flex',
-    },
-    commentAvatar: {
-        flexGrow: 0,
-        flexShrink: 0,
-        padding: '24px 0 10px 16px',
-        '& div': {
-            backgroundColor: '#006ea2',
-        },
     },
 })
 

@@ -33,5 +33,4 @@ const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussi
 export default [
     getDiscussionsLogic,
     createDiscussionLogic,
-    // createDiscussionSuccessLogic,
 ]

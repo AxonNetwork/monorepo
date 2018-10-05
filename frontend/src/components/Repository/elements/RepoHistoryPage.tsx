@@ -5,8 +5,6 @@ import Timeline from './Timeline/Timeline'
 import CommitView from './CommitView'
 import { IGlobalState } from 'redux/store'
 import { selectCommit, getDiff, revertFiles } from 'redux/repository/repoActions'
-import { ISelectCommitAction, IGetDiffAction, IRevertFilesAction } from 'redux/repository/repoActions'
-import { ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 
 @autobind
@@ -22,17 +20,15 @@ class RepoHistoryPage extends React.Component<Props>
             )
         }
 
-        const { selectCommit, getDiff, revertFiles, selectedCommit, classes } = this.props
-        const repoRoot   = repo.path
-        const commits    = repo.commits
-        const commitList = repo.commitList
+        const { username, selectCommit, getDiff, revertFiles, selectedCommit } = this.props
         return (
             <div className={classes.timelinePage}>
                 {selectedCommit &&
                     <CommitView
-                        commit={commits[ selectedCommit ]}
+                        commit={repo.commits[ selectedCommit ]}
                         repoID={repo.repoID}
                         repoRoot={repo.path}
+                        username={username}
                         getDiff={getDiff}
                         selectCommit={selectCommit}
                     />
@@ -40,8 +36,8 @@ class RepoHistoryPage extends React.Component<Props>
                 {selectedCommit === undefined &&
                     <Timeline
                         repoRoot={repo.path}
-                        commits={commits}
-                        commitList={commitList}
+                        commits={repo.commits}
+                        commitList={repo.commitList}
                         getDiff={getDiff}
                         revertFiles={revertFiles}
                         selectCommit={selectCommit}
@@ -55,6 +51,7 @@ class RepoHistoryPage extends React.Component<Props>
 interface Props {
     repo: IRepo | undefined
     selectedCommit: string | undefined
+    username: string | undefined
     getDiff: typeof getDiff
     revertFiles: typeof revertFiles
     selectCommit: typeof selectCommit
@@ -73,16 +70,17 @@ const styles = (theme: Theme) => createStyles({
         borderColor: theme.palette.grey[300],
         maxHeight: '90%',
     },
-
 })
 
 const mapStateToProps = (state: IGlobalState) => {
     const selectedRepo = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selectedRepo]
     const selectedCommit = state.repository.selectedCommit
+    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         repo,
         selectedCommit,
+        username,
     }
 }
 

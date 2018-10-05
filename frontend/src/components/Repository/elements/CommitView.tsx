@@ -55,12 +55,16 @@ class CommitView extends React.Component<Props>
                     />
                 ))}
 
-                <div>
+                <div className={classes.startDiscussionSectionWrapper}>
                     <Typography variant="headline">Start a discussion about these changes</Typography>
-                    <CreateDiscussion
-                        repoID={this.props.repoID}
-                        createDiscussion={this.props.createDiscussion}
-                    />
+                    <div className={classes.startDiscussionFormWrapper}>
+                        <CreateDiscussion
+                            repoID={this.props.repoID}
+                            createDiscussion={this.props.createDiscussion}
+                            username={this.props.username}
+                            commentWrapperClasses={{ comment: classes.createDiscussionComment }}
+                        />
+                    </div>
                 </div>
             </div>
         )
@@ -68,6 +72,7 @@ class CommitView extends React.Component<Props>
 }
 
 interface Props {
+    username: string | undefined
     repoID: string
     repoRoot: string
     commit: ITimelineEvent | undefined
@@ -93,6 +98,21 @@ const styles = () => createStyles({
     },
     commitInfo: {
         marginBottom: 24,
+    },
+    startDiscussionSectionWrapper: {
+        marginTop: 40,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    startDiscussionFormWrapper: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    createDiscussionComment: {
+        maxWidth: 720,
+        flexGrow: 1,
     },
 })
 

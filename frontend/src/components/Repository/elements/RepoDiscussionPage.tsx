@@ -9,6 +9,9 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import CancelIcon from '@material-ui/icons/Cancel'
 
 import Thread from './Discussion/Thread'
 import CreateDiscussion from './Discussion/CreateDiscussion'
@@ -41,6 +44,8 @@ class RepoDiscussionPage extends React.Component<Props>
         // @@TODO: probably better to sort these in the reducer or something
         const discussionsList = Object.keys(discussions).sort().map(created => discussions[parseInt(created, 10)]) // this sucks
 
+        console.log('RepoDiscussionPage this.props.username ~>', this.props.username)
+
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
@@ -72,11 +77,15 @@ class RepoDiscussionPage extends React.Component<Props>
                 </List>
                 {newDiscussion &&
                     <div className={classes.threadPane}>
-                            <CreateDiscussion
-                                repoID={this.props.repoID}
-                                createDiscussion={this.props.createDiscussion}
-                                unselect={() => this.props.selectDiscussion({ created: undefined })}
-                            />
+                        <IconButton onClick={() => this.props.selectDiscussion({ created: undefined })} className={classes.closeNewDiscussionPanelButton}>
+                            <CancelIcon />
+                        </IconButton>
+                        <Typography variant="title" className={classes.startNewDiscussionPrompt}>Start a new discussion</Typography>
+                        <CreateDiscussion
+                            username={this.props.username}
+                            repoID={this.props.repoID}
+                            createDiscussion={this.props.createDiscussion}
+                        />
                     </div>
                 }
                 {selected !== undefined &&
@@ -101,6 +110,7 @@ interface Props {
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number | undefined
+    username: string
     getDiscussions: Function
     selectDiscussion: typeof selectDiscussion
     createDiscussion: Function
@@ -136,15 +146,27 @@ const styles = (theme: Theme) => createStyles({
     selectedDiscussion: {
         backgroundColor: '#cee2f1',
     },
+    closeNewDiscussionPanelButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        padding: theme.spacing.unit,
+    },
+    startNewDiscussionPrompt: {
+        backgroundColor: theme.palette.grey[300],
+        padding: theme.spacing.unit,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected] || {}
     const repoID = repo.repoID || ''
+    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         repo,
-        repoID: repoID,
+        repoID,
+        username,
         discussions: state.discussion.discussions[repoID] || {},
         comments: state.comment.comments[repoID] || {},
         selected: state.discussion.selected,
