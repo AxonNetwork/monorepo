@@ -67,6 +67,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 ...state,
                 selectedRepo: path,
                 selectedFile: undefined,
+                selectedCommit: undefined,
             }
         }
 
@@ -112,7 +113,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     ...state.repos,
                     [path]: {
                         ...(state.repos[path] || {}),
-                        // timeline,
                         commits,
                         commitList,
                     },
@@ -164,7 +164,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.NAVIGATE_REPO_PAGE: {
-            console.log('NAVIGATE REPO PAGE', action)
             const { repoPage } = action.payload
             return {
                 ...state,
@@ -182,8 +181,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         ...state.repos[path],
                         sharedUsers: sharedUsers,
                     },
-
-
                 },
             }
         }

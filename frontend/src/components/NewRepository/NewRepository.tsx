@@ -9,7 +9,7 @@ import { omitBy } from 'lodash'
 
 import SharedRepos from './elements/SharedRepos'
 import { IGlobalState } from 'redux/store'
-import { createRepo} from 'redux/repository/repoActions'
+import { createRepo } from 'redux/repository/repoActions'
 import { cloneSharedRepo } from 'redux/user/userActions'
 import { ISharedRepoInfo } from 'common'
 import autobind from 'utils/autobind'
@@ -21,7 +21,7 @@ class NewRepository extends React.Component<Props, State>
         repoID: '',
     }
 
-    handleChange(event: React.ChangeEvent<HTMLInputElement>){
+    handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ repoID: event.target.value })
     }
 
@@ -32,12 +32,11 @@ class NewRepository extends React.Component<Props, State>
 
     render() {
         const classes = this.props.classes
-
         return (
             <Grid container spacing={24}>
                 <Grid item className={classes.column} xs={12} sm={6}>
                     <Typography variant="headline">
-                        Create New Repository
+                        Create new repository
                     </Typography>
                     <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit}>
                         <TextField
@@ -63,8 +62,8 @@ class NewRepository extends React.Component<Props, State>
 }
 
 interface Props {
-    createRepo: Function
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    createRepo: typeof createRepo
     cloneSharedRepo: typeof cloneSharedRepo
     classes: any
 }
@@ -87,7 +86,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const repoList = Object.keys(repos).map(r => repos[r].repoID)
     const filteredSharedRepos = omitBy(
         sharedRepos,
-        r => repoList.indexOf(r.repoID)<0
+        r => repoList.indexOf(r.repoID) < 0,
     )
     return {
         sharedRepos: filteredSharedRepos,
