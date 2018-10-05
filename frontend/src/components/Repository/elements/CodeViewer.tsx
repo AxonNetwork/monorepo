@@ -2,10 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import autobind from 'utils/autobind'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
 import SyntaxHighlighter from 'react-syntax-highlighter/prism'
-import { setCodeColorScheme } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import getLanguage from 'utils/getLanguage'
 const schemes = require('react-syntax-highlighter/styles/prism')
@@ -35,18 +32,11 @@ class CodeViewer extends React.Component<Props, State>
 {
     render() {
         const { classes } = this.props
-        const scheme = schemes[this.props.codeColorScheme || Object.keys(schemes)[0]]
+        const scheme = schemes[this.props.codeColorScheme || 'vs']
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = (schemeDefaults || {}).background
         return (
             <div>
-                {this.props.showColorSelector &&
-                    <Select onChange={this.onChangeCodeColorScheme} value={this.props.codeColorScheme}>
-                        {Object.keys(schemes).map(s => (
-                            <MenuItem value={s}>{s}</MenuItem>
-                        ))}
-                    </Select>
-                }
                 <div className={classes.codeContainer} style={{ backgroundColor }}>
                     <SyntaxHighlighter style={scheme} language={getLanguage(this.props.language)} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
                         {this.props.contents || ''}
@@ -55,10 +45,6 @@ class CodeViewer extends React.Component<Props, State>
             </div>
         )
     }
-
-    onChangeCodeColorScheme(evt: any) {
-        this.props.setCodeColorScheme({ codeColorScheme: evt.target.value })
-    }
 }
 
 interface Props {
@@ -66,7 +52,6 @@ interface Props {
     contents: string
     codeColorScheme: string | undefined
     showColorSelector?: boolean
-    setCodeColorScheme: typeof setCodeColorScheme
     classes: any
 }
 
@@ -91,9 +76,7 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-const mapDispatchToProps = {
-    setCodeColorScheme,
-}
+const mapDispatchToProps = { }
 
 export default connect(
     mapStateToProps,
