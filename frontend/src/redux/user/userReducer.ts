@@ -6,6 +6,7 @@ const initialState = {
     currentUser: undefined,
     error: undefined,
     codeColorScheme: undefined,
+    checkedLocalUser: false
 }
 
 export interface IUserState {
@@ -13,6 +14,7 @@ export interface IUserState {
     currentUser: string | undefined
     error: Error | undefined
     codeColorScheme: string | undefined
+    checkedLocalUser: boolean
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -20,9 +22,27 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
         case UserActionType.CHECK_LOCAL_USER_SUCCESS:
+            const { email, name } = action.payload
+            const user = state.users[email]
             return {
                 ...state,
-                currentUser: action.payload.email,
+                users:{
+                    ...state.users,
+                    [email]: {
+                        email:email,
+                        name:name,
+                        repos: user !== undefined ? user.repos : [],
+                        sharedRepos: user !== undefined ? user.sharedRepos : {}
+                    }
+                },
+                currentUser: email,
+                checkedLocalUser: true
+            }
+
+        case UserActionType.CHECK_LOCAL_USER_FAILED:
+            return{
+                ...state,
+                checkedLocalUser: true
             }
 
         case UserActionType.FETCH_USER_DATA_SUCCESS:

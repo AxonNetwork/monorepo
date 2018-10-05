@@ -56,7 +56,6 @@ class Sharing extends React.Component<SharingProps, SharingState>
 
     render() {
         const { sharedUsers, folderPath, repoID, addCollaborator, classes } = this.props
-        console.log(sharedUsers)
         return (
             <div>
                 <Typography className={classes.text}>

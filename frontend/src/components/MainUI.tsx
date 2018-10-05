@@ -23,8 +23,11 @@ class MainUI extends React.Component<Props, State>
     }
 
     render() {
-        const { currentPage, loggedIn, classes } = this.props
-        if (!loggedIn) {
+        const { currentPage, loggedIn, checkedLocalUser, classes } = this.props
+        if(!checkedLocalUser){
+            return null
+        }
+        if(!loggedIn) {
             return (
                 <Login />
             )
@@ -62,6 +65,7 @@ class MainUI extends React.Component<Props, State>
 
 interface Props {
     loggedIn: boolean
+    checkedLocalUser: boolean
     currentPage: string
     classes: any
 }
@@ -109,8 +113,12 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     const currentUser = state.user.currentUser||""
     const loggedIn = state.user.users[currentUser] !== undefined
+    const checkedLocalUser = state.user.checkedLocalUser
+    console.log("logged: ", loggedIn)
+    console.log("checked: ", checkedLocalUser)
     return {
         loggedIn: loggedIn,
+        checkedLocalUser: checkedLocalUser,
         currentPage: state.navigation.currentPage,
     }
 }
