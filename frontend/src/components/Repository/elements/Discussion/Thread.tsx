@@ -104,6 +104,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        wordBreak: 'break-all',
     },
     cancel: {
         position: 'absolute',
