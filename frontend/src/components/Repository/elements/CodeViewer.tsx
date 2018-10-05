@@ -7,7 +7,6 @@ import { IGlobalState } from 'redux/store'
 import getLanguage from 'utils/getLanguage'
 const schemes = require('react-syntax-highlighter/styles/prism')
 
-
 const syntaxStyle = {
     padding: 0,
     margin: 0,
@@ -28,7 +27,7 @@ const codeTagProps = {
 }
 
 @autobind
-class CodeViewer extends React.Component<Props, State>
+class CodeViewer extends React.Component<Props>
 {
     render() {
         const { classes } = this.props
@@ -53,12 +52,6 @@ interface Props {
     codeColorScheme: string | undefined
     showColorSelector?: boolean
     classes: any
-}
-
-interface State {
-    fileContents: string
-    error: Error | undefined
-    codeColorScheme: string
 }
 
 const styles = () => createStyles({

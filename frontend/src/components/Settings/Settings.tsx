@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button'
 import { setCodeColorScheme, logout } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
+import CodeViewer from '../Repository/elements/CodeViewer';
 const schemes = require('react-syntax-highlighter/styles/prism')
 
 @autobind
@@ -33,6 +34,11 @@ class Settings extends React.Component<Props>
                             <MenuItem value={s}>{s}</MenuItem>
                         ))}
                     </Select>
+                    <CodeViewer
+                        language="python"
+                        contents="print('Example Code')"
+                        codeColorScheme={this.props.codeColorScheme}
+                    />
                 </div>
                 <div className={classes.section}>
                     <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
@@ -44,7 +50,7 @@ class Settings extends React.Component<Props>
     }
 }
 
-export interface Props {
+interface Props {
     codeColorScheme: string | undefined
     setCodeColorScheme: typeof setCodeColorScheme
     logout: typeof logout
