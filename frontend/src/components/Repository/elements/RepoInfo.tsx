@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -29,8 +30,8 @@ function RepoInfo(props: {
     const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
     return (
         <div className={classes.repoInfo}>
-            <OpenFolderButton folderPath={repo.path} />
-            <div>
+            {/*<OpenFolderButton folderPath={repo.path} />*/}
+            <div className={classes.titleContainer}>
                 <Typography variant="headline" className={classes.headline}>
                     {repo.repoID}
                 </Typography>
@@ -50,11 +51,11 @@ function RepoInfo(props: {
             <div className={classes.spacer}></div>
 
             <div className={classes.tabContainer}>
-                <FolderOpenIcon nativeColor="rgba(0, 0, 0, 0.54)" />
-                <DescriptionIcon nativeColor="rgba(0, 0, 0, 0.54)" />
-                <HistoryIcon nativeColor="rgba(0, 0, 0, 0.54)" />
-                <CommentIcon nativeColor="rgba(0, 0, 0, 0.54)" />
-                <SettingsIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+                <div className={classnames(classes.tab, classes.activeTab)}><FolderOpenIcon nativeColor="rgba(0, 0, 0, 0.7)" /></div>
+                <div className={classnames(classes.tab)}><DescriptionIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
+                <div className={classnames(classes.tab)}><HistoryIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
+                <div className={classnames(classes.tab)}><CommentIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
+                <div className={classnames(classes.tab)}><SettingsIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
             </div>
         </div>
     )
@@ -63,7 +64,6 @@ function RepoInfo(props: {
 const styles = (theme: Theme) => createStyles({
     repoInfo: {
         borderBottom: '1px solid #e4e4e4',
-        paddingBottom: 20,
         display: 'flex',
     },
     locationLink: {
@@ -82,6 +82,9 @@ const styles = (theme: Theme) => createStyles({
     caption: {
         fontSize: '10pt',
     },
+    titleContainer: {
+        paddingBottom: 20,
+    },
     tabContainer: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -90,6 +93,19 @@ const styles = (theme: Theme) => createStyles({
         maxWidth: 360,
         marginLeft: 100,
         marginRight: 60,
+    },
+    tab: {
+        padding: '10px 16px 0',
+        width: '3.5rem',
+        height: '2.6rem',
+        backgroundColor: '#fafafa',
+        cursor: 'pointer',
+    },
+    activeTab: {
+        border: '1px solid #e4e4e4',
+        borderBottom: 'none',
+        position: 'relative',
+        top: 1,
     },
     spacer: {
         flexGrow: 1,
