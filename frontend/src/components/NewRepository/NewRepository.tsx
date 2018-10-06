@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import { omitBy } from 'lodash'
+import { pickBy } from 'lodash'
 
 import SharedRepos from './elements/SharedRepos'
 import { IGlobalState } from 'redux/store'
@@ -84,7 +84,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const sharedRepos = state.user.sharedRepos || {}
     const repos = state.repository.repos
     const repoList = Object.keys(repos).map(r => repos[r].repoID)
-    const filteredSharedRepos = omitBy(
+    const filteredSharedRepos = pickBy(
         sharedRepos,
         r => repoList.indexOf(r.repoID) < 0,
     )
