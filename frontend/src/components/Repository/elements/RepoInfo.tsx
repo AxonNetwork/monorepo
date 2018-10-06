@@ -9,11 +9,17 @@ import { IRepo } from '../../../common'
 
 import { IGlobalState } from '../../../redux/store'
 import { pullRepo } from '../../../redux/repository/repoActions'
+import FolderOpenIcon from '@material-ui/icons/FolderOpen'
+import DescriptionIcon from '@material-ui/icons/Description'
+import HistoryIcon from '@material-ui/icons/History'
+import CommentIcon from '@material-ui/icons/Comment'
+import SettingsIcon from '@material-ui/icons/Settings'
+
 
 function RepoInfo(props: {
-    repo: IRepo|undefined
+    repo: IRepo | undefined
     pullRepo: Function
-    classes: any
+    classes: any,
 })
 {
     const { repo, pullRepo, classes } = props
@@ -24,20 +30,32 @@ function RepoInfo(props: {
     return (
         <div className={classes.repoInfo}>
             <OpenFolderButton folderPath={repo.path} />
-            <Typography variant="headline" className={classes.headline}>
-                {repo.repoID}
-            </Typography>
-            <Typography className={classes.version}>
-                {version}
-            </Typography>
-            {
-                repo.behindRemote &&
-                <PullButton
-                    pullRepo={pullRepo}
-                    folderPath={repo.path}
-                    repoID={repo.repoID}
-                />
-            }
+            <div>
+                <Typography variant="headline" className={classes.headline}>
+                    {repo.repoID}
+                </Typography>
+                <Typography className={classes.version}>
+                    {version}
+                </Typography>
+                {
+                    repo.behindRemote &&
+                    <PullButton
+                        pullRepo={pullRepo}
+                        folderPath={repo.path}
+                        repoID={repo.repoID}
+                    />
+                }
+            </div>
+
+            <div className={classes.spacer}></div>
+
+            <div className={classes.tabContainer}>
+                <FolderOpenIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+                <DescriptionIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+                <HistoryIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+                <CommentIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+                <SettingsIcon nativeColor="rgba(0, 0, 0, 0.54)" />
+            </div>
         </div>
     )
 }
@@ -46,6 +64,7 @@ const styles = (theme: Theme) => createStyles({
     repoInfo: {
         borderBottom: '1px solid #e4e4e4',
         paddingBottom: 20,
+        display: 'flex',
     },
     locationLink: {
         color: theme.palette.secondary.main,
@@ -63,6 +82,18 @@ const styles = (theme: Theme) => createStyles({
     caption: {
         fontSize: '10pt',
     },
+    tabContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        flexGrow: 1,
+        maxWidth: 360,
+        marginLeft: 100,
+        marginRight: 60,
+    },
+    spacer: {
+        flexGrow: 1,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -79,5 +110,5 @@ const mapDispatchToProps = {
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(RepoInfo))
