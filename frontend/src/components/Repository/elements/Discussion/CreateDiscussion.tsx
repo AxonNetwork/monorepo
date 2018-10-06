@@ -8,7 +8,8 @@ import { createDiscussion } from 'redux/discussion/discussionActions'
 import autobind from 'utils/autobind'
 import CommentWrapper from './CommentWrapper'
 import SmartTextarea from 'components/SmartTextarea'
-
+import { IGlobalState } from 'redux/store'
+import { IRepoFile, IDiscussion } from 'common'
 
 @autobind
 class CreateDiscussion extends React.Component<Props, State>
@@ -51,10 +52,8 @@ class CreateDiscussion extends React.Component<Props, State>
                         inputRef={x => this._inputSubject = x}
                     />
                     <SmartTextarea
-                        label="Comment"
-                        className={classes.textField}
                         rows={3}
-                        inputRef={x => this._inputComment = x}
+                        inputRef={(x: any) => this._inputComment = x}
                         files={this.props.files}
                         discussions={this.props.discussions}
                         onSubmit={() => this.onSubmit()}
@@ -79,8 +78,9 @@ class CreateDiscussion extends React.Component<Props, State>
 }
 
 interface Props {
-    repoID: string
+    repoRoot: string
 
+    repoID: string
     username: string | undefined
     files: {[name: string]: IRepoFile}
     discussions: {[created: number]: IDiscussion}
@@ -107,10 +107,11 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
-    const repo = state.repository.repos[ownProps.repoRoot] || {}
+    const repo = state.repository.repos[ownProps.repoRoot||""] || {}
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         username,
+        repoID: repo.repoID,
         files: repo.files || {},
         discussions: state.discussion.discussions[repo.repoID] || {},
     }

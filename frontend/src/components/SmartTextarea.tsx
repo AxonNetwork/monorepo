@@ -4,8 +4,6 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import ButtonBase from '@material-ui/core/ButtonBase'
-import SendIcon from '@material-ui/icons/Send'
 import autobind from 'utils/autobind'
 import { IDiscussion, IRepoFile } from 'common'
 
