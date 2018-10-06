@@ -42,6 +42,10 @@ export enum UserActionType {
     SET_CODE_COLOR_SCHEME = 'SET_CODE_COLOR_SCHEME',
     SET_CODE_COLOR_SCHEME_SUCCESS = 'SET_CODE_COLOR_SCHEME_SUCCESS',
     SET_CODE_COLOR_SCHEME_FAILED = 'SET_CODE_COLOR_SCHEME_FAILED',
+
+    HIDE_MENU_LABELS = 'HIDE_MENU_LABELS',
+    HIDE_MENU_LABELS_SUCCESS = 'HIDE_MENU_LABELS_SUCCESS',
+    HIDE_MENU_LABELS_FAILED = 'HIDE_MENU_LABELS_FAILED',
 }
 
 export interface ILoginAction {
@@ -164,7 +168,7 @@ export interface IIgnoreSharedRepoAction {
 export interface IIgnoreSharedRepoSuccessAction {
     type: UserActionType.IGNORE_SHARED_REPO_SUCCESS
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -185,6 +189,22 @@ export interface ISetCodeColorSchemeSuccessAction {
 }
 
 export type ISetCodeColorSchemeFailedAction = FailedAction<UserActionType.SET_CODE_COLOR_SCHEME_FAILED>
+
+export interface IHideMenuLabelsAction {
+    type: UserActionType.HIDE_MENU_LABELS
+    payload: {
+        menuLabelsHidden: boolean,
+    }
+}
+
+export interface IHideMenuLabelsSuccessAction {
+    type: UserActionType.HIDE_MENU_LABELS_SUCCESS
+    payload: {
+        menuLabelsHidden: boolean,
+    }
+}
+
+export type IHideMenuLabelsFailedAction = FailedAction<UserActionType.HIDE_MENU_LABELS_FAILED>
 
 export interface IReadLocalConfigAction {
     type: UserActionType.READ_LOCAL_CONFIG
@@ -230,7 +250,10 @@ export type IUserAction =
     IReadLocalConfigFailedAction |
     ISetCodeColorSchemeAction |
     ISetCodeColorSchemeSuccessAction |
-    ISetCodeColorSchemeFailedAction
+    ISetCodeColorSchemeFailedAction |
+    IHideMenuLabelsAction |
+    IHideMenuLabelsSuccessAction |
+    IHideMenuLabelsFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -244,6 +267,7 @@ export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): I
 
 export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {}): IReadLocalConfigAction => ({ type: UserActionType.READ_LOCAL_CONFIG, payload })
 export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']): ISetCodeColorSchemeAction => ({ type: UserActionType.SET_CODE_COLOR_SCHEME, payload })
+export const hideMenuLabels = (payload: IHideMenuLabelsAction['payload']): IHideMenuLabelsAction => ({ type: UserActionType.HIDE_MENU_LABELS, payload })
 
 
 

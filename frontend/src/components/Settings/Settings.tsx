@@ -5,8 +5,10 @@ import Typography from '@material-ui/core/Typography'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
 
-import { setCodeColorScheme, logout } from 'redux/user/userActions'
+import { setCodeColorScheme, hideMenuLabels, logout } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 import CodeViewer from '../Repository/elements/CodeViewer'
@@ -19,6 +21,11 @@ class Settings extends React.Component<Props>
         this.props.setCodeColorScheme({ codeColorScheme: evt.target.value })
     }
 
+    onChangeHideMenuLabels(evt) {
+        const menuLabelsHidden = evt.target.checked
+        this.props.hideMenuLabels({ menuLabelsHidden })
+    }
+
     render() {
         const { classes } = this.props
 
@@ -27,6 +34,7 @@ class Settings extends React.Component<Props>
                 <div className={classes.section}>
                     <Typography variant="headline" className={classes.headline}>Settings</Typography>
                 </div>
+
                 <div className={classes.section}>
                     <Typography variant="subheading">Code color scheme:</Typography>
                     <Select onChange={this.onChangeCodeColorScheme} value={this.props.codeColorScheme}>
@@ -39,6 +47,18 @@ class Settings extends React.Component<Props>
                         contents={codeSample}
                     />
                 </div>
+
+                <div className={classes.section}>
+                    <FormControlLabel control={
+                        <Checkbox
+                            checked={this.props.menuLabelsHidden}
+                            onChange={this.onChangeHideMenuLabels}
+                            value="hideMenuLabels"
+                        />
+                    }
+                    label="Hide menu labels" />
+                </div>
+
                 <div className={classes.section}>
                     <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
                         Logout
@@ -52,6 +72,8 @@ class Settings extends React.Component<Props>
 interface Props {
     codeColorScheme: string | undefined
     setCodeColorScheme: typeof setCodeColorScheme
+    menuLabelsHidden: boolean | undefined
+    hideMenuLabels: typeof hideMenuLabels
     logout: typeof logout
     classes: any
 }
@@ -91,11 +113,13 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     return {
         codeColorScheme: state.user.codeColorScheme,
+        menuLabelsHidden: state.user.menuLabelsHidden,
     }
 }
 
 const mapDispatchToProps = {
     setCodeColorScheme,
+    hideMenuLabels,
     logout,
 }
 

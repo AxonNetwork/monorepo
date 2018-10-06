@@ -9,17 +9,22 @@ import PullButton from './RepoInfo/PullButton'
 import { IRepo } from '../../../common'
 
 import { IGlobalState } from '../../../redux/store'
-import { pullRepo } from '../../../redux/repository/repoActions'
+import { pullRepo, navigateRepoPage } from '../../../redux/repository/repoActions'
+import { RepoPage } from 'redux/repository/repoReducer'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import DescriptionIcon from '@material-ui/icons/Description'
 import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
 import SettingsIcon from '@material-ui/icons/Settings'
+import Button from '@material-ui/core/Button'
 
 
 function RepoInfo(props: {
     repo: IRepo | undefined
-    pullRepo: Function
+    repoPage: RepoPage
+    pullRepo: typeof pullRepo
+    navigateRepoPage: typeof navigateRepoPage
+    menuLabelsHidden: boolean | undefined
     classes: any,
 })
 {
@@ -51,12 +56,38 @@ function RepoInfo(props: {
             <div className={classes.spacer}></div>
 
             <div className={classes.tabContainer}>
-                <div className={classnames(classes.tab, classes.activeTab)}><FolderOpenIcon nativeColor="rgba(0, 0, 0, 0.7)" /></div>
-                <div className={classnames(classes.tab)}><DescriptionIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
-                <div className={classnames(classes.tab)}><HistoryIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
-                <div className={classnames(classes.tab)}><CommentIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
-                <div className={classnames(classes.tab)}><SettingsIcon nativeColor="rgba(0, 0, 0, 0.54)" /></div>
+                <Tab repoPage={RepoPage.Files} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
+                    <FolderOpenIcon />{props.menuLabelsHidden ? '' : 'Files'}
+                </Tab>
+                <Tab repoPage={RepoPage.Manuscript} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
+                    <DescriptionIcon />{props.menuLabelsHidden ? '' : 'Editor'}
+                </Tab>
+                <Tab repoPage={RepoPage.History} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
+                    <HistoryIcon />{props.menuLabelsHidden ? '' : 'History'}
+                </Tab>
+                <Tab repoPage={RepoPage.Discussion} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
+                    <CommentIcon />{props.menuLabelsHidden ? '' : 'Discussion'}
+                </Tab>
+                <Tab repoPage={RepoPage.Settings} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
+                    <SettingsIcon />{props.menuLabelsHidden ? '' : 'Settings'}
+                </Tab>
             </div>
+        </div>
+    )
+}
+
+function Tab(props: {
+    navigateRepoPage: typeof navigateRepoPage
+    repoPage: RepoPage
+    activeRepoPage: RepoPage
+    children: any
+    classes: any,
+}) {
+    return (
+        <div className={classnames(props.classes.tab, { [props.classes.activeTab]: props.repoPage === props.activeRepoPage })}>
+            <Button onClick={() => props.navigateRepoPage({ repoPage: props.repoPage })} >
+                {props.children}
+            </Button>
         </div>
     )
 }
@@ -65,6 +96,7 @@ const styles = (theme: Theme) => createStyles({
     repoInfo: {
         borderBottom: '1px solid #e4e4e4',
         display: 'flex',
+        flexShrink: 0,
     },
     locationLink: {
         color: theme.palette.secondary.main,
@@ -87,25 +119,55 @@ const styles = (theme: Theme) => createStyles({
     },
     tabContainer: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'flex-end',
         flexGrow: 1,
-        maxWidth: 360,
+        maxWidth: 510,
         marginLeft: 100,
         marginRight: 60,
     },
     tab: {
-        padding: '10px 16px 0',
-        width: '3.5rem',
+        // padding: '10px 16px 0',
+        // width: '3.5rem',
         height: '2.6rem',
-        backgroundColor: '#fafafa',
+        backgroundColor: '#f3f3f3',
         cursor: 'pointer',
-    },
-    activeTab: {
+        fontSize: '0.8rem',
+        fontFamily: 'Helvetica',
+        color: 'rgba(0, 0, 0, 0.33)',
         border: '1px solid #e4e4e4',
-        borderBottom: 'none',
+        borderRadius: 3,
         position: 'relative',
         top: 1,
+
+        '& svg': {
+            width: '0.8em',
+            height: '0.8em',
+            marginRight: 3,
+            verticalAlign: 'bottom',
+        },
+
+        '& button': {
+            color: 'inherit',
+            textTransform: 'none',
+            minWidth: 'unset',
+            padding: '6px 16px 0',
+            borderRadius: 0,
+            height: '100%',
+        },
+        '& button:hover': {
+            backgroundColor: 'inherit',
+        },
+    },
+    activeTab: {
+        borderBottom: 'none',
+        position: 'relative',
+        color: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: '#fafafa',
+
+        '& svg': {
+            fill: 'rgba(0, 0, 0, 0.7)',
+        },
     },
     spacer: {
         flexGrow: 1,
@@ -115,13 +177,18 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected]
+    const repoPage = state.repository.repoPage
+    const menuLabelsHidden = state.user.menuLabelsHidden
     return {
         repo,
+        repoPage,
+        menuLabelsHidden,
     }
 }
 
 const mapDispatchToProps = {
     pullRepo,
+    navigateRepoPage,
 }
 
 export default connect(

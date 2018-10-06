@@ -24,10 +24,10 @@ class MainUI extends React.Component<Props, State>
 
     render() {
         const { currentPage, loggedIn, checkedLocalUser, classes } = this.props
-        if(!checkedLocalUser){
+        if (!checkedLocalUser) {
             return null
         }
-        if(!loggedIn) {
+        if (!loggedIn) {
             return (
                 <Login />
             )
@@ -104,14 +104,14 @@ const styles = (theme: Theme) => createStyles({
     },
     mainUIContentWrapper: {
         flexGrow: 1,
-        padding: '24px 32px 72px 32px',
+        padding: '24px 32px 0 32px',
         display: 'flex',
     },
 
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const currentUser = state.user.currentUser||""
+    const currentUser = state.user.currentUser || ''
     const loggedIn = state.user.users[currentUser] !== undefined
     const checkedLocalUser = state.user.checkedLocalUser
     return {

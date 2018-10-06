@@ -13,6 +13,7 @@ import {
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
+    IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     fetchUserData, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
@@ -129,9 +130,7 @@ const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRe
 const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigSuccessAction>({
     type: UserActionType.READ_LOCAL_CONFIG,
     async process(_) {
-        console.log('local config 111')
         const config = await UserData.readAll()
-        console.log('local config ~>', config)
         return { config }
     },
 })
@@ -142,6 +141,15 @@ const setCodeColorSchemeLogic = makeLogic<ISetCodeColorSchemeAction, ISetCodeCol
         const { codeColorScheme } = action.payload
         await UserData.setCodeColorScheme(codeColorScheme)
         return { codeColorScheme }
+    },
+})
+
+const hideMenuLabelsLogic = makeLogic<IHideMenuLabelsAction, IHideMenuLabelsSuccessAction>({
+    type: UserActionType.HIDE_MENU_LABELS,
+    async process({ action }) {
+        const { menuLabelsHidden } = action.payload
+        await UserData.hideMenuLabels(menuLabelsHidden)
+        return { menuLabelsHidden }
     },
 })
 
@@ -156,4 +164,5 @@ export default [
     ignoreSharedRepoLogic,
     readLocalConfigLogic,
     setCodeColorSchemeLogic,
+    hideMenuLabelsLogic,
 ]

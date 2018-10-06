@@ -49,7 +49,7 @@ class Repository extends React.Component<Props>
                     }
                 </div>
 
-                <BottomNavigation
+                {/*<BottomNavigation
                     value={this.props.repoPage as number}
                     onChange={this.onNavigateRepoPage}
                     showLabels
@@ -60,7 +60,7 @@ class Repository extends React.Component<Props>
                     <BottomNavigationAction label="History" icon={<HistoryIcon />} />
                     <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
                     <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
-                </BottomNavigation>
+                </BottomNavigation>*/}
             </div>
         )
     }

@@ -7,6 +7,7 @@ const initialState = {
     error: undefined,
     sharedRepos: {},
     codeColorScheme: undefined,
+    menuLabelsHidden: undefined,
     checkedLocalUser: false,
 }
 
@@ -16,6 +17,7 @@ export interface IUserState {
     error: Error | undefined
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
     codeColorScheme: string | undefined
+    menuLabelsHidden: boolean | undefined
     checkedLocalUser: boolean
 }
 
@@ -32,18 +34,18 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
             return {
                 ...state,
-                users:{
+                users: {
                     ...state.users,
-                    [email]: user
+                    [email]: user,
                 },
                 currentUser: email,
-                checkedLocalUser: true
+                checkedLocalUser: true,
             }
 
         case UserActionType.CHECK_LOCAL_USER_FAILED:
             return{
                 ...state,
-                checkedLocalUser: true
+                checkedLocalUser: true,
             }
 
         case UserActionType.FETCH_USER_DATA_SUCCESS:
@@ -76,8 +78,8 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 sharedRepos: {
-                    [repoID]: { repoID, ignored: true}
-                }
+                    [repoID]: { repoID, ignored: true},
+                },
             }
         }
 
@@ -86,6 +88,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 codeColorScheme: config.codeColorScheme,
+                menuLabelsHidden: config.menuLabelsHidden,
             }
         }
 
@@ -97,10 +100,18 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.HIDE_MENU_LABELS_SUCCESS: {
+            const { menuLabelsHidden } = action.payload
+            return {
+                ...state,
+                menuLabelsHidden,
+            }
+        }
+
         case UserActionType.LOGOUT_SUCCESS: {
             return {
                 ...state,
-                currentUser: undefined
+                currentUser: undefined,
             }
         }
 
