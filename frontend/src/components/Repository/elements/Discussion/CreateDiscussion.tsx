@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
@@ -10,6 +10,7 @@ import CommentWrapper from './CommentWrapper'
 import SmartTextarea from 'components/SmartTextarea'
 import { IGlobalState } from 'redux/store'
 import { IRepoFile, IDiscussion } from 'common'
+
 
 @autobind
 class CreateDiscussion extends React.Component<Props, State>
@@ -23,9 +24,9 @@ class CreateDiscussion extends React.Component<Props, State>
 
     onSubmit() {
         const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
-        if (valid) {
+        if (valid && this.props.repoID) {
             let subject = this._inputSubject.value
-            if(this.props.attachedTo !== undefined){
+            if (this.props.attachedTo !== undefined) {
                 subject = `[${this.props.attachedTo}] ${subject}`
             }
             this.setState({ error: '' })
@@ -56,6 +57,7 @@ class CreateDiscussion extends React.Component<Props, State>
                         inputRef={x => this._inputSubject = x}
                     />
                     <SmartTextarea
+                        placeholder="Start the discussion"
                         rows={3}
                         inputRef={(x: any) => this._inputComment = x}
                         files={this.props.files}
@@ -81,42 +83,44 @@ class CreateDiscussion extends React.Component<Props, State>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
     repoRoot: string
     attachedTo?: string
+    commentWrapperClasses?: any
+}
 
-    repoID: string
+interface StateProps {
+    repoID: string | undefined
     username: string | undefined
     files: {[name: string]: IRepoFile}
     discussions: {[created: number]: IDiscussion}
+}
 
+interface DispatchProps {
     createDiscussion: typeof createDiscussion
-    commentWrapperClasses?: any
-    classes: any
 }
 
 interface State {
     error: string
 }
 
-const styles = (theme: Theme) => createStyles({
+const styles = () => createStyles({
     commentWrapper: {}, // this is just here so it can be overridden
     form: {
         width: '100%',
         padding: '16px 36px',
     },
-    textField: {
-        display: 'block',
-        marginBottom: theme.spacing.unit,
-    },
 })
 
-const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
-    const repo = state.repository.repos[ownProps.repoRoot||""] || {}
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repo = state.repository.repos[ownProps.repoRoot || ''] || {}
+    const repoID = repo.repoID
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         username,
-        repoID: repo.repoID,
+        repoID,
         files: repo.files || {},
         discussions: state.discussion.discussions[repo.repoID] || {},
     }
@@ -126,7 +130,7 @@ const mapDispatchToProps = {
     createDiscussion,
 }
 
-export default connect(
+ export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(CreateDiscussion))

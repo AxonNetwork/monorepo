@@ -37,7 +37,6 @@ class Settings extends React.Component<Props>
                     <CodeViewer
                         language="go"
                         contents={codeSample}
-                        codeColorScheme={this.props.codeColorScheme}
                     />
                 </div>
                 <div className={classes.section}>
@@ -90,7 +89,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    return{
+    return {
         codeColorScheme: state.user.codeColorScheme,
     }
 }

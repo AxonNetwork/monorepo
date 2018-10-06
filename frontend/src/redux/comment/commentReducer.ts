@@ -1,4 +1,5 @@
 import { CommentActionType, ICommentAction } from './commentActions'
+import { IDiscussionAction } from '../discussion/discussionActions'
 import { DiscussionActionType } from 'redux/discussion/discussionActions'
 import { IComment } from '../../common'
 
@@ -14,7 +15,7 @@ export interface ICommentState {
     }
 }
 
-const commentReducer = (state: ICommentState = initialState, action: ICommentAction): ICommentState => {
+const commentReducer = (state: ICommentState = initialState, action: ICommentAction | IDiscussionAction): ICommentState => {
     switch (action.type) {
         case CommentActionType.GET_COMMENTS_FOR_REPO_SUCCESS:
             return {

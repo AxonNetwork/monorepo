@@ -3,7 +3,7 @@ import { makeLogic } from '../reduxUtils'
 import { DiscussionActionType,
     IGetDiscussionsAction, IGetDiscussionsSuccessAction,
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
-    getDiscussions, selectDiscussion } from './discussionActions'
+    selectDiscussion } from './discussionActions'
 import { navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 import { IDiscussion } from '../../common'

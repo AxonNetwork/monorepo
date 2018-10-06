@@ -92,7 +92,7 @@ class SmartTextarea extends React.Component<Props, State>
             <div>
                 <TextField
                     value={this.state.comment}
-                    placeholder="Comment (Shift + Enter to send)"
+                    placeholder={this.props.placeholder}
                     fullWidth
                     multiline
                     rows={this.props.rows || 3}
@@ -141,10 +141,11 @@ interface Props {
     files: {[name: string]: IRepoFile} | undefined
     discussions: {[created: number]: IDiscussion}
     onSubmit: (comment: string) => void
-    inputRef?: any
+    inputRef?: React.Ref<any> | React.RefObject<any>
     classes: any
     rows?: number
     rowsMax?: number
+    placeholder?: string
 }
 
 interface State {

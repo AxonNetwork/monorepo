@@ -44,8 +44,6 @@ class RepoDiscussionPage extends React.Component<Props>
         // @@TODO: probably better to sort these in the reducer or something
         const discussionsList = Object.keys(discussions).sort().map(created => discussions[parseInt(created, 10)]) // this sucks
 
-        console.log('RepoDiscussionPage this.props.username ~>', this.props.username)
-
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
@@ -108,18 +106,18 @@ interface Props {
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number | undefined
-    getDiscussions: Function
+    getDiscussions: typeof getDiscussions
     selectDiscussion: typeof selectDiscussion
-    createDiscussion: Function
-    createComment: Function
+    createDiscussion: typeof createDiscussion
+    createComment: typeof createComment
     classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
     discussionPage: {
         maxHeight: 'calc(100% - 84px)',
-        border: '1px solid',
-        borderColor: theme.palette.grey[300],
+        // border: '1px solid',
+        // borderColor: theme.palette.grey[300],
         display: 'flex',
     },
     list: {
@@ -128,14 +126,16 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'auto',
         flexGrow: 1,
         width: 350,
+        border: '1px solid #e0e0e0',
     },
     title: {
         marginTop: theme.spacing.unit * 2,
         marginBottom: theme.spacing.unit,
     },
     threadPane: {
-        borderLeft: '1px solid',
-        borderColor: theme.palette.grey[300],
+        // borderLeft: '1px solid',
+        // borderColor: theme.palette.grey[300],
+        marginLeft: 20,
         height: '100%',
         width: '100%',
         flexGrow: 5,

@@ -17,7 +17,6 @@ const initialState = {
     selectedFile: undefined,
     selectedCommit: undefined,
     checkpointed: false,
-    // hypothesis: null,
 }
 
 export interface IRepoState {
@@ -30,7 +29,6 @@ export interface IRepoState {
     } | undefined
     selectedCommit: string | undefined
     checkpointed: boolean
-    // hypothesis: string | null
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {

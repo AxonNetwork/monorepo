@@ -22,7 +22,7 @@ export default function shortcodes(this: any) {
         compiler.visitors.shortcode = shortcodeCompiler
     }
 
-    function locator(value: string, fromIndex: number) {
+    function locator(value: string /*, fromIndex: number*/) {
         return REGEX[Symbol.search](value)
     }
 

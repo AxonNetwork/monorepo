@@ -11,7 +11,7 @@ class CommentWrapper extends React.Component<Props>
 {
     render() {
         const { username, created, classes } = this.props
-
+        const time = typeof created === 'string' ? created : moment(created).fromNow()
         return (
             <div className={classes.comment}>
                 <div className={classes.commentAvatar}>
@@ -20,7 +20,7 @@ class CommentWrapper extends React.Component<Props>
 
                 <div className={classes.commentBody}>
                     <Typography className={classes.commentHeader}>
-                        <strong>{username}</strong> <small>({moment(created).fromNow()})</small>
+                        {username && <span><strong>{username}</strong> <small>({time})</small></span>}
                     </Typography>
 
                     <div className={classes.commentText}>
@@ -34,7 +34,7 @@ class CommentWrapper extends React.Component<Props>
 
 interface Props {
     username: string | undefined
-    created: number
+    created: number | string
     classes: any
 }
 
@@ -63,12 +63,14 @@ const styles = (theme: Theme) => createStyles({
         padding: '8px 12px',
         borderBottom: '1px solid #e2e2e2',
         color: '#545454',
+        minHeight: 38,
     },
     commentText: {
         padding: theme.spacing.unit * 2,
 
         '& p': {
-            paddingBottom: 6,
+            paddingBottom: 10,
+            margin: 0,
         },
     },
 })

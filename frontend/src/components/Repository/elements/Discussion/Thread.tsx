@@ -67,13 +67,13 @@ class Thread extends React.Component<Props>
                                 </CommentWrapper>
                             )
                         })}
+                        <CreateComment
+                            files={this.props.repo.files}
+                            discussions={this.props.discussions}
+                            onSubmit={this.handleSubmit}
+                        />
                     </div>
                 </div>
-                <CreateComment
-                    files={this.props.repo.files}
-                    discussions={this.props.discussions}
-                    onSubmit={this.handleSubmit}
-                />
             </div>
         )
     }
@@ -108,8 +108,9 @@ const styles = (theme: Theme) => createStyles({
         padding: theme.spacing.unit,
     },
     title: {
-        backgroundColor: theme.palette.grey[300],
+        // backgroundColor: theme.palette.grey[300],
         padding: theme.spacing.unit,
+        fontSize: '1.8rem',
     },
     thread: {
         display: 'flex',

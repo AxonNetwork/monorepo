@@ -14,7 +14,7 @@ export enum DiscussionActionType {
 export interface IGetDiscussionsAction {
     type: DiscussionActionType.GET_DISCUSSIONS
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -22,7 +22,7 @@ export interface IGetDiscussionsSuccessAction {
     type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS
     payload: {
         repoID: string
-        discussions: {[id: string]: IDiscussion}
+        discussions: {[id: string]: IDiscussion},
     }
 }
 
@@ -31,7 +31,7 @@ export type IGetDiscussionsFailedAction = FailedAction<DiscussionActionType.GET_
 export interface ISelectDiscussionAction {
     type: DiscussionActionType.SELECT_DISCUSSION
     payload: {
-        created: number|undefined
+        created: number | undefined,
     }
 }
 
@@ -40,13 +40,15 @@ export interface ICreateDiscussionAction {
     payload: {
         repoID: string
         subject: string
-        commentText: string
+        commentText: string,
     }
 }
 
 export interface ICreateDiscussionSuccessAction {
     type: DiscussionActionType.CREATE_DISCUSSION_SUCCESS
-    payload: {}
+    payload: {
+        discussion: IDiscussion,
+    }
 }
 
 export type ICreateDiscussionFailedAction = FailedAction<DiscussionActionType.CREATE_DISCUSSION_FAILED>
