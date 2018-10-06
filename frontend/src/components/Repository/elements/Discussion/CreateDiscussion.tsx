@@ -24,10 +24,14 @@ class CreateDiscussion extends React.Component<Props, State>
     onSubmit() {
         const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
         if (valid) {
+            let subject = this._inputSubject.value
+            if(this.props.attachedTo !== undefined){
+                subject = `[${this.props.attachedTo}] ${subject}`
+            }
             this.setState({ error: '' })
             this.props.createDiscussion({
                 repoID: this.props.repoID,
-                subject: this._inputSubject.value,
+                subject: subject,
                 commentText: this._inputComment.value,
             })
         } else {
@@ -79,6 +83,7 @@ class CreateDiscussion extends React.Component<Props, State>
 
 interface Props {
     repoRoot: string
+    attachedTo?: string
 
     repoID: string
     username: string | undefined

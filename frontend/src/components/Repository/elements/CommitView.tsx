@@ -60,6 +60,7 @@ class CommitView extends React.Component<Props>
                     <div className={classes.startDiscussionFormWrapper}>
                         <CreateDiscussion
                             repoRoot={this.props.repoRoot}
+                            attachedTo={`Commit: ${commit.commit.substr(0,8)}`}
                             commentWrapperClasses={{ comment: classes.createDiscussionComment }}
                         />
                     </div>

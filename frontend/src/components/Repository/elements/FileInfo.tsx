@@ -1,15 +1,12 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
-// import Table from '@material-ui/core/Table'
-// import TableBody from '@material-ui/core/TableBody'
-// import File from './FileList/File'
-// import DiffViewer from './DiffViewer/DiffViewer'
-// import Thread from './Discussion/Thread'
+import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from './FileList/Breadcrumbs'
 import Timeline from './Timeline/Timeline'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/repository/repoActions'
+import CreateDiscussion from './Discussion/CreateDiscussion'
 import FileViewer from './FileViewer'
 
 
@@ -36,6 +33,18 @@ class FileInfo extends React.Component<Props>
                     <div className={classes.fileViewerContainer}>
                         <FileViewer filename={file.name} repoRoot={this.props.repoRoot} />
                     </div>
+
+                    <div className={classes.startDiscussionSectionWrapper}>
+                        <Typography variant="headline">Start a discussion about this file</Typography>
+                        <div className={classes.startDiscussionFormWrapper}>
+                            <CreateDiscussion
+                                repoRoot={this.props.repoRoot}
+                                attachedTo={file.name}
+                                commentWrapperClasses={{ comment: classes.createDiscussionComment }}
+                            />
+                        </div>
+                    </div>
+
 
                     <div className={classes.timeline}>
                         <Timeline
@@ -91,6 +100,21 @@ const styles = (theme: Theme) => createStyles({
     table: {
         marginTop: theme.spacing.unit,
         borderTop: '1px solid rgba(224, 224, 224, 1)',
+    },
+    startDiscussionSectionWrapper: {
+        marginTop: 40,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    startDiscussionFormWrapper: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    createDiscussionComment: {
+        maxWidth: 720,
+        flexGrow: 1,
     },
 })
 
