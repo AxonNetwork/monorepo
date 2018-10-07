@@ -13,13 +13,14 @@ class UserAvatar extends React.Component<Props>
         const userInitials = (username || '').split(' ').map(x => x.substring(0, 1)).map(x => x.toUpperCase()).join('')
         const color = strToColor(username || '')
         return (
-            <Avatar style={{ backgroundColor: color }}>{userInitials}</Avatar>
+            <Avatar className={this.props.className} style={{ backgroundColor: color }}>{userInitials}</Avatar>
         )
     }
 }
 
 interface Props {
     username: string | undefined
+    className?: string
 }
 
 const styles = () => createStyles({

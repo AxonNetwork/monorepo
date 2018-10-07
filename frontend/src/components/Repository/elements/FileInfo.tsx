@@ -82,6 +82,8 @@ const styles = (theme: Theme) => createStyles({
     fileViewerContainer: {
         padding: 40,
         fontSize: '1rem',
+        maxWidth: 960,
+        alignSelf: 'center',
     },
     timeline: {
         flexGrow: 1,

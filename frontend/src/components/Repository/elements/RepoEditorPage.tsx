@@ -21,76 +21,76 @@ class RepoEditorPage extends React.Component<Props, State>
         saved: true,
         options: [],
         type: '',
-        cb: (_:string)=>{},
+        cb: (_: string) => {},
     }
 
     modules = {
         toolbar: {
             container: '#toolbar',
             handlers: {
-                'image': () => this.imageHandler(),
-                'file': () => this.fileHandler(),
-                'save': () => this.saveHandler(),
-            }
-        }
+                image: () => this.imageHandler(),
+                file: () => this.fileHandler(),
+                save: () => this.saveHandler(),
+            },
+        },
     }
 
-    constructor(props: Props){
+    constructor(props: Props) {
         super(props)
         this.setup(props)
     }
 
-    componentWillReceiveProps(props: Props){
-        if(props.content != this.props.content || props.folderPath != this.props.folderPath){
+    componentWillReceiveProps(props: Props) {
+        if (props.content != this.props.content || props.folderPath != this.props.folderPath) {
             this.setup(props)
         }
-        if(this.state.text.length === 0 && props.content.length > 0){
+        if (this.state.text.length === 0 && props.content.length > 0) {
             this.setState({text: props.content})
         }
     }
 
-    setup(props: Props){
+    setup(props: Props) {
         props.loadTextContent({repoRoot: props.folderPath, file: 'manuscript'})
         this.setState({
             text: props.content,
-            saved: true
+            saved: true,
         })
 
         ImageBlot.folderPath = this.props.folderPath
         Quill.register(ImageBlot)
-        FileLink.onClick=(file: string)=>{
+        FileLink.onClick = (file: string) => {
             console.log('selected: ', file)
         }
         Quill.register(FileLink)
     }
 
-    imageHandler(){
+    imageHandler() {
         const ref = this.quill.current
-        if(ref === null) return
+        if (ref === null) { return }
         const quill = ref.getEditor()
-        const cb = (image: string)=>{
+        const cb = (image: string) => {
             const selection = quill.getSelection()
-            if(selection === null) return
+            if (selection === null) { return }
             const cursor = selection.index
             quill.insertEmbed(cursor, 'conscience-image', image)
-            quill.setSelection(cursor+1, 0)
+            quill.setSelection(cursor + 1, 0)
         }
         const files = this.props.files
-        const images = Object.keys(files).filter(f=>files[f].type==='image')
+        const images = Object.keys(files).filter(f => files[f].type === 'image')
         this.setState({
             type: 'Images',
             options: images,
-            cb: cb
+            cb: cb,
         })
     }
 
-    fileHandler(){
+    fileHandler() {
         const ref = this.quill.current
-        if(ref === null) return
+        if (ref === null) { return }
         const quill = ref.getEditor()
-        const cb = (file: string)=>{
+        const cb = (file: string) => {
             const selection = quill.getSelection()
-            if(selection === null) return
+            if (selection === null) { return }
             const cursor = selection.index
             quill.insertText(cursor, file, 'conscience-file', file)
             quill.setSelection(cursor + file.length + 1, 0)
@@ -98,23 +98,23 @@ class RepoEditorPage extends React.Component<Props, State>
         this.setState({
             type: 'Files',
             options: Object.keys(this.props.files),
-            cb: cb
+            cb: cb,
         })
     }
 
-    saveHandler(){
+    saveHandler() {
         this.props.saveTextContent({
             repoRoot: this.props.folderPath,
             file: 'manuscript',
-            content: this.state.text
+            content: this.state.text,
         })
         this.setState({
-            saved: true
+            saved: true,
         })
     }
 
-    handleKeyPress(event: React.KeyboardEvent){
-        if(event.key === 's' && event.ctrlKey){
+    handleKeyPress(event: React.KeyboardEvent) {
+        if (event.key === 's' && event.ctrlKey) {
             this.saveHandler()
         }
     }
@@ -123,21 +123,21 @@ class RepoEditorPage extends React.Component<Props, State>
         const saved = value == this.props.content
         this.setState({
             text: value,
-            saved: saved
+            saved: saved,
         })
     }
 
-    closeSidebar(){
+    closeSidebar() {
         this.setState({
             type: '',
             options: [],
-            cb: (_: string)=>{}
+            cb: (_: string) => {},
         })
     }
 
     render() {
         const { loaded, classes } = this.props
-        if(!loaded){
+        if (!loaded) {
             return <div></div>
         }
 
@@ -189,52 +189,56 @@ interface State {
 }
 
 const styles = (theme: Theme) => createStyles({
-    editorPage:{
-        display: 'flex'
+    editorPage: {
+        display: 'flex',
     },
-    editor:{
+    editor: {
         height: '100%',
         position: 'relative',
         flexGrow: 1,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingBottom: 40,
     },
-    quill:{
-        height: '100%',
+    quill: {
+        display: 'flex',
         flexGrow: 1,
+        flexDirection: 'column',
+        overflowY: 'auto',
 
         '& > .ql-container': {
-            height: '100%',
-            overflowY: 'scroll'
+            // height: '100%',
+            width: '100%',
+            flexGrow: 1,
         },
     },
-    menuItem:{
-        maxWidth: 300
+    menuItem: {
+        maxWidth: 300,
     },
-    imageBlot:{
+    imageBlot: {
         width: '50%',
-        margin: '0 auto'
+        margin: '0 auto',
     },
     fileLink: {
         // override quilljs
-        color: theme.palette.secondary.main + "!important"
+        color: theme.palette.secondary.main + '!important',
     },
     saveIndicator: {
         width: 12,
         height: 12,
         backgroundColor: theme.palette.secondary.main,
-        borderRadius: "50%",
+        borderRadius: '50%',
         position: 'absolute',
         top: 8,
         right: 8,
-    }
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ""
+    const selected = state.repository.selectedRepo || ''
     const files = state.repository.repos[selected].files || {}
-    const folderPath = state.repository.repos[selected].path || ""
-    const content = (state.editor.content[selected]||{})['manuscript']||""
+    const folderPath = state.repository.repos[selected].path || ''
+    const content = (state.editor.content[selected] || {})['manuscript'] || ''
     const loaded = state.editor.loaded
     return {
         files: files,
@@ -247,10 +251,10 @@ const mapStateToProps = (state: IGlobalState) => {
 const mapDispatchToProps = {
     selectFile,
     loadTextContent,
-    saveTextContent
+    saveTextContent,
 }
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(withStyles(styles)(RepoEditorPage))
