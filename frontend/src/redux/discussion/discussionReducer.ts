@@ -22,6 +22,7 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
             return {
                 ...state,
                 discussions: {
+                    ...state.discussions,
                     [discussion.repoID]: {
                         ...(state.discussions[discussion.repoID] || {}),
                         [discussion.created]: discussion,
@@ -35,6 +36,7 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
             return {
                 ...state,
                 discussions: {
+                    ...state.discussions,
                     [repoID]: {
                         ...(state.discussions[repoID] || {}),
                         ...discussions,
