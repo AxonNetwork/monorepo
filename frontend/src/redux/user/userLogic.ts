@@ -14,6 +14,7 @@ import {
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
+    ISawCommentAction, ISawCommentSuccessAction,
     fetchUserData, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
@@ -118,6 +119,26 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
     },
 })
 
+const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
+    type: UserActionType.SAW_COMMENT,
+    async process({ getState, action }) {
+        const { repoID, discussionID, commentID } = action.payload
+
+        await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentID)
+
+        const state = getState()
+        if (
+            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] !== undefined &&
+            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] >= commentID
+        ) {
+            // If we return nulls here, it indicates that no actual update occurred
+            return { repoID: null, discussionID: null, commentID: null }
+        } else {
+            return { repoID, discussionID, commentID }
+        }
+    },
+})
+
 const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction>({
     type: UserActionType.IGNORE_SHARED_REPO,
     async process({ action }) {
@@ -162,6 +183,7 @@ export default [
     getSharedReposLogic,
     cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
+    sawCommentLogic,
     readLocalConfigLogic,
     setCodeColorSchemeLogic,
     hideMenuLabelsLogic,

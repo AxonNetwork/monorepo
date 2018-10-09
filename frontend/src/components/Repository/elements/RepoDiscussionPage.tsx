@@ -12,14 +12,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Typography from '@material-ui/core/Typography'
+import Badge from '@material-ui/core/Badge'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
 
 import Thread from './Discussion/Thread'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import UserAvatar from 'components/UserAvatar'
-import { getDiscussions, selectDiscussion, createDiscussion } from 'redux/discussion/discussionActions'
-import { createComment } from 'redux/comment/commentActions'
+import { getDiscussions, selectDiscussion, createDiscussion, createComment } from 'redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
 import { IUser, IRepo, IDiscussion, IComment } from 'common'
 
@@ -44,64 +44,45 @@ class RepoDiscussionPage extends React.Component<Props>
             }
         }
 
-        // @@TODO: probably better to do some of this processing/sorting/etc. in the reducer
-        const mostRecentReplies =
-            values(this.props.comments)
-            .filter(c => c.attachedTo.type === 'discussion')
-            .reduce((into, each) => {
-                if (into[each.attachedTo.subject] === undefined || into[each.attachedTo.subject].mostRecentComment < each.created) {
-                    into[each.attachedTo.subject] = { mostRecentComment: each.created, user: each.user }
-                }
-                return into
-            }, {} as { [discussionID: number]: {mostRecentComment: number, user: string} })
-
-        const discussionIDsSorted =
-            sortBy(toPairs(mostRecentReplies), (pair) => pair[1].mostRecentComment)
-            .map(pair => pair[0])
-            .reverse()
+        const newestComment = this.props.newestCommentTimestampPerDiscussion
+        const discussionsSorted = this.props.discussionIDsSortedByNewestComment.map(created => discussions[created] || { created })
 
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
-                    {discussionIDsSorted.map(created => (
-                        <React.Fragment key={created}>
-                            <ListItem button className={classnames(classes.listItem, {[classes.selectedDiscussion]: created === this.props.selected})} key={created} onClick={() => this.props.selectDiscussion({ created })}>
-                                {selected === undefined &&
-                                    <React.Fragment>
-                                        <ListItemText primary={discussions[created].subject} secondary={
-                                            <div className={classes.sidebarListItemSubtext}>
-                                                <div className={classes.sidebarListItemModifiedDate}>
-                                                    {moment(mostRecentReplies[created].mostRecentComment).fromNow()}
-                                                </div>
-                                                <div className={classes.sidebarListItemAvatar}>
-                                                    <UserAvatar username={this.props.users[ discussions[created].email ].name} />
-                                                </div>
-                                            </div>
-                                        }/>
-                                        <ListItemIcon>
-                                            <ChevronRightIcon />
-                                        </ListItemIcon>
-                                    </React.Fragment>
-                                }
-                                {selected !== undefined &&
-                                    <React.Fragment>
-                                        <ListItemText primary={discussions[created].subject} secondary={
-                                            <div className={classes.sidebarListItemSubtext}>
-                                                <div className={classes.sidebarListItemModifiedDate}>
-                                                    {moment(mostRecentReplies[created].mostRecentComment).fromNow()}
-                                                </div>
-                                                <div className={classes.sidebarListItemAvatar}>
-                                                    <UserAvatar username={this.props.users[ discussions[created].email ].name} />
-                                                </div>
-                                            </div>
-                                        }/>
 
-                                    </React.Fragment>
-                                }
-                            </ListItem>
-                            <Divider />
-                        </React.Fragment>
-                    ))}
+                    {discussionsSorted.map(d => {
+                        const isSelected = this.props.selected && d.created === this.props.selected
+                        const showBadge = newestComment[d.created] > (this.props.newestViewedCommentTimestamp[d.created] || 0)
+                        const username = (this.props.users[ d.email ] || {}).name || d.email
+                        return (
+                            <React.Fragment key={d.created}>
+                                <ListItem
+                                    button
+                                    className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
+                                    onClick={() => this.props.selectDiscussion({ created: d.created })}
+                                >
+                                    <ListItemText primary={d.subject} secondary={
+                                        <React.Fragment>
+                                            {showBadge &&
+                                                <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary" />
+                                            }
+                                            <div className={classes.sidebarListItemSubtext}>
+                                                <div className={classes.sidebarListItemModifiedDate}>
+                                                    {moment(newestComment[d.created]).fromNow()}
+                                                </div>
+                                                <div className={classes.sidebarListItemAvatar}>
+                                                    <UserAvatar username={username} />
+                                                </div>
+                                            </div>
+                                        </React.Fragment>
+                                    }/>
+                                </ListItem>
+                                <Divider />
+                            </React.Fragment>
+                        )
+                    })}
+
                     <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ created: -1 })}>
                         <ListItemText primary={'New Discussion'} />
                         <ListItemIcon>
@@ -144,6 +125,10 @@ interface Props {
     discussions: {[created: number]: IDiscussion}
     comments: {[id: number]: IComment}
     selected: number | undefined
+    newestViewedCommentTimestamp: {[discussionID: number]: number}
+    newestCommentTimestampPerDiscussion: {[discussionID: number]: number}
+    discussionIDsSortedByNewestComment: number[]
+
     getDiscussions: typeof getDiscussions
     selectDiscussion: typeof selectDiscussion
     createDiscussion: typeof createDiscussion
@@ -209,6 +194,17 @@ const styles = (theme: Theme) => createStyles({
             fontSize: '0.8rem',
         },
     },
+    discussionBadge: {
+        width: 9,
+        height: 9,
+        right: 'auto',
+        top: -17,
+        left: -15,
+    },
+    discussionBadgeWrapper: {
+        display: 'block',
+        height: 0,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -221,8 +217,11 @@ const mapStateToProps = (state: IGlobalState) => {
         repoID,
         users,
         discussions: state.discussion.discussions[repoID] || {},
-        comments: state.comment.comments[repoID] || {},
+        comments: state.discussion.comments[repoID] || {},
         selected: state.discussion.selected,
+        newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[repoID] || {}),
+        newestCommentTimestampPerDiscussion: (state.discussion.newestCommentTimestampPerDiscussion[repoID] || {}),
+        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
 }
 

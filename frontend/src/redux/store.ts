@@ -4,7 +4,6 @@ import logic from './logic'
 import reducer from './reducer'
 import { IRepoState } from './repository/repoReducer'
 import { INavigationState } from './navigation/navigationReducer'
-import { ICommentState } from './comment/commentReducer'
 import { IDiscussionState } from './discussion/discussionReducer'
 import { IUserState } from './user/userReducer'
 import { IEditorState } from './editor/editorReducer'
@@ -19,9 +18,9 @@ const store = createStore(
   reducer,
   composeEnhancers(
     applyMiddleware(
-      logicMiddleware
-    )
-  )
+      logicMiddleware,
+    ),
+  ),
 )
 
 export default store
@@ -29,7 +28,6 @@ export default store
 export interface IGlobalState {
     repository: IRepoState
     navigation: INavigationState
-    comment: ICommentState
     discussion: IDiscussionState
     user: IUserState
     editor: IEditorState

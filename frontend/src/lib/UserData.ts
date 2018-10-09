@@ -11,6 +11,11 @@ export interface IUserDataContents {
     ignoredSharedRepos?: string[]
     codeColorScheme?: string
     menuLabelsHidden?: boolean
+    newestViewedCommentTimestamp?: {
+        [repoID: string]: {
+            [discussionID: number]: number,
+        },
+    }
 }
 
 const UserData = {
@@ -92,6 +97,20 @@ const UserData = {
 
     async hideMenuLabels(menuLabelsHidden: boolean) {
         await UserData.set('menuLabelsHidden', menuLabelsHidden)
+    },
+
+    async setNewestViewedCommentTimestamp(repoID: string, discussionID: number, commentID: number) {
+        const timestamps = (await UserData.get('newestViewedCommentTimestamp')) || {}
+        if (
+            (timestamps[repoID] || {})[discussionID] !== undefined &&
+            (timestamps[repoID] || {})[discussionID] >= commentID
+        ) {
+            return false
+        }
+        timestamps[repoID] = timestamps[repoID] || {}
+        timestamps[repoID][discussionID] = commentID
+        await UserData.set('newestViewedCommentTimestamp', timestamps)
+        return true
     },
 }
 

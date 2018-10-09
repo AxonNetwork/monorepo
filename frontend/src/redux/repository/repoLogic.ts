@@ -20,8 +20,7 @@ import { RepoActionType,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
-import { getDiscussions } from '../discussion/discussionActions'
-import { getCommentsForRepo } from '../comment/commentActions'
+import { getDiscussions, getCommentsForRepo } from '../discussion/discussionActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'

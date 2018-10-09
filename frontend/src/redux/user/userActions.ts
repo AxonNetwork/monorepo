@@ -35,6 +35,10 @@ export enum UserActionType {
     IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
     IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
 
+    SAW_COMMENT = 'SAW_COMMENT',
+    SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
+    SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
+
     READ_LOCAL_CONFIG = 'READ_LOCAL_CONFIG',
     READ_LOCAL_CONFIG_SUCCESS = 'READ_LOCAL_CONFIG_SUCCESS',
     READ_LOCAL_CONFIG_FAILED = 'READ_LOCAL_CONFIG_FAILED',
@@ -220,6 +224,26 @@ export interface IReadLocalConfigSuccessAction {
 
 export type IReadLocalConfigFailedAction = FailedAction<UserActionType.READ_LOCAL_CONFIG_FAILED>
 
+export interface ISawCommentAction {
+    type: UserActionType.SAW_COMMENT
+    payload: {
+        repoID: string
+        discussionID: number
+        commentID: number,
+    }
+}
+
+export interface ISawCommentSuccessAction {
+    type: UserActionType.SAW_COMMENT_SUCCESS
+    payload: {
+        repoID: string | null
+        discussionID: number | null
+        commentID: number | null,
+    }
+}
+
+export type ISawCommentFailedAction = FailedAction<UserActionType.SAW_COMMENT_FAILED>
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -253,7 +277,10 @@ export type IUserAction =
     ISetCodeColorSchemeFailedAction |
     IHideMenuLabelsAction |
     IHideMenuLabelsSuccessAction |
-    IHideMenuLabelsFailedAction
+    IHideMenuLabelsFailedAction |
+    ISawCommentAction |
+    ISawCommentSuccessAction |
+    ISawCommentFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -269,5 +296,6 @@ export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {})
 export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']): ISetCodeColorSchemeAction => ({ type: UserActionType.SET_CODE_COLOR_SCHEME, payload })
 export const hideMenuLabels = (payload: IHideMenuLabelsAction['payload']): IHideMenuLabelsAction => ({ type: UserActionType.HIDE_MENU_LABELS, payload })
 
+export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 
 

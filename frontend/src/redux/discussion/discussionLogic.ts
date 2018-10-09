@@ -3,11 +3,14 @@ import { makeLogic } from '../reduxUtils'
 import { DiscussionActionType,
     IGetDiscussionsAction, IGetDiscussionsSuccessAction,
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
+    IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction,
+    ICreateCommentAction, ICreateCommentSuccessAction,
     selectDiscussion } from './discussionActions'
 import { navigateRepoPage } from 'redux/repository/repoActions'
+import { fetchUserData } from 'redux/user/userActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-import { IDiscussion } from '../../common'
-import ServerRelay from '../../lib/ServerRelay'
+import { IDiscussion } from 'common'
+import ServerRelay from 'lib/ServerRelay'
 
 const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSuccessAction>({
     type: DiscussionActionType.GET_DISCUSSIONS,
@@ -30,7 +33,32 @@ const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussi
     },
 })
 
+const getCommentsForRepoLogic = makeLogic<IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction>({
+    type: DiscussionActionType.GET_COMMENTS_FOR_REPO,
+    async process({ action }, dispatch) {
+        const { repoID } = action.payload
+        const commentsList = await ServerRelay.getCommentsForRepo(repoID)
+        const comments = keyBy(commentsList, (comment) => `${comment.attachedTo.type}/${comment.attachedTo.subject}/${comment.created}`)
+
+        let emails = commentsList.map(c => c.user)
+        dispatch(fetchUserData({ emails }))
+
+        return { repoID, comments }
+    },
+})
+
+const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccessAction>({
+    type: DiscussionActionType.CREATE_COMMENT,
+    async process({ action }) {
+        const { repoID, text, attachedTo } = action.payload
+        const comment = await ServerRelay.createComment(repoID, text, attachedTo)
+        return { comment }
+    },
+})
+
 export default [
     getDiscussionsLogic,
     createDiscussionLogic,
+    getCommentsForRepoLogic,
+    createCommentLogic,
 ]

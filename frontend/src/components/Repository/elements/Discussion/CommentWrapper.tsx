@@ -1,6 +1,7 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import Badge from '@material-ui/core/Badge'
 import UserAvatar from 'components/UserAvatar'
 import moment from 'moment'
 import autobind from 'utils/autobind'
@@ -20,7 +21,22 @@ class CommentWrapper extends React.Component<Props>
 
                 <div className={classes.commentBody}>
                     <Typography className={classes.commentHeader}>
-                        {username && <span><strong>{username}</strong> <small>({time})</small></span>}
+                        {username &&
+                            <span>
+                                {this.props.showBadge &&
+                                    <Badge classes={{ badge: classes.commentBadge }} badgeContent="" color="secondary">
+                                        <span>
+                                            <strong>{username}</strong> <small>({time})</small>
+                                        </span>
+                                    </Badge>
+                                }
+                                {!this.props.showBadge &&
+                                    <span>
+                                        <strong>{username}</strong> <small>({time})</small>
+                                    </span>
+                                }
+                            </span>
+                        }
                     </Typography>
 
                     <div className={classes.commentText}>
@@ -35,6 +51,7 @@ class CommentWrapper extends React.Component<Props>
 interface Props {
     username: string | undefined
     created: number | string
+    showBadge: boolean | undefined
     classes: any
 }
 
@@ -72,6 +89,11 @@ const styles = (theme: Theme) => createStyles({
             paddingBottom: 10,
             margin: 0,
         },
+    },
+    commentBadge: {
+        width: 9,
+        height: 9,
+        top: -4,
     },
 })
 

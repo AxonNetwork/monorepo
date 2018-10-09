@@ -6,18 +6,47 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
 
-import { createComment } from 'redux/comment/commentActions'
+import { createComment } from 'redux/discussion/discussionActions'
 import { selectFile } from 'redux/repository/repoActions'
+import { sawComment } from 'redux/user/userActions'
 import { IUser, IComment, IRepo, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
 import { IGlobalState } from 'redux/store'
 import CommentWrapper from './CommentWrapper'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import CreateComment from './CreateComment'
+import checkVisible from 'utils/checkVisible'
+
 
 @autobind
 class Thread extends React.Component<Props>
 {
+    _intervalID = -1
+    _commentRefs = {} as any
+
+    componentDidMount() {
+        // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
+        // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
+        this.intervalID = setInterval(() => {
+            let mostRecentVisible = -1
+            for (let created of Object.keys(this._commentRefs)) {
+                // Sometimes refs are null, probably when an element hasn't been rendered yet
+                if (this._commentRefs[created] === null || this._commentRefs[created] === undefined) {
+                    continue
+                }
+                if (checkVisible(this._commentRefs[created]) && created > mostRecentVisible) {
+                    mostRecentVisible = parseInt(created, 10)
+                }
+            }
+            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.subject, commentID: mostRecentVisible })
+        }, 5000)
+    }
+
+    componentWillUnmount() {
+        clearInterval(this._intervalID)
+        this._intervalID = -1
+    }
+
     async handleSubmit(comment: string) {
         if (comment.length === 0) {
             return
@@ -59,7 +88,9 @@ class Thread extends React.Component<Props>
                                     key={c.created}
                                     username={username}
                                     created={c.created}
+                                    showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                 >
+                                    <div ref={x => this._commentRefs[c.created] = x}></div>
                                     <RenderMarkdown
                                         text={c.text}
                                         basePath={this.props.repo.path}
@@ -88,8 +119,11 @@ interface Props {
     comments: {[id: string]: IComment}
     discussions: {[created: number]: IDiscussion}
     unselect?: Function
+    newestViewedCommentTimestamp: number
+
     createComment: typeof createComment
     selectFile: typeof selectFile
+    sawComment: typeof sawComment
     classes?: any
 }
 
@@ -108,7 +142,6 @@ const styles = (theme: Theme) => createStyles({
         padding: theme.spacing.unit,
     },
     title: {
-        // backgroundColor: theme.palette.grey[300],
         padding: theme.spacing.unit,
         fontSize: '1.8rem',
     },
@@ -128,8 +161,9 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const discussions = state.discussion.discussions[ownProps.repo.repoID] || {}
     return {
-        comments: state.comment.comments[ownProps.repo.repoID] || {},
+        comments: state.discussion.comments[ownProps.repo.repoID] || {},
         users: state.user.users,
+        newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[ownProps.repo.repoID] || {})[ownProps.subject] || -1,
         discussions,
     }
 }
@@ -137,6 +171,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
 const mapDispatchToProps = {
     createComment,
     selectFile,
+    sawComment,
 }
 
 const ThreadContainer = connect(

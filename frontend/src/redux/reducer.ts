@@ -4,7 +4,6 @@ import { combineReducers } from 'redux'
 import userReducer from './user/userReducer'
 import repoReducer from './repository/repoReducer'
 import navigationReducer from './navigation/navigationReducer'
-import commentReducer from './comment/commentReducer'
 import discussionReducer from './discussion/discussionReducer'
 import editorReducer from './editor/editorReducer'
 
@@ -17,12 +16,11 @@ const appReducer = combineReducers({
     user: userReducer,
     repository: repoReducer,
     navigation: navigationReducer,
-    comment: commentReducer,
     discussion: discussionReducer,
     editor: editorReducer,
 })
 
-const rootReducer = (state: IGlobalState|undefined, action: {type: string}): IGlobalState => {
+const rootReducer = (state: IGlobalState | undefined, action: {type: string}): IGlobalState => {
     // @@TODO: is this necessary?
     // if (action.type === UserActionType.LOGOUT_SUCCESS) {
     //     state = undefined

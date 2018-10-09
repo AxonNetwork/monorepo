@@ -9,6 +9,7 @@ const initialState = {
     codeColorScheme: undefined,
     menuLabelsHidden: undefined,
     checkedLocalUser: false,
+    newestViewedCommentTimestamp: {},
 }
 
 export interface IUserState {
@@ -19,6 +20,11 @@ export interface IUserState {
     codeColorScheme: string | undefined
     menuLabelsHidden: boolean | undefined
     checkedLocalUser: boolean
+    newestViewedCommentTimestamp: {
+        [repoID: string]: {
+            [discussionID: number]: number,
+        },
+    }
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -89,6 +95,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 ...state,
                 codeColorScheme: config.codeColorScheme,
                 menuLabelsHidden: config.menuLabelsHidden,
+                newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
             }
         }
 
@@ -112,6 +119,24 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 currentUser: undefined,
+            }
+        }
+
+        case UserActionType.SAW_COMMENT_SUCCESS: {
+            const { repoID, discussionID, commentID } = action.payload
+            // If repoID/discussionID/commentID are null, it indicates that no actual update needs to occur.
+            if (repoID === null) {
+                return state
+            }
+            return {
+                ...state,
+                newestViewedCommentTimestamp: {
+                    ...state.newestViewedCommentTimestamp,
+                    [repoID]: {
+                        ...(state.newestViewedCommentTimestamp[repoID] || {}),
+                        [discussionID]: commentID,
+                    },
+                },
             }
         }
 
