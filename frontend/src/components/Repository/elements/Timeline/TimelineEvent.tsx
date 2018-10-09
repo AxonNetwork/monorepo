@@ -40,7 +40,7 @@ class TimelineEvent extends React.Component<Props, State>
                     <div className={classes.topline}></div>
                     {event.verified !== undefined &&
                         <div className={classes.linkIconContainer}>
-                            <Tooltip title={"Secured on blockchain: " + moment(event.verified).format("MMM do YYYY, h:mm a")}>
+                            <Tooltip title={'Secured on blockchain: ' + moment(event.verified).format('MMM do YYYY, h:mm a')}>
                                 <LinkIcon classes={{root: classes.linkIcon}}/>
                             </Tooltip>
                         </div>
@@ -82,7 +82,8 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     event: {
         position: 'relative',
-        paddingTop: '24px',
+        // paddingTop: '24px',
+        padding: '10px 0 20px',
         marginLeft: '24px',
     },
     topline: {
@@ -94,7 +95,7 @@ const styles = (theme: Theme) => createStyles({
         backgroundColor: theme.palette.grey[400],
     },
     linkIcon: {
-        fontSize: 18
+        fontSize: 18,
     },
     linkIconContainer: {
         position: 'absolute',
@@ -104,7 +105,7 @@ const styles = (theme: Theme) => createStyles({
         width: 18,
         height: 18,
         backgroundColor: theme.palette.secondary.main,
-        color: 'white'
+        color: 'white',
     },
     eventIconContainer: {
         position: 'absolute',

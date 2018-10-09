@@ -1,6 +1,7 @@
 import React from 'react'
 import TablePagination from '@material-ui/core/TablePagination'
 import TimelineEvent from './TimelineEvent'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
@@ -31,6 +32,7 @@ class Timeline extends React.Component<Props, State>
     }
 
     render() {
+        const { classes } = this.props
         const { page, rowsPerPage } = this.state
         const commitList = this.props.commitList || []
         const commits = this.props.commits || {}
@@ -42,7 +44,7 @@ class Timeline extends React.Component<Props, State>
                 {
                     timelinePage.map((event) => {
                         return (
-                            <div key={event.commit} onClick={() => this.selectCommit(event.commit)}>
+                            <div key={event.commit} onClick={() => this.selectCommit(event.commit)} className={classes.timelineEvent}>
                                 <TimelineEvent
                                     repoRoot={this.props.repoRoot}
                                     event={event}
@@ -80,6 +82,7 @@ interface Props {
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    classes: any
 }
 
 interface State {
@@ -87,4 +90,15 @@ interface State {
     rowsPerPage: number
 }
 
-export default Timeline
+const styles = () => createStyles({
+    timelineEvent: {
+        cursor: 'pointer',
+
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        },
+    },
+})
+
+
+export default withStyles(styles)(Timeline)

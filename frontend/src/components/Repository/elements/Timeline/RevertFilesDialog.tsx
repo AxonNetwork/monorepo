@@ -49,7 +49,7 @@ class RevertFilesDialog extends React.Component<Props, State>
                 <DialogTitle>Revert Files</DialogTitle>
                 <DialogContent className={classes.dialogContent}>
                     <List>
-                        {event.files.map(file => {
+                        {(event.files || []).map(file => {
                             return(
                                 <ListItem
                                     key={file}
