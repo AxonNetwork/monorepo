@@ -26,7 +26,9 @@ interface IRPCClient {
         commitHash: string
         author: string
         message: string
-        timestamp: number,
+        timestamp: Long
+        files: string[]
+        verified?: Long
     }[] }>
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
     getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>

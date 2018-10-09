@@ -39,6 +39,7 @@ export interface ITimelineEvent {
     time: Date
     message: string
     files: string[]
+    verified?: Date
     diffs?: {[commit: string]: string}
 }
 

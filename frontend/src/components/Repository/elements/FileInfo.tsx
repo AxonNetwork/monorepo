@@ -2,13 +2,12 @@ import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from './FileList/Breadcrumbs'
-import Timeline from './Timeline/Timeline'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/repository/repoActions'
+import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import FileViewer from './FileViewer'
-
 
 @autobind
 class FileInfo extends React.Component<Props>
@@ -23,13 +22,13 @@ class FileInfo extends React.Component<Props>
                     selectedFolder={file.name}
                     selectFile={this.props.selectFile}
                 />
-                {/*<Table className={classes.table}>
-                    <TableBody>
-                        <File file={file} />
-                    </TableBody>
-                </Table>*/}
 
                 <div className={classes.infoContainer}>
+                    <SecuredText
+                        firstVerified={this.props.firstVerified}
+                        lastVerified={this.props.lastVerified}
+                        selectCommit={this.props.selectCommit}
+                    />
                     <div className={classes.fileViewerContainer}>
                         <FileViewer filename={file.name} repoRoot={this.props.repoRoot} />
                     </div>
@@ -45,8 +44,7 @@ class FileInfo extends React.Component<Props>
                         </div>
                     </div>
 
-
-                    <div className={classes.timeline}>
+                    {/* <div className={classes.timeline}>
                         <Timeline
                             repoRoot={this.props.repoRoot}
                             commits={this.props.commits}
@@ -54,7 +52,7 @@ class FileInfo extends React.Component<Props>
                             getDiff={this.props.getDiff}
                             revertFiles={this.props.revertFiles}
                         />
-                    </div>
+                    </div>*/}
 
                 </div>
             </React.Fragment>
@@ -64,12 +62,13 @@ class FileInfo extends React.Component<Props>
 
 interface Props {
     file: IRepoFile
-    commits: {[commit: string]: ITimelineEvent} | undefined
-    commitList: string[]
+    firstVerified?: ITimelineEvent
+    lastVerified?: ITimelineEvent
     repoRoot: string
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
+    selectCommit: Function
     classes: any
 }
 

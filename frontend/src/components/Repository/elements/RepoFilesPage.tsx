@@ -1,4 +1,3 @@
-import { get } from 'lodash'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
@@ -7,12 +6,22 @@ import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
 import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
-import { ICheckpointRepoAction, IGetDiffAction, IRevertFilesAction, ISelectFileAction,
-    checkpointRepo, selectFile, getDiff, revertFiles } from 'redux/repository/repoActions'
+import { ICheckpointRepoAction, IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
+    checkpointRepo, selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
+import { RepoPage } from 'redux/repository/repoReducer'
+
+import { getFirstVerifiedEvent, getLastVerifiedEvent } from 'utils/timeline'
+import autobind from 'utils/autobind'
 
 
+@autobind
 class RepoFilesPage extends React.Component<Props>
 {
+    selectCommit(commit: string){
+        this.props.navigateRepoPage({ repoPage: RepoPage.History })
+        this.props.selectCommit({ selectedCommit: commit })
+    }
+
     render() {
         const { repo, selectedFile, classes } = this.props
         if (repo === undefined) {
@@ -27,18 +36,17 @@ class RepoFilesPage extends React.Component<Props>
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             const relPath = selectedFile.file.replace(repo.path + '/', '')
-            let commitList = [] as string[]
-            if (repo.commitList !== undefined && repo.commits !== undefined) {
-                commitList = repo.commitList.filter(c => get(repo, ['commits', c, 'files'], []).includes(relPath))
-            }
+            const lastVerified = getLastVerifiedEvent(repo.commitList||[], repo.commits||{})
+            const firstVerified = getFirstVerifiedEvent(repo.commitList||[], repo.commits||{}, relPath)
             return (
                 <div className={classes.fileInfoContainer}>
                     <FileInfo
                         file={files[relPath]}
                         repoRoot={repo.path}
-                        commitList={commitList}
-                        commits={repo.commits}
+                        firstVerified={firstVerified}
+                        lastVerified={lastVerified}
                         selectFile={this.props.selectFile}
+                        selectCommit={this.selectCommit}
                         getDiff={this.props.getDiff}
                         revertFiles={this.props.revertFiles}
                     />
@@ -78,6 +86,8 @@ interface Props {
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
+    selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    navigateRepoPage: typeof navigateRepoPage
     classes: any
 }
 
@@ -118,6 +128,8 @@ const mapStateToProps = (state: IGlobalState) => {
 const mapDispatchToProps = {
     checkpointRepo,
     selectFile,
+    selectCommit,
+    navigateRepoPage,
     getDiff,
     revertFiles,
 }

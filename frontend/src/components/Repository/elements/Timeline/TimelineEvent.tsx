@@ -3,6 +3,8 @@ import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
+import Tooltip from '@material-ui/core/Tooltip'
+import LinkIcon from '@material-ui/icons/Link'
 
 import RevertFilesDialog from './RevertFilesDialog'
 import { ITimelineEvent } from '../../../../common'
@@ -36,6 +38,13 @@ class TimelineEvent extends React.Component<Props, State>
                         <MoreVertIcon />
                     </IconButton>*/}
                     <div className={classes.topline}></div>
+                    {event.verified !== undefined &&
+                        <div className={classes.linkIconContainer}>
+                            <Tooltip title={"Secured on blockchain: " + moment(event.verified).format("MMM do YYYY, h:mm a")}>
+                                <LinkIcon classes={{root: classes.linkIcon}}/>
+                            </Tooltip>
+                        </div>
+                    }
                     <div className={classes.eventIconContainer}>
                         <Avatar style={{ backgroundColor: avatarColor }} className={classes.avatar}>{getUserInitials(username)}</Avatar>
                     </div>
@@ -83,6 +92,19 @@ const styles = (theme: Theme) => createStyles({
         bottom: 0,
         width: 2,
         backgroundColor: theme.palette.grey[400],
+    },
+    linkIcon: {
+        fontSize: 18
+    },
+    linkIconContainer: {
+        position: 'absolute',
+        top: 24,
+        left: 28,
+        borderRadius: '50%',
+        width: 18,
+        height: 18,
+        backgroundColor: theme.palette.secondary.main,
+        color: 'white'
     },
     eventIconContainer: {
         position: 'absolute',

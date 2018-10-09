@@ -125,10 +125,13 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             version: 0,
             commit: event.commitHash,
             user: event.author,
-            time: new Date(event.timestamp * 1000),
+            time: new Date(event.timestamp.toNumber() * 1000),
             message: event.message,
-            files: [], // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
+            files: event.files, // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
+            verified: event.verified !== undefined ? new Date(event.verified.toNumber() * 1000) : undefined,
         } as ITimelineEvent))
+
+        const verified = timeline.filter(e=>e.verified !== undefined)
 
         return { repoID, path, timeline }
     },
