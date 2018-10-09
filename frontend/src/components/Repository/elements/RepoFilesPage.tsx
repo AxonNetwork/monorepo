@@ -36,7 +36,7 @@ class RepoFilesPage extends React.Component<Props>
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             const relPath = selectedFile.file.replace(repo.path + '/', '')
-            const lastVerified = getLastVerifiedEvent(repo.commitList||[], repo.commits||{})
+            const lastVerified = getLastVerifiedEvent(repo.commitList||[], repo.commits||{}, relPath)
             const firstVerified = getFirstVerifiedEvent(repo.commitList||[], repo.commits||{}, relPath)
             return (
                 <div className={classes.fileInfoContainer}>

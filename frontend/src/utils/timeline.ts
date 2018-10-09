@@ -1,11 +1,21 @@
 import { ITimelineEvent } from 'common'
 
-export function getLastVerifiedEvent(commitList: string[], commits: {[commitHash: string]: ITimelineEvent}){
-    const commitHash = commitList.find(c=>commits[c].verified !== undefined)
-    if(commitHash === undefined){
-        return undefined
+export function getLastVerifiedEvent(commitList: string[], commits: {[commitHash: string]: ITimelineEvent}, filename: string){
+    let eventIndex = -1
+    for(let i=0; i<commitList.length; i++){
+        const commit = commits[commitList[i]]
+        if(commit.files.indexOf(filename) > -1){
+            eventIndex = i
+            break
+        }
     }
-    return commits[commitHash]
+    for(let i=eventIndex; i >= 0; i--){
+        const commit = commits[commitList[i]]
+        if(commit.verified !== undefined){
+            return commit
+        }
+    }
+    return undefined
 }
 
 export function getFirstVerifiedEvent(commitList: string[], commits: {[commitHash: string]: ITimelineEvent}, filename: string){

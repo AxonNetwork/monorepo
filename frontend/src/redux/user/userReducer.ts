@@ -28,7 +28,6 @@ export interface IUserState {
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
-    console.log(action)
     switch (action.type) {
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
