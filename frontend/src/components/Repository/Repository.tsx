@@ -1,14 +1,6 @@
 import React from 'react'
-import classnames from 'classnames'
 import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import BottomNavigation from '@material-ui/core/BottomNavigation'
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
-import FolderOpenIcon from '@material-ui/icons/FolderOpen'
-import DescriptionIcon from '@material-ui/icons/Description'
-import HistoryIcon from '@material-ui/icons/History'
-import CommentIcon from '@material-ui/icons/Comment'
-import SettingsIcon from '@material-ui/icons/Settings'
 
 import RepoInfo from './elements/RepoInfo'
 import RepoFilesPage from './elements/RepoFilesPage'
@@ -48,19 +40,6 @@ class Repository extends React.Component<Props>
                         <RepoSettingsPage />
                     }
                 </div>
-
-                {/*<BottomNavigation
-                    value={this.props.repoPage as number}
-                    onChange={this.onNavigateRepoPage}
-                    showLabels
-                    className={classnames(classes.bottomNav, { [classes.bottomNavSidebarOpen]: this.props.sidebarOpen })}
-                >
-                    <BottomNavigationAction label="Files" icon={<FolderOpenIcon />} />
-                    <BottomNavigationAction label="Editor" icon={<DescriptionIcon />} />
-                    <BottomNavigationAction label="History" icon={<HistoryIcon />} />
-                    <BottomNavigationAction label="Discussion" icon={<CommentIcon />} />
-                    <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
-                </BottomNavigation>*/}
             </div>
         )
     }
@@ -93,27 +72,6 @@ const styles = (theme: Theme) => createStyles({
         '& > *': {
             flexGrow: 1,
         },
-    },
-    bottomNav: {
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        borderTop: '1px solid',
-        borderColor: '#bfbfbf',
-        backgroundColor: '#f3f3f3',
-        zIndex: 100,
-        transition: theme.transitions.create('left', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    bottomNavSidebarOpen: {
-        left: 200,
-        transition: theme.transitions.create('left', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
     },
 })
 

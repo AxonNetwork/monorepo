@@ -1,5 +1,5 @@
 import { DiscussionActionType, IDiscussionAction } from './discussionActions'
-import { IDiscussion } from '../../common'
+import { IDiscussion, IComment } from '../../common'
 import { values, flatMap, sortBy, toPairs } from 'lodash'
 
 const initialState = {
@@ -25,7 +25,7 @@ export interface IDiscussionState {
         },
     }
 
-    newestCommentTimestampPerDiscussion: {[discussionID: number]: number}
+    newestCommentTimestampPerDiscussion: {[repoID: string]: {[discussionID: number]: number} }
     discussionIDsSortedByNewestComment: {[repoID: string]: number[]}
 }
 
@@ -134,7 +134,7 @@ const derivedDataReducer = (state: IDiscussionState = initialState, action: IDis
             for (let repoID of Object.keys(newestCommentTimestampPerDiscussion)) {
                 discussionIDsSortedByNewestComment[repoID] =
                     sortBy(toPairs(newestCommentTimestampPerDiscussion[repoID]), (pair) => pair[1])
-                    .map(pair => pair[0])
+                    .map(pair => parseInt(pair[0], 10))
                     .reverse()
             }
 

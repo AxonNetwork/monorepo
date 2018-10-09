@@ -52,8 +52,9 @@ export interface IComment {
 }
 
 export interface IAttachedTo {
-    type: 'discussion' | 'file' | 'event'
-    subject: string | number
+    type: 'discussion'
+    // subject: string | number
+    subject: number
 }
 
 export interface IDiscussion {

@@ -55,6 +55,7 @@ export interface ICreateDiscussionSuccessAction {
     type: DiscussionActionType.CREATE_DISCUSSION_SUCCESS
     payload: {
         discussion: IDiscussion,
+        comment: IComment,
     }
 }
 

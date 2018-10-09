@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
-import { values, sortBy, toPairs } from 'lodash'
 import moment from 'moment'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
@@ -9,7 +8,6 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Typography from '@material-ui/core/Typography'
 import Badge from '@material-ui/core/Badge'
@@ -65,7 +63,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                     <ListItemText primary={d.subject} secondary={
                                         <React.Fragment>
                                             {showBadge &&
-                                                <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary" />
+                                                <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary">{null}</Badge>
                                             }
                                             <div className={classes.sidebarListItemSubtext}>
                                                 <div className={classes.sidebarListItemModifiedDate}>

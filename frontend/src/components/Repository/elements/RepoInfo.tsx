@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
-import OpenFolderButton from './RepoInfo/OpenFolderButton'
+// import OpenFolderButton from './RepoInfo/OpenFolderButton'
 import PullButton from './RepoInfo/PullButton'
-import { IRepo } from '../../../common'
+import { IRepo } from 'common'
 
-import { IGlobalState } from '../../../redux/store'
-import { pullRepo, navigateRepoPage } from '../../../redux/repository/repoActions'
+import { IGlobalState } from 'redux/store'
+import { pullRepo, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import DescriptionIcon from '@material-ui/icons/Description'
@@ -17,63 +17,69 @@ import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Button from '@material-ui/core/Button'
+import autobind from 'utils/autobind'
 
 
-function RepoInfo(props: {
+@autobind
+class RepoInfo extends React.Component<Props>
+{
+    render() {
+        const { repo, pullRepo, classes } = this.props
+        if (repo === undefined) {
+            return null
+        }
+        const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
+        return (
+            <div className={classes.repoInfo}>
+                {/*<OpenFolderButton folderPath={repo.path} />*/}
+                <div className={classes.titleContainer}>
+                    <Typography variant="headline" className={classes.headline}>
+                        {repo.repoID}
+                    </Typography>
+                    <Typography className={classes.version}>
+                        {version}
+                    </Typography>
+                    {
+                        repo.behindRemote &&
+                        <PullButton
+                            pullRepo={pullRepo}
+                            folderPath={repo.path}
+                            repoID={repo.repoID}
+                        />
+                    }
+                </div>
+
+                <div className={classes.spacer}></div>
+
+                <div className={classes.tabContainer}>
+                    <Tab repoPage={RepoPage.Files} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <FolderOpenIcon />{this.props.menuLabelsHidden ? '' : 'Files'}
+                    </Tab>
+                    <Tab repoPage={RepoPage.Manuscript} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <DescriptionIcon />{this.props.menuLabelsHidden ? '' : 'Editor'}
+                    </Tab>
+                    <Tab repoPage={RepoPage.History} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <HistoryIcon />{this.props.menuLabelsHidden ? '' : 'History'}
+                    </Tab>
+                    <Tab repoPage={RepoPage.Discussion} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <CommentIcon />{this.props.menuLabelsHidden ? '' : 'Discussion'}
+                    </Tab>
+                    <Tab repoPage={RepoPage.Settings} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <SettingsIcon />{this.props.menuLabelsHidden ? '' : 'Settings'}
+                    </Tab>
+                </div>
+            </div>
+        )
+    }
+}
+
+interface Props {
     repo: IRepo | undefined
     repoPage: RepoPage
+    menuLabelsHidden: boolean | undefined
+    classes: any
     pullRepo: typeof pullRepo
     navigateRepoPage: typeof navigateRepoPage
-    menuLabelsHidden: boolean | undefined
-    classes: any,
-})
-{
-    const { repo, pullRepo, classes } = props
-    if (repo === undefined) {
-        return null
-    }
-    const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
-    return (
-        <div className={classes.repoInfo}>
-            {/*<OpenFolderButton folderPath={repo.path} />*/}
-            <div className={classes.titleContainer}>
-                <Typography variant="headline" className={classes.headline}>
-                    {repo.repoID}
-                </Typography>
-                <Typography className={classes.version}>
-                    {version}
-                </Typography>
-                {
-                    repo.behindRemote &&
-                    <PullButton
-                        pullRepo={pullRepo}
-                        folderPath={repo.path}
-                        repoID={repo.repoID}
-                    />
-                }
-            </div>
-
-            <div className={classes.spacer}></div>
-
-            <div className={classes.tabContainer}>
-                <Tab repoPage={RepoPage.Files} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
-                    <FolderOpenIcon />{props.menuLabelsHidden ? '' : 'Files'}
-                </Tab>
-                <Tab repoPage={RepoPage.Manuscript} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
-                    <DescriptionIcon />{props.menuLabelsHidden ? '' : 'Editor'}
-                </Tab>
-                <Tab repoPage={RepoPage.History} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
-                    <HistoryIcon />{props.menuLabelsHidden ? '' : 'History'}
-                </Tab>
-                <Tab repoPage={RepoPage.Discussion} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
-                    <CommentIcon />{props.menuLabelsHidden ? '' : 'Discussion'}
-                </Tab>
-                <Tab repoPage={RepoPage.Settings} activeRepoPage={props.repoPage} navigateRepoPage={props.navigateRepoPage} classes={classes}>
-                    <SettingsIcon />{props.menuLabelsHidden ? '' : 'Settings'}
-                </Tab>
-            </div>
-        </div>
-    )
 }
 
 function Tab(props: {

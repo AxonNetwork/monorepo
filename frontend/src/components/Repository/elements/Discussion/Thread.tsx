@@ -22,20 +22,21 @@ import checkVisible from 'utils/checkVisible'
 class Thread extends React.Component<Props>
 {
     _intervalID = -1
-    _commentRefs = {} as any
+    _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
 
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
         // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
         const checkSeenComments = () => {
             let mostRecentVisible = -1
-            for (let created of Object.keys(this._commentRefs)) {
+            for (let commentID of Object.keys(this._commentRefs)) {
                 // Sometimes refs are null, probably when an element hasn't been rendered yet
-                if (this._commentRefs[created] === null || this._commentRefs[created] === undefined) {
+                if (this._commentRefs[commentID] === null || this._commentRefs[commentID] === undefined ||
+                    this._commentRefs[commentID].ref === null || this._commentRefs[commentID].ref === undefined) {
                     continue
                 }
-                if (checkVisible(this._commentRefs[created]) && created > mostRecentVisible) {
-                    mostRecentVisible = parseInt(created, 10)
+                if (checkVisible(this._commentRefs[commentID].ref) && this._commentRefs[commentID].created > mostRecentVisible) {
+                    mostRecentVisible = this._commentRefs[commentID].created
                 }
             }
             this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.subject, commentID: mostRecentVisible })
@@ -57,7 +58,7 @@ class Thread extends React.Component<Props>
             repoID: this.props.repo.repoID,
             text: comment,
             attachedTo: {
-                type: this.props.type,
+                type: 'discussion',
                 subject: this.props.subject,
             },
         })
@@ -65,7 +66,7 @@ class Thread extends React.Component<Props>
 
     render() {
         const { classes, title, comments } = this.props
-        const commentsList = values(comments).filter(c => c.attachedTo.type === this.props.type && c.attachedTo.subject === this.props.subject)
+        const commentsList = values(comments).filter(c => c.attachedTo.subject === this.props.subject)
 
         return (
             <div className={classes.threadContainer}>
@@ -92,7 +93,7 @@ class Thread extends React.Component<Props>
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                 >
-                                    <div ref={x => this._commentRefs[c.created] = x}></div>
+                                    <div ref={ ref => this._commentRefs[c.created] = {ref, created: c.created} }></div>
                                     <RenderMarkdown
                                         text={c.text}
                                         basePath={this.props.repo.path}
@@ -112,21 +113,26 @@ class Thread extends React.Component<Props>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
     title: string
-    type: 'discussion' | 'file' | 'event'
-    subject: number | string
+    subject: number
     repo: IRepo
+    unselect?: Function
+}
+
+interface StateProps {
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
     discussions: {[created: number]: IDiscussion}
-    unselect?: Function
     newestViewedCommentTimestamp: number
+}
 
+interface DispatchProps {
     createComment: typeof createComment
     selectFile: typeof selectFile
     sawComment: typeof sawComment
-    classes?: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -160,7 +166,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 
-const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const discussions = state.discussion.discussions[ownProps.repo.repoID] || {}
     return {
         comments: state.discussion.comments[ownProps.repo.repoID] || {},
@@ -176,7 +182,7 @@ const mapDispatchToProps = {
     sawComment,
 }
 
-const ThreadContainer = connect(
+const ThreadContainer = connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(Thread))
