@@ -119,6 +119,7 @@ export interface IFetchFullRepoSuccessAction {
     type: RepoActionType.FETCH_FULL_REPO_SUCCESS
     payload: {
         path: string
+        repoID: string
     }
 }
 
@@ -278,7 +279,9 @@ export interface IPullRepoAction {
 
 export interface IPullRepoSuccessAction {
     type: RepoActionType.PULL_REPO_SUCCESS
-    payload: {}
+    payload: {
+        folderPath: string
+    }
 }
 
 export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED>
@@ -413,7 +416,10 @@ export type IRepoAction =
     INavigateRepoPageAction |
 
     ICheckpointRepoAction |
+
     IPullRepoAction |
+    IPullRepoSuccessAction |
+    IPullRepoFailedAction |
 
     IAddCollaboratorAction |
     IAddCollaboratorSuccessAction |

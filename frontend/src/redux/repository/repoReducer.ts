@@ -70,13 +70,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.FETCH_FULL_REPO_SUCCESS: {
-            const { path } = action.payload
+            const { path, repoID } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     [path]: {
                         ...(state.repos[path] || {}),
+                        repoID: repoID,
                         hasBeenFetched: true,
                     },
                 },
@@ -212,6 +213,20 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         sharedUsers: sharedUsers,
                     },
                 },
+            }
+        }
+
+        case RepoActionType.PULL_REPO_SUCCESS: {
+            const { folderPath } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [folderPath]: {
+                        ...state.repos[folderPath],
+                        behindRemote: false
+                    }
+                }
             }
         }
 

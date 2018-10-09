@@ -14,6 +14,9 @@ const noderpc = packageObject.noderpc
 
 interface IRPCClient {
     initRepoAsync: (params: { repoID: string, path?: string }) => Promise<{ path: string }>
+    checkpointRepoAsync: (params: { path: string, message?: string }) => Promise<{ ok: boolean }>
+    pullRepoAsync: (params: { path: string }) => Promise<{ ok: boolean }>
+    cloneRepoAsync: (params: { repoID: string, path?: string }) => Promise<{ path: string }>
     getLocalRepos: any
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
     getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise< { files: {

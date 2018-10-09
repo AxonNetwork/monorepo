@@ -90,7 +90,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(fetchRepoSharedUsers({ path, repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))
         dispatch(fetchRemoteRefs({ repoID }))
-        return { path }
+        return { path, repoID }
     },
 })
 
@@ -174,7 +174,8 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
     type: RepoActionType.CHECKPOINT_REPO,
     async process({ action }, dispatch) {
         const { repoID, folderPath, message } = action.payload
-        await ConscienceRelay.checkpointRepo(folderPath, message)
+        const rpcClient = rpc.initClient()
+        await rpcClient.checkpointRepoAsync({path: folderPath, message: message})
         await dispatch(fetchFullRepo({ repoID, path: folderPath }))
         return {}
     },
@@ -227,9 +228,10 @@ const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
     type: RepoActionType.PULL_REPO,
     async process({ action }, dispatch) {
         const { folderPath, repoID } = action.payload
-        await ConscienceRelay.pullRepo(folderPath)
+        const rpcClient = rpc.initClient()
+        await rpcClient.pullRepoAsync({ path: folderPath })
         await dispatch(fetchFullRepo({ path: folderPath, repoID }))
-        return {}
+        return { folderPath }
     },
 })
 

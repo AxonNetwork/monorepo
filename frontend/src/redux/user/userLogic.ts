@@ -21,6 +21,7 @@ import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
 import ConscienceRelay from '../../lib/ConscienceRelay'
 import UserData, { CONSCIENCE_LOCATION } from '../../lib/UserData'
+import * as rpc from '../../rpc'
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
@@ -113,7 +114,8 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
     type: UserActionType.CLONE_SHARED_REPO,
     async process({ action }, dispatch) {
         const { repoID } = action.payload
-        const { folderPath: path } = await ConscienceRelay.cloneRepo(repoID, CONSCIENCE_LOCATION)
+        const rpcClient = rpc.initClient()
+        const { path } = await rpcClient.cloneRepoAsync({ repoID: repoID })
         await dispatch(selectRepo({ repoID, path }))
         return {}
     },

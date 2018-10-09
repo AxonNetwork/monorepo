@@ -23,7 +23,7 @@ function PullButton(props: PullButtonProps) {
             size="small"
             color="secondary"
             className={classes.button}
-            onClick={() => pullRepo(folderPath, repoID)}
+            onClick={() => pullRepo({folderPath, repoID})}
         >
             Pull
             <GetAppIcon className={classes.icon} />
