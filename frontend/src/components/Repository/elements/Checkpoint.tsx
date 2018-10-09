@@ -1,5 +1,5 @@
 import React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import autobind from 'utils/autobind'
@@ -61,14 +61,15 @@ class Checkpoint extends React.Component<CheckpointProps, CheckpointState>
     }
 }
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     textField: {
         width: '100%',
     },
     button: {
         display: 'block',
         textTransform: 'none',
-        marginTop: '16px',
+        marginTop: theme.spacing.unit*2,
+        marginBottom: theme.spacing.unit*2,
     },
 })
 
