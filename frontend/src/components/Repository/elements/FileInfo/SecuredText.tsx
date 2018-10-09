@@ -9,7 +9,7 @@ function SecuredText(props: Props){
     if(props.lastVerified === undefined || props.firstVerified === undefined){
         return null
     }
-    const { lastVerified, firstVerified, classes } = props.classes
+    const { lastVerified, firstVerified, classes } = props
     return(
         <div className={classes.securedContainer}>
             <div className={classes.iconContainer}>
