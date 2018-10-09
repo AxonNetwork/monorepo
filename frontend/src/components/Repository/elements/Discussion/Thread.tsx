@@ -27,7 +27,7 @@ class Thread extends React.Component<Props>
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
         // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
-        this.intervalID = setInterval(() => {
+        const checkSeenComments = () => {
             let mostRecentVisible = -1
             for (let created of Object.keys(this._commentRefs)) {
                 // Sometimes refs are null, probably when an element hasn't been rendered yet
@@ -39,7 +39,9 @@ class Thread extends React.Component<Props>
                 }
             }
             this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.subject, commentID: mostRecentVisible })
-        }, 5000)
+        }
+        this._intervalID = setInterval(checkSeenComments, 5000)
+        checkSeenComments()
     }
 
     componentWillUnmount() {

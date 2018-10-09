@@ -28,6 +28,7 @@ export interface IUserState {
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
+    console.log(action)
     switch (action.type) {
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
@@ -122,7 +123,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.SAW_COMMENT_SUCCESS: {
+        case UserActionType.SAW_COMMENT: {
             const { repoID, discussionID, commentID } = action.payload
             // If repoID/discussionID/commentID are null, it indicates that no actual update needs to occur.
             if (repoID === null) {
