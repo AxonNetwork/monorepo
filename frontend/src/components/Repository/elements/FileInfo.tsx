@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from './FileList/Breadcrumbs'
@@ -17,18 +18,24 @@ class FileInfo extends React.Component<Props>
 
         return (
             <React.Fragment>
-                <Breadcrumbs
-                    repoRoot={this.props.repoRoot}
-                    selectedFolder={file.name}
-                    selectFile={this.props.selectFile}
-                />
-
-                <div className={classes.infoContainer}>
+                <div className={classes.headerContainer}>
+                    <Breadcrumbs
+                        repoRoot={this.props.repoRoot}
+                        selectedFolder={file.name}
+                        selectFile={this.props.selectFile}
+                        classes={{ root: classes.breadcrumbs }}
+                    />
                     <SecuredText
+                        lastUpdated={this.props.file.modified}
                         firstVerified={this.props.firstVerified}
                         lastVerified={this.props.lastVerified}
                         selectCommit={this.props.selectCommit}
+                        classes={{ root: classes.securedText }}
                     />
+                </div>
+
+                <div className={classes.infoContainer}>
+
                     <div className={classes.fileViewerContainer}>
                         <FileViewer filename={file.name} repoRoot={this.props.repoRoot} />
                     </div>
@@ -73,6 +80,16 @@ interface Props {
 }
 
 const styles = (theme: Theme) => createStyles({
+    headerContainer: {
+        display: 'flex',
+    },
+    breadcrumbs: {
+        flexGrow: 1,
+    },
+    securedText: {
+        textAlign: 'right',
+        marginTop: 0,
+    },
     infoContainer: {
         display: 'flex',
         flexDirection: 'column',

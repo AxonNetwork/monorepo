@@ -1,36 +1,36 @@
 import React from 'react'
+import classnames from 'classnames'
 import { Theme, createStyles, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
 import { ITimelineEvent } from 'common'
 import moment from 'moment'
 
-function SecuredText(props: Props){
-    if(props.lastVerified === undefined || props.firstVerified === undefined){
+function SecuredText(props: Props) {
+    if (props.lastVerified === undefined || props.firstVerified === undefined) {
         return null
     }
     const { lastVerified, firstVerified, classes } = props
     return(
-        <div className={classes.securedContainer}>
+        <div className={classnames(classes.securedContainer, classes.root)}>
             <div className={classes.iconContainer}>
                 <LinkIcon />
             </div>
             <div>
                 <Typography>
-                        <a href="#" className={classes.link} onClick={()=>props.selectCommit(lastVerified.commit)}>
-                            Blockchain secured
-                        </a>
-                        <span>
-                            {" as of " + moment(props.lastVerified.verified).format("MMM do YYYY, h:mm a")}
-                        </span>
+                    Last updated {moment(props.lastUpdated).format('MMM do YYYY, h:mm a')}
                 </Typography>
                 <Typography>
-                    <a href="#" className={classes.link} onClick={()=>props.selectCommit(firstVerified.commit)}>
-                        Initially secured
+                    <span>Current version secured on </span>
+                    <a href="#" className={classes.link} onClick={() => props.selectCommit(lastVerified.commit)}>
+                        {moment(props.lastVerified.verified).format('MMM do YYYY, h:mm a')}
                     </a>
-                    <span>
-                        {" as of " + moment(props.firstVerified.verified).format("MMM do YYYY, h:mm a")}
-                    </span>
+                </Typography>
+                <Typography>
+                    <span>First version secured on </span>
+                    <a href="#" className={classes.link} onClick={() => props.selectCommit(firstVerified.commit)}>
+                        {moment(props.firstVerified.verified).format('MMM do YYYY, h:mm a')}
+                    </a>
                 </Typography>
             </div>
         </div>
@@ -38,6 +38,7 @@ function SecuredText(props: Props){
 }
 
 interface Props{
+    lastUpdated?: number
     lastVerified?: ITimelineEvent
     firstVerified?: ITimelineEvent
     selectCommit: Function
@@ -45,19 +46,20 @@ interface Props{
 }
 
 const styles = (theme: Theme) => createStyles({
-    securedContainer:{
+    root: {},
+    securedContainer: {
         display: 'flex',
         marginTop: theme.spacing.unit,
     },
-    iconContainer:{
+    iconContainer: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        marginRight: theme.spacing.unit
+        marginRight: theme.spacing.unit,
     },
-    link:{
-        color: theme.palette.secondary.main
-    }
+    link: {
+        color: theme.palette.secondary.main,
+    },
 })
 
 export default withStyles(styles)(SecuredText)

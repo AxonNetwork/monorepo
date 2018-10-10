@@ -33,7 +33,7 @@ class Breadcrumbs extends React.Component<Props>
         this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true } })
     }
 
-    getParts(repoRoot: string, selectedFolder: string|undefined) {
+    getParts(repoRoot: string, selectedFolder: string | undefined) {
         let parts = [ path.basename(repoRoot) ]
         if (selectedFolder !== undefined) {
             parts = parts.concat(selectedFolder.split('/'))
@@ -51,7 +51,7 @@ class Breadcrumbs extends React.Component<Props>
         const parts = this.getParts(repoRoot, selectedFolder)
 
         return (
-            <Typography>
+            <Typography className={classes.root}>
                 <span>Location: </span>
                 {!this.state.showBasePath &&
                     <span className={classes.crumb} onClick={this.showBasePath}>...</span>
@@ -79,12 +79,13 @@ class Breadcrumbs extends React.Component<Props>
 
 interface Props {
     repoRoot: string
-    selectedFolder: string|undefined
+    selectedFolder: string | undefined
     selectFile: Function
     classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
+    root: {},
     crumb: {
         color: theme.palette.secondary.main,
         textDecoration: 'underline',
