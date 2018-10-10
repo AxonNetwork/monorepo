@@ -15,6 +15,7 @@ import {
     ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
+    IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     fetchUserData, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
@@ -176,6 +177,15 @@ const hideMenuLabelsLogic = makeLogic<IHideMenuLabelsAction, IHideMenuLabelsSucc
     },
 })
 
+const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPictureSuccessAction>({
+    type: UserActionType.UPLOAD_USER_PICTURE,
+    async process({ action }) {
+        const { fileInput } = action.payload
+        const { userID, picture } = await ServerRelay.uploadUserPicture(fileInput)
+        return { userID, picture: picture + '?' + (new Date().getTime()) }
+    },
+})
+
 export default [
     loginLogic,
     signupLogic,
@@ -189,4 +199,5 @@ export default [
     readLocalConfigLogic,
     setCodeColorSchemeLogic,
     hideMenuLabelsLogic,
+    uploadUserPictureLogic,
 ]

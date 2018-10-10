@@ -53,6 +53,7 @@ class RepoDiscussionPage extends React.Component<Props>
                         const isSelected = this.props.selected && d.created === this.props.selected
                         const showBadge = newestComment[d.created] > (this.props.newestViewedCommentTimestamp[d.created] || 0)
                         const username = (this.props.users[ d.email ] || {}).name || d.email
+                        const userPicture = (this.props.users[ d.email ] || {}).picture
                         return (
                             <React.Fragment key={d.created}>
                                 <ListItem
@@ -70,7 +71,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                                     {moment(newestComment[d.created]).fromNow()}
                                                 </div>
                                                 <div className={classes.sidebarListItemAvatar}>
-                                                    <UserAvatar username={username} />
+                                                    <UserAvatar username={username} userPicture={userPicture} />
                                                 </div>
                                             </div>
                                         </React.Fragment>

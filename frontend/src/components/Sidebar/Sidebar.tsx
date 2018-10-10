@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import { connect } from 'react-redux'
-import { Theme, createStyles, withStyles } from '@material-ui/core';
+import { Theme, createStyles, withStyles } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Divider from '@material-ui/core/Divider'
@@ -24,6 +24,7 @@ import { selectRepo } from 'redux/repository/repoActions'
 import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
 import { strToColor } from 'utils'
 import autobind from 'utils/autobind'
+import UserAvatar from 'components/UserAvatar'
 
 
 @autobind
@@ -33,7 +34,6 @@ class Sidebar extends React.Component<Props, State>
 
     render() {
         const { user, open, classes } = this.props
-        const userInitials = user.name.split(' ').map(x => x.substring(0, 1)).join('')
         return(
             <Drawer
                 variant="permanent"
@@ -49,7 +49,7 @@ class Sidebar extends React.Component<Props, State>
                 </div>
                 <Divider />
                 <div className={classes.avatarWrapper}>
-                    <Avatar style={{ backgroundColor: strToColor(user.name) }}>{userInitials}</Avatar>
+                    <UserAvatar username={user.name} userPicture={user.picture} />
                     <Typography className={classes.avatarName} classes={{ root: classes.sidebarItemText }}>{this.props.user.name}</Typography>
                 </div>
 
@@ -111,7 +111,7 @@ class Sidebar extends React.Component<Props, State>
 interface Props {
     user: IUser
     repos: {[folderPath: string]: IRepo}
-    selectedRepo?: string|null
+    selectedRepo?: string | null
     currentPage: string
     toggleSidebar: () => void
     selectRepo: Function
@@ -188,7 +188,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const currentUser = state.user.currentUser || ""
+    const currentUser = state.user.currentUser || ''
     const user = state.user.users[currentUser]
     return {
         repos: state.repository.repos,
@@ -201,7 +201,7 @@ const mapStateToProps = (state: IGlobalState) => {
 const mapDispatchToProps = {
     selectRepo,
     navigateNewRepo,
-    navigateSettings
+    navigateSettings,
 }
 
 export default connect(

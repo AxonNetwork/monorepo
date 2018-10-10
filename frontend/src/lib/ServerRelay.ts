@@ -154,6 +154,20 @@ const ServerRelay = {
         const response = await axios.get(API_URL + '/users' + queryString)
         return response.data as IUser[]
     },
+
+    async uploadUserPicture(fileInput: any) {
+        interface IResponse {
+            picture: string
+            userID: string
+        }
+
+        const formData = new FormData()
+        formData.append('user-photo', fileInput.files[0])
+        const resp = await axios.post<IResponse>(API_URL + '/user-photo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        return resp.data
+    },
 }
 
 axios.defaults.timeout = 10000

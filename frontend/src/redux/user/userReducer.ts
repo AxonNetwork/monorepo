@@ -140,6 +140,20 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.UPLOAD_USER_PICTURE_SUCCESS: {
+            const { picture, userID } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        picture,
+                    },
+                },
+            }
+        }
+
         default:
             return state
     }

@@ -11,12 +11,12 @@ import autobind from 'utils/autobind'
 class CommentWrapper extends React.Component<Props>
 {
     render() {
-        const { username, created, classes } = this.props
+        const { username, userPicture, created, classes } = this.props
         const time = typeof created === 'string' ? created : moment(created).fromNow()
         return (
             <div className={classes.comment}>
                 <div className={classes.commentAvatar}>
-                    <UserAvatar username={username} />
+                    <UserAvatar username={username} userPicture={userPicture} />
                 </div>
 
                 <div className={classes.commentBody}>
@@ -50,6 +50,7 @@ class CommentWrapper extends React.Component<Props>
 
 interface Props {
     username: string | undefined
+    userPicture: string | undefined
     created: number | string
     showBadge: boolean | undefined
     classes: any

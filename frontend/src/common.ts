@@ -67,6 +67,7 @@ export interface IDiscussion {
 export interface IUser {
     email: string
     name: string
+    picture: string
     repos: string[]
 }
 

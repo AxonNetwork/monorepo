@@ -46,6 +46,7 @@ class CreateDiscussion extends React.Component<Props, State>
             <CommentWrapper
                 classes={this.props.commentWrapperClasses}
                 username={this.props.username}
+                userPicture={this.props.userPicture}
                 created={new Date().getTime()}
             >
                 <form className={classes.form} onSubmit={this.onSubmit}>
@@ -94,6 +95,7 @@ interface OwnProps {
 interface StateProps {
     repoID: string | undefined
     username: string | undefined
+    userPicture: string | undefined
     files: {[name: string]: IRepoFile}
     discussions: {[created: number]: IDiscussion}
 }
@@ -118,8 +120,10 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repo = state.repository.repos[ownProps.repoRoot || ''] || {}
     const repoID = repo.repoID
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
+    const userPicture = (state.user.users[ state.user.currentUser || '' ] || {}).picture
     return {
         username,
+        userPicture,
         repoID,
         files: repo.files || {},
         discussions: state.discussion.discussions[repo.repoID] || {},

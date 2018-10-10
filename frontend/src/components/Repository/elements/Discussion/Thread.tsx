@@ -86,10 +86,12 @@ class Thread extends React.Component<Props>
                         }
                         {commentsList.map(c => {
                             const username = (this.props.users[c.user] || {}).name || c.user
+                            const userPicture = (this.props.users[c.user] || {}).picture
                             return (
                                 <CommentWrapper
                                     key={c.created}
                                     username={username}
+                                    userPicture={userPicture}
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                 >

@@ -50,6 +50,10 @@ export enum UserActionType {
     HIDE_MENU_LABELS = 'HIDE_MENU_LABELS',
     HIDE_MENU_LABELS_SUCCESS = 'HIDE_MENU_LABELS_SUCCESS',
     HIDE_MENU_LABELS_FAILED = 'HIDE_MENU_LABELS_FAILED',
+
+    UPLOAD_USER_PICTURE = 'UPLOAD_USER_PICTURE',
+    UPLOAD_USER_PICTURE_SUCCESS = 'UPLOAD_USER_PICTURE_SUCCESS',
+    UPLOAD_USER_PICTURE_FAILED = 'UPLOAD_USER_PICTURE_FAILED',
 }
 
 export interface ILoginAction {
@@ -244,6 +248,24 @@ export interface ISawCommentSuccessAction {
 
 export type ISawCommentFailedAction = FailedAction<UserActionType.SAW_COMMENT_FAILED>
 
+export interface IUploadUserPictureAction {
+    type: UserActionType.UPLOAD_USER_PICTURE
+    payload: {
+        userID: string,
+        fileInput: any,
+    }
+}
+
+export interface IUploadUserPictureSuccessAction {
+    type: UserActionType.UPLOAD_USER_PICTURE_SUCCESS
+    payload: {
+        userID: string,
+        picture: string,
+    }
+}
+
+export type IUploadUserPictureFailedAction = FailedAction<UserActionType.UPLOAD_USER_PICTURE_FAILED>
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -280,7 +302,10 @@ export type IUserAction =
     IHideMenuLabelsFailedAction |
     ISawCommentAction |
     ISawCommentSuccessAction |
-    ISawCommentFailedAction
+    ISawCommentFailedAction |
+    IUploadUserPictureAction |
+    IUploadUserPictureSuccessAction |
+    IUploadUserPictureFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -297,5 +322,7 @@ export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']
 export const hideMenuLabels = (payload: IHideMenuLabelsAction['payload']): IHideMenuLabelsAction => ({ type: UserActionType.HIDE_MENU_LABELS, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
+
+export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
 
 
