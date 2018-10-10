@@ -76,7 +76,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                         </React.Fragment>
                                     }/>
                                 </ListItem>
-                                <Divider />
+                                {/* <Divider /> */}
                             </React.Fragment>
                         )
                     })}
@@ -87,7 +87,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             <ControlPointIcon />
                         </ListItemIcon>
                     </ListItem>
-                    <Divider />
+                    {/* <Divider /> */}
                 </List>
                 {newDiscussion &&
                     <div className={classes.threadPane}>
@@ -137,8 +137,6 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     discussionPage: {
         maxHeight: 'calc(100% - 84px)',
-        // border: '1px solid',
-        // borderColor: theme.palette.grey[300],
         display: 'flex',
     },
     list: {
@@ -147,18 +145,18 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'auto',
         flexGrow: 1,
         width: 350,
-        border: '1px solid #e0e0e0',
+        borderTop: '1px solid #e0e0e0',
     },
     listItem: {
         background: 'white',
+        borderTop: 0,
+        border: '1px solid #e0e0e0',
     },
     title: {
         marginTop: theme.spacing.unit * 2,
         marginBottom: theme.spacing.unit,
     },
     threadPane: {
-        // borderLeft: '1px solid',
-        // borderColor: theme.palette.grey[300],
         marginLeft: 20,
         height: '100%',
         width: '100%',

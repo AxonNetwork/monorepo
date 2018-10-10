@@ -191,6 +191,7 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     editorPage: {
         display: 'flex',
+        paddingRight: theme.spacing.unit
     },
     editor: {
         height: '100%',

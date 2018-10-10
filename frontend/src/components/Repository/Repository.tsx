@@ -64,7 +64,8 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     repoMainContent: {
-        marginTop: 30,
+        marginTop: theme.spacing.unit * 4,
+        marginRight: theme.spacing.unit * 4,
         overflowY: 'hidden',
         display: 'flex',
         flexGrow: 1,
