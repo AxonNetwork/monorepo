@@ -45,8 +45,13 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
     async process({ action }, dispatch) {
         const { name, email, password } = action.payload
 
+        const rpcClient = rpc.initClient()
+        const { signature } = await rpcClient.signMessageAsync({ message: new Buffer(email, 'utf8') })
+
+        const hexSignature = signature.toString('hex')
+
         // Create the user, login, and set the JWT
-        const resp = await ServerRelay.signup(name, email, password)
+        const resp = await ServerRelay.signup(name, email, password, hexSignature)
         await UserData.set('jwt', resp.jwt)
 
         // Fetch the user's data

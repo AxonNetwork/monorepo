@@ -35,14 +35,14 @@ const ServerRelay = {
         }
     },
 
-    async signup(name: string, email: string, password: string) {
+    async signup(name: string, email: string, password: string, hexSignature: string) {
         interface IResponse {
             token: string
         }
 
         let response
         try {
-            response = await axios.post<IResponse>(API_URL + '/create-user', { name, email, password })
+            response = await axios.post<IResponse>(API_URL + '/create-user', { name, email, password, hexSignature })
         } catch (err) {
             throw err.response.data.error
         }

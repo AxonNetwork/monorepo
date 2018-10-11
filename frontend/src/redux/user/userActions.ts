@@ -91,7 +91,7 @@ export interface ISignupAction {
     payload: {
         name: string
         email: string
-        password: string,
+        password: string
     }
 }
 
@@ -99,7 +99,7 @@ export interface ISignupSuccessAction {
     type: UserActionType.SIGNUP_SUCCESS
     payload: {
         name: string
-        email: string,
+        email: string
     }
 }
 
