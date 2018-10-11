@@ -69,6 +69,22 @@ const ServerRelay = {
         }
     },
 
+    async getEthBalance(address: string) {
+        interface IResponse {
+            balance: number
+        }
+        const resp = await axios.get<IResponse>(API_URL + "/balance?address=" + address)
+        return resp.data.balance
+    },
+
+    async hitEthFaucet(address: string) {
+        interface IResponse { }
+        await axios.post<IResponse>(API_URL + "/faucet", {
+            address: address,
+            amount: 10
+        })
+    },
+
     async createRepo(repoID: string) {
         interface IResponse { }
         await axios.post<IResponse>(API_URL + '/create-repo', { repoID })

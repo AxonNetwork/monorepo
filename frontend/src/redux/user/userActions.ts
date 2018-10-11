@@ -23,6 +23,10 @@ export enum UserActionType {
     CHECK_LOCAL_USER_SUCCESS = 'CHECK_LOCAL_USER_SUCCESS',
     CHECK_LOCAL_USER_FAILED = 'CHECK_LOCAL_USER_FAILED',
 
+    CHECK_BALANCE_AND_HIT_FAUCET = 'CHECK_BALANCE_AND_HIT_FAUCET',
+    CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS = 'CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS',
+    CHECK_BALANCE_AND_HIT_FAUCET_FAILED = 'CHECK_BALANCE_AND_HIT_FAUCET_FAILED',
+
     FETCH_SHARED_REPOS = 'FETCH_SHARED_REPOS',
     FETCH_SHARED_REPOS_SUCCESS = 'FETCH_SHARED_REPOS_SUCCESS',
     FETCH_SHARED_REPOS_FAILED = 'FETCH_SHARED_REPOS_FAILED',
@@ -135,6 +139,21 @@ export interface ICheckLocalUserSuccessAction {
 }
 
 export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCAL_USER_FAILED>
+
+export interface ICheckBalanceAndHitFaucetAction {
+    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET
+    payload: {}
+}
+
+export interface ICheckBalanceAndHitFaucetSuccessAction {
+    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS
+    payload: {
+        balance: number
+    }
+}
+
+export type ICheckBalanceAndHitFaucetFailedAction = FailedAction<UserActionType.CHECK_BALANCE_AND_HIT_FAUCET_FAILED>
+
 
 export interface IGetSharedReposAction {
     type: UserActionType.FETCH_SHARED_REPOS
@@ -270,39 +289,55 @@ export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
     ILoginFailedAction |
+
     ILogoutAction |
     ILogoutSuccessAction |
     ILogoutFailedAction |
+
     ISignupAction |
     ISignupSuccessAction |
     ISignupFailedAction |
+
     IFetchUserDataAction |
     IFetchUserDataSuccessAction |
     IFetchUserDataFailedAction |
+
     ICheckLocalUserAction |
     ICheckLocalUserSuccessAction |
     ICheckLocalUserFailedAction |
+
+    ICheckBalanceAndHitFaucetAction |
+    ICheckBalanceAndHitFaucetSuccessAction |
+    ICheckBalanceAndHitFaucetFailedAction |
+
     IGetSharedReposAction |
     IGetSharedReposSuccessAction |
     IGetSharedReposFailedAction |
+
     ICloneSharedRepoAction |
     ICloneSharedRepoSuccessAction |
     ICloneSharedRepoFailedAction |
+
     IIgnoreSharedRepoAction |
     IIgnoreSharedRepoSuccessAction |
     IIgnoreSharedRepoFailedAction |
+
     IReadLocalConfigAction |
     IReadLocalConfigSuccessAction |
     IReadLocalConfigFailedAction |
+
     ISetCodeColorSchemeAction |
     ISetCodeColorSchemeSuccessAction |
     ISetCodeColorSchemeFailedAction |
+
     IHideMenuLabelsAction |
     IHideMenuLabelsSuccessAction |
     IHideMenuLabelsFailedAction |
+
     ISawCommentAction |
     ISawCommentSuccessAction |
     ISawCommentFailedAction |
+
     IUploadUserPictureAction |
     IUploadUserPictureSuccessAction |
     IUploadUserPictureFailedAction
@@ -312,6 +347,7 @@ export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, paylo
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, payload: {}})
+export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET, payload: {}})
 
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
 export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })

@@ -38,6 +38,7 @@ interface IRPCClient {
     getAllRemoteRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
     isBehindRemoteAsync: (params: { repoID: string, path: string}) => Promise<{ path: string, isBehindRemote: boolean}>
     signMessageAsync: (params: { message: Buffer }) => Promise<{ signature: Buffer }>
+    ethAddressAsync: (params: {}) => Promise<{ address: string }>
 
     // @@TODO: convert to enum
     UserType: {

@@ -7,6 +7,7 @@ import {
     ISignupAction, ISignupSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
     ICheckLocalUserAction, ICheckLocalUserSuccessAction,
+    ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
     ICloneSharedRepoAction, ICloneSharedRepoSuccessAction,
@@ -16,7 +17,7 @@ import {
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
-    fetchUserData, getSharedRepos,
+    fetchUserData, checkBalanceAndHitFaucet, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
@@ -34,6 +35,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
 
         // Fetch the user's data
         await dispatch(fetchUserData({ emails: [ email ] }))
+        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ email }))
         // @@TODO: remove payload now that we're calling fetchUserData?
         return { email: resp.email, name: resp.name }
@@ -56,6 +58,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
 
         // Fetch the user's data
         await dispatch(fetchUserData({ emails: [ email ] }))
+        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ email }))
         // @@TODO: remove payload now that we're calling fetchUserData?
         return { name: resp.name, email: resp.email }
@@ -85,10 +88,27 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
             throw new Error('Not logged in')
         }
         const resp = await ServerRelay.whoami(jwt)
+
         await dispatch(fetchUserData({ emails: [ resp.email ] }))
+        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ email: resp.email }))
         return { email: resp.email, name: resp.name }
     },
+})
+
+const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
+    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
+    async process(_, dispatch) {
+        const rpcClient = rpc.initClient()
+        const { address } = await rpcClient.ethAddressAsync({})
+        console.log(address)
+        let balance = await ServerRelay.getEthBalance(address)
+        if(balance < 1){
+            await ServerRelay.hitEthFaucet(address)
+            balance += 10
+        }
+        return { balance }
+    }
 })
 
 const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
@@ -195,6 +215,7 @@ export default [
     signupLogic,
     fetchUserDataLogic,
     checkLocalUserLogic,
+    checkBalanceAndHitFaucetLogic,
     logoutLogic,
     getSharedReposLogic,
     cloneSharedRepoLogic,
