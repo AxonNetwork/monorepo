@@ -13,7 +13,6 @@ import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 import CodeViewer from '../Repository/elements/CodeViewer'
 import schemes from 'utils/codeColorSchemes'
-import ServerRelay from 'lib/ServerRelay'
 
 @autobind
 class Settings extends React.Component<Props>
@@ -24,7 +23,7 @@ class Settings extends React.Component<Props>
         this.props.setCodeColorScheme({ codeColorScheme: evt.target.value })
     }
 
-    onChangeHideMenuLabels(evt) {
+    onChangeHideMenuLabels(evt: any) {
         const menuLabelsHidden = evt.target.checked
         this.props.hideMenuLabels({ menuLabelsHidden })
     }

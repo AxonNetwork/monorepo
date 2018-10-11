@@ -1,7 +1,6 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
-import FormHelperText from '@material-ui/core/FormHelperText'
 import autobind from 'utils/autobind'
 import { IDiscussion, IRepoFile } from 'common'
 import SmartTextarea from 'components/SmartTextarea'
@@ -19,7 +18,11 @@ class CreateComment extends React.Component<Props>
     render() {
         const { classes } = this.props
         return (
-            <CommentWrapper>
+            <CommentWrapper
+                username={this.props.username}
+                userPicture={this.props.userPicture}
+                created={new Date().getTime()}
+            >
                 <form className={classes.form} onSubmit={this.onSubmit}>
                     <SmartTextarea
                         placeholder="Write your comment"
@@ -32,7 +35,7 @@ class CreateComment extends React.Component<Props>
                     <Button color="secondary" variant="contained" onClick={this.onSubmit}>
                         Comment
                     </Button>
-                    <FormHelperText error className={classes.error}>{this.state.error}</FormHelperText>
+                    {/* <FormHelperText error className={classes.error}>{this.state.error}</FormHelperText> */}
                 </form>
             </CommentWrapper>
         )
@@ -42,6 +45,8 @@ class CreateComment extends React.Component<Props>
 interface Props {
     files: {[name: string]: IRepoFile} | undefined
     discussions: {[created: number]: IDiscussion}
+    username: string | undefined
+    userPicture: string | undefined
     onSubmit: (comment: string) => void
     classes: any
 }

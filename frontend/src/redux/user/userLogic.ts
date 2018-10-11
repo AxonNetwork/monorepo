@@ -20,8 +20,7 @@ import {
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
-import ConscienceRelay from '../../lib/ConscienceRelay'
-import UserData, { CONSCIENCE_LOCATION } from '../../lib/UserData'
+import UserData from '../../lib/UserData'
 import * as rpc from '../../rpc'
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({

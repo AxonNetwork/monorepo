@@ -52,7 +52,7 @@ interface Props {
     username: string | undefined
     userPicture: string | undefined
     created: number | string
-    showBadge: boolean | undefined
+    showBadge?: boolean
     classes: any
 }
 

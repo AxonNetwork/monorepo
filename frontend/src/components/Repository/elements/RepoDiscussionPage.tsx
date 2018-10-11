@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import classnames from 'classnames'
 import moment from 'moment'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -106,7 +105,6 @@ class RepoDiscussionPage extends React.Component<Props>
                         <Thread
                             repo={this.props.repo}
                             title={(selected as IDiscussion).subject}
-                            type="discussion"
                             subject={(selected as IDiscussion).created}
                             unselect={() => this.props.selectDiscussion({ created: undefined })}
                         />

@@ -125,18 +125,19 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.SAW_COMMENT_SUCCESS: {
             const { repoID, discussionID, commentID } = action.payload
             // If repoID/discussionID/commentID are null, it indicates that no actual update needs to occur.
-            if (repoID === null) {
+            if (repoID === null || discussionID === null || commentID === null) {
                 return state
-            }
-            return {
-                ...state,
-                newestViewedCommentTimestamp: {
-                    ...state.newestViewedCommentTimestamp,
-                    [repoID]: {
-                        ...(state.newestViewedCommentTimestamp[repoID] || {}),
-                        [discussionID]: commentID,
+            } else{
+                return {
+                    ...state,
+                    newestViewedCommentTimestamp: {
+                        ...state.newestViewedCommentTimestamp,
+                        [repoID]: {
+                            ...(state.newestViewedCommentTimestamp[repoID] || {}),
+                            [discussionID]: commentID,
+                        },
                     },
-                },
+                }
             }
         }
 

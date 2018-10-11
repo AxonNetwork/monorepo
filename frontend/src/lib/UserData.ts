@@ -6,16 +6,18 @@ const fs = (window as any).require('fs')
 export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
 export const CONSCIENCE_LOCATION = path.join(app.getPath('documents'), 'Conscience')
 
+interface ICommentTimestamp {
+    [repoID: string]: {
+        [discussionID: number]: number
+    }
+}
+
 export interface IUserDataContents {
     jwt?: string
     ignoredSharedRepos?: string[]
     codeColorScheme?: string
     menuLabelsHidden?: boolean
-    newestViewedCommentTimestamp?: {
-        [repoID: string]: {
-            [discussionID: number]: number,
-        },
-    }
+    newestViewedCommentTimestamp?: ICommentTimestamp
 }
 
 const UserData = {
@@ -100,7 +102,7 @@ const UserData = {
     },
 
     async setNewestViewedCommentTimestamp(repoID: string, discussionID: number, commentID: number) {
-        const timestamps = (await UserData.get('newestViewedCommentTimestamp')) || {}
+        const timestamps = ((await UserData.get('newestViewedCommentTimestamp')) || {}) as ICommentTimestamp
         if (
             (timestamps[repoID] || {})[discussionID] !== undefined &&
             (timestamps[repoID] || {})[discussionID] >= commentID

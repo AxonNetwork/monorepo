@@ -131,8 +131,6 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             verified: event.verified !== undefined ? new Date(event.verified.toNumber() * 1000) : undefined,
         } as ITimelineEvent))
 
-        const verified = timeline.filter(e=>e.verified !== undefined)
-
         return { repoID, path, timeline }
     },
 })

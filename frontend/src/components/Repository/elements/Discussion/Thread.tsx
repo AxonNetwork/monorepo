@@ -107,6 +107,8 @@ class Thread extends React.Component<Props>
                             files={this.props.repo.files}
                             discussions={this.props.discussions}
                             onSubmit={this.handleSubmit}
+                            username={this.props.username}
+                            userPicture={this.props.userPicture}
                         />
                     </div>
                 </div>
@@ -128,6 +130,8 @@ interface StateProps {
     users: {[id: string]: IUser}
     comments: {[id: string]: IComment}
     discussions: {[created: number]: IDiscussion}
+    username: string | undefined
+    userPicture: string | undefined
     newestViewedCommentTimestamp: number
 }
 
@@ -170,11 +174,15 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const discussions = state.discussion.discussions[ownProps.repo.repoID] || {}
+    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
+    const userPicture = (state.user.users[ state.user.currentUser || '' ] || {}).picture
     return {
         comments: state.discussion.comments[ownProps.repo.repoID] || {},
         users: state.user.users,
         newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[ownProps.repo.repoID] || {})[ownProps.subject] || -1,
         discussions,
+        username: username,
+        userPicture: userPicture,
     }
 }
 

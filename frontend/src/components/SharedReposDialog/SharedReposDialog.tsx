@@ -76,7 +76,7 @@ interface State {
 }
 
 const mapStateToProps = (state: IGlobalState) => {
-    const sharedReposObj = (state.user.users[ state.user.currentUser || '' ] || {}).sharedRepos || {}
+    const sharedReposObj = state.user.sharedRepos || {}
     let toPrompt = Object.keys(sharedReposObj).filter(repoID => !sharedReposObj[repoID].ignored)
     let sharedRepoID: string|undefined
     if (toPrompt.length > 0) {

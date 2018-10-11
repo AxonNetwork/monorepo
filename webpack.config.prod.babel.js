@@ -8,7 +8,10 @@ import BaseWebpackConfig from './webpack.config.base.babel';
 export default merge(BaseWebpackConfig, {
     // The point or points to enter the application.
     entry: {
-        app: './frontend/src/index',
+        app: [
+            './frontend/src/index',
+            require.resolve('./polyfills.js')
+        ]
     },
 
     // Affecting the output of the compilation

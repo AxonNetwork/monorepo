@@ -25,12 +25,19 @@ class DiscussionLink extends React.Component<Props>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
     discussionID: number
+}
+
+interface StateProps {
     discussionSubject: string
+}
+
+interface DispatchProps {
     navigateRepoPage: typeof navigateRepoPage
     selectDiscussion: typeof selectDiscussion
-    classes?: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -41,7 +48,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoPath = state.repository.selectedRepo || ''
     const repoID = (state.repository.repos[repoPath] || {}).repoID || ''
     const discussionSubject = (((state.discussion.discussions[ repoID ] || {})[ ownProps.discussionID ]) || {}).subject
@@ -55,7 +62,7 @@ const mapDispatchToProps = {
     navigateRepoPage,
 }
 
-export default connect(
+export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(DiscussionLink))

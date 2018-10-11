@@ -12,7 +12,7 @@ import { IEditorState } from './editor/editorReducer'
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 const logicDeps = {}
-const logicMiddleware = createLogicMiddleware(logic, logicDeps)
+const logicMiddleware = createLogicMiddleware(logic, logicDeps as any)
 
 const store = createStore(
   reducer,

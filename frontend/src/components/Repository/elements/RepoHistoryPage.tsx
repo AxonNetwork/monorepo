@@ -26,7 +26,7 @@ class RepoHistoryPage extends React.Component<Props>
             <div className={classes.timelinePage}>
                 {selectedCommit &&
                     <CommitView
-                        commit={repo.commits[ selectedCommit ]}
+                        commit={(repo.commits||{})[ selectedCommit ]}
                         repoID={repo.repoID}
                         repoRoot={repo.path}
                         username={username}

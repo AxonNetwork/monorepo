@@ -43,7 +43,7 @@ class CommitView extends React.Component<Props>
                     {commit.message}
                 </Typography>
                 <div className={classes.commitInfo}>
-                    <Typography>{commit.user || commit.email}</Typography>
+                    <Typography>{commit.user}</Typography>
                     <Typography>{moment(commit.time).calendar()}</Typography>
                 </div>
 
