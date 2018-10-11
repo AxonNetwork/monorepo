@@ -28,11 +28,17 @@ import * as rpc from '../../rpc'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
-    async process({ action }, dispatch) {
+    async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
+        const state = getState()
+        const { name, email } = state.user.users[state.user.currentUser||""]
 
         const rpcClient = rpc.initClient()
-        const { path } = await rpcClient.initRepoAsync({ repoID: repoID })
+        const { path } = await rpcClient.initRepoAsync({
+            repoID: repoID,
+            name: name,
+            email: email
+        })
         await ServerRelay.createRepo(repoID)
 
         await dispatch(selectRepo({ repoID, path }))

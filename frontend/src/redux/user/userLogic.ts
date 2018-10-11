@@ -137,10 +137,17 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
 
 const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoSuccessAction>({
     type: UserActionType.CLONE_SHARED_REPO,
-    async process({ action }, dispatch) {
+    async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
+        const state = getState()
+        const { name, email } = state.user.users[state.user.currentUser||""]
+
         const rpcClient = rpc.initClient()
-        const { path } = await rpcClient.cloneRepoAsync({ repoID: repoID })
+        const { path } = await rpcClient.cloneRepoAsync({
+            repoID: repoID,
+            name: name,
+            email: email
+         })
         await dispatch(selectRepo({ repoID, path }))
         return {}
     },
