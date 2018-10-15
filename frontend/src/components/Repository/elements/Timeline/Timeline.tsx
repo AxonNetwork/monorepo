@@ -53,7 +53,7 @@ class Timeline extends React.Component<Props, State>
                         nextIconButtonProps={{ classes: { root: classes.paginationButton }, 'aria-label': 'Next Page' }}
                         onChangePage={this.onChangePage}
                         onChangeRowsPerPage={this.onChangeRowsPerPage}
-                        classes={{ toolbar: classes.paginationToolbar }}
+                        classes={{ toolbar: classes.paginationToolbar, caption: classes.paginationText }}
                     />
                 }
 
@@ -113,8 +113,10 @@ const styles = () => createStyles({
         minHeight: 36,
     },
     paginationButton: {
-        padding: 0,
-        margin: 0,
+        padding: 6,
+    },
+    paginationText: {
+        fontSize: '0.85rem',
     },
 })
 
