@@ -1,4 +1,4 @@
-const exec = require('child_process').exec
+const { exec, spawn } = require('child_process')
 const Promise = require('bluebird')
 const klaw = require('klaw')
 const through2 = require('through2')
@@ -118,13 +118,32 @@ async function cloneRepo(repoID, location) {
     }
 }
 
+function spawnCmd(cmd, args, cwd) {
+    return new Promise((resolve, reject) => {
+        let stdout = '', stderr = ''
+        let proc = spawn(cmd, args, { cwd })
+        proc.stdout.on('data', (data) => {
+            stdout += data
+        })
+        proc.stderr.on('data', (data) => {
+            stderr += data
+        })
+        proc.on('close', (code) => {
+            if (code !== 0) {
+                return reject(new Error(stderr))
+            }
+            return resolve(stdout)
+        })
+    })
+}
+
 async function getDiff(repoRoot, commit) {
-    let cmd = 'git show ' + commit
     let diff
     try {
-        diff = await execCmd(cmd, repoRoot)
+        diff = await spawnCmd('git', ['show', commit], repoRoot)
     } catch (err) {
         console.log('ERROR running ConscienceManager.getDiff ~>', err)
+        throw err
     }
     return diff
 }
