@@ -5,9 +5,12 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import DiffViewer from './DiffViewer/DiffViewer'
 import CreateDiscussion from './Discussion/CreateDiscussion'
+import UserAvatar from 'components/UserAvatar'
+import { IGlobalState } from 'redux/store'
 import { createDiscussion } from 'redux/discussion/discussionActions'
 import { IGetDiffAction, ISelectCommitAction } from 'redux/repository/repoActions'
 import { ITimelineEvent } from 'common'
+import { removeEmail, extractEmail } from 'utils'
 import autobind from 'utils/autobind'
 
 @autobind
@@ -43,8 +46,11 @@ class CommitView extends React.Component<Props>
                     {commit.message}
                 </Typography>
                 <div className={classes.commitInfo}>
-                    <Typography>{commit.user}</Typography>
-                    <Typography>{moment(commit.time).calendar()}</Typography>
+                    <UserAvatar className={classes.userAvatar} username={this.props.username} userPicture={this.props.userPicture} />
+                    <div>
+                        <Typography>{commit.user}</Typography>
+                        <Typography>{moment(commit.time).calendar()}</Typography>
+                    </div>
                 </div>
 
                 {Object.keys(diffs).map(filename => (
@@ -60,7 +66,7 @@ class CommitView extends React.Component<Props>
                     <div className={classes.startDiscussionFormWrapper}>
                         <CreateDiscussion
                             repoRoot={this.props.repoRoot}
-                            attachedTo={`Commit: ${commit.commit.substr(0,8)}`}
+                            attachedTo={`Commit: ${commit.commit.substr(0, 8)}`}
                             commentWrapperClasses={{ comment: classes.createDiscussionComment }}
                         />
                     </div>
@@ -70,15 +76,24 @@ class CommitView extends React.Component<Props>
     }
 }
 
-interface Props {
-    username: string | undefined
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
     repoID: string
     repoRoot: string
     commit: ITimelineEvent | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
-    createDiscussion: typeof createDiscussion
     classes: any
+}
+
+interface StateProps {
+    username: string
+    userPicture: string | undefined
+}
+
+interface DispatchProps {
+    createDiscussion: typeof createDiscussion
 }
 
 const styles = () => createStyles({
@@ -96,6 +111,7 @@ const styles = () => createStyles({
         textDecoration: 'underline',
     },
     commitInfo: {
+        display: 'flex',
         marginBottom: 24,
     },
     startDiscussionSectionWrapper: {
@@ -113,13 +129,31 @@ const styles = () => createStyles({
         maxWidth: 720,
         flexGrow: 1,
     },
+    userAvatar: {
+        width: 30,
+        height: 30,
+        fontSize: '1rem',
+        margin: '5px 7px',
+    },
 })
+
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const userEmail = extractEmail(ownProps.commit.user)
+    const userID = state.user.usersByEmail[ userEmail ]
+    const user = state.user.users[ userID || '' ] || {}
+    const username = user.name || removeEmail(ownProps.commit.user)
+    const userPicture = user.picture
+    return {
+        username,
+        userPicture,
+    }
+}
 
 const mapDispatchToProps = {
     createDiscussion,
 }
 
-export default connect(
-    null,
+export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
+    mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(CommitView))

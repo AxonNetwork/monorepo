@@ -49,10 +49,11 @@ class Timeline extends React.Component<Props, State>
                         count={commitList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
-                        backIconButtonProps={{ 'aria-label': 'Previous Page' }}
-                        nextIconButtonProps={{ 'aria-label': 'Next Page' }}
+                        backIconButtonProps={{ classes: { root: classes.paginationButton }, 'aria-label': 'Previous Page' }}
+                        nextIconButtonProps={{ classes: { root: classes.paginationButton }, 'aria-label': 'Next Page' }}
                         onChangePage={this.onChangePage}
                         onChangeRowsPerPage={this.onChangeRowsPerPage}
+                        classes={{ toolbar: classes.paginationToolbar }}
                     />
                 }
 
@@ -106,6 +107,14 @@ const styles = () => createStyles({
         '&:hover': {
             backgroundColor: 'rgba(0, 0, 0, 0.05)',
         },
+    },
+    paginationToolbar: {
+        height: 36,
+        minHeight: 36,
+    },
+    paginationButton: {
+        padding: 0,
+        margin: 0,
     },
 })
 
