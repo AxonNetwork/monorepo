@@ -1,11 +1,14 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import TablePagination from '@material-ui/core/TablePagination'
 import TimelineEvent from './TimelineEvent'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 
-import { ITimelineEvent } from '../../../../common'
+import { IGlobalState } from 'redux/store'
+import { IUser, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 import { ISelectCommitAction, IGetDiffAction, IRevertFilesAction } from 'redux/repository/repoActions'
+import { removeEmail, extractEmail } from 'utils'
 
 
 @autobind
@@ -40,23 +43,6 @@ class Timeline extends React.Component<Props, State>
         const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(c => commits[c])
         return (
             <div>
-                <div>
-                {
-                    timelinePage.map((event) => {
-                        return (
-                            <div key={event.commit} onClick={() => this.selectCommit(event.commit)} className={classes.timelineEvent}>
-                                <TimelineEvent
-                                    repoRoot={this.props.repoRoot}
-                                    event={event}
-                                    getDiff={this.props.getDiff}
-                                    revertFiles={this.props.revertFiles}
-                                />
-                            </div>
-                        )
-                    })
-                }
-                </div>
-
                 {commitList.length > this.state.rowsPerPage &&
                     <TablePagination
                         component="div"
@@ -69,6 +55,27 @@ class Timeline extends React.Component<Props, State>
                         onChangeRowsPerPage={this.onChangeRowsPerPage}
                     />
                 }
+
+                <div>
+                {timelinePage.map((event) => {
+                    const email = extractEmail(event.user) || ''
+                    const user = this.props.users[ this.props.usersByEmail[email] || '' ] || {}
+                    const username = user.name || removeEmail(event.user)
+                    const userPicture = user.picture
+                    return (
+                        <div key={event.commit} onClick={() => this.selectCommit(event.commit)} className={classes.timelineEvent}>
+                            <TimelineEvent
+                                repoRoot={this.props.repoRoot}
+                                event={event}
+                                getDiff={this.props.getDiff}
+                                revertFiles={this.props.revertFiles}
+                                username={username}
+                                userPicture={userPicture}
+                            />
+                        </div>
+                    )
+                })}
+                </div>
             </div>
         )
     }
@@ -79,6 +86,8 @@ interface Props {
     // timeline: ITimelineEvent[]
     commits: {[commit: string]: ITimelineEvent} | undefined
     commitList: string[] | undefined
+    users: {[userID: string]: IUser}
+    usersByEmail: {[email: string]: string}
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
@@ -100,5 +109,17 @@ const styles = () => createStyles({
     },
 })
 
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        users: state.user.users,
+        usersByEmail: state.user.usersByEmail,
+    }
+}
 
-export default withStyles(styles)(Timeline)
+const mapDispatchToProps = {}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(Timeline))
+

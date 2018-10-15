@@ -71,8 +71,10 @@ export interface ILoginAction {
 export interface ILoginSuccessAction {
     type: UserActionType.LOGIN_SUCCESS
     payload: {
-        email: string
-        name: string,
+        userID: string
+        emails: string[]
+        name: string
+        picture: string,
     }
 }
 
@@ -95,15 +97,17 @@ export interface ISignupAction {
     payload: {
         name: string
         email: string
-        password: string
+        password: string,
     }
 }
 
 export interface ISignupSuccessAction {
     type: UserActionType.SIGNUP_SUCCESS
     payload: {
+        userID: string
+        emails: string[]
         name: string
-        email: string
+        picture: string,
     }
 }
 
@@ -112,14 +116,14 @@ export type ISignupFailedAction = FailedAction<UserActionType.SIGNUP_FAILED>
 export interface IFetchUserDataAction {
     type: UserActionType.FETCH_USER_DATA
     payload: {
-        emails: string[],
+        userIDs: string[],
     }
 }
 
 export interface IFetchUserDataSuccessAction {
     type: UserActionType.FETCH_USER_DATA_SUCCESS
     payload: {
-        users: { [email: string]: IUser },
+        users: { [userID: string]: IUser },
     }
 }
 
@@ -133,8 +137,10 @@ export interface ICheckLocalUserAction {
 export interface ICheckLocalUserSuccessAction {
     type: UserActionType.CHECK_LOCAL_USER_SUCCESS
     payload: {
-        email: string
-        name: string,
+        userID: string
+        emails: string[]
+        name: string
+        picture: string,
     }
 }
 
@@ -148,7 +154,7 @@ export interface ICheckBalanceAndHitFaucetAction {
 export interface ICheckBalanceAndHitFaucetSuccessAction {
     type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS
     payload: {
-        balance: number
+        balance: number,
     }
 }
 
@@ -158,7 +164,7 @@ export type ICheckBalanceAndHitFaucetFailedAction = FailedAction<UserActionType.
 export interface IGetSharedReposAction {
     type: UserActionType.FETCH_SHARED_REPOS
     payload: {
-        email: string,
+        userID: string,
     }
 }
 
@@ -251,8 +257,8 @@ export interface ISawCommentAction {
     type: UserActionType.SAW_COMMENT
     payload: {
         repoID: string
-        discussionID: number
-        commentID: number,
+        discussionID: string
+        commentID: string,
     }
 }
 
@@ -260,8 +266,8 @@ export interface ISawCommentSuccessAction {
     type: UserActionType.SAW_COMMENT_SUCCESS
     payload: {
         repoID: string | null
-        discussionID: number | null
-        commentID: number | null,
+        discussionID: string | null
+        commentID: string | null,
     }
 }
 

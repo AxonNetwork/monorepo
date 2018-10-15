@@ -1,8 +1,10 @@
+import { fromPairs } from 'lodash'
 import { UserActionType, IUserAction } from './userActions'
 import { IUser, ISharedRepoInfo } from '../../common'
 
 const initialState = {
     users: {},
+    usersByEmail: {},
     currentUser: undefined,
     error: undefined,
     sharedRepos: {},
@@ -13,7 +15,8 @@ const initialState = {
 }
 
 export interface IUserState {
-    users: {[id: string]: IUser}
+    users: {[userID: string]: IUser}
+    usersByEmail: {[email: string]: string} // value is userID
     currentUser: string | undefined
     error: Error | undefined
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
@@ -22,7 +25,7 @@ export interface IUserState {
     checkedLocalUser: boolean
     newestViewedCommentTimestamp: {
         [repoID: string]: {
-            [discussionID: number]: number,
+            [discussionID: string]: number,
         },
     }
 }
@@ -32,24 +35,31 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
         case UserActionType.CHECK_LOCAL_USER_SUCCESS:
-            const { email, name } = action.payload
-            const user = state.users[email] || {
-                email,
+            const { userID, emails, name, picture } = action.payload
+            const user = state.users[userID] || {
+                userID,
+                emails,
                 name,
+                picture,
                 repos: [],
             }
+            const usersByEmail = fromPairs(emails.map(email => [ email, userID ]))
             return {
                 ...state,
                 users: {
                     ...state.users,
-                    [email]: user,
+                    [userID]: user,
                 },
-                currentUser: email,
+                usersByEmail: {
+                    ...state.usersByEmail,
+                    ...usersByEmail,
+                },
+                currentUser: userID,
                 checkedLocalUser: true,
             }
 
         case UserActionType.CHECK_LOCAL_USER_FAILED:
-            return{
+            return {
                 ...state,
                 checkedLocalUser: true,
             }
@@ -84,7 +94,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 sharedRepos: {
-                    [repoID]: { repoID, ignored: true},
+                    [repoID]: { repoID, ignored: true },
                 },
             }
         }
@@ -127,7 +137,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             // If repoID/discussionID/commentID are null, it indicates that no actual update needs to occur.
             if (repoID === null || discussionID === null || commentID === null) {
                 return state
-            } else{
+            } else {
                 return {
                     ...state,
                     newestViewedCommentTimestamp: {

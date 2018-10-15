@@ -1,18 +1,21 @@
 import { FailedAction } from '../reduxUtils'
-import { IDiscussion, IComment, IAttachedTo } from '../../common'
+import { IDiscussion, IComment } from '../../common'
 
 export enum DiscussionActionType {
     GET_DISCUSSIONS = 'GET_DISCUSSIONS',
     GET_DISCUSSIONS_SUCCESS = 'GET_DISCUSSIONS_SUCCESS',
     GET_DISCUSSIONS_FAILED = 'GET_DISCUSSIONS_FAILED',
+
     SELECT_DISCUSSION = 'SELECT_DISCUSSION',
+
     CREATE_DISCUSSION = 'CREATE_DISCUSSION',
     CREATE_DISCUSSION_SUCCESS = 'CREATE_DISCUSSION_SUCCESS',
     CREATE_DISCUSSION_FAILED = 'CREATE_DISCUSSION_FAILED',
 
-    GET_COMMENTS_FOR_REPO = 'GET_COMMENTS_FOR_REPO',
-    GET_COMMENTS_FOR_REPO_SUCCESS = 'GET_COMMENTS_FOR_REPO_SUCCESS',
-    GET_COMMENTS_FOR_REPO_FAILED = 'GET_COMMENTS_FOR_REPO_FAILED',
+    GET_COMMENTS_FOR_DISCUSSION = 'GET_COMMENTS_FOR_DISCUSSION',
+    GET_COMMENTS_FOR_DISCUSSION_SUCCESS = 'GET_COMMENTS_FOR_DISCUSSION_SUCCESS',
+    GET_COMMENTS_FOR_DISCUSSION_FAILED = 'GET_COMMENTS_FOR_DISCUSSION_FAILED',
+
     CREATE_COMMENT = 'CREATE_COMMENT',
     CREATE_COMMENT_SUCCESS = 'CREATE_COMMENT_SUCCESS',
     CREATE_COMMENT_FAILED = 'CREATE_COMMENT_FAILED',
@@ -29,7 +32,7 @@ export interface IGetDiscussionsSuccessAction {
     type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS
     payload: {
         repoID: string
-        discussions: {[id: string]: IDiscussion},
+        discussions: {[discussionID: string]: IDiscussion},
     }
 }
 
@@ -38,7 +41,7 @@ export type IGetDiscussionsFailedAction = FailedAction<DiscussionActionType.GET_
 export interface ISelectDiscussionAction {
     type: DiscussionActionType.SELECT_DISCUSSION
     payload: {
-        created: number | undefined,
+        discussionID: string | undefined,
     }
 }
 
@@ -61,29 +64,29 @@ export interface ICreateDiscussionSuccessAction {
 
 export type ICreateDiscussionFailedAction = FailedAction<DiscussionActionType.CREATE_DISCUSSION_FAILED>
 
-export interface IGetCommentsForRepoAction {
-    type: DiscussionActionType.GET_COMMENTS_FOR_REPO
+export interface IGetCommentsForDiscussionAction {
+    type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION
     payload: {
-        repoID: string,
+        discussionID: string,
     }
 }
 
-export interface IGetCommentsForRepoSuccessAction {
-    type: DiscussionActionType.GET_COMMENTS_FOR_REPO_SUCCESS
+export interface IGetCommentsForDiscussionSuccessAction {
+    type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS
     payload: {
-        repoID: string
-        comments: {[id: string]: IComment},
+        discussionID: string
+        comments: {[commentID: string]: IComment},
     }
 }
 
-export type IGetCommentsForRepoFailedAction = FailedAction<DiscussionActionType.GET_COMMENTS_FOR_REPO_FAILED>
+export type IGetCommentsForDiscussionFailedAction = FailedAction<DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_FAILED>
 
 export interface ICreateCommentAction {
     type: DiscussionActionType.CREATE_COMMENT
     payload: {
         repoID: string
-        text: string
-        attachedTo: IAttachedTo,
+        discussionID: string
+        text: string,
     }
 }
 
@@ -115,7 +118,7 @@ export const getDiscussions = (payload: IGetDiscussionsAction['payload']): IGetD
 export const selectDiscussion = (payload: ISelectDiscussionAction['payload']): ISelectDiscussionAction => ({ type: DiscussionActionType.SELECT_DISCUSSION, payload })
 export const createDiscussion = (payload: ICreateDiscussionAction['payload']): ICreateDiscussionAction => ({ type: DiscussionActionType.CREATE_DISCUSSION, payload })
 
-export const getCommentsForRepo = (payload: IGetCommentsForRepoAction['payload']): IGetCommentsForRepoAction => ({ type: DiscussionActionType.GET_COMMENTS_FOR_REPO, payload })
+export const getCommentsForDiscussion = (payload: IGetCommentsForDiscussionAction['payload']): IGetCommentsForDiscussionAction => ({ type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION, payload })
 export const createComment = (payload: ICreateCommentAction['payload']): ICreateCommentAction => ({ type: DiscussionActionType.CREATE_COMMENT, payload })
 
 

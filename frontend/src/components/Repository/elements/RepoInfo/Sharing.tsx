@@ -8,33 +8,15 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import AddCollaboratorDialog from './AddCollaboratorDialog'
 import autobind from '../../../../utils/autobind'
 
-export interface SharingProps {
-    sharedUsers: Array<string>
-    folderPath: string
-    repoID: string
-    addCollaborator: Function
-    removeCollaborator: Function
-    classes:{
-        text: string
-        button: string
-        icon: string
-        chip: string
-    }
-}
-
-export interface SharingState {
-    open: boolean
-}
 
 @autobind
-class Sharing extends React.Component<SharingProps, SharingState>
+class Sharing extends React.Component<Props, State>
 {
-
     state = {
-        open: false
+        open: false,
     }
 
-    handleDelete(collaborator: string){
+    handleDelete(collaborator: string) {
         this.props.removeCollaborator({
             repoID: this.props.repoID,
             folderPath: this.props.folderPath,
@@ -42,16 +24,12 @@ class Sharing extends React.Component<SharingProps, SharingState>
         })
     }
 
-    handleClickOpen(){
-        this.setState({
-            open: true,
-        })
+    handleClickOpen() {
+        this.setState({ open: true })
     }
 
-    handleClose(){
-        this.setState({
-            open: false,
-        })
+    handleClose() {
+        this.setState({ open: false })
     }
 
     render() {
@@ -69,7 +47,7 @@ class Sharing extends React.Component<SharingProps, SharingState>
                         label={collaborator}
                         key={collaborator}
                         className={classes.chip}
-                        onDelete={()=>this.handleDelete(collaborator)}
+                        onDelete={() => this.handleDelete(collaborator)}
                     />,
                 )}
                 <IconButton className={classes.button} onClick={this.handleClickOpen} >
@@ -85,6 +63,19 @@ class Sharing extends React.Component<SharingProps, SharingState>
             </div>
         )
     }
+}
+
+interface Props {
+    sharedUsers: string[]
+    folderPath: string
+    repoID: string
+    addCollaborator: Function
+    removeCollaborator: Function
+    classes?: any
+}
+
+interface State {
+    open: boolean
 }
 
 const styles = createStyles({

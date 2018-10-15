@@ -5,32 +5,13 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import autobind from '../../../../utils/autobind'
+import autobind from 'utils/autobind'
 
-export interface AddCollaboratorDialogProps {
-    open: boolean
-    repoID: string
-    folderPath: string
-    onClose: () => void
-    addCollaborator: Function
-}
-
-export interface AddCollaboratorDialogState {
-    email: string
-}
 
 @autobind
-class AddCollaboratorDialog extends React.Component<AddCollaboratorDialogProps>
+class AddCollaboratorDialog extends React.Component<Props>
 {
-    state = {
-        email: ''
-    }
-
-    handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) =>{
-        this.setState({
-            [name]: event.target.value,
-        })
-    }
+    _inputEmail!: HTMLInputElement
 
     handleSubmit(event: React.MouseEvent<HTMLElement>) {
         event.preventDefault()
@@ -38,7 +19,7 @@ class AddCollaboratorDialog extends React.Component<AddCollaboratorDialogProps>
         this.props.addCollaborator({
             folderPath: this.props.folderPath,
             repoID: this.props.repoID,
-            email: this.state.email
+            email: this._inputEmail.value,
         })
     }
 
@@ -50,29 +31,31 @@ class AddCollaboratorDialog extends React.Component<AddCollaboratorDialogProps>
                 onClose={onClose}
             >
                 <DialogTitle>Add Collaborator</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="email"
-                            label="Email Address"
-                            type="email"
-                            value={this.state.email}
-                            onChange={this.handleChange('email')}
-                            fullWidth
-                        />
-                    </DialogContent>
+                <DialogContent>
+                    <TextField
+                        inputRef={x => this._inputEmail = x}
+                        autoFocus
+                        margin="dense"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                    />
+                </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleSubmit} color="secondary">
-                        Add
-                    </Button>
-                    <Button onClick={this.props.onClose} color="secondary">
-                        Cancel
-                    </Button>
+                    <Button onClick={this.handleSubmit} color="secondary">Add</Button>
+                    <Button onClick={this.props.onClose} color="secondary">Cancel</Button>
                 </DialogActions>
             </Dialog>
         )
     }
+}
+
+interface Props {
+    open: boolean
+    repoID: string
+    folderPath: string
+    onClose: () => void
+    addCollaborator: Function
 }
 
 export default AddCollaboratorDialog

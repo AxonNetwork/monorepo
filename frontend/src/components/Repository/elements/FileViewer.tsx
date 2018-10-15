@@ -1,6 +1,8 @@
 import path from 'path'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import autobind from 'utils/autobind'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import CodeViewer from './CodeViewer'
@@ -21,7 +23,13 @@ class FileViewer extends React.Component<Props, State>
 
         switch (extension) {
         case 'md':
-            return <RenderMarkdown text={this.state.fileContents || ''} basePath={this.props.repoRoot} />
+            return (
+                <Card>
+                    <CardContent classes={{ root: classes.mdRoot }}>
+                        <RenderMarkdown text={this.state.fileContents || ''} basePath={this.props.repoRoot} />
+                    </CardContent>
+                </Card>
+            )
         case 'jpg':
         case 'jpeg':
         case 'gif':
@@ -42,7 +50,13 @@ class FileViewer extends React.Component<Props, State>
         case 'rs':
         case 'r':
         case 'txt':
-            return <CodeViewer language={extension} contents={this.state.fileContents} showColorSelector />
+            return (
+                <Card>
+                    <CardContent classes={{ root: classes.codeRoot }}>
+                        <CodeViewer language={extension} contents={this.state.fileContents} showColorSelector />
+                    </CardContent>
+                </Card>
+            )
         default:
             return <div>We don't have a viewer for this kind of file yet.</div>
         }
@@ -50,30 +64,26 @@ class FileViewer extends React.Component<Props, State>
 
     componentDidMount() {
         if (this.isTextFile(this.props.filename)) {
-            fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
-                if (err) {
-                    // @@TODO: display error in UI
-                    console.error(err)
-                    this.setState({ fileContents: '', error: err })
-                    return
-                }
-                this.setState({ fileContents: contents })
-            })
+            this.readFile()
         }
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (prevProps.filename !== this.props.filename && this.isTextFile(this.props.filename)) {
-            fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
-                if (err) {
-                    // @@TODO: display error in UI
-                    console.error(err)
-                    this.setState({ fileContents: '', error: err })
-                    return
-                }
-                this.setState({ fileContents: contents })
-            })
+        if (this.isTextFile(this.props.filename) && prevProps.filename !== this.props.filename) {
+            this.readFile()
         }
+    }
+
+    readFile() {
+        fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
+            if (err) {
+                // @@TODO: display error in UI
+                console.error(err)
+                this.setState({ fileContents: '', error: err })
+                return
+            }
+            this.setState({ fileContents: contents })
+        })
     }
 
     isTextFile(filename: string) {
@@ -114,6 +124,13 @@ const styles = () => createStyles({
     },
     codeContainer: {
         padding: 30,
+    },
+    mdRoot: {
+        padding: 48,
+    },
+    codeRoot: {
+        padding: 0,
+        paddingBottom: '0 !important',
     },
 })
 

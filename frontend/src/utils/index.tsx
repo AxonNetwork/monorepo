@@ -2,12 +2,20 @@ import { memoize } from 'lodash'
 
 export const isProduction = process.env.NODE_ENV === 'production'
 
-export function nullish<T>(x: T|null|undefined): x is undefined {
+export function nullish<T>(x: T | null | undefined): x is undefined {
     return x === null || x === undefined
 }
 
 export const removeEmail = memoize(function(gitUsername: string) {
     return gitUsername.replace(/<.*>/, '').trim()
+})
+
+export const extractEmail = memoize(function(gitUsername: string) {
+    const match = gitUsername.match(/<(.*)>/)
+    if (!match) {
+        return undefined
+    }
+    return match[1].trim()
 })
 
 export const getUserInitials = memoize(function(name: string) {
@@ -90,7 +98,7 @@ var colors = [
 
 function getHashCode(str: string) {
     var hash = 0
-    if (str.length === 0) return hash
+    if (str.length === 0) { return hash }
     for (var i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash)
         hash = hash & hash // Convert to 32bit integer

@@ -1,4 +1,4 @@
-import { makeLogic, makeContinuousLogic } from '../reduxUtils'
+    import { makeLogic, makeContinuousLogic } from '../reduxUtils'
 import { keyBy } from 'lodash'
 import fileType from 'utils/fileType'
 import { ILocalRepo, IRepoFile, ITimelineEvent } from '../../common'
@@ -31,13 +31,13 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
         const state = getState()
-        const { name, email } = state.user.users[state.user.currentUser||""]
+        const { name, email } = state.user.users[state.user.currentUser || '']
 
         const rpcClient = rpc.initClient()
         const { path } = await rpcClient.initRepoAsync({
             repoID: repoID,
             name: name,
-            email: email
+            email: email,
         })
         await ServerRelay.createRepo(repoID)
 
@@ -145,7 +145,7 @@ const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchR
     type: RepoActionType.FETCH_REPO_SHARED_USERS,
     async process({ action }) {
         const { path, repoID } = action.payload
-        const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.email)
+        const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.userID)
         return { path, repoID, sharedUsers }
     },
 })
@@ -243,6 +243,9 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
     type: RepoActionType.ADD_COLLABORATOR,
     async process({ action }) {
         const { repoID, email, folderPath } = action.payload
+        const username = '' // @@TODO
+        const rpcClient = rpc.initClient()
+        await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
         await ServerRelay.shareRepo(repoID, email)
         return { folderPath, repoID, email }
     },
@@ -252,6 +255,9 @@ const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveColl
     type: RepoActionType.REMOVE_COLLABORATOR,
     async process({ action }) {
         const { repoID, email, folderPath } = action.payload
+        const username = '' // @@TODO
+        const rpcClient = rpc.initClient()
+        await rpcClient.setUserPermissionsAsync({ repoID, username, puller: false, pusher: false, admin: false })
         await ServerRelay.unshareRepo(repoID, email)
         return { folderPath, repoID, email }
     },

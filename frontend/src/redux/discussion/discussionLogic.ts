@@ -3,21 +3,28 @@ import { makeLogic } from '../reduxUtils'
 import { DiscussionActionType,
     IGetDiscussionsAction, IGetDiscussionsSuccessAction,
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
-    IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction,
+    IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction,
     ICreateCommentAction, ICreateCommentSuccessAction,
-    selectDiscussion } from './discussionActions'
+    selectDiscussion, getCommentsForDiscussion } from './discussionActions'
 import { navigateRepoPage } from 'redux/repository/repoActions'
 import { fetchUserData } from 'redux/user/userActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-import { IDiscussion } from 'common'
+import { IDiscussion, IComment } from 'common'
 import ServerRelay from 'lib/ServerRelay'
+
 
 const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSuccessAction>({
     type: DiscussionActionType.GET_DISCUSSIONS,
-    async process({ action }) {
+    async process({ action }, dispatch) {
         const { repoID } = action.payload
         const discussionsList = await ServerRelay.getDiscussionsForRepo(action.payload.repoID)
-        const discussions = keyBy(discussionsList, 'created') as {[created: number]: IDiscussion}
+        const discussions = keyBy(discussionsList, 'discussionID') as {[discussionID: string]: IDiscussion}
+
+        // @@TODO: do this in the component or something
+        for (let discussionID of Object.keys(discussions)) {
+            dispatch(getCommentsForDiscussion({ discussionID }))
+        }
+
         return { repoID, discussions }
     },
 })
@@ -27,31 +34,31 @@ const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussi
     async process({ action }, dispatch) {
         const { repoID, subject, commentText } = action.payload
         const { comment, discussion } = await ServerRelay.createDiscussion(repoID, subject, commentText)
-        dispatch(selectDiscussion({ created: discussion.created }))
+        dispatch(selectDiscussion({ discussionID: discussion.discussionID }))
         dispatch(navigateRepoPage({ repoPage: RepoPage.Discussion }))
         return { comment, discussion }
     },
 })
 
-const getCommentsForRepoLogic = makeLogic<IGetCommentsForRepoAction, IGetCommentsForRepoSuccessAction>({
-    type: DiscussionActionType.GET_COMMENTS_FOR_REPO,
+const getCommentsForDiscussionLogic = makeLogic<IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction>({
+    type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION,
     async process({ action }, dispatch) {
-        const { repoID } = action.payload
-        const commentsList = await ServerRelay.getCommentsForRepo(repoID)
-        const comments = keyBy(commentsList, (comment) => `${comment.attachedTo.type}/${comment.attachedTo.subject}/${comment.created}`)
+        const { discussionID } = action.payload
+        const commentsList = await ServerRelay.getCommentsForDiscussion(discussionID)
+        const comments = keyBy(commentsList, 'commentID') as {[commentID: string]: IComment}
 
-        let emails = commentsList.map(c => c.user)
-        dispatch(fetchUserData({ emails }))
+        let userIDs = commentsList.map(c => c.userID)
+        dispatch(fetchUserData({ userIDs }))
 
-        return { repoID, comments }
+        return { discussionID, comments }
     },
 })
 
 const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccessAction>({
     type: DiscussionActionType.CREATE_COMMENT,
     async process({ action }) {
-        const { repoID, text, attachedTo } = action.payload
-        const comment = await ServerRelay.createComment(repoID, text, attachedTo)
+        const { repoID, discussionID, text } = action.payload
+        const comment = await ServerRelay.createComment(repoID, discussionID, text)
         return { comment }
     },
 })
@@ -59,6 +66,6 @@ const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccess
 export default [
     getDiscussionsLogic,
     createDiscussionLogic,
-    getCommentsForRepoLogic,
+    getCommentsForDiscussionLogic,
     createCommentLogic,
 ]

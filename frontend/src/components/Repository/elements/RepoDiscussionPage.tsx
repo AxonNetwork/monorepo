@@ -33,32 +33,29 @@ class RepoDiscussionPage extends React.Component<Props>
         const discussions = this.props.discussions || {}
 
         let selected: IDiscussion | undefined
-        let newDiscussion = false
         if (this.props.selected !== undefined) {
             selected = discussions[this.props.selected]
-            if (selected === undefined) {
-                newDiscussion = true
-            }
         }
+        const newDiscussion = this.props.selected === '<new discussion>' // @@TODO: shitty
 
         const newestComment = this.props.newestCommentTimestampPerDiscussion
-        const discussionsSorted = this.props.discussionIDsSortedByNewestComment.map(created => discussions[created] || { created })
+        const discussionsSorted = this.props.discussionIDsSortedByNewestComment.map(discussionID => discussions[discussionID] || { discussionID })
 
         return (
             <div className={classes.discussionPage}>
                 <List className={classes.list}>
 
                     {discussionsSorted.map(d => {
-                        const isSelected = this.props.selected && d.created === this.props.selected
-                        const showBadge = newestComment[d.created] > (this.props.newestViewedCommentTimestamp[d.created] || 0)
-                        const username = (this.props.users[ d.email ] || {}).name || d.email
-                        const userPicture = (this.props.users[ d.email ] || {}).picture
+                        const isSelected = this.props.selected && d.discussionID === this.props.selected
+                        const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
+                        const username = (this.props.users[ d.userID ] || {}).name || d.userID
+                        const userPicture = (this.props.users[ d.userID ] || {}).picture
                         return (
-                            <React.Fragment key={d.created}>
+                            <React.Fragment key={d.discussionID}>
                                 <ListItem
                                     button
                                     className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
-                                    onClick={() => this.props.selectDiscussion({ created: d.created })}
+                                    onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                                 >
                                     <ListItemText primary={d.subject} secondary={
                                         <React.Fragment>
@@ -67,7 +64,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                             }
                                             <div className={classes.sidebarListItemSubtext}>
                                                 <div className={classes.sidebarListItemModifiedDate}>
-                                                    {moment(newestComment[d.created]).fromNow()}
+                                                    {moment(newestComment[d.discussionID]).fromNow()}
                                                 </div>
                                                 <div className={classes.sidebarListItemAvatar}>
                                                     <UserAvatar username={username} userPicture={userPicture} />
@@ -81,7 +78,7 @@ class RepoDiscussionPage extends React.Component<Props>
                         )
                     })}
 
-                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ created: -1 })}>
+                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ discussionID: '<new discussion>' })}>
                         <ListItemText primary={'New Discussion'} />
                         <ListItemIcon>
                             <ControlPointIcon />
@@ -91,7 +88,7 @@ class RepoDiscussionPage extends React.Component<Props>
                 </List>
                 {newDiscussion &&
                     <div className={classes.threadPane}>
-                        <IconButton onClick={() => this.props.selectDiscussion({ created: undefined })} className={classes.closeNewDiscussionPanelButton}>
+                        <IconButton onClick={() => this.props.selectDiscussion({ discussionID: undefined })} className={classes.closeNewDiscussionPanelButton}>
                             <CancelIcon />
                         </IconButton>
                         <Typography variant="title" className={classes.startNewDiscussionPrompt}>Start a new discussion</Typography>
@@ -105,8 +102,8 @@ class RepoDiscussionPage extends React.Component<Props>
                         <Thread
                             repo={this.props.repo}
                             title={(selected as IDiscussion).subject}
-                            subject={(selected as IDiscussion).created}
-                            unselect={() => this.props.selectDiscussion({ created: undefined })}
+                            discussionID={(selected as IDiscussion).discussionID}
+                            unselect={() => this.props.selectDiscussion({ discussionID: undefined })}
                         />
                     </div>
                 }
@@ -119,12 +116,13 @@ interface Props {
     repoID: string
     repo: IRepo
     users: {[email: string]: IUser}
-    discussions: {[created: number]: IDiscussion}
-    comments: {[id: number]: IComment}
-    selected: number | undefined
-    newestViewedCommentTimestamp: {[discussionID: number]: number}
-    newestCommentTimestampPerDiscussion: {[discussionID: number]: number}
-    discussionIDsSortedByNewestComment: number[]
+    discussions: {[discussionID: string]: IDiscussion}
+    discussionsByRepo: {[repoID: string]: string[]}
+    comments: {[commentID: string]: IComment}
+    selected: string | undefined
+    newestViewedCommentTimestamp: {[discussionID: string]: number}
+    newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
+    discussionIDsSortedByNewestComment: string[]
 
     getDiscussions: typeof getDiscussions
     selectDiscussion: typeof selectDiscussion
@@ -203,19 +201,22 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selected = state.repository.selectedRepo || ''
-    const repo = state.repository.repos[selected] || {}
+    const repo = state.repository.repos[ state.repository.selectedRepo || '' ] || {}
     const repoID = repo.repoID || ''
-    const users = state.user.users
+    let selectedDiscussion = state.discussion.selected
+    if (selectedDiscussion && selectedDiscussion !== '<new discussion>' && (state.discussion.discussions[selectedDiscussion] || {}).repoID !== repoID) {
+        selectedDiscussion = undefined
+    }
     return {
         repo,
         repoID,
-        users,
-        discussions: state.discussion.discussions[repoID] || {},
-        comments: state.discussion.comments[repoID] || {},
-        selected: state.discussion.selected,
+        users: state.user.users,
+        discussions: state.discussion.discussions,
+        discussionsByRepo: state.discussion.discussionsByRepo,
+        comments: state.discussion.comments,
+        selected: selectedDiscussion,
         newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[repoID] || {}),
-        newestCommentTimestampPerDiscussion: (state.discussion.newestCommentTimestampPerDiscussion[repoID] || {}),
+        newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
 }

@@ -17,7 +17,7 @@ import {
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
-    fetchUserData, checkBalanceAndHitFaucet, getSharedRepos,
+    checkBalanceAndHitFaucet, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
@@ -30,51 +30,45 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         const { email, password } = action.payload
 
         // Login and set the JWT
-        const resp = await ServerRelay.login(email, password)
-        await UserData.setJWT(resp.jwt)
+        const { userID, emails, name, picture, jwt } = await ServerRelay.login(email, password)
+        await UserData.setJWT(jwt)
 
-        // Fetch the user's data
-        await dispatch(fetchUserData({ emails: [ email ] }))
         dispatch(checkBalanceAndHitFaucet())
-        dispatch(getSharedRepos({ email }))
-        // @@TODO: remove payload now that we're calling fetchUserData?
-        return { email: resp.email, name: resp.name }
+        dispatch(getSharedRepos({ userID }))
+
+        return { userID, emails, name, picture }
     },
 })
 
 const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
     type: UserActionType.SIGNUP,
     async process({ action }, dispatch) {
-        const { name, email, password } = action.payload
+        const { payload } = action
 
         const rpcClient = rpc.initClient()
-        const { signature } = await rpcClient.signMessageAsync({ message: new Buffer(email, 'utf8') })
+        const { signature } = await rpcClient.signMessageAsync({ message: new Buffer(payload.email, 'utf8') })
 
         const hexSignature = signature.toString('hex')
 
         // Create the user, login, and set the JWT
-        const resp = await ServerRelay.signup(name, email, password, hexSignature)
-        await UserData.set('jwt', resp.jwt)
+        const { userID, emails, name, jwt } = await ServerRelay.signup(payload.name, payload.email, payload.password, hexSignature)
+        await UserData.set('jwt', jwt)
 
         // Fetch the user's data
-        await dispatch(fetchUserData({ emails: [ email ] }))
         dispatch(checkBalanceAndHitFaucet())
-        dispatch(getSharedRepos({ email }))
-        // @@TODO: remove payload now that we're calling fetchUserData?
-        return { name: resp.name, email: resp.email }
+        dispatch(getSharedRepos({ userID }))
+
+        return { userID, emails, name, picture: undefined }
     },
 })
 
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
     type: UserActionType.FETCH_USER_DATA,
     async process({ action }) {
-        const userList = await ServerRelay.fetchUsers(action.payload.emails)
+        const userList = await ServerRelay.fetchUsers(action.payload.userIDs)
 
-        // // Convert the list into an object
-        const users = userList.reduce((into, each) => {
-            into[each.email] = each
-            return into
-        }, {} as {[email: string]: IUser})
+        // Convert the list into an object
+        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
 
         return { users }
     },
@@ -87,12 +81,12 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
         if (!jwt || jwt === '') {
             throw new Error('Not logged in')
         }
-        const resp = await ServerRelay.whoami(jwt)
+        ServerRelay.setJWT(jwt)
+        const { userID, emails, name, picture } = await ServerRelay.whoami()
 
-        await dispatch(fetchUserData({ emails: [ resp.email ] }))
         dispatch(checkBalanceAndHitFaucet())
-        dispatch(getSharedRepos({ email: resp.email }))
-        return { email: resp.email, name: resp.name }
+        dispatch(getSharedRepos({ userID }))
+        return { userID, emails, name, picture }
     },
 })
 
@@ -101,20 +95,19 @@ const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
         const { address } = await rpcClient.ethAddressAsync({})
-        console.log(address)
         let balance = await ServerRelay.getEthBalance(address)
-        if(balance < 1){
+        if (balance < 1) {
             await ServerRelay.hitEthFaucet(address)
             balance += 10
         }
         return { balance }
-    }
+    },
 })
 
 const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
     type: UserActionType.LOGOUT,
     async process() {
-        ServerRelay.removeJWT()
+        ServerRelay.setJWT(undefined)
         await UserData.setJWT(undefined)
         return {}
     },
@@ -123,8 +116,8 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
 const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSuccessAction>({
     type: UserActionType.FETCH_SHARED_REPOS,
     async process({ action }) {
-        const { email } = action.payload
-        const sharedRepoIDs = await ServerRelay.getSharedRepos(email)
+        const { userID } = action.payload
+        const sharedRepoIDs = await ServerRelay.getSharedRepos(userID)
         const ignoredList = await Promise.all( sharedRepoIDs.map(UserData.isRepoIgnored) )
         const sharedReposList = sharedRepoIDs.map((repoID, i) => ({
             repoID,
@@ -140,13 +133,13 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
     async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
         const state = getState()
-        const { name, email } = state.user.users[state.user.currentUser||""]
+        const { name, email } = state.user.users[state.user.currentUser || '']
 
         const rpcClient = rpc.initClient()
         const { path } = await rpcClient.cloneRepoAsync({
             repoID: repoID,
             name: name,
-            email: email
+            email: email,
          })
         await dispatch(selectRepo({ repoID, path }))
         return {}

@@ -21,33 +21,36 @@ import checkVisible from 'utils/checkVisible'
 @autobind
 class Thread extends React.Component<Props>
 {
-    _intervalID = -1
+    _intervalID: NodeJS.Timer | undefined
     _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
 
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
         // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
         const checkSeenComments = () => {
-            let mostRecentVisible = -1
+            let mostRecentVisible = { commentID: '', created: -1 } as {commentID: string, created: number}
+
             for (let commentID of Object.keys(this._commentRefs)) {
                 // Sometimes refs are null, probably when an element hasn't been rendered yet
                 if (this._commentRefs[commentID] === null || this._commentRefs[commentID] === undefined ||
                     this._commentRefs[commentID].ref === null || this._commentRefs[commentID].ref === undefined) {
                     continue
                 }
-                if (checkVisible(this._commentRefs[commentID].ref) && this._commentRefs[commentID].created > mostRecentVisible) {
-                    mostRecentVisible = this._commentRefs[commentID].created
+                if (checkVisible(this._commentRefs[commentID].ref) && this._commentRefs[commentID].created > mostRecentVisible.created) {
+                    mostRecentVisible = { commentID, created: this._commentRefs[commentID].created }
                 }
             }
-            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.subject, commentID: mostRecentVisible })
+            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentID: mostRecentVisible.commentID })
         }
         this._intervalID = setInterval(checkSeenComments, 5000)
         checkSeenComments()
     }
 
     componentWillUnmount() {
-        clearInterval(this._intervalID)
-        this._intervalID = -1
+        if (this._intervalID) {
+            clearInterval(this._intervalID)
+            this._intervalID = undefined
+        }
     }
 
     async handleSubmit(comment: string) {
@@ -56,17 +59,14 @@ class Thread extends React.Component<Props>
         }
         await this.props.createComment({
             repoID: this.props.repo.repoID,
+            discussionID: this.props.discussionID,
             text: comment,
-            attachedTo: {
-                type: 'discussion',
-                subject: this.props.subject,
-            },
         })
     }
 
     render() {
         const { classes, title, comments } = this.props
-        const commentsList = values(comments).filter(c => c.attachedTo.subject === this.props.subject)
+        const commentsList = values(comments).filter(c => c.discussionID === this.props.discussionID)
 
         return (
             <div className={classes.threadContainer}>
@@ -85,8 +85,8 @@ class Thread extends React.Component<Props>
                             <Typography className={classes.comment}>No comments yet. Start the discussion!</Typography>
                         }
                         {commentsList.map(c => {
-                            const username = (this.props.users[c.user] || {}).name || c.user
-                            const userPicture = (this.props.users[c.user] || {}).picture
+                            const username = (this.props.users[c.userID] || {}).name || c.userID
+                            const userPicture = (this.props.users[c.userID] || {}).picture
                             return (
                                 <CommentWrapper
                                     key={c.created}
@@ -121,15 +121,15 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     title: string
-    subject: number
+    discussionID: string
     repo: IRepo
     unselect?: Function
 }
 
 interface StateProps {
-    users: {[id: string]: IUser}
-    comments: {[id: string]: IComment}
-    discussions: {[created: number]: IDiscussion}
+    users: {[userID: string]: IUser}
+    comments: {[commentID: string]: IComment}
+    discussions: {[discussionID: string]: IDiscussion}
     username: string | undefined
     userPicture: string | undefined
     newestViewedCommentTimestamp: number
@@ -173,13 +173,13 @@ const styles = (theme: Theme) => createStyles({
 
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const discussions = state.discussion.discussions[ownProps.repo.repoID] || {}
+    const discussions = state.discussion.discussions || {}
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     const userPicture = (state.user.users[ state.user.currentUser || '' ] || {}).picture
     return {
-        comments: state.discussion.comments[ownProps.repo.repoID] || {},
+        comments: state.discussion.comments,
         users: state.user.users,
-        newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[ownProps.repo.repoID] || {})[ownProps.subject] || -1,
+        newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[ownProps.repo.repoID] || {})[ownProps.discussionID] || -1,
         discussions,
         username: username,
         userPicture: userPicture,

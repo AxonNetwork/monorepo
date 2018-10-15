@@ -44,28 +44,25 @@ export interface ITimelineEvent {
 }
 
 export interface IComment {
+    commentID: string
     repoID: string
+    userID: string
+    discussionID: string
     created: number
     text: string
-    user: string
-    attachedTo: IAttachedTo
-}
-
-export interface IAttachedTo {
-    type: 'discussion'
-    // subject: string | number
-    subject: number
 }
 
 export interface IDiscussion {
+    discussionID: string
     repoID: string
+    userID: string
     created: number
-    email: string
     subject: string
 }
 
 export interface IUser {
-    email: string
+    userID: string
+    emails: string[]
     name: string
     picture: string
     repos: string[]

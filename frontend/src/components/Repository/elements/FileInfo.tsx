@@ -1,5 +1,4 @@
 import React from 'react'
-import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from './FileList/Breadcrumbs'

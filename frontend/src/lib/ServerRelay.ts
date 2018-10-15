@@ -1,71 +1,84 @@
+import querystring from 'querystring'
 import axios from 'axios'
-import { IUser, IComment, IAttachedTo, IDiscussion } from '../common'
+import { IUser, IComment, IDiscussion } from '../common'
 
 // @@TODO: this should come from process.env
 // const API_URL = 'http://demo.conscience.network/api',
 const API_URL = 'http://localhost:8080/api'
 
 const ServerRelay = {
-    setJWT(token: string) {
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-    },
-
-    removeJWT() {
-        axios.defaults.headers.common['Authorization'] = undefined
+    setJWT(token: string | undefined) {
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+        } else {
+            axios.defaults.headers.common['Authorization'] = undefined
+        }
     },
 
     async login(email: string, password: string) {
         interface IResponse {
+            userID: string
+            email: string
             name: string
+            picture: string
             token: string
         }
 
-        let response
+        let resp
         try {
-            response = await axios.post<IResponse>(API_URL + '/login', { email, password })
+            resp = await axios.post<IResponse>(API_URL + '/login', { email, password })
         } catch (err) {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(response.data.token)
+        ServerRelay.setJWT(resp.data.token)
         return {
-            email: email,
-            name: response.data.name,
-            jwt: response.data.token,
+            userID: resp.data.userID,
+            email: resp.data.email,
+            name: resp.data.name,
+            picture: resp.data.picture,
+            jwt: resp.data.token,
         }
     },
 
     async signup(name: string, email: string, password: string, hexSignature: string) {
         interface IResponse {
+            userID: string
+            email: string
+            name: string
             token: string
         }
 
-        let response
+        let resp
         try {
-            response = await axios.post<IResponse>(API_URL + '/create-user', { name, email, password, hexSignature })
+            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, email, password, hexSignature })
         } catch (err) {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(response.data.token)
+        ServerRelay.setJWT(resp.data.token)
         return {
-            email,
-            name,
-            jwt: response.data.token,
+            userID: resp.data.userID,
+            email: resp.data.email,
+            name: resp.data.name,
+            jwt: resp.data.token,
         }
     },
 
-    async whoami(jwt: string) {
+    async whoami() {
         interface IResponse {
+            userID: string
             name: string
-            email: string
+            emails: string[]
+            picture: string
         }
 
-        ServerRelay.setJWT(jwt)
-        const response = await axios.get<IResponse>(API_URL + '/whoami?jwt=' + jwt)
+        const response = await axios.get<IResponse>(API_URL + '/whoami')
         return {
-            email: response.data.email,
+            userID: response.data.userID,
+            emails: response.data.emails,
             name: response.data.name,
+            picture: response.data.picture,
         }
     },
 
@@ -73,15 +86,15 @@ const ServerRelay = {
         interface IResponse {
             balance: number
         }
-        const resp = await axios.get<IResponse>(API_URL + "/balance?address=" + address)
+        const resp = await axios.get<IResponse>(API_URL + '/balance?address=' + address)
         return resp.data.balance
     },
 
     async hitEthFaucet(address: string) {
         interface IResponse { }
-        await axios.post<IResponse>(API_URL + "/faucet", {
+        await axios.post<IResponse>(API_URL + '/faucet', {
             address: address,
-            amount: 10
+            amount: 10,
         })
     },
 
@@ -90,35 +103,35 @@ const ServerRelay = {
         await axios.post<IResponse>(API_URL + '/create-repo', { repoID })
     },
 
-    async shareRepo(repoID: string, email: string) {
+    async shareRepo(repoID: string, userID: string) {
         interface IResponse {
             message: string
         }
-        await axios.post<IResponse>(API_URL + '/share-repo', { repoID, email })
+        await axios.post<IResponse>(API_URL + '/share-repo', { repoID, userID })
     },
 
     async getSharedUsers(repoID: string) {
         interface IResponse {
-            sharedUsers: { name: string, email: string }[]
+            sharedUsers: { name: string, userID: string }[]
         }
 
         const response = await axios.get<IResponse>(API_URL + '/shared-users?repoID=' + repoID)
         return response.data.sharedUsers
     },
 
-    async unshareRepo(repoID: string, email: string) {
+    async unshareRepo(repoID: string, userID: string) {
         interface IResponse {
             message: string
         }
-        await axios.post<IResponse>(API_URL + '/unshare-repo', { repoID, email })
+        await axios.post<IResponse>(API_URL + '/unshare-repo', { repoID, userID })
     },
 
-    async getSharedRepos(email: string) {
+    async getSharedRepos(userID: string) {
         interface IResponse {
             sharedRepos: string[]
         }
 
-        const response = await axios.get<IResponse>(API_URL + '/shared-repos?email=' + email)
+        const response = await axios.get<IResponse>(API_URL + '/shared-repos?userID=' + userID)
         return response.data.sharedRepos
     },
 
@@ -131,12 +144,12 @@ const ServerRelay = {
         return response.data.discussions
     },
 
-    async getCommentsForRepo(repoID: string) {
+    async getCommentsForDiscussion(discussionID: string) {
         interface IResponse {
             comments: IComment[]
         }
 
-        const response = await axios.get<IResponse>(API_URL + '/all-comments?repoID=' + repoID)
+        const response = await axios.get<IResponse>(API_URL + '/all-comments?discussionID=' + discussionID)
         return response.data.comments
     },
 
@@ -150,32 +163,26 @@ const ServerRelay = {
         return response.data
     },
 
-    async createComment(repoID: string, text: string, attachedTo: IAttachedTo) {
+    async createComment(repoID: string, discussionID: string, text: string) {
         interface IResponse {
             newComment: IComment
         }
-        const response = await axios.post<IResponse>(API_URL + '/create-comment', { repoID, text, attachedTo })
+        const response = await axios.post<IResponse>(API_URL + '/create-comment', { repoID, discussionID, text })
         return response.data.newComment
     },
 
-    async fetchUsers(emails: string[]) {
-        // @@TODO: use querystring module
-        let queryString = '?'
-        for (let i = 0; i < emails.length; i++) {
-            if (i > 0) {
-                queryString += '&'
-            }
-            queryString += 'emails=' + emails[i]
-        }
-        const response = await axios.get(API_URL + '/users' + queryString)
+    async fetchUsers(userIDs: string[]) {
+        const response = await axios.get(API_URL + '/users?' + querystring.stringify({ userIDs }))
         return response.data as IUser[]
     },
 
-    async uploadUserPicture(fileInput: any) {
+    async uploadUserPicture(fileInput: HTMLInputElement) {
         interface IResponse {
             picture: string
             userID: string
         }
+
+        if (!fileInput.files) { throw new Error('no files') }
 
         const formData = new FormData()
         formData.append('user-photo', fileInput.files[0])
@@ -184,8 +191,13 @@ const ServerRelay = {
         })
         return resp.data
     },
+
+    async addEmail(email: string) {
+        await axios.post<{}>(API_URL + '/user-email/add', { email })
+    },
 }
 
+window.ServerRelay = ServerRelay
 axios.defaults.timeout = 10000
 
 export default ServerRelay

@@ -57,6 +57,7 @@ interface Props {
 const styles = () => createStyles({
     embeddedImage: {
         maxWidth: '100%',
+        display: 'block',
     },
     wrapper: {
         '& code': {

@@ -2,14 +2,14 @@ import React from 'react'
 import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Avatar from '@material-ui/core/Avatar'
 import Tooltip from '@material-ui/core/Tooltip'
 import LinkIcon from '@material-ui/icons/Link'
 
 import RevertFilesDialog from './RevertFilesDialog'
+import UserAvatar from 'components/UserAvatar'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
-import { removeEmail, getUserInitials, strToColor } from 'utils'
+import { removeEmail, extractEmail } from 'utils'
 
 
 @autobind
@@ -29,8 +29,9 @@ class TimelineEvent extends React.Component<Props, State>
 
     render() {
         const { event, classes } = this.props
-        const username = removeEmail(event.user)
-        const avatarColor = strToColor(event.user)
+        // const username = removeEmail(event.user)
+        // const email = extractEmail(event.user)
+
         return (
             <React.Fragment>
                 <div className={classes.event}>
@@ -46,7 +47,7 @@ class TimelineEvent extends React.Component<Props, State>
                         </div>
                     }
                     <div className={classes.eventIconContainer}>
-                        <Avatar style={{ backgroundColor: avatarColor }} className={classes.avatar}>{getUserInitials(username)}</Avatar>
+                        <UserAvatar username={this.props.username} userPicture={this.props.userPicture} className={classes.avatar} />
                     </div>
                     <div className={classes.eventDescription}>
                         <Typography className={classes.commitMessage}>{event.message}</Typography>
@@ -72,6 +73,8 @@ interface Props {
     repoRoot: string
     getDiff: Function
     revertFiles: Function
+    username: string | undefined
+    userPicture: string | undefined
     classes: any
 }
 
