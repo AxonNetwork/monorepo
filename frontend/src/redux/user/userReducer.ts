@@ -38,11 +38,12 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.SIGNUP_SUCCESS:
         case UserActionType.CHECK_LOCAL_USER_SUCCESS:
         case UserActionType.CHECK_NODE_USER_SUCCESS:
-            const { userID, emails, name, picture } = action.payload
+            const { userID, emails, name, username, picture } = action.payload
             const user = state.users[userID] || {
                 userID,
                 emails,
                 name,
+                username,
                 picture,
                 repos: [],
             }
@@ -68,7 +69,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 checkedLocalUser: true,
             }
 
-        case UserActionType.CHECK_NODE_USER_SUCCESS:
+        case UserActionType.GOT_NODE_USERNAME:
             return {
                 ...state,
                 nodeUsername: action.payload.username,
@@ -81,6 +82,19 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                     ...state.users,
                     ...action.payload.users,
                 },
+            }
+
+        case UserActionType.FETCH_USER_DATA_BY_EMAIL_SUCCESS:
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    ...action.payload.users
+                },
+                usersByEmail: {
+                    ...state.usersByEmail,
+                    ...action.payload.usersByEmail
+                }
             }
 
         case UserActionType.LOGIN_FAILED:

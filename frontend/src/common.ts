@@ -64,6 +64,7 @@ export interface IUser {
     userID: string
     emails: string[]
     name: string
+    username: string
     picture: string
     repos: string[]
 }

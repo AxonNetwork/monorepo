@@ -6,6 +6,7 @@ import {
     ILoginAction, ILoginSuccessAction,
     ISignupAction, ISignupSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
+    IFetchUserDataByEmailAction, IFetchUserDataByEmailSuccessAction,
     ICheckLocalUserAction, ICheckLocalUserSuccessAction,
     ICheckNodeUserAction, ICheckNodeUserSuccessAction,
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
@@ -19,8 +20,7 @@ import {
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
-    checkBalanceAndHitFaucet, getSharedRepos,
-    gotNodeUsername,
+    getSharedRepos, gotNodeUsername,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
@@ -33,12 +33,12 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         const { email, password } = action.payload
 
         // Login and set the JWT
-        const { userID, emails, name, picture, jwt } = await ServerRelay.login(email, password)
+        const { userID, emails, name, username, picture, jwt } = await ServerRelay.login(email, password)
         await UserData.setJWT(jwt)
 
         dispatch(getSharedRepos({ userID }))
 
-        return { userID, emails, name, picture }
+        return { userID, emails, name, username, picture }
     },
 })
 
@@ -53,25 +53,48 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
         const hexSignature = signature.toString('hex')
 
         // Create the user, login, and set the JWT
-        const { userID, emails, name, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature)
+        const { userID, emails, name, username, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature)
         await UserData.set('jwt', jwt)
 
         // Fetch the user's data
         dispatch(getSharedRepos({ userID }))
 
-        return { userID, emails, name, picture: undefined }
+        return { userID, emails, name, username, picture: undefined }
     },
 })
 
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
     type: UserActionType.FETCH_USER_DATA,
-    async process({ action }) {
-        const userList = await ServerRelay.fetchUsers(action.payload.userIDs)
+    async process({ action, getState }) {
+        const inRedux = Object.keys(getState().user.users)
+        const toFetch = action.payload.userIDs.filter(id => !inRedux.includes(id))
+        const userList = await ServerRelay.fetchUsers(toFetch)
 
         // Convert the list into an object
         const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
 
         return { users }
+    },
+})
+
+const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchUserDataByEmailsSuccessAction>({
+    type: UserActionType.FETCH_USER_DATA_BY_EMAIL,
+    async process({ action, getState }) {
+        const inRedux = Object.keys(getState().user.users)
+        const toFetch = action.payload.emails.filter(id => !inRedux.includes(id))
+        const userList = await ServerRelay.fetchUsersByEmail(toFetch)
+
+        let usersByEmail = {} as {[email: string]: string}
+        for(let i=0; i<userList.length; i++){
+            const user = userList[i]
+            for(let j=0; j<user.emails.length; j++){
+                usersByEmail[user.emails[j]] = user.userID
+            }
+        }
+        // Convert the list into an object
+        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
+
+        return { users, usersByEmail }
     },
 })
 
@@ -83,10 +106,10 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
             throw new Error('Not logged in')
         }
         ServerRelay.setJWT(jwt)
-        const { userID, emails, name, picture } = await ServerRelay.whoami()
+        const { userID, emails, name, username, picture } = await ServerRelay.whoami()
 
         dispatch(getSharedRepos({ userID }))
-        return { userID, emails, name, picture }
+        return { userID, emails, name, username, picture }
     },
 })
 
@@ -243,6 +266,7 @@ export default [
     loginLogic,
     signupLogic,
     fetchUserDataLogic,
+    fetchUserDataByEmailLogic,
     checkLocalUserLogic,
     checkNodeUserLogic,
     checkBalanceAndHitFaucetLogic,

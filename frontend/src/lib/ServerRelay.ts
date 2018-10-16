@@ -20,6 +20,7 @@ const ServerRelay = {
             userID: string
             emails: string[]
             name: string
+            username: string
             picture: string
             token: string
         }
@@ -36,6 +37,7 @@ const ServerRelay = {
             userID: resp.data.userID,
             emails: resp.data.emails,
             name: resp.data.name,
+            username: resp.data.username,
             picture: resp.data.picture,
             jwt: resp.data.token,
         }
@@ -46,6 +48,7 @@ const ServerRelay = {
             userID: string
             emails: string[]
             name: string
+            username: string
             picture: string
             token: string
         }
@@ -62,6 +65,7 @@ const ServerRelay = {
             userID: resp.data.userID,
             emails: resp.data.emails,
             name: resp.data.name,
+            username: resp.data.username,
             picture: resp.data.picture,
             jwt: resp.data.token,
         }
@@ -73,6 +77,7 @@ const ServerRelay = {
             userID: string
             emails: string[]
             name: string
+            username: string
             token: string
         }
 
@@ -88,6 +93,7 @@ const ServerRelay = {
             userID: resp.data.userID,
             emails: resp.data.emails,
             name: resp.data.name,
+            username: resp.data.username,
             jwt: resp.data.token,
         }
     },
@@ -96,6 +102,7 @@ const ServerRelay = {
         interface IResponse {
             userID: string
             name: string
+            username: string
             emails: string[]
             picture: string
         }
@@ -105,6 +112,7 @@ const ServerRelay = {
             userID: response.data.userID,
             emails: response.data.emails,
             name: response.data.name,
+            username: response.data.username,
             picture: response.data.picture,
         }
     },
@@ -200,6 +208,11 @@ const ServerRelay = {
 
     async fetchUsers(userIDs: string[]) {
         const response = await axios.get(API_URL + '/users?' + querystring.stringify({ userIDs }))
+        return response.data as IUser[]
+    },
+
+    async fetchUsersByEmail(emails: string[]) {
+        const response = await axios.get(API_URL + '/users-by-email?' + querystring.stringify({ emails }))
         return response.data as IUser[]
     },
 

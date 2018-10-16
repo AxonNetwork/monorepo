@@ -21,10 +21,12 @@ import { RepoActionType,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
 import { getDiscussions, getCommentsForRepo } from '../discussion/discussionActions'
+import { fetchUserDataByEmail } from '../user/userActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import * as rpc from '../../rpc'
+import { dispatch } from 'rxjs/internal/observable/pairs';
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -241,9 +243,13 @@ const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
 
 const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
     type: RepoActionType.ADD_COLLABORATOR,
-    async process({ action }) {
+    async process({ action, getState }, dispatch) {
         const { repoID, email, folderPath } = action.payload
-        const username = '' // @@TODO
+        const user = (await ServerRelay.fetchUsersByEmail([ email ]))[0]
+        if(user === undefined){
+            throw new Error("user does not exist")
+        }
+        const username = user.username
         const rpcClient = rpc.initClient()
         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
         await ServerRelay.shareRepo(repoID, email)
