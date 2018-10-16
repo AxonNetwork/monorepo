@@ -29,15 +29,9 @@ class TimelineEvent extends React.Component<Props, State>
 
     render() {
         const { event, classes } = this.props
-        // const username = removeEmail(event.user)
-        // const email = extractEmail(event.user)
-
         return (
             <React.Fragment>
                 <div className={classes.event}>
-                    {/*<IconButton className={classes.menuButton} onClick={this.handleClick}>
-                        <MoreVertIcon />
-                    </IconButton>*/}
                     <div className={classes.topline}></div>
                     {event.verified !== undefined &&
                         <div className={classes.linkIconContainer}>
@@ -85,8 +79,7 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     event: {
         position: 'relative',
-        // paddingTop: '24px',
-        padding: '10px 0 20px',
+        padding: '18px 0 12px',
         marginLeft: '24px',
     },
     topline: {
@@ -102,8 +95,8 @@ const styles = (theme: Theme) => createStyles({
     },
     linkIconContainer: {
         position: 'absolute',
-        top: 24,
-        left: 28,
+        top: 18,
+        left: 30,
         borderRadius: '50%',
         width: 18,
         height: 18,
@@ -112,7 +105,7 @@ const styles = (theme: Theme) => createStyles({
     },
     eventIconContainer: {
         position: 'absolute',
-        top: '32px',
+        top: '22px',
         zIndex: 1,
     },
     avatar: {
