@@ -58,6 +58,10 @@ export enum UserActionType {
     UPLOAD_USER_PICTURE = 'UPLOAD_USER_PICTURE',
     UPLOAD_USER_PICTURE_SUCCESS = 'UPLOAD_USER_PICTURE_SUCCESS',
     UPLOAD_USER_PICTURE_FAILED = 'UPLOAD_USER_PICTURE_FAILED',
+
+    MODIFY_USER_EMAIL = 'MODIFY_USER_EMAIL',
+    MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
+    MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
 }
 
 export interface ILoginAction {
@@ -291,6 +295,26 @@ export interface IUploadUserPictureSuccessAction {
 
 export type IUploadUserPictureFailedAction = FailedAction<UserActionType.UPLOAD_USER_PICTURE_FAILED>
 
+export interface IModifyUserEmailAction {
+    type: UserActionType.MODIFY_USER_EMAIL
+    payload: {
+        userID: string
+        email: string
+        add: boolean,
+    }
+}
+
+export interface IModifyUserEmailSuccessAction {
+    type: UserActionType.MODIFY_USER_EMAIL_SUCCESS
+    payload: {
+        userID: string
+        email: string
+        add: boolean,
+    }
+}
+
+export type IModifyUserEmailFailedAction = FailedAction<UserActionType.MODIFY_USER_EMAIL_FAILED>
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -346,7 +370,11 @@ export type IUserAction =
 
     IUploadUserPictureAction |
     IUploadUserPictureSuccessAction |
-    IUploadUserPictureFailedAction
+    IUploadUserPictureFailedAction |
+
+    IModifyUserEmailAction |
+    IModifyUserEmailSuccessAction |
+    IModifyUserEmailFailedAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -366,5 +394,6 @@ export const hideMenuLabels = (payload: IHideMenuLabelsAction['payload']): IHide
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 
 export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
+export const modifyUserEmail = (payload: IModifyUserEmailAction['payload']): IModifyUserEmailAction => ({ type: UserActionType.MODIFY_USER_EMAIL, payload })
 
 

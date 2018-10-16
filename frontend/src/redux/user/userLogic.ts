@@ -17,6 +17,7 @@ import {
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
+    IModifyUserEmailAction, IModifyUserEmailSuccessAction,
     checkBalanceAndHitFaucet, getSharedRepos,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
@@ -210,6 +211,15 @@ const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPi
     },
 })
 
+const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailSuccessAction>({
+    type: UserActionType.MODIFY_USER_EMAIL,
+    async process({ action }) {
+        const { userID, email, add } = action.payload
+        await ServerRelay.modifyEmail(email, add)
+        return { userID, email, add }
+    },
+})
+
 export default [
     loginLogic,
     signupLogic,
@@ -225,4 +235,5 @@ export default [
     setCodeColorSchemeLogic,
     hideMenuLabelsLogic,
     uploadUserPictureLogic,
+    modifyUserEmailLogic,
 ]

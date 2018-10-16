@@ -9,6 +9,7 @@ import store from './redux/store'
 import { readLocalConfig, checkLocalUser } from 'redux/user/userActions'
 import { getLocalRepos } from 'redux/repository/repoActions'
 import { isProduction } from 'utils'
+import 'typeface-roboto'
 
 store.dispatch(readLocalConfig())
 store.dispatch(checkLocalUser())

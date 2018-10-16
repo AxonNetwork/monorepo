@@ -192,12 +192,11 @@ const ServerRelay = {
         return resp.data
     },
 
-    async addEmail(email: string) {
-        await axios.post<{}>(API_URL + '/user-email/add', { email })
+    async modifyEmail(email: string, add: boolean) {
+        await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
 }
 
-window.ServerRelay = ServerRelay
 axios.defaults.timeout = 10000
 
 export default ServerRelay

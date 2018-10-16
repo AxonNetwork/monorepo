@@ -157,9 +157,10 @@ const styles = (theme: Theme) => createStyles({
             color: 'inherit',
             textTransform: 'none',
             minWidth: 'unset',
-            padding: '6px 16px 0',
+            padding: '0 16px',
             borderRadius: 0,
             height: '100%',
+            fontWeight: 400,
         },
         '& button:hover': {
             backgroundColor: 'inherit',

@@ -165,6 +165,20 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.MODIFY_USER_EMAIL_SUCCESS: {
+            const { userID, email, add } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        emails: add ? ((state.users[userID] || {}).emails || []).concat(email) : ((state.users[userID] || {}).emails || []).filter(x => x !== email),
+                    },
+                },
+            }
+        }
+
         default:
             return state
     }
