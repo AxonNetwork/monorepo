@@ -4,7 +4,7 @@ export default function checkVisible(elm: any, threshold?: number, mode?: 'visib
     mode = mode || 'visible'
 
     const rect = elm.getBoundingClientRect()
-    if(document.documentElement === null){
+    if (document.documentElement === null) {
         return false
     }
     const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight)
