@@ -6,13 +6,14 @@ import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 import store from './redux/store'
-import { readLocalConfig, checkLocalUser } from 'redux/user/userActions'
+import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
 import { getLocalRepos } from 'redux/repository/repoActions'
 import { isProduction } from 'utils'
 import 'typeface-roboto'
 
 store.dispatch(readLocalConfig())
-store.dispatch(checkLocalUser())
+store.dispatch(checkBalanceAndHitFaucet())
+store.dispatch(checkNodeUser())
 store.dispatch(getLocalRepos())
 
 // Webpack offline plugin

@@ -19,6 +19,7 @@ class LoginPage extends React.Component<Props, State> {
     state = {
         displaySignup: false,
         name: '',
+        username: '',
         password: '',
         email: ''
     }
@@ -41,7 +42,7 @@ class LoginPage extends React.Component<Props, State> {
     handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (this.state.displaySignup) {
-            this.props.signup({name: this.state.name, email: this.state.email, password: this.state.password})
+            this.props.signup({name: this.state.name, username: this.state.username, email: this.state.email, password: this.state.password})
         }else {
             this.props.login({email: this.state.email, password: this.state.password})
         }
@@ -59,14 +60,25 @@ class LoginPage extends React.Component<Props, State> {
                         </Typography>
                         <form noValidate autoComplete="off" onSubmit={this.handleSubmit}>
                             {this.state.displaySignup &&
-                                <TextField
-                                    id="name"
-                                    label="Name"
-                                    value={this.state.name}
-                                    onChange={this.handleChange('name')}
-                                    className={classes.textField}
-                                    error={!!error}
-                                />
+                                <React.Fragment>
+                                    <TextField
+                                        id="username"
+                                        label="Username"
+                                        disabled={!!this.props.nodeUsername}
+                                        value={this.props.nodeUsername || this.state.username}
+                                        onChange={this.handleChange('username')}
+                                        className={classes.textField}
+                                        error={!!error}
+                                    />
+                                    <TextField
+                                        id="name"
+                                        label="Full Name"
+                                        value={this.state.name}
+                                        onChange={this.handleChange('name')}
+                                        className={classes.textField}
+                                        error={!!error}
+                                    />
+                                </React.Fragment>
                             }
                             <TextField
                                 id="email"
@@ -105,6 +117,7 @@ class LoginPage extends React.Component<Props, State> {
 
 interface Props {
     error: Error|undefined
+    nodeUsername: string | undefined
     login: Function
     signup: Function
     classes: any
@@ -180,7 +193,8 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        error: state.user.error
+        error: state.user.error,
+        nodeUsername: state.user.nodeUsername
     }
 }
 

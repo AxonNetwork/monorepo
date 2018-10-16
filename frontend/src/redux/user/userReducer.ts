@@ -6,6 +6,7 @@ const initialState = {
     users: {},
     usersByEmail: {},
     currentUser: undefined,
+    nodeUsername: undefined,
     error: undefined,
     sharedRepos: {},
     codeColorScheme: undefined,
@@ -18,6 +19,7 @@ export interface IUserState {
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string} // value is userID
     currentUser: string | undefined
+    nodeUsername: string | undefined
     error: Error | undefined
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
     codeColorScheme: string | undefined
@@ -35,6 +37,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
         case UserActionType.CHECK_LOCAL_USER_SUCCESS:
+        case UserActionType.CHECK_NODE_USER_SUCCESS:
             const { userID, emails, name, picture } = action.payload
             const user = state.users[userID] || {
                 userID,
@@ -58,10 +61,17 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 checkedLocalUser: true,
             }
 
+        case UserActionType.CHECK_NODE_USER_FAILED:
         case UserActionType.CHECK_LOCAL_USER_FAILED:
             return {
                 ...state,
                 checkedLocalUser: true,
+            }
+
+        case UserActionType.CHECK_NODE_USER_SUCCESS:
+            return {
+                ...state,
+                nodeUsername: action.payload.username,
             }
 
         case UserActionType.FETCH_USER_DATA_SUCCESS:

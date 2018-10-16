@@ -23,6 +23,11 @@ export enum UserActionType {
     CHECK_LOCAL_USER_SUCCESS = 'CHECK_LOCAL_USER_SUCCESS',
     CHECK_LOCAL_USER_FAILED = 'CHECK_LOCAL_USER_FAILED',
 
+    CHECK_NODE_USER = 'CHECK_NODE_USER',
+    CHECK_NODE_USER_SUCCESS = 'CHECK_NODE_USER_SUCCESS',
+    CHECK_NODE_USER_FAILED = 'CHECK_NODE_USER_FAILED',
+    GOT_NODE_USERNAME = 'GOT_NODE_USERNAME',
+
     CHECK_BALANCE_AND_HIT_FAUCET = 'CHECK_BALANCE_AND_HIT_FAUCET',
     CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS = 'CHECK_BALANCE_AND_HIT_FAUCET_SUCCESS',
     CHECK_BALANCE_AND_HIT_FAUCET_FAILED = 'CHECK_BALANCE_AND_HIT_FAUCET_FAILED',
@@ -100,6 +105,7 @@ export interface ISignupAction {
     type: UserActionType.SIGNUP
     payload: {
         name: string
+        username: string
         email: string
         password: string,
     }
@@ -110,6 +116,7 @@ export interface ISignupSuccessAction {
     payload: {
         userID: string
         emails: string[]
+        username: string
         name: string
         picture: string,
     }
@@ -144,11 +151,36 @@ export interface ICheckLocalUserSuccessAction {
         userID: string
         emails: string[]
         name: string
-        picture: string,
+        picture: string
     }
 }
 
 export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCAL_USER_FAILED>
+
+export interface ICheckNodeUserAction {
+    type: UserActionType.CHECK_NODE_USER
+    payload: {}
+}
+
+export interface ICheckNodeUserSuccessAction {
+    type: UserActionType.CHECK_NODE_USER_SUCCESS
+    payload: {
+        userID: string
+        emails: string[]
+        name: string
+        picture: string
+        username: string
+    }
+}
+
+export type ICheckNodeUserFailedAction = FailedAction<UserActionType.CHECK_NODE_USER_FAILED>
+
+export interface IGotNodeUsernameAction {
+    type: UserActionType.GOT_NODE_USERNAME
+    payload: {
+        username: string
+    }
+}
 
 export interface ICheckBalanceAndHitFaucetAction {
     type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET
@@ -336,6 +368,10 @@ export type IUserAction =
     ICheckLocalUserSuccessAction |
     ICheckLocalUserFailedAction |
 
+    ICheckNodeUserAction |
+    ICheckNodeUserSuccessAction |
+    ICheckNodeUserFailedAction |
+
     ICheckBalanceAndHitFaucetAction |
     ICheckBalanceAndHitFaucetSuccessAction |
     ICheckBalanceAndHitFaucetFailedAction |
@@ -381,6 +417,8 @@ export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, paylo
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, payload: {}})
+export const checkNodeUser = () => ({ type: UserActionType.CHECK_NODE_USER, payload: {}})
+export const gotNodeUsername = (payload: IGotNodeUsernameAction['payload']) => ({ type: UserActionType.GOT_NODE_USERNAME, payload})
 export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET, payload: {}})
 
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })

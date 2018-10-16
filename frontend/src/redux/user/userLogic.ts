@@ -7,6 +7,7 @@ import {
     ISignupAction, ISignupSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
     ICheckLocalUserAction, ICheckLocalUserSuccessAction,
+    ICheckNodeUserAction, ICheckNodeUserSuccessAction,
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
@@ -19,6 +20,7 @@ import {
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
     checkBalanceAndHitFaucet, getSharedRepos,
+    gotNodeUsername,
 } from './userActions'
 import { selectRepo } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
@@ -34,7 +36,6 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         const { userID, emails, name, picture, jwt } = await ServerRelay.login(email, password)
         await UserData.setJWT(jwt)
 
-        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ userID }))
 
         return { userID, emails, name, picture }
@@ -47,16 +48,15 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
         const { payload } = action
 
         const rpcClient = rpc.initClient()
-        const { signature } = await rpcClient.signMessageAsync({ message: new Buffer(payload.email, 'utf8') })
+        const { signature } = await rpcClient.setUsernameAsync({ username: payload.username })
 
         const hexSignature = signature.toString('hex')
 
         // Create the user, login, and set the JWT
-        const { userID, emails, name, jwt } = await ServerRelay.signup(payload.name, payload.email, payload.password, hexSignature)
+        const { userID, emails, name, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature)
         await UserData.set('jwt', jwt)
 
         // Fetch the user's data
-        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ userID }))
 
         return { userID, emails, name, picture: undefined }
@@ -85,10 +85,29 @@ const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSucc
         ServerRelay.setJWT(jwt)
         const { userID, emails, name, picture } = await ServerRelay.whoami()
 
-        dispatch(checkBalanceAndHitFaucet())
         dispatch(getSharedRepos({ userID }))
         return { userID, emails, name, picture }
     },
+})
+
+const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
+    type: UserActionType.CHECK_NODE_USER,
+    async process(_, dispatch) {
+        const rpcClient = rpc.initClient()
+        const { username, signature } = await rpcClient.getUsernameAsync({})
+
+        if(!username || username === ''){
+            throw new Error("No node user")
+        }else {
+            dispatch(gotNodeUsername({username}))
+        }
+
+        const hexSignature = signature.toString('hex')
+        const { userID, emails, name, picture } = await ServerRelay.loginWithKey(username, hexSignature)
+
+        dispatch(getSharedRepos({ userID }))
+        return { userID, emails, name, picture, username }
+    }
 })
 
 const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
@@ -225,6 +244,7 @@ export default [
     signupLogic,
     fetchUserDataLogic,
     checkLocalUserLogic,
+    checkNodeUserLogic,
     checkBalanceAndHitFaucetLogic,
     logoutLogic,
     getSharedReposLogic,

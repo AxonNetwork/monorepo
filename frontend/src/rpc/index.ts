@@ -11,6 +11,9 @@ const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
 const noderpc = packageObject.noderpc
 
 interface IRPCClient {
+    setUsernameAsync: (params : { username: string}) => Promise<{ signature: Buffer }>
+    getUsernameAsync: (params : {}) => Promise<{ username: string, signature: Buffer }>
+
     initRepoAsync: (params: { repoID: string, path?: string, name?: string, email?: string }) => Promise<{ path: string }>
     checkpointRepoAsync: (params: { path: string, message?: string }) => Promise<{ ok: boolean }>
     pullRepoAsync: (params: { path: string }) => Promise<{ ok: boolean }>

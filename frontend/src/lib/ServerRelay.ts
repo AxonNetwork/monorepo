@@ -18,7 +18,7 @@ const ServerRelay = {
     async login(email: string, password: string) {
         interface IResponse {
             userID: string
-            email: string
+            emails: string[]
             name: string
             picture: string
             token: string
@@ -34,24 +34,25 @@ const ServerRelay = {
         ServerRelay.setJWT(resp.data.token)
         return {
             userID: resp.data.userID,
-            email: resp.data.email,
+            emails: resp.data.emails,
             name: resp.data.name,
             picture: resp.data.picture,
             jwt: resp.data.token,
         }
     },
 
-    async signup(name: string, email: string, password: string, hexSignature: string) {
+    async loginWithKey(username: string, hexSignature:string) {
         interface IResponse {
             userID: string
-            email: string
+            emails: string[]
             name: string
+            picture: string
             token: string
         }
 
         let resp
         try {
-            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, email, password, hexSignature })
+            resp = await axios.post<IResponse>(API_URL + '/login-with-key', { username, hexSignature })
         } catch (err) {
             throw err.response.data.error
         }
@@ -59,7 +60,33 @@ const ServerRelay = {
         ServerRelay.setJWT(resp.data.token)
         return {
             userID: resp.data.userID,
-            email: resp.data.email,
+            emails: resp.data.emails,
+            name: resp.data.name,
+            picture: resp.data.picture,
+            jwt: resp.data.token,
+        }
+    },
+
+
+    async signup(name: string, username: string, email: string, password: string, hexSignature: string) {
+        interface IResponse {
+            userID: string
+            emails: string[]
+            name: string
+            token: string
+        }
+
+        let resp
+        try {
+            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, username, email, password, hexSignature })
+        } catch (err) {
+            throw err.response.data.error
+        }
+
+        ServerRelay.setJWT(resp.data.token)
+        return {
+            userID: resp.data.userID,
+            emails: resp.data.emails,
             name: resp.data.name,
             jwt: resp.data.token,
         }
