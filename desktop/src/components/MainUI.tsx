@@ -97,6 +97,7 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'hidden',
     },
     mainUISidebarToggle: {
+        marginTop: theme.spacing.unit * 3,
         flexGrow: 0,
         flexShrink: 0,
         opacity: 1,

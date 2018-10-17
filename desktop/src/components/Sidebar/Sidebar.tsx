@@ -134,6 +134,7 @@ const styles = (theme: Theme) => createStyles({
         },
     },
     drawerPaper: {
+        paddingTop: theme.spacing.unit * 3,
         display: 'flex',
         backgroundColor: '#383840',
         position: 'relative',
