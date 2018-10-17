@@ -86,7 +86,7 @@ const styles = (theme: Theme) => createStyles({
     },
     drag: {
         '-webkit-app-region': 'drag',
-        height: 30,
+        height: 88,
         width: '100%',
         position: 'absolute',
     },

@@ -47,79 +47,81 @@ class Settings extends React.Component<Props>
                 </div>
 
                 <div className={classes.contentArea}>
-                    <div className={classnames(classes.section, classes.sectionAccount)}>
-                        <Typography variant="h6"><strong>Your account</strong></Typography>
-                        <div className={classes.sectionAccountContent}>
-                            {/* Profile picture */}
-                            <div>
-                                <Typography variant="subtitle1"><strong>Profile picture</strong></Typography>
+                    <div className={classes.contentAreaInner}>
+                        <section className={classnames(classes.section, classes.sectionAccount)}>
+                            <Typography variant="h6"><strong>Your account</strong></Typography>
+                            <div className={classes.sectionAccountContent}>
+                                {/* Profile picture */}
+                                <div>
+                                    <Typography variant="subtitle1"><strong>Profile picture</strong></Typography>
 
-                                {this.props.currentUserPicture &&
-                                    <img src={this.props.currentUserPicture} className={classes.currentUserPicture} />
-                                }
-                                <input type="file" ref={x => this._inputUserPicture = x} /><br/>
-                                <Button variant="contained" color="secondary" className={classes.button} onClick={this.uploadUserPicture}>Upload</Button>
+                                    {this.props.currentUserPicture &&
+                                        <img src={this.props.currentUserPicture} className={classes.currentUserPicture} />
+                                    }
+                                    <input type="file" ref={x => this._inputUserPicture = x} /><br/>
+                                    <Button variant="contained" color="secondary" className={classes.button} onClick={this.uploadUserPicture}>Upload</Button>
+                                </div>
+
+                                {/* Emails */}
+                                <div>
+                                    <Typography variant="subtitle1"><strong>Email addresses</strong></Typography>
+                                    <List dense classes={{ root: classes.emailList }}>
+                                        {this.props.currentUserEmails.map(email => (
+                                            <ListItem classes={{ root: classes.emailListItem }}>
+                                                <ListItemText primary={email} />
+                                                <ListItemSecondaryAction>
+                                                    <IconButton onClick={() => this.removeEmail(email)} aria-label="Delete">
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+
+                                    <Typography>Add another email address:</Typography>
+                                    <TextField
+                                        inputRef={x => this._inputNewEmail = x}
+                                        classes={{ root: classes.newEmailInput }}
+                                        />
+                                    <Button variant="contained" color="secondary" className={classes.button} onClick={this.addEmail}>Add</Button>
+                                </div>
                             </div>
+                        </section>
 
-                            {/* Emails */}
-                            <div>
-                                <Typography variant="subtitle1"><strong>Email addresses</strong></Typography>
-                                <List dense classes={{ root: classes.emailList }}>
-                                    {this.props.currentUserEmails.map(email => (
-                                        <ListItem classes={{ root: classes.emailListItem }}>
-                                            <ListItemText primary={email} />
-                                            <ListItemSecondaryAction>
-                                                <IconButton onClick={() => this.removeEmail(email)} aria-label="Delete">
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    ))}
-                                </List>
+                        <section className={classes.section}>
+                            <Typography variant="h6"><strong>Code color scheme</strong></Typography>
 
-                                <Typography>Add another email address:</Typography>
-                                <TextField
-                                    inputRef={x => this._inputNewEmail = x}
-                                    classes={{ root: classes.newEmailInput }}
-                                    />
-                                <Button variant="contained" color="secondary" className={classes.button} onClick={this.addEmail}>Add</Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={classes.section}>
-                        <Typography variant="h6"><strong>Code color scheme</strong></Typography>
-
-                        <Select onChange={this.onChangeCodeColorScheme} value={this.props.codeColorScheme}>
-                            {Object.keys(schemes).map(s => (
-                                <MenuItem value={s}>{s}</MenuItem>
-                            ))}
-                        </Select>
-                        <CodeViewer
-                            language="go"
-                            contents={codeSample}
-                        />
-                    </div>
-
-
-                    <div className={classes.section}>
-                        <Typography variant="subheading"><strong>Miscellaneous</strong></Typography>
-
-                        <FormControlLabel control={
-                            <Checkbox
-                                checked={this.props.menuLabelsHidden}
-                                onChange={this.onChangeHideMenuLabels}
-                                value="hideMenuLabels"
+                            <Select onChange={this.onChangeCodeColorScheme} value={this.props.codeColorScheme}>
+                                {Object.keys(schemes).map(s => (
+                                    <MenuItem value={s}>{s}</MenuItem>
+                                ))}
+                            </Select>
+                            <CodeViewer
+                                language="go"
+                                contents={codeSample}
                             />
-                        }
-                        label="Hide menu labels" />
-                    </div>
+                        </section>
 
 
-                    <div className={classes.section}>
-                        <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
-                            Logout
-                        </Button>
+                        <section className={classes.section}>
+                            <Typography variant="subheading"><strong>Miscellaneous</strong></Typography>
+
+                            <FormControlLabel control={
+                                <Checkbox
+                                    checked={this.props.menuLabelsHidden}
+                                    onChange={this.onChangeHideMenuLabels}
+                                    value="hideMenuLabels"
+                                />
+                            }
+                            label="Hide menu labels" />
+                        </section>
+
+
+                        <section className={classes.section}>
+                            <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
+                                Logout
+                            </Button>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -193,7 +195,6 @@ func fetch(hash gitplumbing.Hash) error {
 const styles = (theme: Theme) => createStyles({
     root: {
         width: '100%',
-        paddingRight: 50,
         display: 'flex',
         flexDirection: 'column',
     },
@@ -203,9 +204,12 @@ const styles = (theme: Theme) => createStyles({
         borderBottom: '1px solid #e4e4e4',
     },
     contentArea: {
-        paddingTop: 20,
         overflowY: 'auto',
         flexGrow: 1,
+    },
+    contentAreaInner: {
+        marginTop: theme.spacing.unit * 4,
+        marginRight: theme.spacing.unit * 4,
     },
     section: {
         marginBottom: theme.spacing.unit * 4,
