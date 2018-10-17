@@ -24,21 +24,23 @@ class Repository extends React.Component<Props>
                 <RepoInfo />
 
                 <div className={classes.repoMainContent}>
-                    {this.props.repoPage === RepoPage.Files &&
-                        <RepoFilesPage />
-                    }
-                    {this.props.repoPage === RepoPage.Manuscript &&
-                        <RepoEditorPage />
-                    }
-                    {this.props.repoPage === RepoPage.History &&
-                        <RepoHistoryPage />
-                    }
-                    {this.props.repoPage === RepoPage.Discussion &&
-                        <RepoDiscussionPage />
-                    }
-                    {this.props.repoPage === RepoPage.Settings &&
-                        <RepoSettingsPage />
-                    }
+                    <div className={classes.repoMainContentInner}>
+                        {this.props.repoPage === RepoPage.Files &&
+                            <RepoFilesPage />
+                        }
+                        {this.props.repoPage === RepoPage.Manuscript &&
+                            <RepoEditorPage />
+                        }
+                        {this.props.repoPage === RepoPage.History &&
+                            <RepoHistoryPage />
+                        }
+                        {this.props.repoPage === RepoPage.Discussion &&
+                            <RepoDiscussionPage />
+                        }
+                        {this.props.repoPage === RepoPage.Settings &&
+                            <RepoSettingsPage />
+                        }
+                    </div>
                 </div>
             </div>
         )
@@ -64,15 +66,17 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     repoMainContent: {
-        marginTop: theme.spacing.unit * 4,
-        marginRight: theme.spacing.unit * 4,
-        overflowY: 'hidden',
+        overflowY: 'auto',
         display: 'flex',
         flexGrow: 1,
 
         '& > *': {
             flexGrow: 1,
         },
+    },
+    repoMainContentInner: {
+        marginTop: theme.spacing.unit * 4,
+        marginRight: theme.spacing.unit * 4,
     },
 })
 
