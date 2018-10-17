@@ -21,10 +21,10 @@ class LoginPage extends React.Component<Props, State> {
         name: '',
         username: '',
         password: '',
-        email: ''
+        email: '',
     }
 
-    toggleView(event: Event){
+    toggleView(event: Event) {
         event.preventDefault()
         this.setState({
             displaySignup: !this.state.displaySignup,
@@ -33,7 +33,7 @@ class LoginPage extends React.Component<Props, State> {
 
     handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value
-        this.setState((current)=>({
+        this.setState((current) => ({
             ...current,
             [name]: value,
         }))
@@ -116,7 +116,7 @@ class LoginPage extends React.Component<Props, State> {
 }
 
 interface Props {
-    error: Error|undefined
+    error: Error | undefined
     nodeUsername: string | undefined
     login: Function
     signup: Function
@@ -155,6 +155,7 @@ const styles = (theme: Theme) => createStyles({
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
+        flexGrow: 1,
 
         '& > div': {
             flexGrow: 0,
@@ -194,7 +195,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     return {
         error: state.user.error,
-        nodeUsername: state.user.nodeUsername
+        nodeUsername: state.user.nodeUsername,
     }
 }
 

@@ -29,7 +29,10 @@ class MainUI extends React.Component<Props, State>
         }
         if (!loggedIn) {
             return (
-                <Login />
+                <div className={classes.root}>
+                    <div className={classes.drag} />
+                    <Login />
+                </div >
             )
         }
 
