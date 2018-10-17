@@ -28,7 +28,8 @@ class File extends React.Component<Props>
 
     openItem(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        shell.openItem(this.props.file.name)
+        console.log(this.props)
+        shell.openItem(path.join(this.props.repoRoot, this.props.file.name))
     }
 
     render() {
@@ -59,6 +60,7 @@ class File extends React.Component<Props>
 
 interface Props {
     file: IRepoFile
+    repoRoot: string
     selectFile?: Function
     classes: any
 }

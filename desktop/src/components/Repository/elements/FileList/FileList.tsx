@@ -34,6 +34,7 @@ class FileList extends React.Component<Props>
                                 return (
                                     <File
                                         file={file}
+                                        repoRoot={this.props.repoRoot}
                                         key={name}
                                         selectFile={this.props.selectFile}
                                         classes={{
