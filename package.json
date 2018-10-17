@@ -8,7 +8,7 @@
   "author": "Chong Guo <armourcy@gmail.com>",
   "homepage": ".",
   "license": "MIT",
-  "main": "public/electron.js",
+  "main": "electron/electron.js",
   "scripts": {
     "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source",
     "clean": "trash frontend/dist .awcache coverage",
@@ -28,7 +28,7 @@
     "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "deploy": "heroku container:push web",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3004 electron .",
-    "electron-build": "build -m --c.extraMetadata.main=public/electron.js --c.extraMetadata.name='Conscience'"
+    "electron-build": "build -m --c.extraMetadata.main=electron/electron.js --c.extraMetadata.name='Conscience'"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -233,7 +233,7 @@
       "output": "dist"
     },
     "files": [
-      "public/**/*",
+      "electron/**/*",
       "node_modules/**/*",
       "frontend/dist/**/*"
     ],
