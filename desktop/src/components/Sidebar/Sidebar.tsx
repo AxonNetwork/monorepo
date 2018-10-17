@@ -145,6 +145,7 @@ const styles = (theme: Theme) => createStyles({
             duration: theme.transitions.duration.enteringScreen,
         }),
         overflowX: 'hidden',
+        borderRight: 'none',
     },
     drawerPaperClose: {
         transition: theme.transitions.create('width', {
