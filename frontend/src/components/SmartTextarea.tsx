@@ -123,12 +123,12 @@ class SmartTextarea extends React.Component<Props, State>
                             {file}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((created: string) => (
+                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((discussionID: string) => (
                         <MenuItem
-                            onClick={() => this.handleClose('@discussion', created)}
+                            onClick={() => this.handleClose('@discussion', discussionID)}
                             classes={{root: classes.menuItem}}
                         >
-                            {this.props.discussions[parseInt(created, 10)].subject}
+                            {this.props.discussions[discussionID].subject}
                         </MenuItem>
                     ))}
                 </Menu>
@@ -139,7 +139,7 @@ class SmartTextarea extends React.Component<Props, State>
 
 interface Props {
     files: {[name: string]: IRepoFile} | undefined
-    discussions: {[created: number]: IDiscussion}
+    discussions: {[discussionID: string]: IDiscussion}
     onSubmit: (comment: string) => void
     inputRef?: React.Ref<any> | React.RefObject<any>
     classes: any

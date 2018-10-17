@@ -10,6 +10,7 @@ import CommentWrapper from './CommentWrapper'
 import SmartTextarea from 'components/SmartTextarea'
 import { IGlobalState } from 'redux/store'
 import { IRepoFile, IDiscussion } from 'common'
+import { keyBy } from 'lodash'
 
 
 @autobind
@@ -97,7 +98,7 @@ interface StateProps {
     username: string | undefined
     userPicture: string | undefined
     files: {[name: string]: IRepoFile}
-    discussions: {[created: number]: IDiscussion}
+    discussions: {[discussionID: string]: IDiscussion}
 }
 
 interface DispatchProps {
@@ -121,12 +122,15 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = repo.repoID
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     const userPicture = (state.user.users[ state.user.currentUser || '' ] || {}).picture
+    const discussionIDs = state.discussion.discussionsByRepo[repo.repoID] || {}
+    const discussionList = discussionIDs.map((id:string)=>state.discussion.discussions[id])
+    const discussions = keyBy(discussionList, 'discussionID')
     return {
+        repoID,
         username,
         userPicture,
-        repoID,
         files: repo.files || {},
-        discussions: state.discussion.discussions[repo.repoID] || {},
+        discussions: discussions
     }
 }
 
@@ -134,8 +138,9 @@ const mapDispatchToProps = {
     createDiscussion,
 }
 
- export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
+const CreateDiscussionContainer = connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(CreateDiscussion))
 
+export default CreateDiscussionContainer

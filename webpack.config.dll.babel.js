@@ -21,10 +21,6 @@ const immutableVendors = [
     'immutable',
 ];
 
-const materializeVendors = [
-    'materialize-css',
-];
-
 const config = {
     // Get mode from NODE_ENV
     mode: process.env.NODE_ENV,
@@ -36,7 +32,6 @@ const config = {
     entry: {
         react: reactVendors,
         immutable: immutableVendors,
-        materialize: materializeVendors,
     },
 
     // Affecting the output of the compilation

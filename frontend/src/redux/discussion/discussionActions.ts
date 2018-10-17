@@ -107,9 +107,9 @@ export type IDiscussionAction =
     ICreateDiscussionAction |
     ICreateDiscussionSuccessAction |
     ICreateDiscussionFailedAction |
-    IGetCommentsForRepoAction |
-    IGetCommentsForRepoSuccessAction |
-    IGetCommentsForRepoFailedAction |
+    IGetCommentsForDiscussionAction |
+    IGetCommentsForDiscussionSuccessAction |
+    IGetCommentsForDiscussionFailedAction |
     ICreateCommentAction |
     ICreateCommentSuccessAction |
     ICreateCommentFailedAction

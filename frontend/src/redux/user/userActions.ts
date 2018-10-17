@@ -123,7 +123,7 @@ export interface ISignupSuccessAction {
         emails: string[]
         username: string
         name: string
-        picture: string,
+        picture: string | undefined,
     }
 }
 
@@ -318,7 +318,7 @@ export interface ISawCommentAction {
     payload: {
         repoID: string
         discussionID: string
-        commentID: string,
+        commentTimestamp: number,
     }
 }
 
@@ -327,7 +327,7 @@ export interface ISawCommentSuccessAction {
     payload: {
         repoID: string | null
         discussionID: string | null
-        commentID: string | null,
+        commentTimestamp: number | null,
     }
 }
 

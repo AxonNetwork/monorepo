@@ -77,11 +77,11 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
     },
 })
 
-const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchUserDataByEmailsSuccessAction>({
+const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchUserDataByEmailSuccessAction>({
     type: UserActionType.FETCH_USER_DATA_BY_EMAIL,
     async process({ action, getState }) {
         const inRedux = Object.keys(getState().user.users)
-        const toFetch = action.payload.emails.filter(id => !inRedux.includes(id))
+        const toFetch = action.payload.emails.filter(email => !inRedux.includes(email))
         const userList = await ServerRelay.fetchUsersByEmail(toFetch)
 
         let usersByEmail = {} as {[email: string]: string}
@@ -176,13 +176,13 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
     async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
         const state = getState()
-        const { name, email } = state.user.users[state.user.currentUser || '']
+        const { name, emails } = state.user.users[state.user.currentUser || '']
 
         const rpcClient = rpc.initClient()
         const { path } = await rpcClient.cloneRepoAsync({
             repoID: repoID,
             name: name,
-            email: email,
+            email: emails[0],
          })
         await dispatch(selectRepo({ repoID, path }))
         return {}
@@ -192,19 +192,19 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
-        const { repoID, discussionID, commentID } = action.payload
+        const { repoID, discussionID, commentTimestamp } = action.payload
 
-        await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentID)
+        await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentTimestamp)
 
         const state = getState()
         if (
             (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] !== undefined &&
-            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] >= commentID
+            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] >= commentTimestamp
         ) {
             // If we return nulls here, it indicates that no actual update occurred
-            return { repoID: null, discussionID: null, commentID: null }
+            return { repoID: null, discussionID: null, commentTimestamp: null }
         } else {
-            return { repoID, discussionID, commentID }
+            return { repoID, discussionID, commentTimestamp }
         }
     },
 })

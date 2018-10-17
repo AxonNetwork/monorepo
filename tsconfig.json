@@ -25,6 +25,7 @@
   },
   "exclude": [
     "node_modules",
+    "node_modules/@types/react-redux/node_modules/@types/react/index.d.ts",
     "**/__tests__/**"
-  ]
+  ],
 }

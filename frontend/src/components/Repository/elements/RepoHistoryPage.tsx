@@ -21,15 +21,14 @@ class RepoHistoryPage extends React.Component<Props>
             )
         }
 
-        const { username, selectCommit, getDiff, revertFiles, selectedCommit } = this.props
+        const { selectCommit, getDiff, revertFiles, selectedCommit } = this.props
         return (
             <div className={classes.timelinePage}>
                 {selectedCommit &&
                     <CommitView
-                        commit={(repo.commits||{})[ selectedCommit ]}
                         repoID={repo.repoID}
                         repoRoot={repo.path}
-                        username={username}
+                        commit={(repo.commits||{})[ selectedCommit ]}
                         getDiff={getDiff}
                         selectCommit={selectCommit}
                     />
@@ -52,7 +51,6 @@ class RepoHistoryPage extends React.Component<Props>
 interface Props {
     repo: IRepo | undefined
     selectedCommit: string | undefined
-    username: string | undefined
     getDiff: typeof getDiff
     revertFiles: typeof revertFiles
     selectCommit: typeof selectCommit
@@ -77,11 +75,9 @@ const mapStateToProps = (state: IGlobalState) => {
     const selectedRepo = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selectedRepo]
     const selectedCommit = state.repository.selectedCommit
-    const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     return {
         repo,
         selectedCommit,
-        username,
     }
 }
 

@@ -1,6 +1,6 @@
 import { DiscussionActionType, IDiscussionAction } from './discussionActions'
 import { IDiscussion, IComment } from '../../common'
-import { uniq, values, sortBy, toPairs } from 'lodash'
+import { uniq, values, sortBy } from 'lodash'
 
 const initialState = {
     discussions: {},

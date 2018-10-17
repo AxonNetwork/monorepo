@@ -38,7 +38,7 @@ function SecuredText(props: Props) {
 }
 
 interface Props{
-    lastUpdated?: number
+    lastUpdated?: Date
     lastVerified?: ITimelineEvent
     firstVerified?: ITimelineEvent
     selectCommit: Function

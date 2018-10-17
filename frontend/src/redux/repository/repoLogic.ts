@@ -20,26 +20,24 @@ import { RepoActionType,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
-import { getDiscussions, getCommentsForRepo } from '../discussion/discussionActions'
-import { fetchUserDataByEmail } from '../user/userActions'
+import { getDiscussions } from '../discussion/discussionActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import * as rpc from '../../rpc'
-import { dispatch } from 'rxjs/internal/observable/pairs';
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
     async process({ action, getState }, dispatch) {
         const { repoID } = action.payload
         const state = getState()
-        const { name, email } = state.user.users[state.user.currentUser || '']
+        const { name, emails } = state.user.users[state.user.currentUser || '']
 
         const rpcClient = rpc.initClient()
         const { path } = await rpcClient.initRepoAsync({
             repoID: repoID,
             name: name,
-            email: email,
+            email: emails[0],
         })
         await ServerRelay.createRepo(repoID)
 
@@ -93,7 +91,6 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
 
         dispatch(fetchRepoFiles({ path, repoID }))
         dispatch(fetchRepoTimeline({ path, repoID }))
-        dispatch(getCommentsForRepo({ repoID }))
         dispatch(getDiscussions({ repoID }))
         dispatch(fetchRepoSharedUsers({ path, repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))

@@ -24,7 +24,6 @@
 * [x] [yarn](https://github.com/yarnpkg/yarn) - dependency manager
 * [x] [express](http://expressjs.com/) - node.js web framework for backend
 * [x] [postgresql](https://www.postgresql.org/) - advanced open source database
-* [x] [materialize](http://materializecss.com/) - a modern responsive front-end framework based on Material Design
 * [x] [sass](https://github.com/sass/sass) - CSS pre-processors
 * [x] [postcss](https://github.com/postcss/postcss) - CSS post-processor
 * [x] [css-modules](https://github.com/css-modules/css-modules) - for default scoped/local css

@@ -20,7 +20,7 @@ class DiscussionLink extends React.Component<Props>
     }
 
     onClick() {
-        this.props.selectDiscussion({ created: this.props.discussionID })
+        this.props.selectDiscussion({ discussionID: this.props.discussionID })
         this.props.navigateRepoPage({ repoPage: RepoPage.Discussion })
     }
 }
@@ -28,7 +28,7 @@ class DiscussionLink extends React.Component<Props>
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
-    discussionID: number
+    discussionID: string
 }
 
 interface StateProps {
@@ -49,9 +49,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoPath = state.repository.selectedRepo || ''
-    const repoID = (state.repository.repos[repoPath] || {}).repoID || ''
-    const discussionSubject = (((state.discussion.discussions[ repoID ] || {})[ ownProps.discussionID ]) || {}).subject
+    const discussionSubject = (state.discussion.discussions[ ownProps.discussionID ] || {}).subject
+
     return {
         discussionSubject,
     }

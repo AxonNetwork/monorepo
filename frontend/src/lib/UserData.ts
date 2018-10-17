@@ -8,7 +8,7 @@ export const CONSCIENCE_LOCATION = path.join(app.getPath('documents'), 'Conscien
 
 interface ICommentTimestamp {
     [repoID: string]: {
-        [discussionID: number]: number
+        [discussionID: string]: number
     }
 }
 
@@ -101,16 +101,16 @@ const UserData = {
         await UserData.set('menuLabelsHidden', menuLabelsHidden)
     },
 
-    async setNewestViewedCommentTimestamp(repoID: string, discussionID: number, commentID: number) {
+    async setNewestViewedCommentTimestamp(repoID: string, discussionID: string, commentTimestamp: number) {
         const timestamps = ((await UserData.get('newestViewedCommentTimestamp')) || {}) as ICommentTimestamp
         if (
             (timestamps[repoID] || {})[discussionID] !== undefined &&
-            (timestamps[repoID] || {})[discussionID] >= commentID
+            (timestamps[repoID] || {})[discussionID] >= commentTimestamp
         ) {
             return false
         }
         timestamps[repoID] = timestamps[repoID] || {}
-        timestamps[repoID][discussionID] = commentID
+        timestamps[repoID][discussionID] = commentTimestamp
         await UserData.set('newestViewedCommentTimestamp', timestamps)
         return true
     },

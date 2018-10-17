@@ -21,7 +21,7 @@ import checkVisible from 'utils/checkVisible'
 @autobind
 class Thread extends React.Component<Props>
 {
-    _intervalID: NodeJS.Timer | undefined
+    _intervalID: any | undefined //Timer ID, can't get Typescript to accept this
     _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
 
     componentDidMount() {
@@ -40,7 +40,7 @@ class Thread extends React.Component<Props>
                     mostRecentVisible = { commentID, created: this._commentRefs[commentID].created }
                 }
             }
-            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentID: mostRecentVisible.commentID })
+            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentTimestamp: mostRecentVisible.created })
         }
         this._intervalID = setInterval(checkSeenComments, 5000)
         checkSeenComments()

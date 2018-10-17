@@ -41,7 +41,7 @@ class RenderMarkdown extends React.Component<Props>
         case 'file':
             return <FileLink filename={contents} basePath={this.props.basePath}/>
         case 'discussion':
-            return <DiscussionLink discussionID={parseInt(contents, 10)} />
+            return <DiscussionLink discussionID={contents} />
         default:
             return <span>@{identifier}:[{contents}]</span>
         }

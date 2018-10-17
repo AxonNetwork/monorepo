@@ -9,7 +9,7 @@ import UserAvatar from 'components/UserAvatar'
 import { IGlobalState } from 'redux/store'
 import { createDiscussion } from 'redux/discussion/discussionActions'
 import { IGetDiffAction, ISelectCommitAction } from 'redux/repository/repoActions'
-import { ITimelineEvent } from 'common'
+import { ITimelineEvent, IUser } from 'common'
 import { removeEmail, extractEmail } from 'utils'
 import autobind from 'utils/autobind'
 
@@ -84,7 +84,6 @@ interface OwnProps {
     commit: ITimelineEvent | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     selectCommit: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
-    classes: any
 }
 
 interface StateProps {
@@ -138,10 +137,12 @@ const styles = () => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const userEmail = extractEmail(ownProps.commit.user)
+    const commit = (ownProps || {}).commit
+    const commitUser = (commit || {} as any).user || ''
+    const userEmail = extractEmail(commitUser) || ''
     const userID = state.user.usersByEmail[ userEmail ]
-    const user = state.user.users[ userID || '' ] || {}
-    const username = user.name || removeEmail(ownProps.commit.user)
+    const user = state.user.users[ userID || '' ] || {} as IUser
+    const username = user.name || removeEmail(commitUser)
     const userPicture = user.picture
     return {
         username,

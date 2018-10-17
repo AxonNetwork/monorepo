@@ -9,8 +9,6 @@ import RevertFilesDialog from './RevertFilesDialog'
 import UserAvatar from 'components/UserAvatar'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
-import { removeEmail, extractEmail } from 'utils'
-
 
 @autobind
 class TimelineEvent extends React.Component<Props, State>

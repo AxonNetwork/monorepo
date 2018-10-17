@@ -18,7 +18,6 @@ import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
 
 const ReactManifest = './frontend/dist/dll/react_manifest.json';
 const ImmutableManifest = './frontend/dist/dll/immutable_manifest.json';
-const MaterializeManifest = './frontend/dist/dll/materialize_manifest.json';
 const devMode = process.env.NODE_ENV !== 'production';
 
 export default {
@@ -50,7 +49,7 @@ export default {
                     // { loader: 'ts-loader' },
                 ],
             },
-            // Use a list of loaders to load materialize and prism css files
+            // Use a list of loaders to load prism css files
             {
                 test: /\.css$/,
                 use: [
@@ -131,7 +130,6 @@ export default {
         // Load pre-build dll reference files
         new webpack.DllReferencePlugin({ manifest: ReactManifest }),
         new webpack.DllReferencePlugin({ manifest: ImmutableManifest }),
-        new webpack.DllReferencePlugin({ manifest: MaterializeManifest }),
         // Extract css part from javascript bundle into separated file
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash:10].css',
