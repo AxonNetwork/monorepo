@@ -24,7 +24,7 @@ export default merge(BaseWebpackConfig, {
         chunkFilename: '[name].[chunkhash:10].js',
         // publicPath: specifies the server-relative URL of the output resource directory
         // https://webpack.js.org/configuration/output/#output-publicpath
-        publicPath: '/',
+        publicPath: './',
     },
 
     // A list of used webpack plugins
