@@ -16,13 +16,10 @@ import autobind from 'utils/autobind'
 @autobind
 class LoginPage extends React.Component<Props, State> {
 
-    state = {
-        displaySignup: false,
-        name: '',
-        username: '',
-        password: '',
-        email: '',
-    }
+    _inputUsername: HTMLInputElement | undefined
+    _inputName: HTMLInputElement | undefined
+    _inputEmail: HTMLInputElement | undefined
+    _inputPassword: HTMLInputElement | undefined
 
     toggleView(event: Event) {
         event.preventDefault()
@@ -31,20 +28,17 @@ class LoginPage extends React.Component<Props, State> {
         })
     }
 
-    handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value
-        this.setState((current) => ({
-            ...current,
-            [name]: value,
-        }))
-    }
-
     handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        const email = this._inputEmail !== undefined ? this._inputEmail.value : ""
+        const password = this._inputPassword !== undefined ? this._inputPassword.value : ""
+
         if (this.state.displaySignup) {
-            this.props.signup({name: this.state.name, username: this.state.username, email: this.state.email, password: this.state.password})
+            const name = this._inputName !== undefined ? this._inputName.value : ""
+            const username = this._inputUsername !== undefined ? this._inputUsername.value : ""
+            this.props.signup({name: name, username: username, email: email, password: password})
         }else {
-            this.props.login({email: this.state.email, password: this.state.password})
+            this.props.login({email: email, password: password})
         }
     }
 
@@ -62,38 +56,31 @@ class LoginPage extends React.Component<Props, State> {
                             {this.state.displaySignup &&
                                 <React.Fragment>
                                     <TextField
-                                        id="username"
                                         label="Username"
+                                        defaultValue={this.props.nodeUsername||""}
+                                        inputRef={ x => this._inputUsername = x }
                                         disabled={!!this.props.nodeUsername}
-                                        value={this.props.nodeUsername || this.state.username}
-                                        onChange={this.handleChange('username')}
                                         className={classes.textField}
                                         error={!!error}
                                     />
                                     <TextField
-                                        id="name"
                                         label="Full Name"
-                                        value={this.state.name}
-                                        onChange={this.handleChange('name')}
+                                        inputRef={ x => this._inputName = x }
                                         className={classes.textField}
                                         error={!!error}
                                     />
                                 </React.Fragment>
                             }
                             <TextField
-                                id="email"
                                 label="Email"
-                                value={this.state.email}
-                                onChange={this.handleChange('email')}
+                                inputRef={ x => this._inputEmail = x }
                                 className={classes.textField}
                                 error={!!error}
                             />
                             <TextField
-                                id="password"
                                 label="Password"
                                 type="password"
-                                value={this.state.password}
-                                onChange={this.handleChange('password')}
+                                inputRef={ x => this._inputPassword = x }
                                 className={classes.textField}
                                 error={!!error}
                             />
