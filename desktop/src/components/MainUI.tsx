@@ -35,6 +35,7 @@ class MainUI extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
+                <div className={classes.drag} />
                 <Sidebar
                     open={this.state.sidebarOpen}
                     toggleSidebar={this.onToggleSidebar}
@@ -80,6 +81,12 @@ const styles = (theme: Theme) => createStyles({
         height: '100%',
         overflow: 'hidden',
     },
+    drag: {
+        '-webkit-app-region': 'drag',
+        height: 30,
+        width: '100%',
+        position: 'absolute',
+    },
     mainUI: {
         display: 'flex',
         width: '100%',
@@ -104,7 +111,7 @@ const styles = (theme: Theme) => createStyles({
     },
     mainUIContentWrapper: {
         flexGrow: 1,
-        paddingTop: theme.spacing.unit *3,
+        paddingTop: theme.spacing.unit * 3,
         display: 'flex',
     },
 

@@ -18,7 +18,7 @@ let mainWindow; let
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({ resizable: true, webPreferences: { webSecurity: false } });
+    mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false } });
     mainWindow.maximize();
 
     // and load the index.html of the app.
