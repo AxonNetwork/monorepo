@@ -6,6 +6,7 @@
     "url": "https://github.com/Armour/express-webpack-react-redux-typescript-boilerplate.git"
   },
   "author": "Chong Guo <armourcy@gmail.com>",
+  "homepage": ".",
   "license": "MIT",
   "main": "public/electron.js",
   "scripts": {
@@ -80,7 +81,6 @@
     "cssnano": "^4.1.0",
     "dotenv-webpack": "^1.5.7",
     "duplicate-package-checker-webpack-plugin": "^3.0.0",
-    "electron": "^3.0.4",
     "electron-devtools-installer": "^2.2.4",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
@@ -158,6 +158,10 @@
     "commitlint-config-armour": "^1.2.1",
     "coveralls": "^3.0.2",
     "dotenv": "^6.0.0",
+    "electron": "^3.0.4",
+    "electron-builder": "^20.23.1",
+    "electron-builder-lib": "^20.23.1",
+    "electron-builder-squirrel-windows": "^20.23.1",
     "eslint": "^5.6.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-import-resolver-webpack": "^0.10.1",
@@ -218,5 +222,30 @@
       "ts",
       "tsx"
     ]
+  },
+  "build": {
+    "appId": "com.conscience.app",
+    "productName": "Conscience",
+    "asar": true,
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "public/**/*",
+      "node_modules/**/*",
+      "frontend/dist/**/*"
+    ],
+    "mac": {
+      "category": "financial"
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }
