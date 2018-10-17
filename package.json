@@ -8,18 +8,18 @@
   "author": "Chong Guo <armourcy@gmail.com>",
   "homepage": ".",
   "license": "MIT",
-  "main": "electron/electron.js",
+  "main": "desktop/electron/electron.js",
   "scripts": {
     "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source",
-    "clean": "trash frontend/dist .awcache coverage",
-    "dll": "cross-env NODE_ENV=production webpack --config webpack.config.dll.babel.js",
+    "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
+    "dll": "cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.dll.babel.js",
     "dev": "yarn clean && yarn dll && concurrently --raw \"yarn dev-server\" \"yarn dev-client\"",
     "dev-server": "cross-env NODE_ENV=development nodemon --exec babel-node backend/server.js",
-    "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.babel.js",
+    "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config ./desktop/webpack.config.dev.babel.js",
     "prod": "yarn build && yarn serve",
-    "build": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config webpack.config.prod.babel.js",
+    "build": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.prod.babel.js",
     "serve": "cross-env NODE_ENV=production nodemon --exec babel-node backend/server.js",
-    "profile": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config webpack.config.profile.babel.js",
+    "profile": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.profile.babel.js",
     "eslint": "eslint -f codeframe \"**/*.js\"",
     "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
     "stylelint": "stylelint \"**/*.css **/*.sass **/*.scss\"",
@@ -28,7 +28,7 @@
     "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "deploy": "heroku container:push web",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3004 electron .",
-    "electron-build": "build -m --c.extraMetadata.main=electron/electron.js --c.extraMetadata.name='Conscience'"
+    "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience'"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -213,7 +213,7 @@
     },
     "moduleDirectories": [
       "node_modules",
-      "frontend/src",
+      "desktop/src",
       "backend"
     ],
     "moduleFileExtensions": [
@@ -230,12 +230,12 @@
     "asar": true,
     "directories": {
       "buildResources": "assets",
-      "output": "dist"
+      "output": "desktop/dist-app"
     },
     "files": [
-      "electron/**/*",
-      "node_modules/**/*",
-      "frontend/dist/**/*"
+      "desktop/electron/**/*",
+      "desktop/dist-bundle/**/*",
+      "node_modules/**/*"
     ],
     "mac": {
       "category": "financial"

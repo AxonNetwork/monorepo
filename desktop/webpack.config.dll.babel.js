@@ -37,7 +37,7 @@ const config = {
     // Affecting the output of the compilation
     output: {
     // path: the output directory as an absolute path (required)
-        path: path.resolve(__dirname, 'frontend/dist/dll/'),
+        path: path.resolve(__dirname, 'dist-bundle/dll/'),
         // filename: specifies the name of output file on disk (required)
         filename: '[name]_dll.js',
         // library: name of the generated dll reference
@@ -50,7 +50,7 @@ const config = {
         new ProgressBarWebpackPlugin(),
         // Output manifest json file for each generated dll reference file
         new webpack.DllPlugin({
-            path: path.resolve(__dirname, 'frontend/dist/dll/[name]_manifest.json'),
+            path: path.resolve(__dirname, 'dist-bundle/dll/[name]_manifest.json'),
             name: '[name]_dll',
         }),
     ],

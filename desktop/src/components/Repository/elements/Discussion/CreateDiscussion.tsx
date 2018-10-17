@@ -122,15 +122,15 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = repo.repoID
     const username = (state.user.users[ state.user.currentUser || '' ] || {}).name
     const userPicture = (state.user.users[ state.user.currentUser || '' ] || {}).picture
-    const discussionIDs = state.discussion.discussionsByRepo[repo.repoID] || {}
-    const discussionList = discussionIDs.map((id:string)=>state.discussion.discussions[id])
+    const discussionIDs = state.discussion.discussionsByRepo[repo.repoID] || []
+    const discussionList = discussionIDs.map((id: string) => state.discussion.discussions[id])
     const discussions = keyBy(discussionList, 'discussionID')
     return {
         repoID,
         username,
         userPicture,
         files: repo.files || {},
-        discussions: discussions
+        discussions: discussions,
     }
 }
 

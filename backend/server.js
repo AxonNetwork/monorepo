@@ -55,7 +55,7 @@ app.use('/api/v1', router);
 
 if (isProduction) {
     // Serve dist files if is production mode
-    const distPath = path.resolve(__dirname, '../frontend/dist/prod');
+    const distPath = path.resolve(__dirname, '../frontend/dist-bundle/prod');
     app.use(express.static(distPath));
     app.get('*', (_, res) => {
         res.sendFile(`${distPath}/index.html`);

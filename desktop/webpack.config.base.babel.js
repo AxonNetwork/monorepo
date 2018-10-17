@@ -16,8 +16,8 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
 
-const ReactManifest = './frontend/dist/dll/react_manifest.json';
-const ImmutableManifest = './frontend/dist/dll/immutable_manifest.json';
+const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json')
+const ImmutableManifest = path.join(__dirname, 'dist-bundle/dll/immutable_manifest.json')
 const devMode = process.env.NODE_ENV !== 'production';
 
 export default {
@@ -140,17 +140,17 @@ export default {
         // Generate html file to dist folder
         new HtmlWebpackPlugin({
             title: 'Conscience',
-            template: path.resolve(__dirname, 'frontend/public/index.ejs'),
+            template: path.resolve(__dirname, 'public/index.ejs'),
         }),
         // Add dll reference files to html
         new AddAssetHtmlPlugin({
-            filepath: path.resolve(__dirname, 'frontend/dist/dll/*_dll.js'),
+            filepath: path.resolve(__dirname, 'dist-bundle/dll/*_dll.js'),
             includeSourcemap: false,
         }),
         // Copy static files to build dir
         new CopyWebpackPlugin([
             {
-                from: 'frontend/public/**/*',
+                from: 'public/**/*',
                 to: '[name].[ext]',
                 ignore: ['index.ejs'],
             },
@@ -162,7 +162,7 @@ export default {
     // What directories should be searched when resolving modules
         modules: [
             'node_modules',
-            'frontend/src',
+            'src',
         ],
         // Automatically resolve certain extensions (Ex. import 'folder/name(.ext)')
         extensions: [

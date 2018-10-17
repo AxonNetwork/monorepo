@@ -17,23 +17,13 @@ let mainWindow; let
     repoServer;
 
 function createWindow() {
-    const fs = require('fs')
-    fs.writeFileSync('/tmp/hi', [
-        path.join(__dirname, '/../frontend/dist/prod/index.html'),
-        path.join(__dirname, '../frontend/dist/prod/index.html'),
-        process.cwd(),
-    ].join('\n'))
-
     // Create the browser window.
     mainWindow = new BrowserWindow({ resizable: true, webPreferences: { webSecurity: false } });
     mainWindow.maximize();
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
-        // pathname: path.join(__dirname,   '../frontend/dist/prod/index.html'),
-        // pathname: path.join(__dirname, 'index.html'),
-        pathname: path.join(__dirname, '../frontend/dist/prod/index.html'),
-        // pathname: '/frontend/dist/prod/index.html',
+        pathname: path.join(__dirname, '../dist-bundle/prod/index.html'),
         protocol: 'file:',
         slashes: true,
     });

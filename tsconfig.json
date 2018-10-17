@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "experimentalDecorators": true,
-    "baseUrl": "frontend/src",
+    "baseUrl": "desktop/src",
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
