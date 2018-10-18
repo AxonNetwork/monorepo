@@ -67,6 +67,7 @@ export interface IUser {
     username: string
     picture: string
     repos: string[]
+    orgs: string[]
 }
 
 export interface IRef {
@@ -74,3 +75,10 @@ export interface IRef {
     commitHash: string
 }
 
+export interface IOrganization {
+    orgID: string
+    name: string
+    creator: string //userID
+    members: string[] //userID[]
+    repos: string[] //repoID[]
+}

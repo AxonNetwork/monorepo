@@ -3,6 +3,7 @@ import repoLogic from './repository/repoLogic'
 import navigationLogic from './navigation/navigationLogic'
 import discussionLogic from './discussion/discussionLogic'
 import editorLogic from './editor/editorLogic'
+import orgLogic from './org/orgLogic'
 
 export default [
     ...userLogic,
@@ -10,4 +11,5 @@ export default [
     ...navigationLogic,
     ...discussionLogic,
     ...editorLogic,
+    ...orgLogic,
 ]

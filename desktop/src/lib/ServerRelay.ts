@@ -1,6 +1,6 @@
 import querystring from 'querystring'
 import axios from 'axios'
-import { IUser, IComment, IDiscussion } from '../common'
+import { IUser, IComment, IDiscussion, IOrganization } from '../common'
 
 // @@TODO: this should come from process.env
 // const API_URL = 'http://demo.conscience.network/api',
@@ -235,6 +235,20 @@ const ServerRelay = {
     async modifyEmail(email: string, add: boolean) {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
+
+    async fetchOrgs(userID: string){
+        interface IResponse {
+            orgs: string[]
+        }
+        const response = await axios.get<IResponse>(API_URL + "/organizations?" + querystring.stringify({ userID }))
+
+        return response.data
+    },
+
+    async fetchOrgInfo(orgID: string){
+        const response = await axios.get(API_URL + "/organization/" + orgID)
+        return response.data as IOrganization
+    }
 }
 
 axios.defaults.timeout = 10000

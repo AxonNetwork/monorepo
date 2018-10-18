@@ -134,6 +134,20 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.FETCH_ORGS_SUCCESS: {
+            const { userID, orgs } = action.payload
+            return {
+                ...state,
+                users:{
+                    ...state.users,
+                    [userID]:{
+                        ...state.users[userID],
+                        orgs: orgs
+                    }
+                }
+            }
+        }
+
         case UserActionType.READ_LOCAL_CONFIG_SUCCESS: {
             const { config } = action.payload
             return {

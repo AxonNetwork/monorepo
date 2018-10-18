@@ -1,4 +1,4 @@
-    import { makeLogic, makeContinuousLogic } from '../reduxUtils'
+import { makeLogic, makeContinuousLogic } from '../reduxUtils'
 import { keyBy } from 'lodash'
 import fileType from 'utils/fileType'
 import { ILocalRepo, IRepoFile, ITimelineEvent } from '../../common'

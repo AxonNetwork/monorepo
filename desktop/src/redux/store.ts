@@ -6,6 +6,7 @@ import { IRepoState } from './repository/repoReducer'
 import { IDiscussionState } from './discussion/discussionReducer'
 import { IUserState } from './user/userReducer'
 import { IEditorState } from './editor/editorReducer'
+import { IOrgState } from './org/orgReducer'
 import { INavigationState } from './navigation/navigationReducer'
 import { IUIState } from './ui/uiReducer'
 
@@ -31,6 +32,7 @@ export interface IGlobalState {
     discussion: IDiscussionState
     user: IUserState
     editor: IEditorState
+    org: IOrgState
     navigation: INavigationState
     ui: IUIState
 }

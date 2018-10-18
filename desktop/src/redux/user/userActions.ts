@@ -44,6 +44,10 @@ export enum UserActionType {
     IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
     IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
 
+    FETCH_ORGS = 'FETCH_ORGS',
+    FETCH_ORGS_SUCCESS = 'FETCH_ORGS_SUCCESS',
+    FETCH_ORGS_FAILED = 'FETCH_ORGS_FAILED',
+
     SAW_COMMENT = 'SAW_COMMENT',
     SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
     SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
@@ -244,6 +248,23 @@ export interface IIgnoreSharedRepoSuccessAction {
 
 export type IIgnoreSharedRepoFailedAction = FailedAction<UserActionType.IGNORE_SHARED_REPO_FAILED>
 
+export interface IFetchOrgsAction {
+    type: UserActionType.FETCH_ORGS
+    payload: {
+        userID: string,
+    }
+}
+
+export interface IFetchOrgsSuccessAction {
+    type: UserActionType.FETCH_ORGS_SUCCESS
+    payload: {
+        userID: string,
+        orgs: string[] //orgIDs
+    }
+}
+
+export type IFetchOrgsFailedAction = FailedAction<UserActionType.FETCH_ORGS_FAILED>
+
 export interface ISetCodeColorSchemeAction {
     type: UserActionType.SET_CODE_COLOR_SCHEME
     payload: {
@@ -390,6 +411,10 @@ export type IUserAction =
     IIgnoreSharedRepoSuccessAction |
     IIgnoreSharedRepoFailedAction |
 
+    IFetchOrgsAction |
+    IFetchOrgsSuccessAction |
+    IFetchOrgsFailedAction |
+
     IReadLocalConfigAction |
     IReadLocalConfigSuccessAction |
     IReadLocalConfigFailedAction |
@@ -426,6 +451,8 @@ export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALA
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
 export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })
 export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): IIgnoreSharedRepoAction => ({ type: UserActionType.IGNORE_SHARED_REPO, payload })
+
+export const fetchOrgs = (payload: IFetchOrgsAction['payload']): IFetchOrgsAction => ({ type: UserActionType.FETCH_ORGS, payload })
 
 export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {}): IReadLocalConfigAction => ({ type: UserActionType.READ_LOCAL_CONFIG, payload })
 export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']): ISetCodeColorSchemeAction => ({ type: UserActionType.SET_CODE_COLOR_SCHEME, payload })

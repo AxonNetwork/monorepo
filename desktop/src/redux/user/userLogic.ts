@@ -13,15 +13,17 @@ import {
     IGetSharedReposAction, IGetSharedReposSuccessAction,
     ICloneSharedRepoAction, ICloneSharedRepoSuccessAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
+    IFetchOrgsAction, IFetchOrgsSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
     IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
-    getSharedRepos, gotNodeUsername,
+    getSharedRepos, fetchOrgs, gotNodeUsername,
 } from './userActions'
 import { selectRepo, getLocalRepos } from '../repository/repoActions'
+import { fetchOrgInfo } from '../org/orgActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
 import * as rpc from '../../rpc'
@@ -36,6 +38,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         await UserData.setJWT(jwt)
 
         dispatch(getSharedRepos({ userID }))
+        dispatch(fetchOrgs({ userID }))
         dispatch(getLocalRepos())
 
         return { userID, emails, name, username, picture }
@@ -57,6 +60,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
 
         // Fetch the user's data
         dispatch(getSharedRepos({ userID }))
+        dispatch(fetchOrgs({ userID }))
         dispatch(getLocalRepos())
 
         return { userID, emails, name, username, picture: undefined }
@@ -115,7 +119,9 @@ const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccess
         const { userID, emails, name, picture } = await ServerRelay.loginWithKey(username, hexSignature)
 
         dispatch(getSharedRepos({ userID }))
+        dispatch(fetchOrgs({ userID }))
         dispatch(getLocalRepos())
+
         return { userID, emails, name, picture, username }
     },
 })
@@ -174,6 +180,17 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
         await dispatch(selectRepo({ repoID, path }))
         return {}
     },
+})
+
+const fetchOrgsLogic = makeLogic<IFetchOrgsAction, IFetchOrgsSuccessAction>({
+    type: UserActionType.FETCH_ORGS,
+    async process({ action }, dispatch) {
+        const { userID } = action.payload
+        const { orgs } = await ServerRelay.fetchOrgs(userID)
+
+        await Promise.all( orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))) )
+        return { userID, orgs }
+    }
 })
 
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
@@ -260,6 +277,7 @@ export default [
     getSharedReposLogic,
     cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
+    fetchOrgsLogic,
     sawCommentLogic,
     readLocalConfigLogic,
     setCodeColorSchemeLogic,
