@@ -71,10 +71,6 @@ const ServerRelay = {
         }
     },
 
-<<<<<<< Updated upstream:desktop/src/lib/ServerRelay.ts
-
-=======
->>>>>>> Stashed changes:frontend/src/lib/ServerRelay.ts
     async signup(name: string, username: string, email: string, password: string, hexSignature: string) {
         interface IResponse {
             userID: string
