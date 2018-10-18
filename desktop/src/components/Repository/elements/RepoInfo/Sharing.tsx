@@ -1,12 +1,16 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
+import { IGlobalState } from 'redux/store'
+import { IUser } from 'common'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Chip from '@material-ui/core/Chip'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 
 import AddCollaboratorDialog from './AddCollaboratorDialog'
-import autobind from '../../../../utils/autobind'
+import autobind from 'utils/autobind'
+import { addCollaborator, removeCollaborator } from 'redux/repository/repoActions'
 
 
 @autobind
@@ -20,7 +24,7 @@ class Sharing extends React.Component<Props, State>
         this.props.removeCollaborator({
             repoID: this.props.repoID,
             folderPath: this.props.folderPath,
-            email: collaborator
+            email: collaborator,
         })
     }
 
@@ -42,12 +46,12 @@ class Sharing extends React.Component<Props, State>
                         ' none'
                     }
                 </Typography>
-                {sharedUsers.map(collaborator =>
+                {sharedUsers.map(userID =>
                     <Chip
-                        label={collaborator}
-                        key={collaborator}
+                        label={(this.props.users[userID] || {}).name || userID}
+                        key={userID}
                         className={classes.chip}
-                        onDelete={() => this.handleDelete(collaborator)}
+                        onDelete={() => this.handleDelete(userID)}
                     />,
                 )}
                 <IconButton className={classes.button} onClick={this.handleClickOpen} >
@@ -69,8 +73,12 @@ interface Props {
     sharedUsers: string[]
     folderPath: string
     repoID: string
-    addCollaborator: Function
-    removeCollaborator: Function
+
+    users: {[userID: string]: IUser}
+
+    addCollaborator: typeof addCollaborator
+    removeCollaborator: typeof removeCollaborator
+
     classes?: any
 }
 
@@ -96,4 +104,18 @@ const styles = createStyles({
     },
 })
 
-export default withStyles(styles)(Sharing)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        users: state.user.users,
+    }
+}
+
+const mapDispatchToProps = {
+    addCollaborator,
+    removeCollaborator,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(Sharing))

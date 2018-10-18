@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { IGlobalState } from 'redux/store'
 import Sharing from './RepoInfo/Sharing'
-import { addCollaborator, removeCollaborator } from '../../../redux/repository/repoActions'
 import { IRepo } from 'common'
 
 
@@ -17,8 +16,6 @@ class RepoSettingsPage extends React.Component<Props>
                     sharedUsers={repo.sharedUsers || []}
                     folderPath={repo.path}
                     repoID={repo.repoID}
-                    addCollaborator={this.props.addCollaborator}
-                    removeCollaborator={this.props.removeCollaborator}
                 />
             </div>
         )
@@ -28,8 +25,6 @@ class RepoSettingsPage extends React.Component<Props>
 interface Props {
     classes: any
     repo: IRepo
-    addCollaborator: typeof addCollaborator
-    removeCollaborator: typeof removeCollaborator
 }
 
 const styles = (_: Theme) => createStyles({
@@ -47,14 +42,10 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    addCollaborator,
-    removeCollaborator
 }
 
-const RepoSettingsPageContainer = connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(RepoSettingsPage))
-
-export default RepoSettingsPageContainer
 
