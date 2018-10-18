@@ -69,7 +69,10 @@ class FileViewer extends React.Component<Props, State>
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (this.isTextFile(this.props.filename) && prevProps.filename !== this.props.filename) {
+        if (
+            this.isTextFile(this.props.filename) &&
+            (prevProps.filename !== this.props.filename || prevProps.repoRoot !== this.props.repoRoot)
+        ) {
             this.readFile()
         }
     }

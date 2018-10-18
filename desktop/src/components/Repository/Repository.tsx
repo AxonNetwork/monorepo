@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 
 import RepoInfo from './elements/RepoInfo'
+import RepoHomePage from './elements/RepoHomePage'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoHistoryPage from './elements/RepoHistoryPage'
 import RepoEditorPage from './elements/RepoEditorPage'
@@ -25,6 +26,9 @@ class Repository extends React.Component<Props>
 
                 <div className={classes.repoMainContent}>
                     <div className={classes.repoMainContentInner}>
+                        {this.props.repoPage === RepoPage.Home &&
+                            <RepoHomePage />
+                        }
                         {this.props.repoPage === RepoPage.Files &&
                             <RepoFilesPage />
                         }

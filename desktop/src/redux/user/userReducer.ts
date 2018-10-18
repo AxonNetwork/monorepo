@@ -36,7 +36,6 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
     switch (action.type) {
         case UserActionType.LOGIN_SUCCESS:
         case UserActionType.SIGNUP_SUCCESS:
-        case UserActionType.CHECK_LOCAL_USER_SUCCESS:
         case UserActionType.CHECK_NODE_USER_SUCCESS:
             const { userID, emails, name, username, picture } = action.payload
             const user = state.users[userID] || {
@@ -63,7 +62,6 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
 
         case UserActionType.CHECK_NODE_USER_FAILED:
-        case UserActionType.CHECK_LOCAL_USER_FAILED:
             return {
                 ...state,
                 checkedLocalUser: true,
@@ -75,26 +73,39 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 nodeUsername: action.payload.username,
             }
 
-        case UserActionType.FETCH_USER_DATA_SUCCESS:
+        case UserActionType.FETCH_USER_DATA_SUCCESS: {
+            const { users } = action.payload
+            const usersByEmail = {} as {[email: string]: string}
+            for (let userID of Object.keys(users)) {
+                for (let email of (users[userID].emails || [])) {
+                    usersByEmail[email] = userID
+                }
+            }
+
             return {
                 ...state,
                 users: {
                     ...state.users,
                     ...action.payload.users,
                 },
+                usersByEmail: {
+                    ...state.usersByEmail,
+                    ...usersByEmail,
+                },
             }
+        }
 
         case UserActionType.FETCH_USER_DATA_BY_EMAIL_SUCCESS:
             return {
                 ...state,
                 users: {
                     ...state.users,
-                    ...action.payload.users
+                    ...action.payload.users,
                 },
                 usersByEmail: {
                     ...state.usersByEmail,
-                    ...action.payload.usersByEmail
-                }
+                    ...action.payload.usersByEmail,
+                },
             }
 
         case UserActionType.LOGIN_FAILED:

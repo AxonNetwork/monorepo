@@ -1,7 +1,9 @@
 import { RepoActionType, IRepoAction } from './repoActions'
+import { DiscussionActionType, IDiscussionAction } from '../discussion/discussionActions'
 import { IRepo, ITimelineEvent } from '../../common'
 
 export enum RepoPage {
+    Home,
     Files,
     Manuscript,
     History,
@@ -12,7 +14,7 @@ export enum RepoPage {
 
 const initialState = {
     repos: {},
-    repoPage: RepoPage.Files,
+    repoPage: RepoPage.Home,
     selectedRepo: undefined,
     selectedFile: undefined,
     selectedCommit: undefined,
@@ -31,7 +33,7 @@ export interface IRepoState {
     checkpointed: boolean
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
+const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDiscussionAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS: {
             const { repoID, path } = action.payload
@@ -159,6 +161,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             return {
                 ...state,
                 selectedCommit,
+                repoPage: RepoPage.History,
             }
         }
 
@@ -224,9 +227,9 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     ...state.repos,
                     [folderPath]: {
                         ...state.repos[folderPath],
-                        behindRemote: false
-                    }
-                }
+                        behindRemote: false,
+                    },
+                },
             }
         }
 
@@ -241,6 +244,13 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         behindRemote: true,
                     },
                 },
+            }
+        }
+
+        case DiscussionActionType.SELECT_DISCUSSION: {
+            return {
+                ...state,
+                repoPage: RepoPage.Discussion,
             }
         }
 

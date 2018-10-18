@@ -20,6 +20,7 @@ import { RepoActionType,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
+import { fetchUserData } from '../user/userActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
@@ -142,9 +143,12 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
 
 const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
     type: RepoActionType.FETCH_REPO_SHARED_USERS,
-    async process({ action }) {
+    async process({ action }, dispatch) {
         const { path, repoID } = action.payload
         const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.userID)
+
+        dispatch(fetchUserData({ userIDs: sharedUsers }))
+
         return { path, repoID, sharedUsers }
     },
 })
@@ -243,8 +247,8 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
     async process({ action, getState }, dispatch) {
         const { repoID, email, folderPath } = action.payload
         const user = (await ServerRelay.fetchUsersByEmail([ email ]))[0]
-        if(user === undefined){
-            throw new Error("user does not exist")
+        if (user === undefined) {
+            throw new Error('user does not exist')
         }
         const username = user.username
         const rpcClient = rpc.initClient()

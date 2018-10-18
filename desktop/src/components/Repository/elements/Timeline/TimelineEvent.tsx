@@ -11,20 +11,8 @@ import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
 
 @autobind
-class TimelineEvent extends React.Component<Props, State>
+class TimelineEvent extends React.Component<Props>
 {
-    state = {
-        openDialog: false,
-    }
-
-    handleClick() {
-        this.setState({ openDialog: true })
-    }
-
-    handleClose() {
-        this.setState({ openDialog: false })
-    }
-
     render() {
         const { event, classes } = this.props
         return (
@@ -47,14 +35,6 @@ class TimelineEvent extends React.Component<Props, State>
                         <Typography className={classes.username}>{event.user}</Typography>
                     </div>
                 </div>
-
-                <RevertFilesDialog
-                    event={this.props.event}
-                    repoRoot={this.props.repoRoot}
-                    revertFiles={this.props.revertFiles}
-                    open={this.state.openDialog}
-                    onClose={this.handleClose}
-                />
             </React.Fragment>
         )
     }
@@ -63,15 +43,9 @@ class TimelineEvent extends React.Component<Props, State>
 interface Props {
     event: ITimelineEvent
     repoRoot: string
-    getDiff: Function
-    revertFiles: Function
     username: string | undefined
     userPicture: string | undefined
     classes: any
-}
-
-interface State {
-    openDialog: boolean
 }
 
 const styles = (theme: Theme) => createStyles({

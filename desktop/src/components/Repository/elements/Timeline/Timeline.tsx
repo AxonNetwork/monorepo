@@ -7,7 +7,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { IGlobalState } from 'redux/store'
 import { IUser, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
-import { ISelectCommitAction, IGetDiffAction, IRevertFilesAction } from 'redux/repository/repoActions'
+import { ISelectCommitAction } from 'redux/repository/repoActions'
 import { removeEmail, extractEmail } from 'utils'
 
 
@@ -68,8 +68,6 @@ class Timeline extends React.Component<Props, State>
                             <TimelineEvent
                                 repoRoot={this.props.repoRoot}
                                 event={event}
-                                getDiff={this.props.getDiff}
-                                revertFiles={this.props.revertFiles}
                                 username={username}
                                 userPicture={userPicture}
                             />
@@ -89,8 +87,6 @@ interface Props {
     commitList: string[] | undefined
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string}
-    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
-    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
     classes: any
 }

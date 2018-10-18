@@ -11,6 +11,7 @@ import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
 import { pullRepo, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
+import HomeIcon from '@material-ui/icons/Home'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import DescriptionIcon from '@material-ui/icons/Description'
 import HistoryIcon from '@material-ui/icons/History'
@@ -53,6 +54,9 @@ class RepoInfo extends React.Component<Props>
                 <div className={classes.spacer}></div>
 
                 <div className={classes.tabContainer}>
+                    <Tab repoPage={RepoPage.Home} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
+                        <HomeIcon />{this.props.menuLabelsHidden ? '' : 'Home'}
+                    </Tab>
                     <Tab repoPage={RepoPage.Files} activeRepoPage={this.props.repoPage} navigateRepoPage={this.props.navigateRepoPage} classes={classes}>
                         <FolderOpenIcon />{this.props.menuLabelsHidden ? '' : 'Files'}
                     </Tab>

@@ -51,30 +51,27 @@ class RepoDiscussionPage extends React.Component<Props>
                         const username = (this.props.users[ d.userID ] || {}).name || d.userID
                         const userPicture = (this.props.users[ d.userID ] || {}).picture
                         return (
-                            <React.Fragment key={d.discussionID}>
-                                <ListItem
-                                    button
-                                    className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
-                                    onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
-                                >
-                                    <ListItemText primary={d.subject} secondary={
-                                        <React.Fragment>
-                                            {showBadge &&
-                                                <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary">{null}</Badge>
-                                            }
-                                            <div className={classes.sidebarListItemSubtext}>
-                                                <div className={classes.sidebarListItemModifiedDate}>
-                                                    {moment(newestComment[d.discussionID]).fromNow()}
-                                                </div>
-                                                <div className={classes.sidebarListItemAvatar}>
-                                                    <UserAvatar username={username} userPicture={userPicture} />
-                                                </div>
+                            <ListItem
+                                button
+                                className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
+                                onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
+                            >
+                                <ListItemText primary={d.subject} secondary={
+                                    <React.Fragment>
+                                        {showBadge &&
+                                            <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary">{null}</Badge>
+                                        }
+                                        <div className={classes.sidebarListItemSubtext}>
+                                            <div className={classes.sidebarListItemModifiedDate}>
+                                                {moment(newestComment[d.discussionID]).fromNow()}
                                             </div>
-                                        </React.Fragment>
-                                    }/>
-                                </ListItem>
-                                {/* <Divider /> */}
-                            </React.Fragment>
+                                            <div className={classes.sidebarListItemAvatar}>
+                                                <UserAvatar username={username} userPicture={userPicture} />
+                                            </div>
+                                        </div>
+                                    </React.Fragment>
+                                }/>
+                            </ListItem>
                         )
                     })}
 

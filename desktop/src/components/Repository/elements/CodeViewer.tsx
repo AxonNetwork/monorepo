@@ -58,6 +58,7 @@ interface Props {
 const styles = () => createStyles({
     codeContainer: {
         padding: 30,
+        overflowX: 'scroll',
     },
 })
 

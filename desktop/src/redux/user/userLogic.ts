@@ -7,7 +7,6 @@ import {
     ISignupAction, ISignupSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
     IFetchUserDataByEmailAction, IFetchUserDataByEmailSuccessAction,
-    ICheckLocalUserAction, ICheckLocalUserSuccessAction,
     ICheckNodeUserAction, ICheckNodeUserSuccessAction,
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
@@ -22,7 +21,7 @@ import {
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
     getSharedRepos, gotNodeUsername,
 } from './userActions'
-import { selectRepo } from '../repository/repoActions'
+import { selectRepo, getLocalRepos } from '../repository/repoActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
 import * as rpc from '../../rpc'
@@ -37,6 +36,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         await UserData.setJWT(jwt)
 
         dispatch(getSharedRepos({ userID }))
+        dispatch(getLocalRepos())
 
         return { userID, emails, name, username, picture }
     },
@@ -57,6 +57,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
 
         // Fetch the user's data
         dispatch(getSharedRepos({ userID }))
+        dispatch(getLocalRepos())
 
         return { userID, emails, name, username, picture: undefined }
     },
@@ -67,6 +68,7 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
     async process({ action, getState }) {
         const inRedux = Object.keys(getState().user.users)
         const toFetch = action.payload.userIDs.filter(id => !inRedux.includes(id))
+        console.log('toFetch', { inRedux, toFetch })
         const userList = await ServerRelay.fetchUsers(toFetch)
 
         // Convert the list into an object
@@ -84,9 +86,9 @@ const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchU
         const userList = await ServerRelay.fetchUsersByEmail(toFetch)
 
         let usersByEmail = {} as {[email: string]: string}
-        for(let i=0; i<userList.length; i++){
+        for (let i = 0; i < userList.length; i++) {
             const user = userList[i]
-            for(let j=0; j<user.emails.length; j++){
+            for (let j = 0; j < user.emails.length; j++) {
                 usersByEmail[user.emails[j]] = user.userID
             }
         }
@@ -97,30 +99,15 @@ const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchU
     },
 })
 
-const checkLocalUserLogic = makeLogic<ICheckLocalUserAction, ICheckLocalUserSuccessAction>({
-    type: UserActionType.CHECK_LOCAL_USER,
-    async process(_, dispatch) {
-        const jwt = await UserData.getJWT()
-        if (!jwt || jwt === '') {
-            throw new Error('Not logged in')
-        }
-        ServerRelay.setJWT(jwt)
-        const { userID, emails, name, username, picture } = await ServerRelay.whoami()
-
-        dispatch(getSharedRepos({ userID }))
-        return { userID, emails, name, username, picture }
-    },
-})
-
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
     type: UserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
         const { username, signature } = await rpcClient.getUsernameAsync({})
 
-        if(!username || username === ''){
-            throw new Error("No node user")
-        }else {
+        if (!username || username === '') {
+            throw new Error('No node user')
+        } else {
             dispatch(gotNodeUsername({username}))
         }
 
@@ -128,8 +115,9 @@ const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccess
         const { userID, emails, name, picture } = await ServerRelay.loginWithKey(username, hexSignature)
 
         dispatch(getSharedRepos({ userID }))
+        dispatch(getLocalRepos())
         return { userID, emails, name, picture, username }
-    }
+    },
 })
 
 const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
@@ -266,7 +254,6 @@ export default [
     signupLogic,
     fetchUserDataLogic,
     fetchUserDataByEmailLogic,
-    checkLocalUserLogic,
     checkNodeUserLogic,
     checkBalanceAndHitFaucetLogic,
     logoutLogic,

@@ -15,8 +15,8 @@ import autobind from 'utils/autobind'
 
 
 @autobind
-class LoginPage extends React.Component<Props, State> {
-
+class LoginPage extends React.Component<Props, State>
+{
     _inputUsername: HTMLInputElement | null = null
     _inputName: HTMLInputElement | null = null
     _inputEmail: HTMLInputElement | null = null
@@ -29,17 +29,17 @@ class LoginPage extends React.Component<Props, State> {
         })
     }
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        const email = this._inputEmail !== null ? this._inputEmail.value : ""
-        const password = this._inputPassword !== null ? this._inputPassword.value : ""
+        const email = this._inputEmail !== null ? this._inputEmail.value : ''
+        const password = this._inputPassword !== null ? this._inputPassword.value : ''
 
         if (this.state.displaySignup) {
-            const name = this._inputName !== null ? this._inputName.value : ""
-            const username = this._inputUsername !== null ? this._inputUsername.value : ""
-            this.props.signup({name: name, username: username, email: email, password: password})
-        }else {
-            this.props.login({email: email, password: password})
+            const name = this._inputName !== null ? this._inputName.value : ''
+            const username = this._inputUsername !== null ? this._inputUsername.value : ''
+            this.props.signup({ name, username, email, password })
+        } else {
+            this.props.login({ email, password })
         }
     }
 
@@ -58,7 +58,7 @@ class LoginPage extends React.Component<Props, State> {
                                 <React.Fragment>
                                     <TextField
                                         label="Username"
-                                        defaultValue={this.props.nodeUsername||""}
+                                        defaultValue={this.props.nodeUsername || ''}
                                         inputRef={ x => this._inputUsername = x }
                                         disabled={!!this.props.nodeUsername}
                                         className={classes.textField}

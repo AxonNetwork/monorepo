@@ -23,10 +23,6 @@ export enum UserActionType {
     LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
     LOGOUT_FAILED = 'LOGOUT_FAILED',
 
-    CHECK_LOCAL_USER = 'CHECK_LOCAL_USER',
-    CHECK_LOCAL_USER_SUCCESS = 'CHECK_LOCAL_USER_SUCCESS',
-    CHECK_LOCAL_USER_FAILED = 'CHECK_LOCAL_USER_FAILED',
-
     CHECK_NODE_USER = 'CHECK_NODE_USER',
     CHECK_NODE_USER_SUCCESS = 'CHECK_NODE_USER_SUCCESS',
     CHECK_NODE_USER_FAILED = 'CHECK_NODE_USER_FAILED',
@@ -156,30 +152,11 @@ export interface IFetchUserDataByEmailSuccessAction {
     type: UserActionType.FETCH_USER_DATA_BY_EMAIL_SUCCESS
     payload: {
         users: { [userID: string]: IUser },
-        usersByEmail: { [email: string]: string} // value is userID
+        usersByEmail: { [email: string]: string}, // value is userID
     }
 }
 
 export type IFetchUserDataByEmailFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_BY_EMAIL_FAILED>
-
-
-export interface ICheckLocalUserAction {
-    type: UserActionType.CHECK_LOCAL_USER
-    payload: {}
-}
-
-export interface ICheckLocalUserSuccessAction {
-    type: UserActionType.CHECK_LOCAL_USER_SUCCESS
-    payload: {
-        userID: string
-        emails: string[]
-        name: string
-        username: string
-        picture: string
-    }
-}
-
-export type ICheckLocalUserFailedAction = FailedAction<UserActionType.CHECK_LOCAL_USER_FAILED>
 
 export interface ICheckNodeUserAction {
     type: UserActionType.CHECK_NODE_USER
@@ -193,7 +170,7 @@ export interface ICheckNodeUserSuccessAction {
         emails: string[]
         name: string
         username: string
-        picture: string
+        picture: string,
     }
 }
 
@@ -202,7 +179,7 @@ export type ICheckNodeUserFailedAction = FailedAction<UserActionType.CHECK_NODE_
 export interface IGotNodeUsernameAction {
     type: UserActionType.GOT_NODE_USERNAME
     payload: {
-        username: string
+        username: string,
     }
 }
 
@@ -392,10 +369,6 @@ export type IUserAction =
     IFetchUserDataByEmailSuccessAction |
     IFetchUserDataByEmailFailedAction |
 
-    ICheckLocalUserAction |
-    ICheckLocalUserSuccessAction |
-    ICheckLocalUserFailedAction |
-
     ICheckNodeUserAction |
     ICheckNodeUserSuccessAction |
     ICheckNodeUserFailedAction |
@@ -446,7 +419,6 @@ export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, paylo
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 export const fetchUserDataByEmail = (payload: IFetchUserDataByEmailAction['payload']): IFetchUserDataByEmailAction => ({ type: UserActionType.FETCH_USER_DATA_BY_EMAIL, payload })
-export const checkLocalUser = () => ({ type: UserActionType.CHECK_LOCAL_USER, payload: {}})
 export const checkNodeUser = () => ({ type: UserActionType.CHECK_NODE_USER, payload: {}})
 export const gotNodeUsername = (payload: IGotNodeUsernameAction['payload']) => ({ type: UserActionType.GOT_NODE_USERNAME, payload})
 export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET, payload: {}})
