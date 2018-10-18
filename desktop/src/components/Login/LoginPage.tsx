@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import logo from '../../assets/img/logo.png'
 
@@ -16,10 +17,10 @@ import autobind from 'utils/autobind'
 @autobind
 class LoginPage extends React.Component<Props, State> {
 
-    _inputUsername: HTMLInputElement | undefined
-    _inputName: HTMLInputElement | undefined
-    _inputEmail: HTMLInputElement | undefined
-    _inputPassword: HTMLInputElement | undefined
+    _inputUsername: HTMLInputElement | null = null
+    _inputName: HTMLInputElement | null = null
+    _inputEmail: HTMLInputElement | null = null
+    _inputPassword: HTMLInputElement | null = null
 
     toggleView(event: Event) {
         event.preventDefault()
@@ -30,12 +31,12 @@ class LoginPage extends React.Component<Props, State> {
 
     handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const email = this._inputEmail !== undefined ? this._inputEmail.value : ""
-        const password = this._inputPassword !== undefined ? this._inputPassword.value : ""
+        const email = this._inputEmail !== null ? this._inputEmail.value : ""
+        const password = this._inputPassword !== null ? this._inputPassword.value : ""
 
         if (this.state.displaySignup) {
-            const name = this._inputName !== undefined ? this._inputName.value : ""
-            const username = this._inputUsername !== undefined ? this._inputUsername.value : ""
+            const name = this._inputName !== null ? this._inputName.value : ""
+            const username = this._inputUsername !== null ? this._inputUsername.value : ""
             this.props.signup({name: name, username: username, email: email, password: password})
         }else {
             this.props.login({email: email, password: password})
@@ -87,8 +88,16 @@ class LoginPage extends React.Component<Props, State> {
                             {error !== undefined &&
                                 <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
                             }
-                            <Button variant="raised" color="secondary" className={classes.button} type="submit">
+                            <Button
+                                variant="raised"
+                                color="secondary"
+                                className={classes.button}
+                                disabled={this.props.loginLoading}
+                                type="submit"
+                            >
                                 {this.state.displaySignup ? 'Signup' : 'Login'}
+                                {this.props.loginLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
+
                             </Button>
                         </form>
                         <ToggleText
@@ -105,6 +114,7 @@ class LoginPage extends React.Component<Props, State> {
 interface Props {
     error: Error | undefined
     nodeUsername: string | undefined
+    loginLoading: boolean
     login: Function
     signup: Function
     classes: any
@@ -171,6 +181,14 @@ const styles = (theme: Theme) => createStyles({
         marginTop: '32px',
         marginBottom: '16px',
     },
+    buttonLoading: {
+        color: theme.palette.secondary.main,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
     errorMessage: {
         marginBottom: '-20px',
     },
@@ -183,6 +201,7 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         error: state.user.error,
         nodeUsername: state.user.nodeUsername,
+        loginLoading: state.ui.loginLoading,
     }
 }
 

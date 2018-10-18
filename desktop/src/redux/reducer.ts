@@ -3,9 +3,10 @@ import { combineReducers } from 'redux'
 
 import userReducer from './user/userReducer'
 import repoReducer from './repository/repoReducer'
-import navigationReducer from './navigation/navigationReducer'
 import discussionReducer from './discussion/discussionReducer'
 import editorReducer from './editor/editorReducer'
+import navigationReducer from './navigation/navigationReducer'
+import uiReducer from './ui/uiReducer'
 
 import { IGlobalState } from './store'
 // @@TODO: is this necessary?
@@ -15,9 +16,10 @@ const appReducer = combineReducers({
     // routing: routerReducer,
     user: userReducer,
     repository: repoReducer,
-    navigation: navigationReducer,
     discussion: discussionReducer,
     editor: editorReducer,
+    navigation: navigationReducer,
+    ui: uiReducer,
 })
 
 const rootReducer = (state: IGlobalState | undefined, action: {type: string}): IGlobalState => {

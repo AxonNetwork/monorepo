@@ -70,6 +70,7 @@ class RepoFilesPage extends React.Component<Props>
                                 checkpointRepo={this.props.checkpointRepo}
                                 folderPath={repo.path}
                                 repoID={repo.repoID}
+                                checkpointLoading={this.props.checkpointLoading}
                             />
                         </div>
                     }
@@ -82,6 +83,7 @@ class RepoFilesPage extends React.Component<Props>
 interface Props {
     repo: IRepo | undefined
     selectedFile: { file: string, isFolder: boolean } | undefined
+    checkpointLoading: boolean
     checkpointRepo: (payload: ICheckpointRepoAction['payload']) => ICheckpointRepoAction
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
@@ -119,9 +121,12 @@ const mapStateToProps = (state: IGlobalState) => {
     if (selectedRepo !== null && selectedRepo !== undefined) {
         repo = state.repository.repos[selectedRepo] || undefined
     }
+    const checkpointLoading = state.ui.checkpointLoading
+
     return {
         repo,
         selectedFile,
+        checkpointLoading,
     }
 }
 

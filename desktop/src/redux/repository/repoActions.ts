@@ -416,6 +416,8 @@ export type IRepoAction =
     INavigateRepoPageAction |
 
     ICheckpointRepoAction |
+    ICheckpointRepoSuccessAction |
+    ICheckpointRepoFailedAction |
 
     IPullRepoAction |
     IPullRepoSuccessAction |

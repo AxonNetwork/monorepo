@@ -45,6 +45,7 @@ class RepoInfo extends React.Component<Props>
                             pullRepo={pullRepo}
                             folderPath={repo.path}
                             repoID={repo.repoID}
+                            pullLoading={this.props.pullLoading}
                         />
                     }
                 </div>
@@ -77,6 +78,7 @@ interface Props {
     repo: IRepo | undefined
     repoPage: RepoPage
     menuLabelsHidden: boolean | undefined
+    pullLoading: boolean
     classes: any
     pullRepo: typeof pullRepo
     navigateRepoPage: typeof navigateRepoPage
@@ -186,10 +188,12 @@ const mapStateToProps = (state: IGlobalState) => {
     const repo = state.repository.repos[selected]
     const repoPage = state.repository.repoPage
     const menuLabelsHidden = state.user.menuLabelsHidden
+    const pullLoading = state.ui.pullLoading
     return {
         repo,
         repoPage,
         menuLabelsHidden,
+        pullLoading,
     }
 }
 

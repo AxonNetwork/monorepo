@@ -2,21 +2,11 @@ import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import autobind from 'utils/autobind'
 
-export interface CheckpointProps {
-    folderPath: string
-    repoID: string
-    checkpointRepo: Function
-    classes: any
-}
-
-export interface CheckpointState {
-    message: string
-}
-
 @autobind
-class Checkpoint extends React.Component<CheckpointProps, CheckpointState>
+class Checkpoint extends React.Component<Props, State>
 {
     state={
         message: ''
@@ -53,12 +43,31 @@ class Checkpoint extends React.Component<CheckpointProps, CheckpointState>
                     rowsMax={2}
                     className={classes.textField}
                 />
-                <Button variant="raised" color="secondary" className={classes.button} type="submit">
+                <Button
+                variant="raised"
+                color="secondary"
+                className={classes.button}
+                disabled={this.props.checkpointLoading}
+                type="submit"
+                >
                     Checkpoint
+                    {this.props.checkpointLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                 </Button>
             </form>
         )
     }
+}
+
+interface Props {
+    folderPath: string
+    repoID: string
+    checkpointLoading: boolean
+    checkpointRepo: Function
+    classes: any
+}
+
+interface State {
+    message: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -70,6 +79,14 @@ const styles = (theme: Theme) => createStyles({
         textTransform: 'none',
         marginTop: theme.spacing.unit*2,
         marginBottom: theme.spacing.unit*2,
+    },
+    buttonLoading: {
+        color: theme.palette.secondary.main,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
     },
 })
 

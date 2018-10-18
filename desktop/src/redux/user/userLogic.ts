@@ -46,7 +46,6 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
     type: UserActionType.SIGNUP,
     async process({ action }, dispatch) {
         const { payload } = action
-
         const rpcClient = rpc.initClient()
         const { signature } = await rpcClient.setUsernameAsync({ username: payload.username })
 
