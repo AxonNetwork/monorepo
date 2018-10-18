@@ -17,18 +17,23 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import RepoList from './RepoList'
-import { IRepo, IUser } from 'common'
+import OrgList from './OrgList'
+import { IRepo, IUser, IOrganization } from 'common'
 import { IGlobalState } from 'redux/store'
 import { selectRepo } from 'redux/repository/repoActions'
+import { selectOrg } from 'redux/org/orgActions'
 import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
 import autobind from 'utils/autobind'
 import UserAvatar from 'components/UserAvatar'
-
+import { keyBy } from 'lodash'
 
 @autobind
 class Sidebar extends React.Component<Props, State>
 {
-    state = { open: true }
+    state = {
+        repoOpen: true,
+        orgOpen: true,
+    }
 
     render() {
         const { user, open, classes } = this.props
@@ -56,9 +61,9 @@ class Sidebar extends React.Component<Props, State>
                 <List>
                     <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
                         <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        {this.state.open ? <ExpandLess /> : <ExpandMore />}
+                        {this.state.repoOpen ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
-                    <Collapse in={this.state.open} timeout="auto" unmountOnExit>
+                    <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
                         <RepoList
                             repos={this.props.repos}
                             selectedRepo={this.props.selectedRepo}
@@ -66,6 +71,17 @@ class Sidebar extends React.Component<Props, State>
                             selectRepo={this.props.selectRepo}
                         />
                     </Collapse>
+                    <ListItem button onClick={this.onClickExpandOrganizations} className={classes.sidebarItemText}>
+                        <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                        {this.state.orgOpen ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                    <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
+                        <OrgList
+                            orgs={this.props.orgs}
+                            selectOrg={this.props.selectOrg}
+                        />
+                    </Collapse>
+
                 </List>
 
                 <div className={classes.sidebarSpacer}></div>
@@ -102,7 +118,11 @@ class Sidebar extends React.Component<Props, State>
     }
 
     onClickExpandRepositories() {
-        this.setState({ open: !this.state.open })
+        this.setState({ repoOpen: !this.state.repoOpen })
+    }
+
+    onClickExpandOrganizations() {
+        this.setState({ orgOpen: !this.state.orgOpen })
     }
 }
 
@@ -111,16 +131,19 @@ interface Props {
     repos: {[folderPath: string]: IRepo}
     selectedRepo?: string | null
     currentPage: string
+    orgs: {[orgID: string]: IOrganization}
     toggleSidebar: () => void
-    selectRepo: Function
-    navigateNewRepo: Function
-    navigateSettings: Function
+    selectRepo: typeof selectRepo
+    selectOrg: typeof selectOrg
+    navigateNewRepo: typeof navigateNewRepo
+    navigateSettings: typeof navigateSettings
     open: boolean
     classes: any
 }
 
 interface State {
-    open: boolean
+    repoOpen: boolean
+    orgOpen: boolean
 }
 
 const drawerWidth = 200
@@ -189,17 +212,24 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const currentUser = state.user.currentUser || ''
-    const user = state.user.users[currentUser]
+    const user = state.user.users[currentUser] || {}
+    const orgIDs = user.orgs || []
+    const orgList = orgIDs
+        .filter((id: string) => state.org.orgs[id] !== undefined)
+        .map((id: string) => state.org.orgs[id]||{})
+    const orgs = keyBy(orgList, "orgID")
     return {
         repos: state.repository.repos,
         selectedRepo: state.repository.selectedRepo,
         currentPage: state.navigation.currentPage,
-        user: user,
+        user,
+        orgs,
     }
 }
 
 const mapDispatchToProps = {
     selectRepo,
+    selectOrg,
     navigateNewRepo,
     navigateSettings,
 }

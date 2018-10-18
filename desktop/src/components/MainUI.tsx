@@ -9,6 +9,7 @@ import Sidebar from './Sidebar/Sidebar'
 import Login from './Login/LoginPage'
 import NewRepository from './NewRepository/NewRepository'
 import Settings from './Settings/Settings'
+import OrganizationPage from './Organization/OrganizationPage'
 import Repository from './Repository/Repository'
 import autobind from 'utils/autobind'
 import { IGlobalState } from 'redux/store'
@@ -52,13 +53,16 @@ class MainUI extends React.Component<Props, State>
 
                     <div className={classes.mainUIContentWrapper}>
                         {currentPage === 'new' &&
-                            <NewRepository/>
+                            <NewRepository />
                         }
                         {currentPage === 'settings' &&
                             <Settings />
                         }
                         {currentPage === 'repo' &&
                             <Repository sidebarOpen={this.state.sidebarOpen} />
+                        }
+                        {currentPage === 'org' &&
+                            <OrganizationPage />
                         }
                     </div>
                 </main>

@@ -9,6 +9,8 @@ export enum OrgActionType {
     FETCH_ORG_INFO = 'FETCH_ORG_INFO',
     FETCH_ORG_INFO_SUCCESS = 'FETCH_ORG_INFO_SUCCESS',
     FETCH_ORG_INFO_FAILED = 'FETCH_ORG_INFO_FAILED',
+
+    SELECT_ORG = 'SELECT_ORG',
 }
 
 export interface ICreateOrgAction {
@@ -39,7 +41,12 @@ export interface IFetchOrgInfoSuccessAction {
 
 export type IFetchOrgInfoFailedAction = FailedAction<OrgActionType.FETCH_ORG_INFO_FAILED>
 
-
+export interface ISelectOrgAction {
+    type: OrgActionType.SELECT_ORG
+    payload: {
+        orgID: string
+    }
+}
 export type IOrgAction =
     ICreateOrgAction |
     ICreateOrgSuccessAction |
@@ -47,7 +54,10 @@ export type IOrgAction =
 
     IFetchOrgInfoAction |
     IFetchOrgInfoSuccessAction |
-    IFetchOrgInfoFailedAction
+    IFetchOrgInfoFailedAction |
+
+    ISelectOrgAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
+export const selectOrg = (payload: ISelectOrgAction['payload']): ISelectOrgAction => ({ type: OrgActionType.SELECT_ORG, payload })

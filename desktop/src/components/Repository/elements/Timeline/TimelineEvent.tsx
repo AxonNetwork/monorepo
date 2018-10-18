@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography'
 import Tooltip from '@material-ui/core/Tooltip'
 import LinkIcon from '@material-ui/icons/Link'
 
-import RevertFilesDialog from './RevertFilesDialog'
 import UserAvatar from 'components/UserAvatar'
 import { ITimelineEvent } from '../../../../common'
 import autobind from 'utils/autobind'
