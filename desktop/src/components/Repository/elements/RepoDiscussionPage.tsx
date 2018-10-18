@@ -54,6 +54,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             <ListItem
                                 button
                                 className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
+                                classes={{ button: classes.listItemHover }}
                                 onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                             >
                                 <ListItemText primary={d.subject} secondary={
@@ -145,6 +146,11 @@ const styles = (theme: Theme) => createStyles({
         background: 'white',
         borderTop: 0,
         border: '1px solid #e0e0e0',
+    },
+    listItemHover: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        },
     },
     title: {
         marginTop: theme.spacing.unit * 2,

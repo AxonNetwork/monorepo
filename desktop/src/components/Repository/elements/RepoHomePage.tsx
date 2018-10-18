@@ -35,9 +35,11 @@ class RepoHomePage extends React.Component<Props>
 
         return (
             <div className={classes.root}>
-                <div className={classnames(classes.readmeContainer, classes.box)}>
-                    <FileViewer filename={'README.md'} repoRoot={repo.path} />
-                </div>
+                {(repo.files || {})['README.md'] &&
+                    <div className={classnames(classes.readmeContainer, classes.box)}>
+                        <FileViewer filename={'README.md'} repoRoot={repo.path} />
+                    </div>
+                }
 
                 <div className={classes.boxes}>
                     <Card className={classnames(classes.usersContainer, classes.box)}>
@@ -69,6 +71,7 @@ class RepoHomePage extends React.Component<Props>
                                         <ListItem
                                             button
                                             className={classnames(classes.listItem)}
+                                            classes={{ button: classes.listItemHover }}
                                             onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                                         >
                                             <ListItemText primary={d.subject} secondary={
@@ -162,6 +165,11 @@ const styles = createStyles({
 
         '&:last-child': {
             borderBottom: 'none',
+        },
+    },
+    listItemHover: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
         },
     },
     sidebarListItemSubtext: {
