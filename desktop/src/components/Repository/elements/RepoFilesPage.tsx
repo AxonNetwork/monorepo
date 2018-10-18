@@ -17,7 +17,7 @@ import autobind from 'utils/autobind'
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
-    selectCommit(commit: string){
+    selectCommit(commit: string) {
         this.props.navigateRepoPage({ repoPage: RepoPage.History })
         this.props.selectCommit({ selectedCommit: commit })
     }
@@ -29,15 +29,11 @@ class RepoFilesPage extends React.Component<Props>
         }
 
         const files = repo.files || {}
-        const filesChanged = Object.keys(files).some((name) => {
-            const file = files[name]
-            return (file.status === 'M' || file.status === '?')
-        })
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             const relPath = selectedFile.file.replace(repo.path + '/', '')
-            const lastVerified = getLastVerifiedEvent(repo.commitList||[], repo.commits||{}, relPath)
-            const firstVerified = getFirstVerifiedEvent(repo.commitList||[], repo.commits||{}, relPath)
+            const lastVerified = getLastVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
+            const firstVerified = getFirstVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
             return (
                 <div className={classes.fileInfoContainer}>
                     <FileInfo
@@ -64,16 +60,6 @@ class RepoFilesPage extends React.Component<Props>
                             selectFile={this.props.selectFile}
                         />
                     </div>
-                    {filesChanged &&
-                        <div className={classes.checkpoint}>
-                            <Checkpoint
-                                checkpointRepo={this.props.checkpointRepo}
-                                folderPath={repo.path}
-                                repoID={repo.repoID}
-                                checkpointLoading={this.props.checkpointLoading}
-                            />
-                        </div>
-                    }
                 </div>
             )
         }
@@ -83,8 +69,6 @@ class RepoFilesPage extends React.Component<Props>
 interface Props {
     repo: IRepo | undefined
     selectedFile: { file: string, isFolder: boolean } | undefined
-    checkpointLoading: boolean
-    checkpointRepo: (payload: ICheckpointRepoAction['payload']) => ICheckpointRepoAction
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
@@ -107,10 +91,6 @@ const styles = createStyles({
         overflowX: 'hidden',
         overflowY: 'auto',
     },
-    checkpoint: {
-        alignSelf: 'flex-end',
-        width: '100%',
-    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -121,17 +101,14 @@ const mapStateToProps = (state: IGlobalState) => {
     if (selectedRepo !== null && selectedRepo !== undefined) {
         repo = state.repository.repos[selectedRepo] || undefined
     }
-    const checkpointLoading = state.ui.checkpointLoading
 
     return {
         repo,
         selectedFile,
-        checkpointLoading,
     }
 }
 
 const mapDispatchToProps = {
-    checkpointRepo,
     selectFile,
     selectCommit,
     navigateRepoPage,

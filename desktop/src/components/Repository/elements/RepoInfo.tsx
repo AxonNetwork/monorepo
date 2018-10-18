@@ -5,11 +5,10 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 
 // import OpenFolderButton from './RepoInfo/OpenFolderButton'
-import PullButton from './RepoInfo/PullButton'
 import { IRepo } from 'common'
 
 import { IGlobalState } from 'redux/store'
-import { pullRepo, navigateRepoPage } from 'redux/repository/repoActions'
+import { navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 import HomeIcon from '@material-ui/icons/Home'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
@@ -19,13 +18,14 @@ import CommentIcon from '@material-ui/icons/Comment'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Button from '@material-ui/core/Button'
 import autobind from 'utils/autobind'
+import PushPullButtons from './RepoInfo/PushPullButtons'
 
 
 @autobind
 class RepoInfo extends React.Component<Props>
 {
     render() {
-        const { repo, pullRepo, classes } = this.props
+        const { repo, classes } = this.props
         if (repo === undefined) {
             return null
         }
@@ -34,21 +34,15 @@ class RepoInfo extends React.Component<Props>
             <div className={classes.repoInfo}>
                 {/*<OpenFolderButton folderPath={repo.path} />*/}
                 <div className={classes.titleContainer}>
-                    <Typography variant="headline" className={classes.headline}>
-                        {repo.repoID}
-                    </Typography>
-                    <Typography className={classes.version}>
-                        {version}
-                    </Typography>
-                    {
-                        repo.behindRemote &&
-                        <PullButton
-                            pullRepo={pullRepo}
-                            folderPath={repo.path}
-                            repoID={repo.repoID}
-                            pullLoading={this.props.pullLoading}
-                        />
-                    }
+                    <Typography variant="headline" className={classes.headline}>{repo.repoID}</Typography>
+                    <Typography className={classes.version}>{version}</Typography>
+
+                    <PushPullButtons
+                        repo={repo}
+                        pullLoading={this.props.pullLoading}
+                        checkpointLoading={this.props.checkpointLoading}
+                        classes={{ root: classes.pushPullButtons }}
+                    />
                 </div>
 
                 <div className={classes.spacer}></div>
@@ -73,7 +67,7 @@ class RepoInfo extends React.Component<Props>
                         <SettingsIcon />{this.props.menuLabelsHidden ? '' : 'Settings'}
                     </Tab>
                 </div>
-            </div>
+            </div >
         )
     }
 }
@@ -83,9 +77,11 @@ interface Props {
     repoPage: RepoPage
     menuLabelsHidden: boolean | undefined
     pullLoading: boolean
-    classes: any
-    pullRepo: typeof pullRepo
+    checkpointLoading: boolean
+
     navigateRepoPage: typeof navigateRepoPage
+
+    classes: any
 }
 
 function Tab(props: {
@@ -128,6 +124,10 @@ const styles = (theme: Theme) => createStyles({
     },
     titleContainer: {
         paddingBottom: 20,
+    },
+    pushPullButtons: {
+        display: 'inline',
+        marginLeft: 30,
     },
     tabContainer: {
         display: 'flex',
@@ -193,16 +193,17 @@ const mapStateToProps = (state: IGlobalState) => {
     const repoPage = state.repository.repoPage
     const menuLabelsHidden = state.user.menuLabelsHidden
     const pullLoading = state.ui.pullLoading
+    const checkpointLoading = state.ui.checkpointLoading
     return {
         repo,
         repoPage,
         menuLabelsHidden,
         pullLoading,
+        checkpointLoading,
     }
 }
 
 const mapDispatchToProps = {
-    pullRepo,
     navigateRepoPage,
 }
 
