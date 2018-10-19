@@ -35,9 +35,16 @@ class Repositories extends React.Component<Props>
             >
                 <CardContent>
                     <Typography variant="h6">{repo.repoID}</Typography>
-                    <Typography className={classes.lastUpdated}>
-                        {"Last updated " + moment(lastUpdated).fromNow()}
-                    </Typography>
+                    {lastUpdated &&
+                        <Typography className={classes.lastUpdated}>
+                            {"Last updated " + moment(lastUpdated).fromNow()}
+                        </Typography>
+                    }
+                    {!lastUpdated &&
+                        <Typography className={classes.lastUpdated}>
+                            No commits yet
+                        </Typography>
+                    }
                     <div className={classes.statButtons}>
                         <Button
                             color="secondary"
@@ -129,7 +136,7 @@ const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
         repos[path].repoID === props.repoID
     ))
     const repo = repos[repoPath || ""]
-    const numDiscussions = state.discussion.discussionsByRepo[props.repoID].length
+    const numDiscussions = (state.discussion.discussionsByRepo[props.repoID] || []).length
     return {
         repo,
         numDiscussions,
