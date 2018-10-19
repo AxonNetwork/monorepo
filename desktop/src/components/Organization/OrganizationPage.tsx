@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
 import classnames from 'classnames'
 import Typography from '@material-ui/core/Typography'
-import Description from './elements/Description'
 import Repositories from './elements/Repositories'
 import Members from './elements/Members'
 import { IGlobalState } from 'redux/store'
@@ -19,9 +18,9 @@ class OrganizationPage extends React.Component<Props>
                     <Typography variant="headline" className={classes.headline}>
                         {org.name}
                     </Typography>
-                    <Description
-                        description={'Test Description'}
-                    />
+                    {/* <Typography className={classes.description}>
+                        {org.description}
+                    </Typography> */}
                 </div>
                 <div className={classes.boxes}>
                     <Repositories
@@ -54,6 +53,11 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
         marginBottom: theme.spacing.unit
+    },
+    description: {
+        fontStyle: 'italic',
+        marginBottom: theme.spacing.unit,
+        fontSize: '12pt'
     },
     boxes: {
         display: 'flex',

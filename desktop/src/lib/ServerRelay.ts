@@ -257,6 +257,17 @@ const ServerRelay = {
         await axios.post(API_URL + "/remove-member-from-org/", { orgID, userID })
     },
 
+    async addRepoToOrg(orgID: string, repoID: string){
+        await axios.post(API_URL + "/add-repo-to-org/", { orgID, repoID })
+    },
+
+    async removeRepoFromOrg(orgID: string, repoID: string){
+        await axios.post(API_URL + "/remove-repo-from-org/", { orgID, repoID })
+    },
+
+    async changeOrgDescription(orgID: string, description: string){
+        return
+    },
 }
 
 axios.defaults.timeout = 10000

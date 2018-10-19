@@ -18,6 +18,18 @@ export enum OrgActionType {
     REMOVE_MEMBER_FROM_ORG_SUCCESS = 'REMOVE_MEMBER_FROM_ORG_SUCCESS',
     REMOVE_MEMBER_FROM_ORG_FAILED = 'REMOVE_MEMBER_FROM_ORG_FAILED',
 
+    ADD_REPO_TO_ORG = 'ADD_REPO_TO_ORG',
+    ADD_REPO_TO_ORG_SUCCESS = 'ADD_REPO_TO_ORG_SUCCESS',
+    ADD_REPO_TO_ORG_FAILED = 'ADD_REPO_TO_ORG_FAILED',
+
+    REMOVE_REPO_FROM_ORG = 'REMOVE_REPO_FROM_ORG',
+    REMOVE_REPO_FROM_ORG_SUCCESS = 'REMOVE_REPO_FROM_ORG_SUCCESS',
+    REMOVE_REPO_FROM_ORG_FAILED = 'REMOVE_REPO_FROM_ORG_FAILED',
+
+    CHANGE_ORG_DESCRIPTION = 'CHANGE_ORG_DESCRIPTION',
+    CHANGE_ORG_DESCRIPTION_SUCCESS = 'CHANGE_ORG_DESCRIPTION_SUCCESS',
+    CHANGE_ORG_DESCRIPTION_FAILED = 'CHANGE_ORG_DESCRIPTION_FAILED',
+
     SELECT_ORG = 'SELECT_ORG',
 }
 
@@ -67,7 +79,6 @@ export interface IAddMemberToOrgSuccessAction {
 
 export type IAddMemberToOrgFailedAction = FailedAction<OrgActionType.ADD_MEMBER_TO_ORG_FAILED>
 
-
 export interface IRemoveMemberFromOrgAction {
     type: OrgActionType.REMOVE_MEMBER_FROM_ORG
     payload: {
@@ -86,6 +97,60 @@ export interface IRemoveMemberFromOrgSuccessAction {
 
 export type IRemoveMemberFromOrgFailedAction = FailedAction<OrgActionType.REMOVE_MEMBER_FROM_ORG_FAILED>
 
+export interface IAddRepoToOrgAction {
+    type: OrgActionType.ADD_REPO_TO_ORG
+    payload: {
+        orgID: string
+        repoID: string
+    }
+}
+
+export interface IAddRepoToOrgSuccessAction {
+    type: OrgActionType.ADD_REPO_TO_ORG_SUCCESS
+    payload: {
+        orgID: string
+        repoID: string
+    }
+}
+
+export type IAddRepoToOrgFailedAction = FailedAction<OrgActionType.ADD_REPO_TO_ORG_FAILED>
+
+export interface IRemoveRepoFromOrgAction {
+    type: OrgActionType.REMOVE_REPO_FROM_ORG
+    payload: {
+        orgID: string
+        repoID: string
+    }
+}
+
+export interface IRemoveRepoFromOrgSuccessAction {
+    type: OrgActionType.REMOVE_REPO_FROM_ORG_SUCCESS
+    payload: {
+        orgID: string
+        repoID: string
+    }
+}
+
+export type IRemoveRepoFromOrgFailedAction = FailedAction<OrgActionType.REMOVE_REPO_FROM_ORG_FAILED>
+
+
+export interface IChangeOrgDescriptionAction {
+    type: OrgActionType.CHANGE_ORG_DESCRIPTION
+    payload: {
+        orgID: string
+        description: string
+    }
+}
+
+export interface IChangeOrgDescriptionSuccessAction {
+    type: OrgActionType.CHANGE_ORG_DESCRIPTION_SUCCESS
+    payload: {
+        orgID: string
+        description: string
+    }
+}
+
+export type IChangeOrgDescriptionFailedAction = FailedAction<OrgActionType.CHANGE_ORG_DESCRIPTION_FAILED>
 
 export interface ISelectOrgAction {
     type: OrgActionType.SELECT_ORG
@@ -110,10 +175,26 @@ export type IOrgAction =
     IRemoveMemberFromOrgSuccessAction |
     IRemoveMemberFromOrgFailedAction |
 
+    IAddRepoToOrgAction |
+    IAddRepoToOrgSuccessAction |
+    IAddRepoToOrgFailedAction |
+
+    IRemoveRepoFromOrgAction |
+    IRemoveRepoFromOrgSuccessAction |
+    IRemoveRepoFromOrgFailedAction |
+
+
+    IChangeOrgDescriptionAction |
+    IChangeOrgDescriptionSuccessAction |
+    IChangeOrgDescriptionFailedAction |
+
     ISelectOrgAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
 export const addMemberToOrg = (payload: IAddMemberToOrgAction['payload']): IAddMemberToOrgAction => ({ type: OrgActionType.ADD_MEMBER_TO_ORG, payload })
 export const removeMemberFromOrg = (payload: IRemoveMemberFromOrgAction['payload']): IRemoveMemberFromOrgAction => ({ type: OrgActionType.REMOVE_MEMBER_FROM_ORG, payload })
+export const addRepoToOrg = (payload: IAddRepoToOrgAction['payload']): IAddRepoToOrgAction => ({ type: OrgActionType.ADD_REPO_TO_ORG, payload })
+export const removeRepoFromOrg = (payload: IRemoveRepoFromOrgAction['payload']): IRemoveRepoFromOrgAction => ({ type: OrgActionType.REMOVE_REPO_FROM_ORG, payload })
+export const changeOrgDescription = (payload: IChangeOrgDescriptionAction['payload']): IChangeOrgDescriptionAction => ({ type: OrgActionType.CHANGE_ORG_DESCRIPTION, payload })
 export const selectOrg = (payload: ISelectOrgAction['payload']): ISelectOrgAction => ({ type: OrgActionType.SELECT_ORG, payload })

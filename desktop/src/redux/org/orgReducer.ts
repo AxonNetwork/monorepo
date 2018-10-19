@@ -57,6 +57,38 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
             }
         }
 
+        case OrgActionType.ADD_REPO_TO_ORG_SUCCESS: {
+            const { orgID, repoID } = action.payload
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [orgID]: {
+                        ...state.orgs[orgID],
+                        repos: [
+                            ...state.orgs[orgID].repos,
+                            repoID
+                        ]
+                    }
+                }
+            }
+        }
+
+        case OrgActionType.REMOVE_REPO_FROM_ORG_SUCCESS: {
+            const { orgID, repoID } = action.payload
+            const updatedRepos = state.orgs[orgID].repos
+                .filter((id: string) => id !== repoID)
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [orgID]: {
+                        ...state.orgs[orgID],
+                        repos: updatedRepos
+                    }
+                }
+            }
+        }
 
         case OrgActionType.SELECT_ORG: {
             return {

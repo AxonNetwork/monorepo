@@ -3,6 +3,9 @@ import { OrgActionType,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
     IAddMemberToOrgAction, IAddMemberToOrgSuccessAction,
     IRemoveMemberFromOrgAction, IRemoveMemberFromOrgSuccessAction,
+    IAddRepoToOrgAction, IAddRepoToOrgSuccessAction,
+    IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction,
+    IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction,
 } from './orgActions'
 import ServerRelay from 'lib/ServerRelay'
 
@@ -39,8 +42,40 @@ const removeMemberFromOrgLogic = makeLogic<IRemoveMemberFromOrgAction, IRemoveMe
     }
 })
 
+const addRepoToOrgLogic = makeLogic<IAddRepoToOrgAction, IAddRepoToOrgSuccessAction>({
+    type: OrgActionType.ADD_REPO_TO_ORG,
+    async process({ action}){
+        const { orgID, repoID } = action.payload
+        await ServerRelay.addRepoToOrg(orgID, repoID)
+        return { orgID, repoID }
+    }
+})
+
+const removeRepoFromOrgLogic = makeLogic<IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction>({
+    type: OrgActionType.REMOVE_REPO_FROM_ORG,
+    async process({ action}){
+        const { orgID, repoID } = action.payload
+        await ServerRelay.removeRepoFromOrg(orgID, repoID)
+        return { orgID, repoID }
+    }
+})
+
+
+const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction>({
+    type: OrgActionType.CHANGE_ORG_DESCRIPTION,
+    async process({ action}){
+        const { orgID, description } = action.payload
+        await ServerRelay.changeOrgDescription(orgID, description)
+        return { orgID, description }
+    }
+})
+
+
 export default [
     fetchOrgInfoLogic,
     addMemberToOrgLogic,
     removeMemberFromOrgLogic,
+    addRepoToOrgLogic,
+    removeRepoFromOrgLogic,
+    changeOrgDescriptionLogic,
 ]
