@@ -21,7 +21,7 @@ class RepoHistoryPage extends React.Component<Props>
             )
         }
 
-        const { selectCommit, getDiff, revertFiles, selectedCommit } = this.props
+        const { selectCommit, getDiff, selectedCommit } = this.props
         return (
             <div className={classes.timelinePage}>
                 {selectedCommit &&
@@ -38,8 +38,6 @@ class RepoHistoryPage extends React.Component<Props>
                         repoRoot={repo.path}
                         commits={repo.commits}
                         commitList={repo.commitList}
-                        getDiff={getDiff}
-                        revertFiles={revertFiles}
                         selectCommit={selectCommit}
                     />
                 }

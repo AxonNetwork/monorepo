@@ -2,12 +2,11 @@ import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import FileList from './FileList/FileList'
-import Checkpoint from './Checkpoint'
 import FileInfo from './FileInfo'
 import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
-import { ICheckpointRepoAction, IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
-    checkpointRepo, selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
+import { IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
+    selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 
 import { getFirstVerifiedEvent, getLastVerifiedEvent } from 'utils/timeline'

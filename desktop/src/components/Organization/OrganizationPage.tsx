@@ -1,45 +1,36 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
+import classnames from 'classnames'
 import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import UserAvatar from 'components/UserAvatar'
+import Description from './elements/Description'
+import Repositories from './elements/Repositories'
+import Members from './elements/Members'
 import { IGlobalState } from 'redux/store'
-import { IOrganization, IUser } from 'common'
+import { IOrganization } from 'common'
 
 class OrganizationPage extends React.Component<Props>
 {
     render(){
         const { org, classes } = this.props
-        console.log(org)
         return(
-            <div>
-                <Typography variant="headline">{org.name}</Typography>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6">Members</Typography>
-                        <div>
-                            {(org.members || []).map(userID => {
-                                const user = this.props.users[userID] || {}
-                                return (
-                                    <div className={classes.user}>
-                                        <div className={classes.userAvatar}>
-                                            <UserAvatar username={user.name} userPicture={user.picture} />
-                                        </div>
-                                        <div className={classes.userInfo}>
-                                            <Typography><strong>{user.name}</strong></Typography>
-                                            <Typography>{user.username}</Typography>
-                                            {user.userID === org.creator &&
-                                                <Typography><em>Creator</em></Typography>
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className={classes.organizationPage}>
+                <div className={classes.header}>
+                    <Typography variant="headline" className={classes.headline}>
+                        {org.name}
+                    </Typography>
+                    <Description
+                        description={'Test Description'}
+                    />
+                </div>
+                <div className={classes.boxes}>
+                    <Repositories
+                        classes={{root: classes.box}}
+                    />
+                    <Members
+                        classes={{root: classnames(classes.box, classes.membersBox)}}
+                    />
+                </div>
             </div>
         )
     }
@@ -47,33 +38,42 @@ class OrganizationPage extends React.Component<Props>
 
 interface Props {
     org: IOrganization
-    users: {[userID: string]: IUser}
     classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-    user: {
-        display: 'flex',
-        marginBottom: theme.spacing.unit*2
+    organizationPage: {
+        width: '100%',
     },
-    userAvatar : {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        marginRight: theme.spacing.unit,
+    header: {
+        width: '100%',
+        borderBottom: '1px solid #e4e4e4',
+        marginBottom: theme.spacing.unit * 2
     },
-    userInfo: {
+    headline: {
+        fontSize: '2rem',
+        color: 'rgba(0, 0, 0, 0.7)',
+        marginBottom: theme.spacing.unit
+    },
+    boxes: {
+        display: 'flex',
+        marginRight: theme.spacing.unit * 3,
+    },
+    box: {
+        marginRight: theme.spacing.unit * 3,
         flexGrow: 1
+    },
+    membersBox: {
+        width: 350,
+        flexGrow: 0
     }
 })
 
 const mapStateToProps = (state: IGlobalState) => {
     const selectedOrg = state.org.selectedOrg || ""
     const org = state.org.orgs[selectedOrg]
-    const users = state.user.users
     return {
         org,
-        users,
     }
 }
 

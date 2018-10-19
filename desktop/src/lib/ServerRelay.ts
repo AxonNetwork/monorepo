@@ -247,7 +247,16 @@ const ServerRelay = {
     async fetchOrgInfo(orgID: string){
         const response = await axios.get(API_URL + "/organization/" + orgID)
         return response.data as IOrganization
-    }
+    },
+
+    async addMemberToOrg(orgID: string, userID: string){
+        await axios.post(API_URL + "/add-member-to-org/", { orgID, userID })
+    },
+
+    async removeMemberFromOrg(orgID: string, userID: string){
+        await axios.post(API_URL + "/remove-member-from-org/", { orgID, userID })
+    },
+
 }
 
 axios.defaults.timeout = 10000

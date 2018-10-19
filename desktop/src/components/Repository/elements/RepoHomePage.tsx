@@ -207,7 +207,7 @@ const mapStateToProps = (state: IGlobalState) => {
     if (selectedRepo !== null && selectedRepo !== undefined) {
         repo = state.repository.repos[selectedRepo] || undefined
     }
-    const repoID = (repo || {}).repoID
+    const repoID = (repo || {repoID: undefined}).repoID || ""
 
     return {
         repo,
