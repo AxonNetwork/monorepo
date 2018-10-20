@@ -42,3 +42,8 @@ backend/redis-data/*
 !backend/redis-data/.gitkeep
 
 .env
+
+desktop/build-resources/binaries/conscience*
+desktop/build-resources/binaries/git-remote-conscience
+
+

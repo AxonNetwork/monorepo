@@ -28,7 +28,7 @@
     "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "deploy": "heroku container:push web",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3004 electron .",
-    "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience'"
+    "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -229,7 +229,7 @@
     "productName": "Conscience",
     "asar": true,
     "directories": {
-      "buildResources": "assets",
+      "buildResources": "desktop/build-resources",
       "output": "desktop/dist-app"
     },
     "files": [
@@ -237,8 +237,18 @@
       "desktop/dist-bundle/**/*",
       "node_modules/**/*"
     ],
+    "extraResources": [
+        "desktop/build-resources/binaries/*"
+    ],
     "mac": {
-      "category": "financial"
+      "target": "pkg",
+      "category": "financial",
+      "icon": "icons/icon.png"
+    },
+    "pkg": {
+      "allowRootDirectory": true,
+      "allowAnywhere": true,
+      "scripts": "pkg-scripts"
     },
     "linux": {
       "target": [
