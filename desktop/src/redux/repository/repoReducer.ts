@@ -18,6 +18,7 @@ const initialState = {
     selectedRepo: undefined,
     selectedFile: undefined,
     selectedCommit: undefined,
+    timelinePage: {},
     checkpointed: false,
 }
 
@@ -30,6 +31,7 @@ export interface IRepoState {
         isFolder: boolean,
     } | undefined
     selectedCommit: string | undefined
+    timelinePage: {[repoID: string]: number}
     checkpointed: boolean
 }
 
@@ -243,6 +245,17 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                         ...state.repos[path],
                         behindRemote: true,
                     },
+                },
+            }
+        }
+
+        case RepoActionType.CHANGE_TIMELINE_PAGE: {
+            const { repoID, page } = action.payload
+            return {
+                ...state,
+                timelinePage: {
+                    ...state.timelinePage,
+                    [repoID]: page,
                 },
             }
         }

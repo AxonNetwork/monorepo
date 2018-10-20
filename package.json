@@ -22,11 +22,7 @@
     "profile": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.profile.babel.js",
     "eslint": "eslint -f codeframe \"**/*.js\"",
     "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
-    "stylelint": "stylelint \"**/*.css **/*.sass **/*.scss\"",
-    "lint": "yarn eslint && yarn tslint && yarn stylelint",
-    "test": "jest --no-cache --coverage",
-    "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "deploy": "heroku container:push web",
+    "lint": "yarn eslint && yarn tslint",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3004 electron .",
     "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
   },

@@ -7,7 +7,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { IGlobalState } from 'redux/store'
 import { IUser, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
-import { ISelectCommitAction } from 'redux/repository/repoActions'
+import { ISelectCommitAction, changeTimelinePage } from 'redux/repository/repoActions'
 import { removeEmail, extractEmail } from 'utils'
 
 
@@ -26,7 +26,8 @@ class Timeline extends React.Component<Props, State>
     }
 
     onChangePage(_: any, page: number) {
-        this.setState({ page })
+        // this.setState({ page })
+        this.props.changeTimelinePage({ repoID: this.props.repoID, page })
     }
 
     onChangeRowsPerPage(evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
@@ -35,8 +36,8 @@ class Timeline extends React.Component<Props, State>
     }
 
     render() {
-        const { classes } = this.props
-        const { page, rowsPerPage } = this.state
+        const { page, classes } = this.props
+        const { rowsPerPage } = this.state
         const commitList = this.props.commitList || []
         const commits = this.props.commits || {}
 
@@ -82,12 +83,15 @@ class Timeline extends React.Component<Props, State>
 
 interface Props {
     repoRoot: string
+    repoID: string
+    page: number
     // timeline: ITimelineEvent[]
     commits: {[commit: string]: ITimelineEvent} | undefined
     commitList: string[] | undefined
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string}
     selectCommit?: (payload: ISelectCommitAction['payload']) => ISelectCommitAction
+    changeTimelinePage: typeof changeTimelinePage
     classes: any
 }
 
@@ -123,7 +127,9 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    changeTimelinePage,
+}
 
 export default connect(
     mapStateToProps,

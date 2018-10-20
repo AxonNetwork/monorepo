@@ -101,6 +101,8 @@ class RepoHomePage extends React.Component<Props>
                             <Typography variant="h6">Recent commits</Typography>
 
                             <Timeline
+                                repoID={repo.repoID}
+                                page={0}
                                 repoRoot={repo.path}
                                 commits={repo.commits}
                                 commitList={commitList}
@@ -207,7 +209,7 @@ const mapStateToProps = (state: IGlobalState) => {
     if (selectedRepo !== null && selectedRepo !== undefined) {
         repo = state.repository.repos[selectedRepo] || undefined
     }
-    const repoID = (repo || {repoID: undefined}).repoID || ""
+    const repoID = (repo || {repoID: undefined}).repoID || ''
 
     return {
         repo,

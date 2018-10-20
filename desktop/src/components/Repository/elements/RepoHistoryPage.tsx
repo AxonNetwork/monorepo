@@ -28,13 +28,15 @@ class RepoHistoryPage extends React.Component<Props>
                     <CommitView
                         repoID={repo.repoID}
                         repoRoot={repo.path}
-                        commit={(repo.commits||{})[ selectedCommit ]}
+                        commit={(repo.commits || {})[ selectedCommit ]}
                         getDiff={getDiff}
                         selectCommit={selectCommit}
                     />
                 }
                 {selectedCommit === undefined &&
                     <Timeline
+                        repoID={repo.repoID}
+                        page={this.props.timelinePage}
                         repoRoot={repo.path}
                         commits={repo.commits}
                         commitList={repo.commitList}
@@ -48,6 +50,7 @@ class RepoHistoryPage extends React.Component<Props>
 
 interface Props {
     repo: IRepo | undefined
+    timelinePage: number
     selectedCommit: string | undefined
     getDiff: typeof getDiff
     revertFiles: typeof revertFiles
@@ -76,6 +79,7 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         repo,
         selectedCommit,
+        timelinePage: state.repository.timelinePage[ (repo || {}).repoID || '' ] || 0,
     }
 }
 

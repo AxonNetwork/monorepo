@@ -62,6 +62,8 @@ export enum RepoActionType {
     REMOVE_COLLABORATOR = 'REMOVE_COLLABORATOR',
     REMOVE_COLLABORATOR_SUCCESS = 'REMOVE_COLLABORATOR_SUCCESS',
 
+    CHANGE_TIMELINE_PAGE = 'CHANGE_TIMELINE_PAGE',
+
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
     REVERT_FILES = 'REVERT_FILES',
@@ -74,7 +76,7 @@ export enum RepoActionType {
 export interface ICreateRepoAction {
     type: RepoActionType.CREATE_REPO
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -82,7 +84,7 @@ export interface ICreateRepoSuccessAction {
     type: RepoActionType.CREATE_REPO_SUCCESS
     payload: {
         repoID: string
-        path: string
+        path: string,
     }
 }
 
@@ -99,9 +101,9 @@ export interface IGetLocalReposSuccessAction {
         repos: {
             [path: string]: {
                 repoID: string
-                path: string
-            }
-        }
+                path: string,
+            },
+        },
     }
 }
 
@@ -111,7 +113,7 @@ export interface IFetchFullRepoAction {
     type: RepoActionType.FETCH_FULL_REPO
     payload: {
         path: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -119,7 +121,7 @@ export interface IFetchFullRepoSuccessAction {
     type: RepoActionType.FETCH_FULL_REPO_SUCCESS
     payload: {
         path: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -129,7 +131,7 @@ export interface IFetchRepoFilesAction {
     type: RepoActionType.FETCH_REPO_FILES
     payload: {
         path: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -138,7 +140,7 @@ export interface IFetchRepoFilesSuccessAction {
     payload: {
         path: string
         repoID: string
-        files: {[path: string]: IRepoFile}
+        files: {[path: string]: IRepoFile},
     }
 }
 
@@ -148,7 +150,7 @@ export interface IFetchRepoTimelineAction {
     type: RepoActionType.FETCH_REPO_TIMELINE
     payload: {
         path: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -157,7 +159,7 @@ export interface IFetchRepoTimelineSuccessAction {
     payload: {
         path: string
         repoID: string
-        timeline: ITimelineEvent[]
+        timeline: ITimelineEvent[],
     }
 }
 
@@ -167,7 +169,7 @@ export interface IFetchLocalRefsAction {
     type: RepoActionType.FETCH_LOCAL_REFS
     payload: {
         repoID: string
-        path: string
+        path: string,
     }
 }
 
@@ -175,7 +177,7 @@ export interface IFetchLocalRefsSuccessAction {
     type: RepoActionType.FETCH_LOCAL_REFS_SUCCESS
     payload: {
         path: string
-        localRefs: {[name: string]: string}
+        localRefs: {[name: string]: string},
     }
 }
 
@@ -184,7 +186,7 @@ export type IFetchLocalRefsFailedAction = FailedAction<RepoActionType.FETCH_LOCA
 export interface IFetchRemoteRefsAction {
     type: RepoActionType.FETCH_REMOTE_REFS
     payload: {
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -192,7 +194,7 @@ export interface IFetchRemoteRefsSuccessAction {
     type: RepoActionType.FETCH_REMOTE_REFS_SUCCESS
     payload: {
         repoID: string
-        remoteRefs: {[name: string]: string}
+        remoteRefs: {[name: string]: string},
     }
 }
 
@@ -202,7 +204,7 @@ export interface IFetchRepoSharedUsersAction {
     type: RepoActionType.FETCH_REPO_SHARED_USERS
     payload: {
         path: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -211,7 +213,7 @@ export interface IFetchRepoSharedUsersSuccessAction {
     payload: {
         path: string
         repoID: string
-        sharedUsers: string[]
+        sharedUsers: string[],
     }
 }
 
@@ -221,7 +223,7 @@ export interface ISelectRepoAction {
     type: RepoActionType.SELECT_REPO
     payload: {
         repoID: string
-        path: string
+        path: string,
     }
 }
 
@@ -229,7 +231,7 @@ export interface ISelectRepoSuccessAction {
     type: RepoActionType.SELECT_REPO_SUCCESS
     payload: {
         repoID: string
-        path: string
+        path: string,
     }
 }
 
@@ -237,7 +239,7 @@ export interface IWatchRepoAction {
     type: RepoActionType.WATCH_REPO
     payload: {
         repoID: string
-        path: string
+        path: string,
     }
 }
 
@@ -249,7 +251,7 @@ export interface IWatchRepoSuccessAction {
 export interface INavigateRepoPageAction {
     type: RepoActionType.NAVIGATE_REPO_PAGE,
     payload: {
-        repoPage: RepoPage
+        repoPage: RepoPage,
     }
 }
 
@@ -258,7 +260,7 @@ export interface ICheckpointRepoAction {
     payload: {
         folderPath: string
         repoID: string
-        message: string
+        message: string,
     }
 }
 
@@ -273,14 +275,14 @@ export interface IPullRepoAction {
     type: RepoActionType.PULL_REPO
     payload: {
         folderPath: string
-        repoID: string
+        repoID: string,
     }
 }
 
 export interface IPullRepoSuccessAction {
     type: RepoActionType.PULL_REPO_SUCCESS
     payload: {
-        folderPath: string
+        folderPath: string,
     }
 }
 
@@ -289,14 +291,14 @@ export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED
 export interface ISelectFileAction {
     type: RepoActionType.SELECT_FILE
     payload: {
-        selectedFile: { file: string, isFolder: boolean } | undefined
+        selectedFile: { file: string, isFolder: boolean } | undefined,
     }
 }
 
 export interface ISelectCommitAction {
     type: RepoActionType.SELECT_COMMIT
     payload: {
-        selectedCommit: string | undefined
+        selectedCommit: string | undefined,
     }
 }
 
@@ -305,7 +307,7 @@ export interface IAddCollaboratorAction {
     payload: {
         folderPath: string
         repoID: string
-        email: string
+        email: string,
     }
 }
 
@@ -314,7 +316,7 @@ export interface IAddCollaboratorSuccessAction {
     payload: {
         folderPath: string
         repoID: string
-        email: string
+        email: string,
     }
 }
 
@@ -323,7 +325,7 @@ export interface IRemoveCollaboratorAction {
     payload: {
         folderPath: string
         repoID: string
-        email: string
+        email: string,
     }
 }
 
@@ -332,7 +334,7 @@ export interface IRemoveCollaboratorSuccessAction {
     payload: {
         folderPath: string
         repoID: string
-        email: string
+        email: string,
     }
 }
 
@@ -340,7 +342,7 @@ export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
     payload: {
         repoRoot: string
-        commit: string
+        commit: string,
     }
 }
 
@@ -349,7 +351,7 @@ export interface IGetDiffSuccessAction {
     payload: {
         diffs: {[filename: string]: string}
         repoRoot: string
-        commit: string
+        commit: string,
     }
 }
 
@@ -358,7 +360,7 @@ export interface IRevertFilesAction {
     payload: {
         repoRoot: string
         files: string
-        commit: string
+        commit: string,
     }
 }
 
@@ -370,7 +372,15 @@ export interface IRevertFilesSuccessAction {
 export interface IBehindRemoteAction{
     type: RepoActionType.BEHIND_REMOTE
     payload: {
-        path: string
+        path: string,
+    }
+}
+
+export interface IChangeTimelinePageAction {
+    type: RepoActionType.CHANGE_TIMELINE_PAGE
+    payload: {
+        repoID: string
+        page: number,
     }
 }
 
@@ -434,6 +444,8 @@ export type IRepoAction =
     IRevertFilesAction |
     IRevertFilesSuccessAction |
 
+    IChangeTimelinePageAction |
+
     IBehindRemoteAction
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
@@ -456,5 +468,6 @@ export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAd
 export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, payload })
-export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction=> ({ type: RepoActionType.BEHIND_REMOTE, payload })
+export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, payload })
+export const changeTimelinePage = (payload: IChangeTimelinePageAction['payload']): IChangeTimelinePageAction => ({ type: RepoActionType.CHANGE_TIMELINE_PAGE, payload })
 
