@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import moment from 'moment'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, createMuiTheme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
 import CardContent from '@material-ui/core/CardContent'
@@ -49,7 +49,7 @@ class RepoHomePage extends React.Component<Props>
                             <div className={classes.usersList}>
                                 {(repo.sharedUsers || []).map(userID => {
                                     const user = this.props.users[userID] || {}
-                                    return <UserAvatar username={user.name} userPicture={user.picture} />
+                                    return <UserAvatar username={user.name} userPicture={user.picture} className={classes.avatar} />
                                 })}
                             </div>
                         </CardContent>
@@ -57,7 +57,7 @@ class RepoHomePage extends React.Component<Props>
 
                     <Card className={classnames(classes.discussionsContainer, classes.box)}>
                         <CardContent>
-                            <Typography variant="h6">Recent discussions</Typography>
+                            <Typography variant="h6">Recent Discussions</Typography>
 
                             <List>
                                 {discussionList.map(discussionID => {
@@ -98,7 +98,7 @@ class RepoHomePage extends React.Component<Props>
 
                     <Card className={classnames(classes.commitsContainer, classes.box)}>
                         <CardContent>
-                            <Typography variant="h6">Recent commits</Typography>
+                            <Typography variant="h6">Recent Commits</Typography>
 
                             <Timeline
                                 repoID={repo.repoID}
@@ -157,6 +157,9 @@ const styles = createStyles({
     usersList: {
         display: 'flex',
         flexWrap: 'wrap',
+    },
+    avatar: {
+        marginRight: 4
     },
 
     // @@TODO: delete these after component-izing the discussion list

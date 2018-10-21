@@ -47,14 +47,12 @@ class Repositories extends React.Component<Props>
                     }
                     <div className={classes.statButtons}>
                         <Button
-                            color="secondary"
                             onClick={this.onClickNavigateRepoFiles}
                         >
                             <FolderOpenIcon fontSize="small" />
                             {numFiles}
                         </Button>
                         <Button
-                            color="secondary"
                             onClick={this.onClickNavigateRepoDiscussions}
                         >
                             <CommentIcon fontSize="small"/>
