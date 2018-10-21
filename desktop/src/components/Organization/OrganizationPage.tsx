@@ -1,42 +1,60 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
-import classnames from 'classnames'
 import Typography from '@material-ui/core/Typography'
-import Repositories from './elements/Repositories'
-import Members from './elements/Members'
+import Tabs from '../Tabs/Tabs'
+import OrganizationHomePage from './OrganizationHomePage'
+import OrganizationSettingsPage from './OrganizationSettingsPage'
+import { OrgPage } from 'redux/org/orgReducer'
+import { navigateOrgPage } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization } from 'common'
 
 class OrganizationPage extends React.Component<Props>
 {
     render(){
-        const { org, classes } = this.props
+        const { org, orgPage, classes } = this.props
+        if(org === undefined){
+            return null
+        }
+
         return(
             <div className={classes.organizationPage}>
                 <div className={classes.header}>
-                    <Typography variant="headline" className={classes.headline}>
-                        {org.name}
-                    </Typography>
-                    {/* <Typography className={classes.description}>
-                        {org.description}
-                    </Typography> */}
-                </div>
-                <div className={classes.boxes}>
-                    <Repositories
-                        classes={{root: classes.box}}
+                    <div className={classes.orgInfo}>
+                        <Typography variant="headline" className={classes.headline}>
+                            {org.name}
+                        </Typography>
+                        <Typography>
+                            <em>{org.description}</em>
+                        </Typography>
+                    </div>
+                    <Tabs
+                        pages={[
+                            [OrgPage.Home, 'Home'],
+                            [OrgPage.Settings, 'Settings']
+                        ]}
+                        activePage={this.props.orgPage}
+                        onTabSelect={(orgPage: OrgPage) => this.props.navigateOrgPage({ orgPage })}
+                        menuLabelsHidden={this.props.menuLabelsHidden}
                     />
-                    <Members
-                        classes={{root: classnames(classes.box, classes.membersBox)}}
-                    />
                 </div>
-            </div>
+                {orgPage === OrgPage.Home &&
+                    <OrganizationHomePage />
+                }
+                {orgPage === OrgPage.Settings &&
+                    <OrganizationSettingsPage />
+                }
+           </div>
         )
     }
 }
 
 interface Props {
     org: IOrganization
+    orgPage: OrgPage
+    menuLabelsHidden: boolean
+    navigateOrgPage: typeof navigateOrgPage
     classes: any
 }
 
@@ -45,9 +63,14 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
     },
     header: {
+        display: 'flex',
+        justifyContent: 'space-between',
         width: '100%',
         borderBottom: '1px solid #e4e4e4',
         marginBottom: theme.spacing.unit * 2
+    },
+    orgInfo: {
+        marginBottom: theme.spacing.unit
     },
     headline: {
         fontSize: '2rem',
@@ -59,29 +82,65 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: theme.spacing.unit,
         fontSize: '12pt'
     },
-    boxes: {
+    tabContainer: {
         display: 'flex',
-        marginRight: theme.spacing.unit * 3,
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        flexGrow: 1,
+        maxWidth: 510,
+        marginLeft: 100,
+        marginRight: 60,
     },
-    box: {
-        marginRight: theme.spacing.unit * 3,
-        flexGrow: 1
+    tab: {
+        // padding: '10px 16px 0',
+        // width: '3.5rem',
+        height: '2.6rem',
+        backgroundColor: '#f3f3f3',
+        cursor: 'pointer',
+        fontSize: '0.8rem',
+        fontFamily: 'Helvetica',
+        color: 'rgba(0, 0, 0, 0.33)',
+        border: '1px solid #e4e4e4',
+        borderRadius: 3,
+        position: 'relative',
+        top: 1,
+
+        '& svg': {
+            width: '0.8em',
+            height: '0.8em',
+            marginRight: 3,
+            verticalAlign: 'bottom',
+        },
+
+        '& button': {
+            color: 'inherit',
+            textTransform: 'none',
+            minWidth: 'unset',
+            padding: '0 16px',
+            borderRadius: 0,
+            height: '100%',
+            fontWeight: 400,
+        },
+        '& button:hover': {
+            backgroundColor: 'inherit',
+        },
     },
-    membersBox: {
-        width: 350,
-        flexGrow: 0
-    }
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selectedOrg = state.org.selectedOrg || ""
-    const org = state.org.orgs[selectedOrg]
+    const org = state.org.orgs[state.org.selectedOrg || ""]
+    const orgPage = state.org.orgPage
+    const menuLabelsHidden = state.user.menuLabelsHidden
     return {
         org,
+        orgPage,
+        menuLabelsHidden,
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    navigateOrgPage
+}
 
 export default connect(
     mapStateToProps,

@@ -1,6 +1,7 @@
 import { makeLogic } from '../reduxUtils'
 import { OrgActionType,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
+    IUpdateOrgAction, IUpdateOrgSuccessAction,
     IAddMemberToOrgAction, IAddMemberToOrgSuccessAction,
     IRemoveMemberFromOrgAction, IRemoveMemberFromOrgSuccessAction,
     IAddRepoToOrgAction, IAddRepoToOrgSuccessAction,
@@ -18,6 +19,17 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
         return { org }
     }
 })
+
+const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
+    type: OrgActionType.UPDATE_ORG,
+    async process({ action}){
+        const { orgID, name, description } = action.payload
+        const org = await ServerRelay.updateOrg(orgID, name, description)
+
+        return { org }
+    }
+})
+
 
 const addMemberToOrgLogic = makeLogic<IAddMemberToOrgAction, IAddMemberToOrgSuccessAction>({
     type: OrgActionType.ADD_MEMBER_TO_ORG,
@@ -73,6 +85,7 @@ const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChange
 
 export default [
     fetchOrgInfoLogic,
+    updateOrgLogic,
     addMemberToOrgLogic,
     removeMemberFromOrgLogic,
     addRepoToOrgLogic,

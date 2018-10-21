@@ -78,6 +78,7 @@ export interface IRef {
 export interface IOrganization {
     orgID: string
     name: string
+    description: string
     creator: string //userID
     members: string[] //userID[]
     repos: string[] //repoID[]

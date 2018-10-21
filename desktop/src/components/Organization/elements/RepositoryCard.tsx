@@ -109,7 +109,8 @@ interface DispatchProps {
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        maxWidth: 300,
+        minWidth: 250,
+        maxWidth: 350,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],

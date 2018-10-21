@@ -1,5 +1,6 @@
 import { FailedAction } from '../reduxUtils'
 import { IOrganization } from 'common'
+import { OrgPage } from './orgReducer'
 
 export enum OrgActionType {
     CREATE_ORG = 'CREATE_ORG',
@@ -9,6 +10,10 @@ export enum OrgActionType {
     FETCH_ORG_INFO = 'FETCH_ORG_INFO',
     FETCH_ORG_INFO_SUCCESS = 'FETCH_ORG_INFO_SUCCESS',
     FETCH_ORG_INFO_FAILED = 'FETCH_ORG_INFO_FAILED',
+
+    UPDATE_ORG = 'UPDATE_ORG',
+    UPDATE_ORG_SUCCESS = 'UPDATE_ORG_SUCCESS',
+    UPDATE_ORG_FAILED = 'UPDATE_ORG_FAILED',
 
     ADD_MEMBER_TO_ORG = 'ADD_MEMBER_TO_ORG',
     ADD_MEMBER_TO_ORG_SUCCESS = 'ADD_MEMBER_TO_ORG_SUCCESS',
@@ -31,6 +36,8 @@ export enum OrgActionType {
     CHANGE_ORG_DESCRIPTION_FAILED = 'CHANGE_ORG_DESCRIPTION_FAILED',
 
     SELECT_ORG = 'SELECT_ORG',
+
+    NAVIGATE_ORG_PAGE = 'NAVIGATE_ORG_PAGE',
 }
 
 export interface ICreateOrgAction {
@@ -60,6 +67,24 @@ export interface IFetchOrgInfoSuccessAction {
 }
 
 export type IFetchOrgInfoFailedAction = FailedAction<OrgActionType.FETCH_ORG_INFO_FAILED>
+
+export interface IUpdateOrgAction {
+    type: OrgActionType.UPDATE_ORG
+    payload: {
+        orgID: string
+        name: string
+        description: string
+    }
+}
+
+export interface IUpdateOrgSuccessAction {
+    type: OrgActionType.UPDATE_ORG_SUCCESS
+    payload: {
+        org: IOrganization
+    }
+}
+
+export type IUpdateOrgFailedAction = FailedAction<OrgActionType.UPDATE_ORG_FAILED>
 
 export interface IAddMemberToOrgAction {
     type: OrgActionType.ADD_MEMBER_TO_ORG
@@ -158,6 +183,14 @@ export interface ISelectOrgAction {
         orgID: string
     }
 }
+
+export interface INavigateOrgPageAction {
+    type: OrgActionType.NAVIGATE_ORG_PAGE
+    payload: {
+        orgPage: OrgPage
+    }
+}
+
 export type IOrgAction =
     ICreateOrgAction |
     ICreateOrgSuccessAction |
@@ -166,6 +199,10 @@ export type IOrgAction =
     IFetchOrgInfoAction |
     IFetchOrgInfoSuccessAction |
     IFetchOrgInfoFailedAction |
+
+    IUpdateOrgAction |
+    IUpdateOrgSuccessAction |
+    IUpdateOrgFailedAction |
 
     IAddMemberToOrgAction |
     IAddMemberToOrgSuccessAction |
@@ -183,18 +220,20 @@ export type IOrgAction =
     IRemoveRepoFromOrgSuccessAction |
     IRemoveRepoFromOrgFailedAction |
 
-
     IChangeOrgDescriptionAction |
     IChangeOrgDescriptionSuccessAction |
     IChangeOrgDescriptionFailedAction |
 
-    ISelectOrgAction
+    ISelectOrgAction |
+    INavigateOrgPageAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
+export const updateOrg = (payload: IUpdateOrgAction['payload']): IUpdateOrgAction => ({ type: OrgActionType.UPDATE_ORG, payload })
 export const addMemberToOrg = (payload: IAddMemberToOrgAction['payload']): IAddMemberToOrgAction => ({ type: OrgActionType.ADD_MEMBER_TO_ORG, payload })
 export const removeMemberFromOrg = (payload: IRemoveMemberFromOrgAction['payload']): IRemoveMemberFromOrgAction => ({ type: OrgActionType.REMOVE_MEMBER_FROM_ORG, payload })
 export const addRepoToOrg = (payload: IAddRepoToOrgAction['payload']): IAddRepoToOrgAction => ({ type: OrgActionType.ADD_REPO_TO_ORG, payload })
 export const removeRepoFromOrg = (payload: IRemoveRepoFromOrgAction['payload']): IRemoveRepoFromOrgAction => ({ type: OrgActionType.REMOVE_REPO_FROM_ORG, payload })
 export const changeOrgDescription = (payload: IChangeOrgDescriptionAction['payload']): IChangeOrgDescriptionAction => ({ type: OrgActionType.CHANGE_ORG_DESCRIPTION, payload })
 export const selectOrg = (payload: ISelectOrgAction['payload']): ISelectOrgAction => ({ type: OrgActionType.SELECT_ORG, payload })
+export const navigateOrgPage = (payload: INavigateOrgPageAction['payload']): INavigateOrgPageAction => ({ type: OrgActionType.NAVIGATE_ORG_PAGE, payload })

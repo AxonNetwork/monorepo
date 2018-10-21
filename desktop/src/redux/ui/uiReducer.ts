@@ -1,19 +1,22 @@
 import { UserActionType, IUserAction } from '../user/userActions'
 import { RepoActionType, IRepoAction } from '../repository/repoActions'
+import { OrgActionType, IOrgAction } from '../org/orgActions'
 
 const initialState = {
     loginLoading: false,
     checkpointLoading: false,
     pullLoading: false,
+    orgSettingsLoading: false
 }
 
 export interface IUIState {
     loginLoading: boolean
     checkpointLoading: boolean
     pullLoading: boolean
+    orgSettingsLoading: boolean
 }
 
-const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAction): IUIState => {
+const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
     switch(action.type){
         case UserActionType.SIGNUP:
         case UserActionType.LOGIN:
@@ -55,6 +58,18 @@ const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAct
             return {
                 ...state,
                 pullLoading: false
+            }
+
+        case OrgActionType.UPDATE_ORG:
+            return {
+                ...state,
+                orgSettingsLoading: true
+            }
+
+        case OrgActionType.UPDATE_ORG_SUCCESS:
+            return {
+                ...state,
+                orgSettingsLoading: false
             }
     }
 

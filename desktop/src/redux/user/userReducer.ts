@@ -10,7 +10,7 @@ const initialState = {
     error: undefined,
     sharedRepos: {},
     codeColorScheme: undefined,
-    menuLabelsHidden: undefined,
+    menuLabelsHidden: false,
     checkedLocalUser: false,
     newestViewedCommentTimestamp: {},
 }
@@ -23,7 +23,7 @@ export interface IUserState {
     error: Error | undefined
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
     codeColorScheme: string | undefined
-    menuLabelsHidden: boolean | undefined
+    menuLabelsHidden: boolean
     checkedLocalUser: boolean
     newestViewedCommentTimestamp: {
         [repoID: string]: {
@@ -153,7 +153,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 codeColorScheme: config.codeColorScheme,
-                menuLabelsHidden: config.menuLabelsHidden,
+                menuLabelsHidden: config.menuLabelsHidden || false,
                 newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
             }
         }

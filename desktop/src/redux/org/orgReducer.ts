@@ -1,19 +1,27 @@
 import { OrgActionType, IOrgAction } from './orgActions'
 import { IOrganization } from 'common'
 
+export enum OrgPage {
+    Home,
+    Settings,
+}
+
 const initialState = {
     orgs: {},
     selectedOrg: undefined,
+    orgPage: OrgPage.Home,
 }
 
 export interface IOrgState {
     orgs: {[orgID: string]: IOrganization}
     selectedOrg: string|undefined // orgID
+    orgPage: OrgPage
 }
 
 const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgState => {
     switch(action.type){
-        case OrgActionType.FETCH_ORG_INFO_SUCCESS: {
+        case OrgActionType.FETCH_ORG_INFO_SUCCESS:
+        case OrgActionType.UPDATE_ORG_SUCCESS: {
             const { org } = action.payload
             return {
                 ...state,
@@ -94,6 +102,13 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
             return {
                 ...state,
                 selectedOrg: action.payload.orgID
+            }
+        }
+
+        case OrgActionType.NAVIGATE_ORG_PAGE: {
+            return {
+                ...state,
+                orgPage: action.payload.orgPage
             }
         }
     }
