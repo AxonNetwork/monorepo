@@ -17,9 +17,17 @@ class SmartTextarea extends React.Component<Props, State>
         position: 0,
     }
 
+    getValue() {
+        return this.state.comment
+    }
+
+    setValue(value: string) {
+        this.setState({ comment: value })
+    }
+
     handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Enter' && event.shiftKey) {
-            this.props.onSubmit(this.state.comment)
+            this.props.onSubmit()
             return
         }
     }
@@ -140,7 +148,7 @@ class SmartTextarea extends React.Component<Props, State>
 interface Props {
     files: {[name: string]: IRepoFile} | undefined
     discussions: {[discussionID: string]: IDiscussion}
-    onSubmit: (comment: string) => void
+    onSubmit: () => void
     inputRef?: React.Ref<any> | React.RefObject<any>
     classes: any
     rows?: number

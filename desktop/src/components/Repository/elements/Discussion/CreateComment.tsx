@@ -9,12 +9,6 @@ import CommentWrapper from 'components/Repository/elements/Discussion/CommentWra
 @autobind
 class CreateComment extends React.Component<Props>
 {
-    _inputComment!: HTMLInputElement
-
-    onSubmit() {
-        this.props.onSubmit(this._inputComment.value)
-    }
-
     render() {
         const { classes } = this.props
         return (
@@ -23,16 +17,16 @@ class CreateComment extends React.Component<Props>
                 userPicture={this.props.userPicture}
                 created={new Date().getTime()}
             >
-                <form className={classes.form} onSubmit={this.onSubmit}>
+                <form className={classes.form} onSubmit={this.props.onSubmit}>
                     <SmartTextarea
                         placeholder="Write your comment"
                         rows={3}
-                        inputRef={x => this._inputComment = x}
+                        innerRef={this.props.smartTextareaRef}
                         files={this.props.files}
                         discussions={this.props.discussions}
-                        onSubmit={this.onSubmit}
+                        onSubmit={this.props.onSubmit}
                     />
-                    <Button color="secondary" variant="contained" onClick={this.onSubmit}>
+                    <Button color="secondary" variant="contained" onClick={this.props.onSubmit}>
                         Comment
                     </Button>
                     {/* <FormHelperText error className={classes.error}>{this.state.error}</FormHelperText> */}
@@ -47,7 +41,8 @@ interface Props {
     discussions: {[created: number]: IDiscussion}
     username: string | undefined
     userPicture: string | undefined
-    onSubmit: (comment: string) => void
+    onSubmit: () => void
+    smartTextareaRef?: any
     classes: any
 }
 

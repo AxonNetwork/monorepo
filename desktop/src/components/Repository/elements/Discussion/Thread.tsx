@@ -21,8 +21,9 @@ import checkVisible from 'utils/checkVisible'
 @autobind
 class Thread extends React.Component<Props>
 {
-    _intervalID: any | undefined //Timer ID, can't get Typescript to accept this
+    _intervalID: any | undefined // Timer ID, can't get Typescript to accept this
     _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
+    _inputComment!: any
 
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
@@ -53,7 +54,8 @@ class Thread extends React.Component<Props>
         }
     }
 
-    async handleSubmit(comment: string) {
+    async onClickCreateComment() {
+        const comment = this._inputComment.getValue()
         if (comment.length === 0) {
             return
         }
@@ -94,6 +96,7 @@ class Thread extends React.Component<Props>
                                     userPicture={userPicture}
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
+                                    onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
                                 >
                                     <div ref={ ref => this._commentRefs[c.created] = {ref, created: c.created} }></div>
                                     <RenderMarkdown
@@ -106,14 +109,24 @@ class Thread extends React.Component<Props>
                         <CreateComment
                             files={this.props.repo.files}
                             discussions={this.props.discussions}
-                            onSubmit={this.handleSubmit}
+                            onSubmit={this.onClickCreateComment}
                             username={this.props.username}
                             userPicture={this.props.userPicture}
+                            smartTextareaRef={(x: any) => this._inputComment = x}
                         />
                     </div>
                 </div>
             </div>
         )
+    }
+
+    onClickReplyLink(commentID: string) {
+        const currentValue = this._inputComment.getValue()
+        if (currentValue.trim().length > 0) {
+            this._inputComment.setValue(currentValue + ` @comment:[${commentID}] `)
+        } else {
+            this._inputComment.setValue(currentValue + `@comment[${commentID}] `)
+        }
     }
 }
 

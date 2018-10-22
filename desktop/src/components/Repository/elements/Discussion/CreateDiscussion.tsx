@@ -21,10 +21,10 @@ class CreateDiscussion extends React.Component<Props, State>
     }
 
     _inputSubject!: HTMLInputElement
-    _inputComment!: HTMLInputElement
+    _inputComment!: any
 
     onSubmit() {
-        const valid = this._inputComment.value.length > 0 && this._inputSubject.value.length > 0
+        const valid = this._inputComment.getValue().length > 0 && this._inputSubject.value.length > 0
         if (valid && this.props.repoID) {
             let subject = this._inputSubject.value
             if (this.props.attachedTo !== undefined) {
@@ -34,7 +34,7 @@ class CreateDiscussion extends React.Component<Props, State>
             this.props.createDiscussion({
                 repoID: this.props.repoID,
                 subject: subject,
-                commentText: this._inputComment.value,
+                commentText: this._inputComment.getValue(),
             })
         } else {
             this.setState({ error: 'Oops! You need both a subject and a comment.' })
@@ -61,20 +61,11 @@ class CreateDiscussion extends React.Component<Props, State>
                     <SmartTextarea
                         placeholder="Start the discussion"
                         rows={3}
-                        inputRef={(x: any) => this._inputComment = x}
+                        innerRef={(x: any) => this._inputComment = x}
                         files={this.props.files}
                         discussions={this.props.discussions}
                         onSubmit={() => this.onSubmit()}
                     />
-                    {/*<TextField
-                        id="comment"
-                        label="Comment"
-                        className={classes.textField}
-                        fullWidth
-                        multiline
-                        rows={3}
-                        inputRef={x => this._inputComment = x}
-                    />*/}
                     <Button color="secondary" variant="contained" onClick={this.onSubmit}>
                         Create
                     </Button>

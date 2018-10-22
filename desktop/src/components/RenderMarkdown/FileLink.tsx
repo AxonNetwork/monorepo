@@ -5,13 +5,13 @@ import Popper from '@material-ui/core/Popper'
 import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
-import FileViewer from '../Repository/elements/FileViewer';
+import FileViewer from '../Repository/elements/FileViewer'
 
 @autobind
 class FileLink extends React.Component<Props, State>
 {
-    state={
-        showPopper: false
+    state = {
+        showPopper: false,
     }
 
     render() {
@@ -49,16 +49,12 @@ class FileLink extends React.Component<Props, State>
         this.props.navigateRepoPage({ repoPage: RepoPage.Files })
     }
 
-    showPopper(){
-        this.setState({
-            showPopper: true
-        })
+    showPopper() {
+        this.setState({ showPopper: true })
     }
 
-    hidePopper(){
-        this.setState({
-            showPopper: false
-        })
+    hidePopper() {
+        this.setState({ showPopper: false })
     }
 }
 
@@ -80,14 +76,14 @@ const styles = (theme: Theme) => createStyles({
         textDecoration: 'underline',
         cursor: 'pointer',
     },
-    popper:{
+    popper: {
         width: 450,
         height: 350,
         backgroundColor: theme.palette.background.default,
         border: '1px solid',
         borderColor: theme.palette.grey[400],
-        overflow: 'scroll'
-    }
+        overflow: 'scroll',
+    },
 })
 
 const mapDispatchToProps = {
