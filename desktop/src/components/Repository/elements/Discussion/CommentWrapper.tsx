@@ -22,20 +22,19 @@ class CommentWrapper extends React.Component<Props>
                 <div className={classes.commentBody}>
                     <Typography className={classes.commentHeader}>
                         {username &&
-                            <span>
+                            <div className={classes.commentHeaderLeft}>
                                 {this.props.showBadge &&
                                     <Badge classes={{ badge: classes.commentBadge }} badgeContent="" color="secondary">
-                                        <span>
-                                            <strong>{username}</strong> <small>({time})</small>
-                                        </span>
+                                        <span><strong>{username}</strong> <small>({time})</small></span>
                                     </Badge>
                                 }
                                 {!this.props.showBadge &&
-                                    <span>
-                                        <strong>{username}</strong> <small>({time})</small>
-                                    </span>
+                                    <span><strong>{username}</strong> <small>({time})</small></span>
                                 }
-                            </span>
+                            </div>
+                        }
+                        {this.props.onClickReplyLink &&
+                            <a className={classes.replyLink} onClick={this.props.onClickReplyLink}>Reply</a>
                         }
                     </Typography>
 
@@ -53,6 +52,7 @@ interface Props {
     userPicture: string | undefined
     created: number | string
     showBadge?: boolean
+    onClickReplyLink?: () => void
     classes: any
 }
 
@@ -77,11 +77,15 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     commentHeader: {
+        display: 'flex',
         backgroundColor: '#f1f1f1',
         padding: '8px 12px',
         borderBottom: '1px solid #e2e2e2',
         color: '#545454',
         minHeight: 38,
+    },
+    commentHeaderLeft: {
+        flexGrow: 1,
     },
     commentText: {
         padding: theme.spacing.unit * 2,
@@ -95,6 +99,12 @@ const styles = (theme: Theme) => createStyles({
         width: 9,
         height: 9,
         top: -4,
+    },
+    replyLink: {
+        textAlign: 'right',
+        textDecoration: 'underline',
+        color: theme.palette.secondary.main,
+        cursor: 'pointer',
     },
 })
 
