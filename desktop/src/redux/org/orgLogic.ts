@@ -2,6 +2,7 @@ import { makeLogic } from '../reduxUtils'
 import { OrgActionType,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
     IUpdateOrgAction, IUpdateOrgSuccessAction,
+    IUploadOrgPictureAction, IUploadOrgPictureSuccessAction,
     IAddMemberToOrgAction, IAddMemberToOrgSuccessAction,
     IRemoveMemberFromOrgAction, IRemoveMemberFromOrgSuccessAction,
     IAddRepoToOrgAction, IAddRepoToOrgSuccessAction,
@@ -15,7 +16,6 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
     async process({ action}){
         const { orgID } = action.payload
         const org = await ServerRelay.fetchOrgInfo(orgID)
-
         return { org }
     }
 })
@@ -25,8 +25,18 @@ const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
     async process({ action}){
         const { orgID, name, description } = action.payload
         const org = await ServerRelay.updateOrg(orgID, name, description)
-
         return { org }
+    }
+})
+
+
+const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSuccessAction>({
+    type: OrgActionType.UPLOAD_ORG_PICTURE,
+    async process({ action}){
+        const { orgID, fileInput } = action.payload
+        const { picture } = await ServerRelay.uploadOrgPicture(orgID, fileInput)
+
+        return { orgID, picture }
     }
 })
 
@@ -86,6 +96,7 @@ const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChange
 export default [
     fetchOrgInfoLogic,
     updateOrgLogic,
+    uploadOrgPicture,
     addMemberToOrgLogic,
     removeMemberFromOrgLogic,
     addRepoToOrgLogic,

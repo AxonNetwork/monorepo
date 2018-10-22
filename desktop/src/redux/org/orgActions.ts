@@ -15,6 +15,10 @@ export enum OrgActionType {
     UPDATE_ORG_SUCCESS = 'UPDATE_ORG_SUCCESS',
     UPDATE_ORG_FAILED = 'UPDATE_ORG_FAILED',
 
+    UPLOAD_ORG_PICTURE = 'UPLOAD_ORG_PICTURE',
+    UPLOAD_ORG_PICTURE_SUCCESS = 'UPLOAD_ORG_PICTURE_SUCCESS',
+    UPLOAD_ORG_PICTURE_FAILED = 'UPLOAD_ORG_PICTURE_FAILED',
+
     ADD_MEMBER_TO_ORG = 'ADD_MEMBER_TO_ORG',
     ADD_MEMBER_TO_ORG_SUCCESS = 'ADD_MEMBER_TO_ORG_SUCCESS',
     ADD_MEMBER_TO_ORG_FAILED = 'ADD_MEMBER_TO_ORG_FAILED',
@@ -85,6 +89,24 @@ export interface IUpdateOrgSuccessAction {
 }
 
 export type IUpdateOrgFailedAction = FailedAction<OrgActionType.UPDATE_ORG_FAILED>
+
+export interface IUploadOrgPictureAction {
+    type: OrgActionType.UPLOAD_ORG_PICTURE
+    payload: {
+        orgID: string
+        fileInput: any
+    }
+}
+
+export interface IUploadOrgPictureSuccessAction {
+    type: OrgActionType.UPLOAD_ORG_PICTURE_SUCCESS
+    payload: {
+        orgID: string
+        picture: string
+    }
+}
+
+export type IUploadOrgPictureFailedAction = FailedAction<OrgActionType.UPLOAD_ORG_PICTURE_FAILED>
 
 export interface IAddMemberToOrgAction {
     type: OrgActionType.ADD_MEMBER_TO_ORG
@@ -204,6 +226,10 @@ export type IOrgAction =
     IUpdateOrgSuccessAction |
     IUpdateOrgFailedAction |
 
+    IUploadOrgPictureAction |
+    IUploadOrgPictureSuccessAction |
+    IUploadOrgPictureFailedAction |
+
     IAddMemberToOrgAction |
     IAddMemberToOrgSuccessAction |
     IAddMemberToOrgFailedAction |
@@ -230,6 +256,7 @@ export type IOrgAction =
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
 export const updateOrg = (payload: IUpdateOrgAction['payload']): IUpdateOrgAction => ({ type: OrgActionType.UPDATE_ORG, payload })
+export const uploadOrgPicture = (payload: IUploadOrgPictureAction['payload']): IUploadOrgPictureAction => ({ type: OrgActionType.UPLOAD_ORG_PICTURE, payload })
 export const addMemberToOrg = (payload: IAddMemberToOrgAction['payload']): IAddMemberToOrgAction => ({ type: OrgActionType.ADD_MEMBER_TO_ORG, payload })
 export const removeMemberFromOrg = (payload: IRemoveMemberFromOrgAction['payload']): IRemoveMemberFromOrgAction => ({ type: OrgActionType.REMOVE_MEMBER_FROM_ORG, payload })
 export const addRepoToOrg = (payload: IAddRepoToOrgAction['payload']): IAddRepoToOrgAction => ({ type: OrgActionType.ADD_REPO_TO_ORG, payload })

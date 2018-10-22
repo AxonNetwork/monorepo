@@ -259,6 +259,24 @@ const ServerRelay = {
         return response.data
     },
 
+
+    async uploadOrgPicture(orgID: string, fileInput: HTMLInputElement) {
+        interface IResponse {
+            picture: string
+            orgID: string
+        }
+
+        if (!fileInput.files) { throw new Error('no files') }
+
+        const formData = new FormData()
+        formData.set('orgID', orgID)
+        formData.append('org-photo', fileInput.files[0])
+        const resp = await axios.post<IResponse>(API_URL + '/org-photo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        return resp.data
+    },
+
     async addMemberToOrg(orgID: string, userID: string){
         await axios.post(API_URL + "/add-member-to-org/", { orgID, userID })
     },

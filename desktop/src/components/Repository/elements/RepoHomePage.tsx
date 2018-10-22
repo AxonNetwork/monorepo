@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import moment from 'moment'
-import { withStyles, createStyles, createMuiTheme } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
 import CardContent from '@material-ui/core/CardContent'

@@ -21,13 +21,20 @@ class OrganizationPage extends React.Component<Props>
         return(
             <div className={classes.organizationPage}>
                 <div className={classes.header}>
-                    <div className={classes.orgInfo}>
-                        <Typography variant="headline" className={classes.headline}>
-                            {org.name}
-                        </Typography>
-                        <Typography>
-                            <em>{org.description}</em>
-                        </Typography>
+                    <div className={classes.orgInfoContainer}>
+                        {org.picture.length > 0 &&
+                            <div>
+                                <img src={org.picture} className={classes.orgPicture} />
+                            </div>
+                        }
+                        <div className={classes.orgInfo}>
+                            <Typography variant="headline" className={classes.headline}>
+                                {org.name}
+                            </Typography>
+                            <Typography>
+                                <em>{org.description}</em>
+                            </Typography>
+                        </div>
                     </div>
                     <Tabs
                         pages={[
@@ -69,8 +76,19 @@ const styles = (theme: Theme) => createStyles({
         borderBottom: '1px solid #e4e4e4',
         marginBottom: theme.spacing.unit * 2
     },
-    orgInfo: {
+    orgInfoContainer: {
+        display: 'flex',
         marginBottom: theme.spacing.unit
+    },
+    orgInfo: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly'
+    },
+    orgPicture: {
+        width: 100,
+        borderRadius: 10,
+        marginRight: theme.spacing.unit * 4
     },
     headline: {
         fontSize: '2rem',

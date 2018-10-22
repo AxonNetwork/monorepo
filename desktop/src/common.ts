@@ -80,6 +80,7 @@ export interface IOrganization {
     name: string
     description: string
     creator: string //userID
+    picture: string
     members: string[] //userID[]
     repos: string[] //repoID[]
 }
