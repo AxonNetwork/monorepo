@@ -5,6 +5,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import FileLink from './FileLink'
 import DiscussionLink from './DiscussionLink'
+import CommentLink from './CommentLink'
 import CodeViewer from 'components/Repository/elements/CodeViewer'
 import shortcodes from './remark-references'
 import autobind from 'utils/autobind'
@@ -42,6 +43,8 @@ class RenderMarkdown extends React.Component<Props>
             return <FileLink filename={contents} basePath={this.props.basePath}/>
         case 'discussion':
             return <DiscussionLink discussionID={contents} />
+        case 'comment':
+            return <CommentLink commentID={contents} />
         default:
             return <span>@{identifier}:[{contents}]</span>
         }
