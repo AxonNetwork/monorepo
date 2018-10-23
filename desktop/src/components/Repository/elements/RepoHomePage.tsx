@@ -9,6 +9,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import { connect } from 'react-redux'
 import { IRepo, IUser, IDiscussion } from 'common'
 import { IGlobalState } from 'redux/store'
@@ -32,12 +33,24 @@ class RepoHomePage extends React.Component<Props>
 
         const commitList = (repo.commitList || []).slice(0, 5)
         const discussionList = (this.props.discussionIDsSortedByNewestComment || []).slice(0, 5)
+        const readmeExists = !!(repo.files || {})['README.md']
 
         return (
             <div className={classes.root}>
-                {(repo.files || {})['README.md'] &&
+                {readmeExists &&
                     <div className={classnames(classes.readmeContainer, classes.box)}>
                         <FileViewer filename={'README.md'} repoRoot={repo.path} />
+                    </div>
+                }
+                {!readmeExists &&
+                    <div className={classnames(classes.readmeContainer, classes.box, classes.readmeContainerNoReadme)}>
+                        <div className={classes.readmeContainerNoReadmeContents}>
+                            <Typography className={classes.noReadmeText}>
+                                Click to add a welcome message and instructions to this repository.
+                            </Typography>
+
+                            <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
+                        </div>
                     </div>
                 }
 
@@ -143,6 +156,28 @@ const styles = createStyles({
         maxWidth: 640,
         flexShrink: 1,
         flexGrow: 1,
+    },
+    readmeContainerNoReadme: {
+        backgroundColor: '#f1f1f1',
+        borderRadius: 10,
+        border: '3px solid #c5c5c5',
+        padding: 30,
+        textAlign: 'center',
+        cursor: 'pointer',
+    },
+    readmeContainerNoReadmeContents: {
+        position: 'relative',
+        top: '15%',
+    },
+    noReadmeText: {
+        fontSize: '1.2rem',
+        color: '#a2a2a2',
+        fontWeight: 700,
+        marginBottom: 20,
+    },
+    noReadmeAddIcon: {
+        fontSize: '5rem',
+        color: '#a2a2a2',
     },
     boxes: {
         display: 'flex',
