@@ -30,7 +30,7 @@ export interface IRepoState {
         file: string
         isFolder: boolean
         editing: boolean
-        defaultEditorContents: string | undefined,
+        defaultEditorContents?: string | undefined,
     } | undefined
     selectedCommit: string | undefined
     timelinePage: {[repoID: string]: number}
