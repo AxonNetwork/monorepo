@@ -4,7 +4,6 @@ import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from './FileList/Breadcrumbs'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
-import { IGetDiffAction, IRevertFilesAction, ISelectFileAction } from 'redux/repository/repoActions'
 import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import FileViewer from './FileViewer'
@@ -21,14 +20,12 @@ class FileInfo extends React.Component<Props>
                     <Breadcrumbs
                         repoRoot={this.props.repoRoot}
                         selectedFolder={file.name}
-                        selectFile={this.props.selectFile}
                         classes={{ root: classes.breadcrumbs }}
                     />
                     <SecuredText
                         lastUpdated={this.props.file.modified}
                         firstVerified={this.props.firstVerified}
                         lastVerified={this.props.lastVerified}
-                        selectCommit={this.props.selectCommit}
                         classes={{ root: classes.securedText }}
                     />
                 </div>
@@ -71,10 +68,6 @@ interface Props {
     firstVerified?: ITimelineEvent
     lastVerified?: ITimelineEvent
     repoRoot: string
-    getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
-    revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
-    selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction
-    selectCommit: Function
     classes: any
 }
 

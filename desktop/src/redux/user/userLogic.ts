@@ -72,7 +72,9 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
     async process({ action, getState }) {
         const inRedux = Object.keys(getState().user.users)
         const toFetch = action.payload.userIDs.filter(id => !inRedux.includes(id))
-        console.log('toFetch', { inRedux, toFetch })
+        if (toFetch.length <= 0) {
+            return { users: [] }
+        }
         const userList = await ServerRelay.fetchUsers(toFetch)
 
         // Convert the list into an object
@@ -190,7 +192,7 @@ const fetchOrgsLogic = makeLogic<IFetchOrgsAction, IFetchOrgsSuccessAction>({
 
         await Promise.all( orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))) )
         return { userID, orgs }
-    }
+    },
 })
 
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({

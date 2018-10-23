@@ -28,7 +28,9 @@ export interface IRepoState {
     repoPage: RepoPage
     selectedFile: {
         file: string
-        isFolder: boolean,
+        isFolder: boolean
+        editing: boolean
+        defaultEditorContents: string | undefined,
     } | undefined
     selectedCommit: string | undefined
     timelinePage: {[repoID: string]: number}

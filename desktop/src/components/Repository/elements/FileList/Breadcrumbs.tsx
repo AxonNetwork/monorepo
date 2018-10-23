@@ -1,9 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import path from 'path'
 import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import path from 'path'
-import autobind from '../../../../utils/autobind'
+import { selectFile } from 'redux/repository/repoActions'
+import autobind from 'utils/autobind'
 
 @autobind
 class Breadcrumbs extends React.Component<Props>
@@ -30,7 +32,7 @@ class Breadcrumbs extends React.Component<Props>
 
         const { repoRoot, selectedFolder } = this.props
         const parts = this.getParts(repoRoot, selectedFolder)
-        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true } })
+        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true, editing: false } })
     }
 
     getParts(repoRoot: string, selectedFolder: string | undefined) {
@@ -80,7 +82,7 @@ class Breadcrumbs extends React.Component<Props>
 interface Props {
     repoRoot: string
     selectedFolder: string | undefined
-    selectFile: Function
+    selectFile: typeof selectFile
     classes: any
 }
 
@@ -93,4 +95,12 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(Breadcrumbs)
+const mapDispatchToProps = {
+    selectFile,
+}
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(withStyles(styles)(Breadcrumbs))
+

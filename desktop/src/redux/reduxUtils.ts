@@ -6,9 +6,16 @@ interface ActionType {
 }
 
 interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType extends ActionType> {
-    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload']|void>
+    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload'] | void>
 }
 
+// interface ProcessFuncNoReturn<HandledActionType extends ActionType> {
+//     (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): void
+// }
+
+// export function makeLogic
+//     <HandledActionType extends ActionType, undefined>
+//     (opts: { type: string, warnTimeout?: number, process: ProcessFuncNoReturn<HandledActionType> })
 export function makeLogic
     <HandledActionType extends ActionType, SuccessActionType extends ActionType>
     (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType> })
@@ -39,7 +46,7 @@ export function makeContinuousLogic
     return createLogic({
         type: opts.type,
         warnTimeout: 0,
-        process: opts.process
+        process: opts.process,
     })
 }
 

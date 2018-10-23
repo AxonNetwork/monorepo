@@ -22,7 +22,7 @@ class File extends React.Component<Props>
     selectFile() {
         if (!!this.props.selectFile) {
             const isFolder = this.props.file.type === 'folder'
-            this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: isFolder} })
+            this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder, editing: false } })
         }
     }
 

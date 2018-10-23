@@ -77,7 +77,7 @@ export interface ICreateRepoAction {
     type: RepoActionType.CREATE_REPO
     payload: {
         repoID: string
-        orgID: string
+        orgID: string,
     }
 }
 
@@ -86,7 +86,7 @@ export interface ICreateRepoSuccessAction {
     payload: {
         repoID: string
         path: string
-        orgID: string
+        orgID: string,
     }
 }
 
@@ -293,7 +293,12 @@ export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED
 export interface ISelectFileAction {
     type: RepoActionType.SELECT_FILE
     payload: {
-        selectedFile: { file: string, isFolder: boolean } | undefined,
+        selectedFile: {
+            file: string
+            isFolder: boolean
+            editing: boolean
+            defaultEditorContents?: string,
+        } | undefined,
     }
 }
 
@@ -309,7 +314,7 @@ export interface IAddCollaboratorAction {
     payload: {
         repoID: string
         repoRoot: string
-        email: string
+        email: string,
     }
 }
 
@@ -318,7 +323,7 @@ export interface IAddCollaboratorSuccessAction {
     payload: {
         repoID: string
         repoRoot: string
-        userID: string
+        userID: string,
     }
 }
 
@@ -327,7 +332,7 @@ export interface IRemoveCollaboratorAction {
     payload: {
         repoID: string
         repoRoot: string
-        userID: string
+        userID: string,
     }
 }
 
@@ -336,7 +341,7 @@ export interface IRemoveCollaboratorSuccessAction {
     payload: {
         repoID: string
         repoRoot: string
-        userID: string
+        userID: string,
     }
 }
 

@@ -2,16 +2,20 @@ import { EditorActionType, IEditorAction } from './editorActions'
 
 const initialState = {
     content: {},
-    loaded: false
+    loaded: false,
+    editingFile: null,
+    textBuffer: '',
 }
 
 export interface IEditorState {
     content: {
         [repoRoot: string]: {
-            [file: string]: string
-        }
+            [file: string]: string,
+        },
     }
     loaded: boolean
+    editingFile: { repoRoot: string, filename: string } | null
+    textBuffer: string
 }
 
 const editorReducer = (state: IEditorState = initialState, action: IEditorAction): IEditorState => {
@@ -19,24 +23,36 @@ const editorReducer = (state: IEditorState = initialState, action: IEditorAction
         case EditorActionType.LOAD_TEXT_CONTENT: {
             return {
                 ...state,
-                loaded: false
+                loaded: false,
             }
         }
 
         case EditorActionType.LOAD_TEXT_CONTENT_SUCCESS: {
-            const { repoRoot, file, content } = action.payload
+            const { repoRoot, filename, content } = action.payload
             return {
                 ...state,
                 content: {
                     [repoRoot]: {
                         ...state.content[repoRoot],
-                        [file]: content
-                    }
+                        [filename]: content,
+                    },
                 },
-                loaded: true
+                loaded: true,
+                editingFile: {
+                    repoRoot,
+                    filename,
+                },
+                textBuffer: content,
             }
         }
 
+        case EditorActionType.UPDATE_TEXT_BUFFER: {
+            const { contents } = action.payload
+            return {
+                ...state,
+                textBuffer: contents,
+            }
+        }
 
         default:
             return state

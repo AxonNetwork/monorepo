@@ -8,9 +8,9 @@ import { IGlobalState } from 'redux/store'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
     selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-
 import { getFirstVerifiedEvent, getLastVerifiedEvent } from 'utils/timeline'
 import autobind from 'utils/autobind'
+import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
 
 
 @autobind
@@ -30,23 +30,30 @@ class RepoFilesPage extends React.Component<Props>
         const files = repo.files || {}
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
-            const relPath = selectedFile.file.replace(repo.path + '/', '')
-            const lastVerified = getLastVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
-            const firstVerified = getFirstVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
-            return (
-                <div className={classes.fileInfoContainer}>
-                    <FileInfo
-                        file={files[relPath]}
+            if (!selectedFile.editing) {
+                const relPath = selectedFile.file.replace(repo.path + '/', '')
+                const lastVerified = getLastVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
+                const firstVerified = getFirstVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
+                return (
+                    <div className={classes.fileInfoContainer}>
+                        <FileInfo
+                            file={files[relPath]}
+                            repoRoot={repo.path}
+                            firstVerified={firstVerified}
+                            lastVerified={lastVerified}
+                        />
+                    </div>
+                )
+
+            } else {
+                return (
+                    <MarkdownEditor
                         repoRoot={repo.path}
-                        firstVerified={firstVerified}
-                        lastVerified={lastVerified}
-                        selectFile={this.props.selectFile}
-                        selectCommit={this.selectCommit}
-                        getDiff={this.props.getDiff}
-                        revertFiles={this.props.revertFiles}
+                        filename={selectedFile.file}
+                        defaultContents={selectedFile.defaultEditorContents}
                     />
-                </div>
-            )
+                )
+            }
         } else {
             const selectedFolder = selectedFile !== undefined ? selectedFile.file : undefined
             return (
@@ -67,7 +74,7 @@ class RepoFilesPage extends React.Component<Props>
 
 interface Props {
     repo: IRepo | undefined
-    selectedFile: { file: string, isFolder: boolean } | undefined
+    selectedFile: ISelectFileAction['payload']['selectedFile'] // { file: string, isFolder: boolean, editing: boolean } | undefined
     getDiff: (payload: IGetDiffAction['payload']) => IGetDiffAction
     revertFiles: (payload: IRevertFilesAction['payload']) => IRevertFilesAction
     selectFile: (payload: ISelectFileAction['payload']) => ISelectFileAction

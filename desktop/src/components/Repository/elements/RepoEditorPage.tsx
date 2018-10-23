@@ -50,7 +50,7 @@ class RepoEditorPage extends React.Component<Props, State>
     }
 
     setup(props: Props) {
-        props.loadTextContent({repoRoot: props.folderPath, file: 'manuscript'})
+        props.loadTextContent({repoRoot: props.folderPath, filename: 'manuscript'})
         this.setState({
             text: props.content,
             saved: true,
@@ -191,7 +191,7 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     editorPage: {
         display: 'flex',
-        paddingRight: theme.spacing.unit
+        paddingRight: theme.spacing.unit,
     },
     editor: {
         height: '100%',

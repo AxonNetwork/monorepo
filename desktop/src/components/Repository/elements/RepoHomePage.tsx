@@ -10,12 +10,13 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { connect } from 'react-redux'
 import { IRepo, IUser, IDiscussion } from 'common'
 import { IGlobalState } from 'redux/store'
-import { selectCommit, navigateRepoPage } from 'redux/repository/repoActions'
-import { RepoPage } from 'redux/repository/repoReducer'
+import { selectCommit, selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { selectDiscussion } from 'redux/discussion/discussionActions'
+import { RepoPage } from 'redux/repository/repoReducer'
 import FileViewer from './FileViewer'
 import UserAvatar from 'components/UserAvatar'
 import Timeline from './Timeline/Timeline'
@@ -28,8 +29,28 @@ class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { repo, classes } = this.props
+
+        let loading = false
         if (repo === undefined) {
-            return null
+            loading = true
+        } else if (!repo.sharedUsers || repo.sharedUsers.length === 0) {
+            loading = true
+        } else {
+            // @@TODO: this is probably horrible for performance in the render() function
+            for (let userID of (repo.sharedUsers || [])) {
+                if (!this.props.users[userID]) {
+                    loading = true
+                    break
+                }
+            }
+        }
+
+        if (loading) {
+            return (
+                <div className={classes.loadingWrapper}>
+                    <CircularProgress size={100} className={classes.loading} />
+                </div>
+            )
         }
 
         const commitList = (repo.commitList || []).slice(0, 5)
@@ -38,22 +59,20 @@ class RepoHomePage extends React.Component<Props>
 
         return (
             <div className={classes.root}>
-                {readmeExists &&
-                    <div className={classnames(classes.readmeContainer, classes.box)}>
+                <div className={classnames(classes.readmeContainer, classes.box, { [classes.readmeContainerNoReadme]: !readmeExists })}>
+                    {readmeExists &&
                         <FileViewer filename={'README.md'} repoRoot={repo.path} />
-                    </div>
-                }
-                {!readmeExists &&
-                    <div className={classnames(classes.readmeContainer, classes.box, classes.readmeContainerNoReadme)}>
-                        <div className={classes.readmeContainerNoReadmeContents}>
+                    }
+                    {!readmeExists &&
+                        <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickAddReadme}>
                             <Typography className={classes.noReadmeText}>
                                 Click to add a welcome message and instructions to this repository.
                             </Typography>
 
                             <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
                         </div>
-                    </div>
-                }
+                    }
+                </div>
 
                 <div className={classes.boxes}>
                     <Card className={classnames(classes.usersContainer, classes.box)}>
@@ -77,7 +96,7 @@ class RepoHomePage extends React.Component<Props>
                                     <Typography>There aren't any discussions yet for this repo.</Typography>
                                     <Typography>
                                         <a href="#"
-                                            onClick={()=>this.props.navigateRepoPage({ repoPage: RepoPage.Discussion })}
+                                            onClick={() => this.props.navigateRepoPage({ repoPage: RepoPage.Discussion })}
                                             className={classes.link}
                                         >
                                             Get the conversation started
@@ -130,7 +149,7 @@ class RepoHomePage extends React.Component<Props>
                                     <Typography>There aren't any commits yet for this repo.</Typography>
                                     <Typography>
                                         <a href="#"
-                                            onClick={()=>this.props.navigateRepoPage({ repoPage: RepoPage.Files })}
+                                            onClick={() => this.props.navigateRepoPage({ repoPage: RepoPage.Files })}
                                             className={classes.link}
                                         >
                                             Check out your workspace
@@ -153,6 +172,25 @@ class RepoHomePage extends React.Component<Props>
             </div>
         )
     }
+
+    onClickAddReadme() {
+        const repo = (this.props.repo || {}) as IRepo
+
+        const contributors = (repo.sharedUsers || []).map(userID => {
+            const user = this.props.users[userID] || {} as IUser
+            if (user.emails && user.emails.length > 0) {
+                return `- ${user.name} (<${user.emails[0]}>)`
+            } else {
+                return `- ${user.name}`
+            }
+        }).join('\n')
+
+        const defaultEditorContents =
+            `# ${repo.repoID}\n\nWrite some instructions or a welcome message here to help others understand the work that you're doing.  Markdown syntax is fully supported.  When you're done, save the file and commit it to the repository.\n\n# Contributors\n\n${contributors}`
+
+        this.props.selectFile({ selectedFile: { file: 'README.md', isFolder: false, editing: true, defaultEditorContents } })
+        this.props.navigateRepoPage({ repoPage: RepoPage.Files })
+    }
 }
 
 interface Props {
@@ -165,6 +203,7 @@ interface Props {
     discussions: {[discussionID: string]: IDiscussion}
 
     selectCommit: typeof selectCommit
+    selectFile: typeof selectFile
     selectDiscussion: typeof selectDiscussion
     navigateRepoPage: typeof navigateRepoPage
 
@@ -175,6 +214,16 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
+    },
+    loading: {
+        color: theme.palette.secondary.main,
+    },
+    loadingWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     box: {
         margin: '0 20px 20px 0',
@@ -265,9 +314,9 @@ const styles = (theme: Theme) => createStyles({
         display: 'block',
         height: 0,
     },
-    link:{
-        color: theme.palette.secondary.main
-    }
+    link: {
+        color: theme.palette.secondary.main,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -292,6 +341,7 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     selectCommit,
+    selectFile,
     selectDiscussion,
     navigateRepoPage,
 }

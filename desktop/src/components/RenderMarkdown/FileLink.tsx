@@ -45,7 +45,7 @@ class FileLink extends React.Component<Props, State>
     }
 
     goToFile() {
-        this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false } })
+        this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, editing: false } })
         this.props.navigateRepoPage({ repoPage: RepoPage.Files })
     }
 
