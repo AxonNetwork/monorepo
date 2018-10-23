@@ -43,7 +43,7 @@ const ServerRelay = {
         }
     },
 
-    async loginWithKey(username: string, hexSignature:string) {
+    async loginWithKey(username: string, hexSignature: string) {
         interface IResponse {
             userID: string
             emails: string[]
@@ -235,25 +235,25 @@ const ServerRelay = {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
 
-    async fetchOrgs(userID: string){
+    async fetchOrgs(userID: string) {
         interface IResponse {
             orgs: string[]
         }
-        const response = await axios.get<IResponse>(API_URL + "/organizations?" + querystring.stringify({ userID }))
+        const response = await axios.get<IResponse>(API_URL + '/organizations?' + querystring.stringify({ userID }))
 
         return response.data
     },
 
-    async fetchOrgInfo(orgID: string){
-        const response = await axios.get(API_URL + "/organization/" + orgID)
+    async fetchOrgInfo(orgID: string) {
+        const response = await axios.get(API_URL + '/organization/' + orgID)
         return response.data as IOrganization
     },
 
     async updateOrg(orgID: string, name: string, description: string) {
-        const response = await axios.post(API_URL + "/update-organization",{
+        const response = await axios.post(API_URL + '/update-organization', {
             orgID,
             name,
-            description
+            description,
         })
 
         return response.data
@@ -277,23 +277,23 @@ const ServerRelay = {
         return resp.data
     },
 
-    async addMemberToOrg(orgID: string, userID: string){
-        await axios.post(API_URL + "/add-member-to-org/", { orgID, userID })
+    async addMemberToOrg(orgID: string, userID: string) {
+        await axios.post(API_URL + '/add-member-to-org/', { orgID, userID })
     },
 
-    async removeMemberFromOrg(orgID: string, userID: string){
-        await axios.post(API_URL + "/remove-member-from-org/", { orgID, userID })
+    async removeMemberFromOrg(orgID: string, userID: string) {
+        await axios.post(API_URL + '/remove-member-from-org/', { orgID, userID })
     },
 
-    async addRepoToOrg(orgID: string, repoID: string){
-        await axios.post(API_URL + "/add-repo-to-org/", { orgID, repoID })
+    async addRepoToOrg(orgID: string, repoID: string) {
+        await axios.post(API_URL + '/add-repo-to-org/', { orgID, repoID })
     },
 
-    async removeRepoFromOrg(orgID: string, repoID: string){
-        await axios.post(API_URL + "/remove-repo-from-org/", { orgID, repoID })
+    async removeRepoFromOrg(orgID: string, repoID: string) {
+        await axios.post(API_URL + '/remove-repo-from-org/', { orgID, repoID })
     },
 
-    async changeOrgDescription(orgID: string, description: string){
+    async changeOrgDescription(orgID: string, description: string) {
         return
     },
 }
