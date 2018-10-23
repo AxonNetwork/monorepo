@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import moment from 'moment'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
 import CardContent from '@material-ui/core/CardContent'
@@ -13,7 +13,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import { connect } from 'react-redux'
 import { IRepo, IUser, IDiscussion } from 'common'
 import { IGlobalState } from 'redux/store'
-import { selectCommit } from 'redux/repository/repoActions'
+import { selectCommit, navigateRepoPage } from 'redux/repository/repoActions'
+import { RepoPage } from 'redux/repository/repoReducer'
 import { selectDiscussion } from 'redux/discussion/discussionActions'
 import FileViewer from './FileViewer'
 import UserAvatar from 'components/UserAvatar'
@@ -71,7 +72,19 @@ class RepoHomePage extends React.Component<Props>
                     <Card className={classnames(classes.discussionsContainer, classes.box)}>
                         <CardContent>
                             <Typography variant="h6">Recent Discussions</Typography>
-
+                            {discussionList.length === 0 &&
+                                <React.Fragment>
+                                    <Typography>There aren't any discussions yet for this repo.</Typography>
+                                    <Typography>
+                                        <a href="#"
+                                            onClick={()=>this.props.navigateRepoPage({ repoPage: RepoPage.Discussion })}
+                                            className={classes.link}
+                                        >
+                                            Get the conversation started
+                                        </a>
+                                    </Typography>
+                                </React.Fragment>
+                            }
                             <List>
                                 {discussionList.map(discussionID => {
                                     const d = this.props.discussions[discussionID] || {}
@@ -112,6 +125,19 @@ class RepoHomePage extends React.Component<Props>
                     <Card className={classnames(classes.commitsContainer, classes.box)}>
                         <CardContent>
                             <Typography variant="h6">Recent Commits</Typography>
+                            {commitList.length === 0 &&
+                                <React.Fragment>
+                                    <Typography>There aren't any commits yet for this repo.</Typography>
+                                    <Typography>
+                                        <a href="#"
+                                            onClick={()=>this.props.navigateRepoPage({ repoPage: RepoPage.Files })}
+                                            className={classes.link}
+                                        >
+                                            Check out your workspace
+                                        </a>
+                                    </Typography>
+                                </React.Fragment>
+                            }
 
                             <Timeline
                                 repoID={repo.repoID}
@@ -140,12 +166,13 @@ interface Props {
 
     selectCommit: typeof selectCommit
     selectDiscussion: typeof selectDiscussion
+    navigateRepoPage: typeof navigateRepoPage
 
     classes: any
 }
 
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
     },
@@ -238,6 +265,9 @@ const styles = createStyles({
         display: 'block',
         height: 0,
     },
+    link:{
+        color: theme.palette.secondary.main
+    }
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -263,6 +293,7 @@ const mapStateToProps = (state: IGlobalState) => {
 const mapDispatchToProps = {
     selectCommit,
     selectDiscussion,
+    navigateRepoPage,
 }
 
 export default connect(

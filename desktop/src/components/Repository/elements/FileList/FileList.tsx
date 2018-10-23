@@ -2,7 +2,9 @@ import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
+import Typography from '@material-ui/core/Typography'
 
+const shell = (window as any).require('electron').shell
 import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 
 import File from './File'
@@ -26,6 +28,20 @@ class FileList extends React.Component<Props>
                     selectedFolder={selectedFolder}
                     selectFile={this.props.selectFile}
                 />
+                {names.length === 0 &&
+                    <div className={classes.emptyRepoText}>
+                        <Typography>There's nothing here yet.</Typography>
+                        <Typography>
+                            <span>Start by adding files to your </span>
+                            <a href="#"
+                                onClick={()=>shell.openItem(this.props.repoRoot)}
+                                className={classes.link}
+                            >
+                                Repository Folder
+                            </a>
+                        </Typography>
+                    </div>
+                }
                 <Table className={classes.table}>
                     <TableBody>
                         {
@@ -74,6 +90,15 @@ const styles = (theme: Theme) => createStyles({
     tableRow: {
         height: 36,
     },
+    emptyRepoText: {
+        marginTop: theme.spacing.unit * 2,
+        '& p': {
+            marginTop: theme.spacing.unit * 2
+        }
+    },
+    link: {
+        color: theme.palette.secondary.main
+    }
 })
 
 export default withStyles(styles)(FileList)
