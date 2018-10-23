@@ -256,7 +256,8 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
         const rpcClient = rpc.initClient()
         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
         const userID = user.userID
-        await ServerRelay.shareRepo(userID, email)
+        await ServerRelay.shareRepo(repoID, userID)
+        dispatch(fetchUserData({ userIDs: [ userID ] }))
         return { repoRoot, repoID, userID }
     },
 })
