@@ -76,7 +76,8 @@ export enum RepoActionType {
 export interface ICreateRepoAction {
     type: RepoActionType.CREATE_REPO
     payload: {
-        repoID: string,
+        repoID: string
+        orgID: string
     }
 }
 
@@ -84,7 +85,8 @@ export interface ICreateRepoSuccessAction {
     type: RepoActionType.CREATE_REPO_SUCCESS
     payload: {
         repoID: string
-        path: string,
+        path: string
+        orgID: string
     }
 }
 

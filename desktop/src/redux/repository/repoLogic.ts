@@ -22,6 +22,7 @@ import { RepoActionType,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
 import { fetchUserData } from '../user/userActions'
 import { getDiscussions } from '../discussion/discussionActions'
+import { addRepoToOrg } from '../org/orgActions'
 import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
@@ -30,7 +31,7 @@ import * as rpc from '../../rpc'
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
     async process({ action, getState }, dispatch) {
-        const { repoID } = action.payload
+        const { repoID, orgID } = action.payload
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
@@ -42,8 +43,9 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
         })
         await ServerRelay.createRepo(repoID)
 
+        await dispatch(addRepoToOrg({ orgID, repoID }))
         await dispatch(selectRepo({ repoID, path }))
-        return { repoID, path }
+        return { repoID, path, orgID }
     },
 })
 

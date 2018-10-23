@@ -4,6 +4,7 @@ import { OrgActionType, IOrgAction } from '../org/orgActions'
 
 const initialState = {
     loginLoading: false,
+    createRepoLoading: false,
     checkpointLoading: false,
     pullLoading: false,
     orgSettingsLoading: false
@@ -11,6 +12,7 @@ const initialState = {
 
 export interface IUIState {
     loginLoading: boolean
+    createRepoLoading: boolean
     checkpointLoading: boolean
     pullLoading: boolean
     orgSettingsLoading: boolean
@@ -32,6 +34,19 @@ const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAct
             return {
                 ...state,
                 loginLoading: false
+            }
+
+        case RepoActionType.CREATE_REPO:
+            return {
+                ...state,
+                createRepoLoading: true
+            }
+
+        case RepoActionType.CREATE_REPO_SUCCESS:
+        case RepoActionType.CREATE_REPO_FAILED:
+            return {
+                ...state,
+                createRepoLoading: false
             }
 
         case RepoActionType.CHECKPOINT_REPO:
