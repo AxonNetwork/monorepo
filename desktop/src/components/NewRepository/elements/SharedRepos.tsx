@@ -16,7 +16,7 @@ class SharedRepos extends React.Component<Props>
         return (
             <React.Fragment>
                 <Typography variant="headline">
-                    Shared Repos
+                    Repos Shared with You
                 </Typography>
                 <List>
                     {

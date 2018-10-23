@@ -56,9 +56,9 @@ class NewRepository extends React.Component<Props, State>
             <Grid container spacing={24}>
                 <Grid item className={classes.column} xs={12} sm={6}>
                     <Typography variant="headline">
-                        Create new repository
+                        Create New Repository
                     </Typography>
-                    <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit}>
+                    <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
                         <TextField
                             id="repo-id"
                             label="Repository ID"
@@ -119,6 +119,9 @@ interface State {
 }
 
 const styles = (theme: Theme) => createStyles({
+    form:{
+        marginRight: 128
+    },
     button: {
         display: 'block',
         textTransform: 'none',
