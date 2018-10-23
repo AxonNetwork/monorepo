@@ -81,6 +81,7 @@ export interface IOrganization {
     description: string
     creator: string //userID
     picture: string
+    readme: string
     members: string[] //userID[]
     repos: string[] //repoID[]
 }

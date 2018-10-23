@@ -33,7 +33,7 @@ class Repositories extends React.Component<Props, State>
             <React.Fragment>
                 <div className={classes.root}>
                     <div className={classes.header}>
-                        <Typography variant="h6">Studies</Typography>
+                        <Typography variant="h6">Repositories</Typography>
                     </div>
                     <div className={classes.repoCards}>
                         {org.repos.map(id =>

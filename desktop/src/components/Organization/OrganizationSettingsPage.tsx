@@ -59,10 +59,10 @@ class OrganizationPage extends React.Component<Props>
                             No image Uploaded
                         </Typography>
                     }
-                    {org.picture.length > 0 && 
+                    {org.picture.length > 0 &&
                         <React.Fragment>
                             <Typography>
-                                Current Image: 
+                                Current Image:
                             </Typography>
                             <img src={org.picture} className={classes.orgPicture}/>
                         </React.Fragment>
@@ -76,8 +76,8 @@ class OrganizationPage extends React.Component<Props>
 
     onClickUpdateOrgSettings() {
         const orgID = this.props.org.orgID
-        const name = this._inputOrgName !== null ? this._inputOrgName.value : ''
-        const description = this._inputDescription !== null ? this._inputDescription.value : ''
+        const name = this._inputOrgName !== null ? this._inputOrgName.value : ""
+        const description = this._inputDescription !== null ? this._inputDescription.value : ""
         this.props.updateOrg({ orgID, name, description })
     }
 

@@ -76,8 +76,9 @@ export interface IUpdateOrgAction {
     type: OrgActionType.UPDATE_ORG
     payload: {
         orgID: string
-        name: string
-        description: string
+        name?: string
+        description?: string
+        readme?: string
     }
 }
 

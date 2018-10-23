@@ -47,7 +47,9 @@ class OrganizationPage extends React.Component<Props>
                     />
                 </div>
                 {orgPage === OrgPage.Home &&
-                    <OrganizationHomePage />
+                    <OrganizationHomePage
+                        org={org}
+                    />
                 }
                 {orgPage === OrgPage.Settings &&
                     <OrganizationSettingsPage />
