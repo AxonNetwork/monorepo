@@ -245,7 +245,7 @@ const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
 const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
     type: RepoActionType.ADD_COLLABORATOR,
     async process({ action, getState }, dispatch) {
-        const { repoID, email, folderPath } = action.payload
+        const { repoRoot, repoID, email } = action.payload
         const user = (await ServerRelay.fetchUsersByEmail([ email ]))[0]
         if (user === undefined) {
             throw new Error('user does not exist')
@@ -253,20 +253,23 @@ const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorS
         const username = user.username
         const rpcClient = rpc.initClient()
         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
-        await ServerRelay.shareRepo(repoID, email)
-        return { folderPath, repoID, email }
+        const userID = user.userID
+        await ServerRelay.shareRepo(userID, email)
+        return { repoRoot, repoID, userID }
     },
 })
 
 const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
     type: RepoActionType.REMOVE_COLLABORATOR,
-    async process({ action }) {
-        const { repoID, email, folderPath } = action.payload
-        const username = '' // @@TODO
+    async process({ action, getState }) {
+        const { repoRoot, repoID, userID } = action.payload
+        const user = getState().user.users[userID]
+        // @@TODO fetch if not exists
+        const username = user.username
         const rpcClient = rpc.initClient()
         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: false, pusher: false, admin: false })
-        await ServerRelay.unshareRepo(repoID, email)
-        return { folderPath, repoID, email }
+        await ServerRelay.unshareRepo(repoID, userID)
+        return { repoRoot, repoID, userID }
     },
 })
 

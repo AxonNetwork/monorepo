@@ -190,16 +190,16 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
         }
 
         case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
-            const { folderPath, email } = action.payload
+            const { repoRoot, userID } = action.payload
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [folderPath]: {
-                        ...(state.repos[folderPath] || {}),
+                    [repoRoot]: {
+                        ...(state.repos[repoRoot] || {}),
                         sharedUsers: [
-                            ...((state.repos[folderPath] || {}).sharedUsers || []),
-                            email,
+                            ...((state.repos[repoRoot] || {}).sharedUsers || []),
+                            userID,
                         ],
                     },
                 },
@@ -207,14 +207,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
         }
 
         case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
-            const { folderPath, email } = action.payload
-            const sharedUsers = ((state.repos[folderPath] || {}).sharedUsers || []).filter(e => e !== email)
+            const { repoRoot, userID } = action.payload
+            const sharedUsers = ((state.repos[repoRoot] || {}).sharedUsers || []).filter(id => id !== userID)
             return {
                 ...state,
                 repos: {
                     ...state.repos,
-                    [folderPath]: {
-                        ...(state.repos[folderPath] || {}),
+                    [repoRoot]: {
+                        ...(state.repos[repoRoot] || {}),
                         sharedUsers: sharedUsers,
                     },
                 },

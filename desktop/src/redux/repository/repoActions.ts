@@ -305,36 +305,36 @@ export interface ISelectCommitAction {
 export interface IAddCollaboratorAction {
     type: RepoActionType.ADD_COLLABORATOR
     payload: {
-        folderPath: string
         repoID: string
-        email: string,
+        repoRoot: string
+        email: string
     }
 }
 
 export interface IAddCollaboratorSuccessAction {
     type: RepoActionType.ADD_COLLABORATOR_SUCCESS
     payload: {
-        folderPath: string
         repoID: string
-        email: string,
+        repoRoot: string
+        userID: string
     }
 }
 
 export interface IRemoveCollaboratorAction {
     type: RepoActionType.REMOVE_COLLABORATOR
     payload: {
-        folderPath: string
         repoID: string
-        email: string,
+        repoRoot: string
+        userID: string
     }
 }
 
 export interface IRemoveCollaboratorSuccessAction {
     type: RepoActionType.REMOVE_COLLABORATOR_SUCCESS
     payload: {
-        folderPath: string
         repoID: string
-        email: string,
+        repoRoot: string
+        userID: string
     }
 }
 
