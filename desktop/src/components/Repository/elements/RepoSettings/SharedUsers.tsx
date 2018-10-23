@@ -24,14 +24,14 @@ import autobind from 'utils/autobind'
 class SharedUsers extends React.Component<Props, State>
 {
     state = {
-        dialogOpen: false
+        dialogOpen: false,
     }
 
     _inputUser: HTMLInputElement | null = null
 
-    render(){
+    render() {
         const { repo, users, classes } = this.props
-        return(
+        return (
             <Card className={classes.root}>
                 <CardContent>
                     <Typography variant="h6">Shared Users</Typography>
@@ -48,7 +48,7 @@ class SharedUsers extends React.Component<Props, State>
                                         <Typography>{user.username}</Typography>
                                     </div>
                                     <IconButton
-                                        onClick={()=>this.onClickRemoveMember(userID)}
+                                        onClick={() => this.onClickRemoveMember(userID)}
                                     >
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
@@ -125,11 +125,11 @@ interface State {
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        minWidth: 350
+        minWidth: 350,
     },
     user: {
         display: 'flex',
-        marginTop: theme.spacing.unit * 2
+        marginTop: theme.spacing.unit * 2,
     },
     userAvatar : {
         display: 'flex',
@@ -138,7 +138,7 @@ const styles = (theme: Theme) => createStyles({
         marginRight: theme.spacing.unit,
     },
     userInfo: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     button: {
         width: '100%',
@@ -147,15 +147,15 @@ const styles = (theme: Theme) => createStyles({
         marginTop: theme.spacing.unit * 2,
     },
     controlPointIcon: {
-        marginRight: theme.spacing.unit
+        marginRight: theme.spacing.unit,
     },
     dialog: {
-        minWidth: 350
-    }
+        minWidth: 350,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selectedRepo = state.repository.selectedRepo || ""
+    const selectedRepo = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selectedRepo]
     const users = state.user.users
     return {
