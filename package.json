@@ -176,7 +176,7 @@
     "tslint-react": "^3.6.0",
     "webpack-dev-server": "^3.1.8"
   },
-  "resolutions":{
+  "resolutions": {
     "@types/quill": "1.3.6"
   },
   "browserslist": [
@@ -234,7 +234,7 @@
       "node_modules/**/*"
     ],
     "extraResources": [
-        "desktop/build-resources/binaries/*"
+      "desktop/build-resources/binaries/*"
     ],
     "mac": {
       "target": "pkg",

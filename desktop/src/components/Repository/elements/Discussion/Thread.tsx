@@ -24,6 +24,7 @@ class Thread extends React.Component<Props>
     _intervalID: any | undefined // Timer ID, can't get Typescript to accept this
     _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
     _inputComment!: any
+    _bottomDiv: HTMLDivElement | null = null
 
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
@@ -114,6 +115,9 @@ class Thread extends React.Component<Props>
                             userPicture={this.props.userPicture}
                             smartTextareaRef={(x: any) => this._inputComment = x}
                         />
+
+                        {/* this div is used for scrolling down to CreateComment when a user clicks 'reply' */}
+                        <div ref={x => this._bottomDiv = x}></div>
                     </div>
                 </div>
             </div>
@@ -125,7 +129,11 @@ class Thread extends React.Component<Props>
         if (currentValue.trim().length > 0) {
             this._inputComment.setValue(currentValue + ` @comment:[${commentID}] `)
         } else {
-            this._inputComment.setValue(currentValue + `@comment[${commentID}] `)
+            this._inputComment.setValue(currentValue + `@comment:[${commentID}] `)
+        }
+
+        if (this._bottomDiv) {
+            this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
         }
     }
 }

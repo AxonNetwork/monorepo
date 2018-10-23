@@ -159,7 +159,7 @@ const styles = createStyles({
         flexWrap: 'wrap',
     },
     avatar: {
-        marginRight: 4
+        marginRight: 4,
     },
 
     // @@TODO: delete these after component-izing the discussion list
