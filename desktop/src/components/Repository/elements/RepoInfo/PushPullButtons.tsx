@@ -65,7 +65,6 @@ class PushPullButtons extends React.Component<Props, State>
 
                 <Tooltip title="Open this folder on your computer">
                     <IconButton
-                        color="secondary"
                         classes={{ root: classes.button }}
                         disabled={false}
                         onClick={this.onClickOpenFolder}
