@@ -1,21 +1,36 @@
+import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
+import TextField from '@material-ui/core/TextField'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import Typography from '@material-ui/core/Typography'
-
-const shell = (window as any).require('electron').shell
+import Button from '@material-ui/core/Button'
+import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
-
 import File from './File'
 import Breadcrumbs from './Breadcrumbs'
-import { IRepoFile } from '../../../../common'
+import { selectFile } from 'redux/repository/repoActions'
+import { IRepoFile } from 'common'
+import autobind from 'utils/autobind'
+
+const shell = (window as any).require('electron').shell
 
 
-class FileList extends React.Component<Props>
+@autobind
+class FileList extends React.Component<Props, State>
 {
+    state = { newFileDialogOpen: false }
+
+    _inputNewFileName: HTMLInputElement | null = null
+
     render() {
         let { classes, files, selectedFolder } = this.props
         if (selectedFolder !== undefined) {
@@ -25,7 +40,13 @@ class FileList extends React.Component<Props>
         const names = sortFolders(files)
         return (
             <React.Fragment>
-                <Breadcrumbs repoRoot={this.props.repoRoot} selectedFolder={selectedFolder} />
+                <div className={classes.toolbar}>
+                    <Breadcrumbs repoRoot={this.props.repoRoot} selectedFolder={selectedFolder} classes={{ root: classes.breadcrumb }} />
+
+                    <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
+                        <ControlPointIcon /> New file
+                    </Button>
+                </div>
 
                 {names.length === 0 &&
                     <div className={classes.emptyRepoText}>
@@ -44,7 +65,7 @@ class FileList extends React.Component<Props>
                 {names.length > 0 &&
                     <Card className={classes.fileListCard}>
                         <CardContent className={classes.fileListCardContent}>
-                            <Table className={classes.table}>
+                            <Table>
                                 <TableBody>
                                     {names.map((name) => {
                                         const file = files[name]
@@ -63,8 +84,52 @@ class FileList extends React.Component<Props>
                         </CardContent>
                     </Card>
                 }
+
+                <Dialog
+                    fullWidth
+                    open={this.state.newFileDialogOpen}
+                >
+                    <DialogTitle>Create new file</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            fullWidth
+                            autoFocus
+                            inputRef={x => this._inputNewFileName = x}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.onClickCreateNewFile}>Create</Button>
+                        <Button onClick={this.onClickCancelNewFile}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
             </React.Fragment>
         )
+    }
+
+    onClickNewFile() {
+        this.setState({ newFileDialogOpen: true })
+    }
+
+    onClickCreateNewFile() {
+        if (!this._inputNewFileName) {
+            return
+        }
+        const filename = this._inputNewFileName.value.trim()
+        if (filename.length === 0) {
+            return
+        }
+
+        const basepath = this.props.selectedFolder || '.'
+        const fullpath = path.join(basepath, filename)
+
+        this.props.selectFile({ selectedFile: { file: fullpath, isFolder: false, editing: true } })
+    }
+
+    onClickCancelNewFile() {
+        if (this._inputNewFileName) {
+            this._inputNewFileName.value = ''
+        }
+        this.setState({ newFileDialogOpen: false })
     }
 }
 
@@ -72,8 +137,14 @@ interface Props {
     repoRoot: string
     files: {[name: string]: IRepoFile}
     selectedFolder: string | undefined
-    selectFile: Function
+
+    selectFile: typeof selectFile
+
     classes: any
+}
+
+interface State {
+    newFileDialogOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -96,9 +167,11 @@ const styles = (theme: Theme) => createStyles({
         minHeight: 0,
         height: 32,
     },
-    table: {
-        // marginTop: theme.spacing.unit * 2,
-        // borderTop: '1px solid rgba(224, 224, 224, 1)',
+    toolbar: {
+        display: 'flex',
+    },
+    breadcrumb: {
+        flexGrow: 1,
     },
     tableRow: {
         height: 36,
@@ -117,4 +190,14 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileList)
+const mapDispatchToProps = {
+    selectFile,
+}
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(withStyles(styles)(FileList))
+
+
+

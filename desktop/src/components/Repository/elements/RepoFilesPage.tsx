@@ -58,7 +58,6 @@ class RepoFilesPage extends React.Component<Props>
                             repoRoot={repo.path}
                             files={files}
                             selectedFolder={selectedFolder}
-                            selectFile={this.props.selectFile}
                         />
                     </div>
                 </div>

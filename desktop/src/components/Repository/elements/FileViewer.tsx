@@ -56,7 +56,7 @@ class FileViewer extends React.Component<Props, State>
             return (
                 <Card>
                     <CardContent classes={{ root: classes.codeRoot }}>
-                        <CodeViewer language={extension} contents={this.state.fileContents} showColorSelector />
+                        <CodeViewer language={extension} contents={this.state.fileContents} />
                     </CardContent>
                 </Card>
             )
@@ -133,10 +133,12 @@ const styles = () => createStyles({
     },
     mdRoot: {
         padding: 48,
+        minWidth: 680,
     },
     codeRoot: {
         padding: 0,
         paddingBottom: '0 !important',
+        minWidth: 680,
     },
 })
 

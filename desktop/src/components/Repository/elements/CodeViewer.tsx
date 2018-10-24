@@ -51,7 +51,6 @@ interface Props {
     language: string
     contents: string
     codeColorScheme: string | undefined
-    showColorSelector?: boolean
     classes: any
 }
 
