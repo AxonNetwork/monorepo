@@ -1,5 +1,7 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import Typography from '@material-ui/core/Typography'
@@ -39,24 +41,28 @@ class FileList extends React.Component<Props>
                         </Typography>
                     </div>
                 }
-                <Table className={classes.table}>
-                    <TableBody>
-                        {
-                            names.map((name) => {
-                                const file = files[name]
-                                return (
-                                    <File
-                                        file={file}
-                                        repoRoot={this.props.repoRoot}
-                                        key={name}
-                                        selectFile={this.props.selectFile}
-                                        classes={{ tableRow: classes.tableRow }}
-                                    />
-                                )
-                            })
-                        }
-                    </TableBody>
-                </Table>
+                {names.length > 0 &&
+                    <Card className={classes.fileListCard}>
+                        <CardContent className={classes.fileListCardContent}>
+                            <Table className={classes.table}>
+                                <TableBody>
+                                    {names.map((name) => {
+                                        const file = files[name]
+                                        return (
+                                            <File
+                                                file={file}
+                                                repoRoot={this.props.repoRoot}
+                                                key={name}
+                                                selectFile={this.props.selectFile}
+                                                classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
+                                            />
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                }
             </React.Fragment>
         )
     }
@@ -71,6 +77,18 @@ interface Props {
 }
 
 const styles = (theme: Theme) => createStyles({
+    fileListCard: {
+        margin: '15px 5px 5px 5px',
+        padding: 0,
+    },
+    fileListCardContent: {
+        cursor: 'pointer',
+
+        '&:last-child': {
+            padding: 0,
+            margin: '10px 0',
+        },
+    },
     button: {
         textTransform: 'none',
         fontSize: '12pt',
@@ -79,11 +97,14 @@ const styles = (theme: Theme) => createStyles({
         height: 32,
     },
     table: {
-        marginTop: theme.spacing.unit * 2,
-        borderTop: '1px solid rgba(224, 224, 224, 1)',
+        // marginTop: theme.spacing.unit * 2,
+        // borderTop: '1px solid rgba(224, 224, 224, 1)',
     },
     tableRow: {
         height: 36,
+    },
+    tableCell: {
+        borderBottom: 'none',
     },
     emptyRepoText: {
         marginTop: theme.spacing.unit * 2,
