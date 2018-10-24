@@ -3,7 +3,12 @@ import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
+import CancelIcon from '@material-ui/icons/Cancel'
+import SaveIcon from '@material-ui/icons/Save'
+import TextField from '@material-ui/core/TextField'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import Breadcrumbs from 'components/Repository/elements/FileList/Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
@@ -37,30 +42,44 @@ class MarkdownEditor extends React.Component<Props, State>
                 <Breadcrumbs
                     repoRoot={this.props.repoRoot}
                     selectedFolder={filename}
+                    selectFile={this.props.selectFile}
                     classes={{ root: classes.breadcrumbs }}
                 />
 
                 <div className={classes.toolbar}>
-                    <div className={classes.toolbarSpacer}></div>
-                    <div>{modified ? 'modified' : null}</div>
-                    <Button onClick={this.onClickSave} color="secondary">Save</Button>
-                    <Button onClick={this.onClickClose} color="secondary">Close</Button>
+                    <IconButton
+                        onClick={this.onClickSave}
+                        disabled={modified}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+                    <IconButton onClick={this.onClickClose}>
+                        <CancelIcon />
+                    </IconButton>
                 </div>
 
                 <div className={classes.columnContainer}>
                     <div className={classes.textareaWrapper}>
-                        <textarea
-                            defaultValue={this.props.defaultContents || this.state.contents}
+                        <TextField
+                            multiline
+                            fullWidth
+                            variant="outlined"
+                            rows="40"
+                            defaultValue={this.state.contents}
                             onChange={this.onChangeText}
-                            ref={x => this._inputText = x}
+                            inputRef={x => this._inputText = x}
                         />
                     </div>
 
                     <div className={classes.renderedWrapper}>
-                        <RenderMarkdown
-                            text={this.state.contents}
-                            basePath={this.props.repoRoot || ''}
-                        />
+                        <Card>
+                            <CardContent>
+                                <RenderMarkdown
+                                    text={this.state.contents}
+                                    basePath={this.props.repoRoot || ''}
+                                />
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>
@@ -114,7 +133,7 @@ class MarkdownEditor extends React.Component<Props, State>
 
             this.setState({
                 loading: false,
-                contents: this.props.defaultContents || contents,
+                contents: contents,
                 contentsOnDisk: contents,
                 fileExistsOnDisk: true,
                 error: undefined,
@@ -145,12 +164,11 @@ const styles = (theme: Theme) => createStyles({
     root: {
         height: '100%',
         paddingBottom: 30,
+        marginRight: 32,
     },
     toolbar: {
         display: 'flex',
-    },
-    toolbarSpacer: {
-        flexGrow: 1,
+        justifyContent: 'flex-end',
     },
     columnContainer: {
         display: 'flex',
@@ -158,13 +176,10 @@ const styles = (theme: Theme) => createStyles({
     },
     textareaWrapper: {
         flexGrow: 1,
-        marginRight: 30,
-        maxWidth: 520,
         width: '50%',
+        marginRight: 30,
 
         '& textarea': {
-            width: '100%',
-            height: '100%',
             fontFamily: 'Consolas, Monaco, "Courier New", monospace',
             fontSize: '0.9rem',
         },
@@ -175,15 +190,6 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-// const mapStateToProps = (state: IGlobalState) => {
-//     const selected = state.repository.selectedRepo || ''
-//     const repoRoot = state.repository.repos[selected].path || ''
-//     return {
-//         repoRoot,
-//         filename: ,
-//     }
-// }
-
 const mapDispatchToProps = {
     selectFile,
 }
@@ -192,7 +198,3 @@ export default connect(
     null,
     mapDispatchToProps,
 )(withStyles(styles)(MarkdownEditor))
-
-// export default withStyles(styles)(MarkdownEditor)
-
-

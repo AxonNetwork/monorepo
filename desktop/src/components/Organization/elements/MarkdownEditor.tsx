@@ -105,11 +105,11 @@ const styles = (theme: Theme) => createStyles({
     root: {
         height: '100%',
         paddingBottom: 30,
+        marginRight: 64,
     },
     toolbar: {
         display: 'flex',
         justifyContent: 'flex-end',
-        marginRight: 64,
         marginBottom: 8,
     },
     toolbarSpacer: {
@@ -122,12 +122,9 @@ const styles = (theme: Theme) => createStyles({
     textareaWrapper: {
         flexGrow: 1,
         marginRight: 30,
-        maxWidth: 520,
         width: '50%',
 
         '& textarea': {
-            width: '100%',
-            height: '100%',
             fontFamily: 'Consolas, Monaco, "Courier New", monospace',
             fontSize: '0.9rem',
         },
@@ -135,7 +132,6 @@ const styles = (theme: Theme) => createStyles({
     renderedWrapper: {
         flexGrow: 1,
         width: '50%',
-        marginRight: 64,
     },
     buttonLoading: {
         color: theme.palette.secondary.main,

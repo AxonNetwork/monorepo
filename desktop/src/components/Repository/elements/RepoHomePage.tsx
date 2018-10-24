@@ -9,6 +9,8 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
+import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { connect } from 'react-redux'
@@ -60,7 +62,15 @@ class RepoHomePage extends React.Component<Props>
             <div className={classes.root}>
                 <div className={classnames(classes.readmeContainer, classes.box, { [classes.readmeContainerNoReadme]: !readmeExists })}>
                     {readmeExists &&
-                        <FileViewer filename={'README.md'} repoRoot={repo.path} />
+                        <React.Fragment>
+                            <FileViewer filename={'README.md'} repoRoot={repo.path} />
+                            <IconButton
+                                onClick={this.onClickAddReadme}
+                                className={classes.editReadmeButton}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </React.Fragment>
                     }
                     {!readmeExists &&
                         <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickAddReadme}>
@@ -231,6 +241,12 @@ const styles = (theme: Theme) => createStyles({
         maxWidth: 640,
         flexShrink: 1,
         flexGrow: 1,
+        position: 'relative',
+    },
+    editReadmeButton: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
     },
     readmeContainerNoReadme: {
         backgroundColor: '#f1f1f1',
