@@ -72,7 +72,7 @@ export enum UserActionType {
     MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
     MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
 
-    ADDED_ORG = 'ADDED_ORG'
+    ADDED_ORG = 'ADDED_ORG',
 }
 
 export interface ILoginAction {
@@ -261,7 +261,7 @@ export interface IFetchOrgsSuccessAction {
     type: UserActionType.FETCH_ORGS_SUCCESS
     payload: {
         userID: string,
-        orgs: string[] //orgIDs
+        orgs: string[], //orgIDs
     }
 }
 
@@ -325,9 +325,9 @@ export interface ISawCommentAction {
 export interface ISawCommentSuccessAction {
     type: UserActionType.SAW_COMMENT_SUCCESS
     payload: {
-        repoID: string | null
-        discussionID: string | null
-        commentTimestamp: number | null,
+        repoID: string
+        discussionID: string
+        commentTimestamp: number,
     }
 }
 
@@ -375,7 +375,7 @@ export interface IAddedOrgAction {
     type: UserActionType.ADDED_ORG
     payload: {
         userID: string
-        orgID: string
+        orgID: string,
     }
 }
 

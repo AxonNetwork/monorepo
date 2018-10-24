@@ -59,7 +59,7 @@ const styles = createStyles({
         alignItems: 'flex-end',
         flexGrow: 1,
         maxWidth: 510,
-        marginLeft: 100,
+        // marginLeft: 100,
         marginRight: 60,
     },
 })

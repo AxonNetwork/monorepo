@@ -138,13 +138,13 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             const { userID, orgs } = action.payload
             return {
                 ...state,
-                users:{
+                users: {
                     ...state.users,
-                    [userID]:{
+                    [userID]: {
                         ...state.users[userID],
-                        orgs: orgs
-                    }
-                }
+                        orgs: orgs,
+                    },
+                },
             }
         }
 
@@ -183,20 +183,15 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
 
         case UserActionType.SAW_COMMENT_SUCCESS: {
             const { repoID, discussionID, commentTimestamp } = action.payload
-            // If repoID/discussionID/commentID are null, it indicates that no actual update needs to occur.
-            if (repoID === null || discussionID === null || commentTimestamp === null) {
-                return state
-            } else {
-                return {
-                    ...state,
-                    newestViewedCommentTimestamp: {
-                        ...state.newestViewedCommentTimestamp,
-                        [repoID]: {
-                            ...(state.newestViewedCommentTimestamp[repoID] || {}),
-                            [discussionID]: commentTimestamp,
-                        },
+            return {
+                ...state,
+                newestViewedCommentTimestamp: {
+                    ...state.newestViewedCommentTimestamp,
+                    [repoID]: {
+                        ...(state.newestViewedCommentTimestamp[repoID] || {}),
+                        [discussionID]: commentTimestamp,
                     },
-                }
+                },
             }
         }
 
@@ -238,10 +233,10 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                         ...(state.users[userID] || {}),
                         orgs: [
                             ...((state.users[userID] || {}).orgs || []),
-                            orgID
-                        ]
-                    }
-                }
+                            orgID,
+                        ],
+                    },
+                },
             }
 
         }

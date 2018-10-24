@@ -60,8 +60,8 @@ const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccess
         const { repoID, discussionID, text, callback } = action.payload
         try {
             const comment = await ServerRelay.createComment(repoID, discussionID, text)
-            callback()
             dispatch(sawComment({ repoID, discussionID, commentTimestamp: comment.created }))
+            callback()
             return { comment }
         } catch (err) {
             callback(err)

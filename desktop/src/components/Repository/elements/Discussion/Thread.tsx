@@ -48,7 +48,9 @@ class Thread extends React.Component<Props, State>
                     mostRecentVisible = { commentID, created: this._commentRefs[commentID].created }
                 }
             }
-            this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentTimestamp: mostRecentVisible.created })
+            if (this.props.newestViewedCommentTimestamp < mostRecentVisible.created) {
+                this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentTimestamp: mostRecentVisible.created })
+            }
         }
         this._intervalID = setInterval(checkSeenComments, 5000)
         checkSeenComments()

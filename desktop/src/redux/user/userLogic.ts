@@ -201,17 +201,7 @@ const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
         const { repoID, discussionID, commentTimestamp } = action.payload
 
         await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentTimestamp)
-
-        const state = getState()
-        if (
-            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] !== undefined &&
-            (state.user.newestViewedCommentTimestamp[repoID] || {})[discussionID] >= commentTimestamp
-        ) {
-            // If we return nulls here, it indicates that no actual update occurred
-            return { repoID: null, discussionID: null, commentTimestamp: null }
-        } else {
-            return { repoID, discussionID, commentTimestamp }
-        }
+        return { repoID, discussionID, commentTimestamp }
     },
 })
 
