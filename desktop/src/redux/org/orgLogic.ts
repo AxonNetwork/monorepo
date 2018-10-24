@@ -1,5 +1,6 @@
 import { makeLogic } from '../reduxUtils'
 import { OrgActionType,
+    ICreateOrgAction, ICreateOrgSuccessAction,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
     IUpdateOrgAction, IUpdateOrgSuccessAction,
     IUploadOrgPictureAction, IUploadOrgPictureSuccessAction,
@@ -9,8 +10,20 @@ import { OrgActionType,
     IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction,
     IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction,
 } from './orgActions'
-import { fetchUserData } from '../user/userActions'
+import { fetchUserData, addedOrg } from '../user/userActions'
 import ServerRelay from 'lib/ServerRelay'
+
+const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
+    type: OrgActionType.CREATE_ORG,
+    async process({ action, getState }, dispatch){
+        const { name } = action.payload
+        const org = await ServerRelay.createOrg(name)
+        const userID = org.members[0]
+        const orgID = org.orgID
+        await dispatch(addedOrg({ userID, orgID }))
+        return { org }
+    }
+})
 
 const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAction>({
     type: OrgActionType.FETCH_ORG_INFO,
@@ -30,7 +43,6 @@ const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
         return { org }
     }
 })
-
 
 const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSuccessAction>({
     type: OrgActionType.UPLOAD_ORG_PICTURE,
@@ -96,6 +108,7 @@ const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChange
 
 
 export default [
+    createOrgLogic,
     fetchOrgInfoLogic,
     updateOrgLogic,
     uploadOrgPicture,

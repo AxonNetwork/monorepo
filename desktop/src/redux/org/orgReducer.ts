@@ -21,6 +21,19 @@ export interface IOrgState {
 
 const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgState => {
     switch(action.type){
+
+        case OrgActionType.CREATE_ORG_SUCCESS: {
+            const { org } = action.payload
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [org.orgID]: org
+                },
+                selectedOrg: org.orgID
+            }
+        }
+
         case OrgActionType.FETCH_ORG_INFO_SUCCESS:
         case OrgActionType.UPDATE_ORG_SUCCESS: {
             const { org } = action.payload

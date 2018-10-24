@@ -46,12 +46,16 @@ export enum OrgActionType {
 
 export interface ICreateOrgAction {
     type: OrgActionType.CREATE_ORG
-    payload: {}
+    payload: {
+        name: string
+    }
 }
 
 export interface ICreateOrgSuccessAction {
     type: OrgActionType.CREATE_ORG_SUCCESS
-    payload: {}
+    payload: {
+        org: IOrganization
+    }
 }
 
 export type ICreateOrgFailedAction = FailedAction<OrgActionType.CREATE_ORG_FAILED>

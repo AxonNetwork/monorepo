@@ -228,6 +228,24 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.ADDED_ORG: {
+            const { userID, orgID } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        orgs: [
+                            ...((state.users[userID] || {}).orgs || []),
+                            orgID
+                        ]
+                    }
+                }
+            }
+
+        }
+
         default:
             return state
     }

@@ -21,11 +21,12 @@ import OrgList from './OrgList'
 import { IRepo, IUser, IOrganization } from 'common'
 import { IGlobalState } from 'redux/store'
 import { selectRepo } from 'redux/repository/repoActions'
-import { selectOrg } from 'redux/org/orgActions'
+import { selectOrg, createOrg } from 'redux/org/orgActions'
 import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
 import autobind from 'utils/autobind'
 import UserAvatar from 'components/UserAvatar'
 import { keyBy } from 'lodash'
+
 
 @autobind
 class Sidebar extends React.Component<Props, State>
@@ -33,6 +34,7 @@ class Sidebar extends React.Component<Props, State>
     state = {
         repoOpen: true,
         orgOpen: true,
+        orgDialogOpen: false,
     }
 
     render() {
@@ -79,6 +81,7 @@ class Sidebar extends React.Component<Props, State>
                         <OrgList
                             orgs={this.props.orgs}
                             selectOrg={this.props.selectOrg}
+                            createOrg={this.props.createOrg}
                         />
                     </Collapse>
 
@@ -133,11 +136,14 @@ interface Props {
     currentPage: string
     orgs: {[orgID: string]: IOrganization}
     toggleSidebar: () => void
+
     selectRepo: typeof selectRepo
     selectOrg: typeof selectOrg
+    createOrg: typeof createOrg
     navigateNewRepo: typeof navigateNewRepo
     navigateSettings: typeof navigateSettings
     open: boolean
+
     classes: any
 }
 
@@ -230,6 +236,7 @@ const mapStateToProps = (state: IGlobalState) => {
 const mapDispatchToProps = {
     selectRepo,
     selectOrg,
+    createOrg,
     navigateNewRepo,
     navigateSettings,
 }

@@ -235,6 +235,11 @@ const ServerRelay = {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
 
+    async createOrg(name: string){
+        const response = await axios.post(API_URL + '/create-organization', { name })
+        return response.data as IOrganization
+    },
+
     async fetchOrgs(userID: string) {
         interface IResponse {
             orgs: string[]

@@ -71,6 +71,8 @@ export enum UserActionType {
     MODIFY_USER_EMAIL = 'MODIFY_USER_EMAIL',
     MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
     MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
+
+    ADDED_ORG = 'ADDED_ORG'
 }
 
 export interface ILoginAction {
@@ -369,6 +371,14 @@ export interface IModifyUserEmailSuccessAction {
 
 export type IModifyUserEmailFailedAction = FailedAction<UserActionType.MODIFY_USER_EMAIL_FAILED>
 
+export interface IAddedOrgAction {
+    type: UserActionType.ADDED_ORG
+    payload: {
+        userID: string
+        orgID: string
+    }
+}
+
 export type IUserAction =
     ILoginAction |
     ILoginSuccessAction |
@@ -437,7 +447,9 @@ export type IUserAction =
 
     IModifyUserEmailAction |
     IModifyUserEmailSuccessAction |
-    IModifyUserEmailFailedAction
+    IModifyUserEmailFailedAction |
+
+    IAddedOrgAction
 
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
@@ -463,4 +475,4 @@ export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAc
 export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
 export const modifyUserEmail = (payload: IModifyUserEmailAction['payload']): IModifyUserEmailAction => ({ type: UserActionType.MODIFY_USER_EMAIL, payload })
 
-
+export const addedOrg = (payload: IAddedOrgAction['payload']): IAddedOrgAction => ({ type: UserActionType.ADDED_ORG, payload })
