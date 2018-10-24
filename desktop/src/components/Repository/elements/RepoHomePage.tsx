@@ -85,11 +85,13 @@ class RepoHomePage extends React.Component<Props>
                 </div>
 
                 <div className={classes.boxes}>
-                    <Card className={classes.box}>
-                        <CardContent>
-                            <SecuredText />
-                        </CardContent>
-                    </Card>
+                    {commitList.length > 0 &&
+                        <Card className={classes.box}>
+                            <CardContent>
+                                <SecuredText />
+                            </CardContent>
+                        </Card>
+                    }
                     <Card className={classnames(classes.usersContainer, classes.box)}>
                         <CardContent>
                             <Typography variant="h6">Team</Typography>
