@@ -3,6 +3,8 @@ import { Theme, withStyles, createStyles } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import classnames from 'classnames'
 import Repositories from './elements/Repositories'
@@ -22,7 +24,7 @@ class OrganizationHomePage extends React.Component<Props>
                 <div className={classes.boxes}>
                     {org.readme.length === 0 &&
                         <div className={classes.noReadmeContainer}>
-                            <div className={classes.noReadmeContents} onClick={this.onClickAddReadme}>
+                            <div className={classes.noReadmeContents} onClick={this.onClickEditReadme}>
                                 <Typography className={classes.noReadmeText}>
                                     Click to add a welcome message for your team
                                 </Typography>
@@ -33,6 +35,12 @@ class OrganizationHomePage extends React.Component<Props>
                     }
                     {org.readme.length > 0 &&
                         <Card className={classes.readmeBox}>
+                            <IconButton
+                                onClick={this.onClickEditReadme}
+                                className={classes.editButton}
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
                             <CardContent>
                                 <RenderMarkdown
                                     text={org.readme}
@@ -48,9 +56,8 @@ class OrganizationHomePage extends React.Component<Props>
         )
     }
 
-    onClickAddReadme() {
+    onClickEditReadme() {
         this.props.navigateOrgPage({ orgPage: OrgPage.Editor })
-
     }
 }
 
@@ -75,7 +82,12 @@ const styles = (theme: Theme) => createStyles({
         marginRight: theme.spacing.unit * 3,
     },
     readmeBox: {
+        position: 'relative',
         marginBottom: theme.spacing.unit * 3,
+    },
+    editButton: {
+        position: 'absolute',
+        right: 0
     },
     membersBox: {
        minWidth: 350,

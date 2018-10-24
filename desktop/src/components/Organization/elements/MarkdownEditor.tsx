@@ -4,6 +4,9 @@ import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
+import CancelIcon from '@material-ui/icons/Cancel'
+import SaveIcon from '@material-ui/icons/Save'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import autobind from 'utils/autobind'
@@ -28,15 +31,16 @@ class MarkdownEditor extends React.Component<Props, State>
         return (
             <div className={classes.root}>
                 <div className={classes.toolbar}>
-                    <Button
+                    <IconButton
                         onClick={this.onClickSave}
-                        color="secondary"
                         disabled={isSaving || !modified}
                     >
-                        Save
+                        <SaveIcon />
                         {isSaving && <CircularProgress size={24} className={classes.buttonLoading} />}
-                    </Button>
-                    <Button onClick={this.onClickClose} color="secondary">Close</Button>
+                    </IconButton>
+                    <IconButton onClick={this.onClickClose}>
+                        <CancelIcon />
+                    </IconButton>
                 </div>
 
                 <div className={classes.columnContainer}>
