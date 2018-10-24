@@ -134,6 +134,7 @@ class Thread extends React.Component<Props>
 
         if (this._bottomDiv) {
             this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
+            setTimeout(() => this._inputComment.focus(), 1000)
         }
     }
 }

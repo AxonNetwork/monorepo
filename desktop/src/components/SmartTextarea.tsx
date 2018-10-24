@@ -17,12 +17,20 @@ class SmartTextarea extends React.Component<Props, State>
         position: 0,
     }
 
+    _inputTextarea: HTMLTextAreaElement | null = null
+
     getValue() {
         return this.state.comment
     }
 
     setValue(value: string) {
         this.setState({ comment: value })
+    }
+
+    focus() {
+        if (this._inputTextarea) {
+            this._inputTextarea.focus()
+        }
     }
 
     handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
@@ -108,7 +116,7 @@ class SmartTextarea extends React.Component<Props, State>
                     onChange={this.handleChange}
                     onKeyUp={this.handleKeyPress}
                     className={classes.textField}
-                    inputRef={this.props.inputRef}
+                    inputRef={x => this._inputTextarea = x}
                 />
                 <Menu
                     anchorEl={this.state.anchorEl}
@@ -149,7 +157,6 @@ interface Props {
     files: {[name: string]: IRepoFile} | undefined
     discussions: {[discussionID: string]: IDiscussion}
     onSubmit: () => void
-    inputRef?: React.Ref<any> | React.RefObject<any>
     classes: any
     rows?: number
     rowsMax?: number
