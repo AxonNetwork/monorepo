@@ -7,7 +7,7 @@ const initialState = {
     createRepoLoading: false,
     checkpointLoading: false,
     pullLoading: false,
-    orgSettingsLoading: false
+    updateOrgLoading: false,
 }
 
 export interface IUIState {
@@ -15,7 +15,7 @@ export interface IUIState {
     createRepoLoading: boolean
     checkpointLoading: boolean
     pullLoading: boolean
-    orgSettingsLoading: boolean
+    updateOrgLoading: boolean
 }
 
 const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
@@ -78,13 +78,14 @@ const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAct
         case OrgActionType.UPDATE_ORG:
             return {
                 ...state,
-                orgSettingsLoading: true
+                updateOrgLoading: true
             }
 
         case OrgActionType.UPDATE_ORG_SUCCESS:
+        case OrgActionType.UPDATE_ORG_FAILED:
             return {
                 ...state,
-                orgSettingsLoading: false
+                updateOrgLoading: false
             }
     }
 

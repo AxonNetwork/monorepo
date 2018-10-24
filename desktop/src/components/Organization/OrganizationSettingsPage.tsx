@@ -19,7 +19,7 @@ class OrganizationPage extends React.Component<Props>
     _inputOrgPicture: HTMLInputElement | null = null
 
     render(){
-        const { org, orgSettingsLoading, classes } = this.props
+        const { org, updateOrgLoading, classes } = this.props
         return(
             <div className={classes.settingsPage}>
                 <div className={classes.settings}>
@@ -46,11 +46,11 @@ class OrganizationPage extends React.Component<Props>
                         color="secondary"
                         variant="contained"
                         className={classes.button}
-                        disabled={orgSettingsLoading}
+                        disabled={updateOrgLoading}
                         onClick={this.onClickUpdateOrgSettings}
                     >
                         Update
-                        {orgSettingsLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
+                        {updateOrgLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                     </Button>
                 </div>
                 <div className={classes.imageContainer}>
@@ -93,7 +93,7 @@ class OrganizationPage extends React.Component<Props>
 
 interface Props {
     org: IOrganization
-    orgSettingsLoading: boolean
+    updateOrgLoading: boolean
     updateOrg: typeof updateOrg
     uploadOrgPicture: typeof uploadOrgPicture
     classes: any
@@ -135,10 +135,10 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     const selectedOrg = state.org.selectedOrg || ""
     const org = state.org.orgs[selectedOrg]
-    const orgSettingsLoading = state.ui.orgSettingsLoading
+    const updateOrgLoading = state.ui.updateOrgLoading
     return {
         org,
-        orgSettingsLoading,
+        updateOrgLoading,
     }
 }
 

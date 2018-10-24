@@ -4,6 +4,7 @@ import { IOrganization } from 'common'
 export enum OrgPage {
     Home,
     Settings,
+    Editor,
 }
 
 const initialState = {

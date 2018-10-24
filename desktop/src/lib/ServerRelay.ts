@@ -249,11 +249,12 @@ const ServerRelay = {
         return response.data as IOrganization
     },
 
-    async updateOrg(orgID: string, name: string, description: string) {
+    async updateOrg(orgID: string, name: string|undefined, description: string|undefined, readme: string|undefined) {
         const response = await axios.post(API_URL + '/update-organization', {
             orgID,
             name,
             description,
+            readme,
         })
 
         return response.data

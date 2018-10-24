@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Tabs from '../Tabs/Tabs'
 import OrganizationHomePage from './OrganizationHomePage'
 import OrganizationSettingsPage from './OrganizationSettingsPage'
+import OrganizationEditorPage from './OrganizationEditorPage'
 import { OrgPage } from 'redux/org/orgReducer'
 import { navigateOrgPage } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
@@ -49,10 +50,14 @@ class OrganizationPage extends React.Component<Props>
                 {orgPage === OrgPage.Home &&
                     <OrganizationHomePage
                         org={org}
+                        navigateOrgPage={this.props.navigateOrgPage}
                     />
                 }
                 {orgPage === OrgPage.Settings &&
                     <OrganizationSettingsPage />
+                }
+                {orgPage === OrgPage.Editor &&
+                    <OrganizationEditorPage />
                 }
            </div>
         )

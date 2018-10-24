@@ -23,8 +23,8 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
 const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
     type: OrgActionType.UPDATE_ORG,
     async process({ action}){
-        const { orgID, name, description } = action.payload
-        const org = await ServerRelay.updateOrg(orgID, name, description)
+        const { orgID, name, description, readme } = action.payload
+        const org = await ServerRelay.updateOrg(orgID, name, description, readme)
         return { org }
     }
 })
