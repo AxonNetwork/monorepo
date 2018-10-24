@@ -5,6 +5,8 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
+import Button from '@material-ui/core/Button'
+import FormHelperText from '@material-ui/core/FormHelperText'
 
 import { createComment } from 'redux/discussion/discussionActions'
 import { selectFile } from 'redux/repository/repoActions'
@@ -12,19 +14,23 @@ import { sawComment } from 'redux/user/userActions'
 import { IUser, IComment, IRepo, IDiscussion } from 'common'
 import autobind from 'utils/autobind'
 import { IGlobalState } from 'redux/store'
-import CommentWrapper from './CommentWrapper'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
-import CreateComment from './CreateComment'
+import SmartTextarea from 'components/SmartTextarea'
+import CommentWrapper from 'components/Repository/elements/Discussion/CommentWrapper'
 import checkVisible from 'utils/checkVisible'
 
 
 @autobind
-class Thread extends React.Component<Props>
+class Thread extends React.Component<Props, State>
 {
     _intervalID: any | undefined // Timer ID, can't get Typescript to accept this
     _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
     _inputComment!: any
     _bottomDiv: HTMLDivElement | null = null
+
+    state = {
+        createCommentError: undefined,
+    }
 
     componentDidMount() {
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
@@ -64,6 +70,14 @@ class Thread extends React.Component<Props>
             repoID: this.props.repo.repoID,
             discussionID: this.props.discussionID,
             text: comment,
+            callback: (err) => {
+                if (err) {
+                    this.setState({ createCommentError: err.toString() })
+                } else {
+                    this._inputComment.setValue('')
+                    this.setState({ createCommentError: undefined })
+                }
+            },
         })
     }
 
@@ -107,14 +121,28 @@ class Thread extends React.Component<Props>
                                 </CommentWrapper>
                             )
                         })}
-                        <CreateComment
-                            files={this.props.repo.files}
-                            discussions={this.props.discussions}
-                            onSubmit={this.onClickCreateComment}
+
+                        {/* Create comment form */}
+                        <CommentWrapper
                             username={this.props.username}
                             userPicture={this.props.userPicture}
-                            smartTextareaRef={(x: any) => this._inputComment = x}
-                        />
+                            created={new Date().getTime()}
+                        >
+                            {this.state.createCommentError &&
+                                <FormHelperText error className={classes.createCommentError}>{this.state.createCommentError}</FormHelperText>
+                            }
+                            <SmartTextarea
+                                placeholder="Write your comment"
+                                rows={3}
+                                innerRef={(x: any) => this._inputComment = x}
+                                files={this.props.repo.files}
+                                discussions={this.props.discussions}
+                                onSubmit={this.onClickCreateComment}
+                            />
+                            <Button color="secondary" variant="contained" onClick={this.onClickCreateComment}>
+                                Comment
+                            </Button>
+                        </CommentWrapper>
 
                         {/* this div is used for scrolling down to CreateComment when a user clicks 'reply' */}
                         <div ref={x => this._bottomDiv = x}></div>
@@ -163,6 +191,10 @@ interface DispatchProps {
     sawComment: typeof sawComment
 }
 
+interface State {
+    createCommentError: string | undefined
+}
+
 const styles = (theme: Theme) => createStyles({
     threadContainer: {
         position: 'relative',
@@ -193,6 +225,10 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'auto',
         flexGrow: 1,
         backgroundColor: '#f7f7f76b',
+    },
+    createCommentError: {
+        fontSize: '0.9rem',
+        fontWeight: 500,
     },
 })
 

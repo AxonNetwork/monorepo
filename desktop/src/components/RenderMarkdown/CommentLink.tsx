@@ -37,7 +37,7 @@ class CommentLink extends React.Component<Props, State>
                 <Popper
                     open={this.state.showPopper}
                     anchorEl={this._ref}
-                    placement="left"
+                    placement="right"
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
                     className={classes.popper}

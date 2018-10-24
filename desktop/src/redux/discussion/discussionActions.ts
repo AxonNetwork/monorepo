@@ -86,7 +86,8 @@ export interface ICreateCommentAction {
     payload: {
         repoID: string
         discussionID: string
-        text: string,
+        text: string
+        callback: (error?: Error) => void,
     }
 }
 

@@ -7,7 +7,7 @@ import { DiscussionActionType,
     ICreateCommentAction, ICreateCommentSuccessAction,
     selectDiscussion, getCommentsForDiscussion } from './discussionActions'
 import { navigateRepoPage } from 'redux/repository/repoActions'
-import { fetchUserData } from 'redux/user/userActions'
+import { fetchUserData, sawComment } from 'redux/user/userActions'
 import { RepoPage } from 'redux/repository/repoReducer'
 import { IDiscussion, IComment } from 'common'
 import ServerRelay from 'lib/ServerRelay'
@@ -56,10 +56,17 @@ const getCommentsForDiscussionLogic = makeLogic<IGetCommentsForDiscussionAction,
 
 const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccessAction>({
     type: DiscussionActionType.CREATE_COMMENT,
-    async process({ action }) {
-        const { repoID, discussionID, text } = action.payload
-        const comment = await ServerRelay.createComment(repoID, discussionID, text)
-        return { comment }
+    async process({ action }, dispatch) {
+        const { repoID, discussionID, text, callback } = action.payload
+        try {
+            const comment = await ServerRelay.createComment(repoID, discussionID, text)
+            callback()
+            dispatch(sawComment({ repoID, discussionID, commentTimestamp: comment.created }))
+            return { comment }
+        } catch (err) {
+            callback(err)
+            throw err
+        }
     },
 })
 
