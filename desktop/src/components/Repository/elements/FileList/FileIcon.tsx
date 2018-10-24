@@ -9,14 +9,15 @@ import PermMediaIcon from '@material-ui/icons/PermMedia'
 import FolderIcon from '@material-ui/icons/Folder'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
 
-export interface FileIconProps{
+interface FileIconProps {
     fileType: string
     status: string
     classes: any
 }
 
-function FileIcon(props: FileIconProps){
-    const { fileType, status, classes} = props
+// @@TODO: filetype standardization
+function FileIcon(props: FileIconProps) {
+    const { fileType, status, classes } = props
     let icon
     switch (fileType) {
         case 'data':

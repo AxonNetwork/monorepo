@@ -1,12 +1,13 @@
 
 
+// @@TODO: filetype standardization
 export default function getLanguage(ext: string) {
     switch (ext) {
     case 'js':
     case 'json':
         return 'javascript'
     case 'ts':
-    return 'typescript'
+        return 'typescript'
     case 'py':
         return 'python'
     case 'md':

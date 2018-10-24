@@ -21,6 +21,7 @@ class FileViewer extends React.Component<Props, State>
         const { filename, classes } = this.props
         const extension = path.extname(filename).toLowerCase().substring(1)
 
+        // @@TODO: filetype standardization
         switch (extension) {
         case 'md':
             return (

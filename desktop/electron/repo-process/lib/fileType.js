@@ -1,5 +1,6 @@
 const path = require('path');
 
+// @@TODO: filetype standardization
 function fileType(fileName) {
     const extension = path.extname(fileName).substr(1);
     switch (extension) {

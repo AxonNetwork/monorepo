@@ -50,9 +50,7 @@ class FileList extends React.Component<Props>
                                         repoRoot={this.props.repoRoot}
                                         key={name}
                                         selectFile={this.props.selectFile}
-                                        classes={{
-                                            tableRow: classes.tableRow,
-                                        }}
+                                        classes={{ tableRow: classes.tableRow }}
                                     />
                                 )
                             })

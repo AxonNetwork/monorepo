@@ -1,5 +1,6 @@
 import path from 'path'
 
+// @@TODO: filetype standardization
 function fileType(filename: string) {
     const extension = path.extname(filename).substr(1)
     switch (extension) {
