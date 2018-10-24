@@ -1,5 +1,7 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import BackupIcon from '@material-ui/icons/Backup'
+import Typography from '@material-ui/core/Typography'
 import { connect } from 'react-redux'
 import Timeline from './Timeline/Timeline'
 import CommitView from './CommitView'
@@ -16,7 +18,17 @@ class RepoHistoryPage extends React.Component<Props>
         if (repo === undefined) {
             return (
                 <div className={classes.timelinePage}>
-                    Loading...
+                    <Typography>Loading...</Typography>
+                </div>
+            )
+        }
+
+        if (!repo.commitList || repo.commitList.length === 0) {
+            return (
+                <div className={classes.timelinePage}>
+                    <Typography className={classes.noHistoryMessage}>
+                        This is the history view.  Right now, it's empty because nobody has committed any files to the repository.  Try adding some files and then committing them using the <BackupIcon /> button in the header.
+                    </Typography>
                 </div>
             )
         }
@@ -69,6 +81,24 @@ const styles = (theme: Theme) => createStyles({
         border: '1px solid',
         borderColor: theme.palette.grey[300],
         maxHeight: '90%',
+    },
+    noHistoryMessage: {
+        fontSize: '1.1rem',
+        color: '#9c9c9c',
+        maxWidth: 640,
+        margin: '0 auto',
+        background: '#f1f1f1',
+        padding: 20,
+        borderRadius: 10,
+        border: '3px solid #9c9c9c',
+        marginTop: 30,
+        textAlign: 'center',
+        lineHeight: '2rem',
+
+        '& svg': {
+            verticalAlign: 'text-bottom',
+            margin: '0 5px',
+        },
     },
 })
 
