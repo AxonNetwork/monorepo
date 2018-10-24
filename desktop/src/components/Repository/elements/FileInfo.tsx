@@ -26,7 +26,7 @@ class FileInfo extends React.Component<Props>
         }
 
         // @@TODO: filetype standardization
-        const extensions = [ '.md', '.markdown', '.mdown' ]
+        const extensions = [ '.md', '.markdown', '.mdown', '.txt' ]
         const canQuickEdit = extensions.includes(path.extname(this.props.file.name).toLowerCase())
 
         return (

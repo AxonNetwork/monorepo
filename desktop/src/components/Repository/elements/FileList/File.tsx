@@ -40,7 +40,7 @@ class File extends React.Component<Props>
 
     canQuickEdit() {
         // @@TODO: filetype standardization
-        const extensions = [ '.md', '.markdown', '.mdown' ]
+        const extensions = [ '.md', '.markdown', '.mdown', '.txt' ]
         return this.props.file.type !== 'folder' && extensions.includes(path.extname(this.props.file.name).toLowerCase())
     }
 
