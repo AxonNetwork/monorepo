@@ -13,6 +13,9 @@ class FileInfo extends React.Component<Props>
 {
     render() {
         const { classes, file } = this.props
+        if (!file) {
+            return <div>Loading...</div>
+        }
 
         return (
             <React.Fragment>
