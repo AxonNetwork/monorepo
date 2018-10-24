@@ -9,13 +9,15 @@ import { OrgActionType,
     IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction,
     IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction,
 } from './orgActions'
+import { fetchUserData } from '../user/userActions'
 import ServerRelay from 'lib/ServerRelay'
 
 const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAction>({
     type: OrgActionType.FETCH_ORG_INFO,
-    async process({ action}){
+    async process({ action}, dispatch){
         const { orgID } = action.payload
         const org = await ServerRelay.fetchOrgInfo(orgID)
+        await dispatch(fetchUserData({ userIDs: org.members }))
         return { org }
     }
 })

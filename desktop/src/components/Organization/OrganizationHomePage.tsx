@@ -19,10 +19,11 @@ class OrganizationHomePage extends React.Component<Props>
 {
     render(){
         const { org, classes } = this.props
+        const hasReadme = org.readme && org.readme.length > 0
         return(
             <div className={classes.organizationHomePage}>
                 <div className={classes.boxes}>
-                    {org.readme.length === 0 &&
+                    {!hasReadme &&
                         <div className={classes.noReadmeContainer}>
                             <div className={classes.noReadmeContents} onClick={this.onClickEditReadme}>
                                 <Typography className={classes.noReadmeText}>
@@ -33,7 +34,7 @@ class OrganizationHomePage extends React.Component<Props>
                             </div>
                         </div>
                     }
-                    {org.readme.length > 0 &&
+                    {hasReadme &&
                         <Card className={classes.readmeBox}>
                             <IconButton
                                 onClick={this.onClickEditReadme}
