@@ -34,7 +34,7 @@ class SharedUsers extends React.Component<Props, State>
         return (
             <Card className={classes.root}>
                 <CardContent>
-                    <Typography variant="h6">Shared Users</Typography>
+                    <Typography variant="h6">Collaborators</Typography>
                     <div>
                         {(repo.sharedUsers || []).map(userID => {
                             const user = users[userID] || {}
