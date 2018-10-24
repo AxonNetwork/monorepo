@@ -18,7 +18,7 @@ class OrganizationPage extends React.Component<Props>
     _inputDescription: HTMLInputElement | null = null
     _inputOrgPicture: HTMLInputElement | null = null
 
-    render(){
+    render() {
         const { org, updateOrgLoading, classes } = this.props
         return(
             <div className={classes.settingsPage}>
@@ -27,6 +27,7 @@ class OrganizationPage extends React.Component<Props>
                         Settings
                     </Typography>
                     <TextField
+                        key={org.orgID + ':1'}
                         label="Organization Name"
                         inputRef={ x => this._inputOrgName = x }
                         defaultValue={org.name}
@@ -34,6 +35,7 @@ class OrganizationPage extends React.Component<Props>
                         fullWidth
                     />
                     <TextField
+                        key={org.orgID + ':2'}
                         label="Description"
                         inputRef={ x => this._inputDescription = x }
                         defaultValue={org.description}
@@ -76,13 +78,13 @@ class OrganizationPage extends React.Component<Props>
 
     onClickUpdateOrgSettings() {
         const orgID = this.props.org.orgID
-        const name = this._inputOrgName !== null ? this._inputOrgName.value : ""
-        const description = this._inputDescription !== null ? this._inputDescription.value : ""
+        const name = this._inputOrgName !== null ? this._inputOrgName.value : ''
+        const description = this._inputDescription !== null ? this._inputDescription.value : ''
         this.props.updateOrg({ orgID, name, description })
     }
 
     onClickUploadOrgImage() {
-        if(this._inputOrgPicture === null){
+        if (this._inputOrgPicture === null) {
             return
         }
         const fileInput = this._inputOrgPicture
@@ -102,21 +104,21 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     settingsPage: {
         minWidth: 450,
-        maxWidth: 650
+        maxWidth: 650,
     },
     settings: {
     },
     imageContainer: {
         marginTop: theme.spacing.unit * 2,
         '& button': {
-            marginTop: theme.spacing.unit * 2
-        }
+            marginTop: theme.spacing.unit * 2,
+        },
     },
     header: {
-        marginBottom: theme.spacing.unit * 2
+        marginBottom: theme.spacing.unit * 2,
     },
     input: {
-        marginBottom: theme.spacing.unit * 2
+        marginBottom: theme.spacing.unit * 2,
     },
     buttonLoading: {
         color: theme.palette.secondary.main,
@@ -128,12 +130,12 @@ const styles = (theme: Theme) => createStyles({
     },
     orgPicture: {
         width: 100,
-        display: 'block'
+        display: 'block',
     },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const selectedOrg = state.org.selectedOrg || ""
+    const selectedOrg = state.org.selectedOrg || ''
     const org = state.org.orgs[selectedOrg]
     const updateOrgLoading = state.ui.updateOrgLoading
     return {
