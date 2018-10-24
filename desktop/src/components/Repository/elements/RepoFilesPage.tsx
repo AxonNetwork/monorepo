@@ -8,7 +8,6 @@ import { IGlobalState } from 'redux/store'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
     selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
 import { RepoPage } from 'redux/repository/repoReducer'
-import { getFirstVerifiedEvent, getLastVerifiedEvent } from 'utils/timeline'
 import autobind from 'utils/autobind'
 import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
 
@@ -32,15 +31,11 @@ class RepoFilesPage extends React.Component<Props>
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
             if (!selectedFile.editing) {
                 const relPath = selectedFile.file.replace(repo.path + '/', '')
-                const lastVerified = getLastVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
-                const firstVerified = getFirstVerifiedEvent(repo.commitList || [], repo.commits || {}, relPath)
                 return (
                     <div className={classes.fileInfoContainer}>
                         <FileInfo
                             file={files[relPath]}
                             repoRoot={repo.path}
-                            firstVerified={firstVerified}
-                            lastVerified={lastVerified}
                         />
                     </div>
                 )

@@ -1,8 +1,9 @@
 import React from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import LinkIcon from '@material-ui/icons/Link'
 import DiffViewer from './DiffViewer/DiffViewer'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import UserAvatar from 'components/UserAvatar'
@@ -12,6 +13,7 @@ import { IGetDiffAction, ISelectCommitAction } from 'redux/repository/repoAction
 import { ITimelineEvent, IUser } from 'common'
 import { removeEmail, extractEmail } from 'utils'
 import autobind from 'utils/autobind'
+import SecuredText from './FileInfo/SecuredText';
 
 @autobind
 class CommitView extends React.Component<Props>
@@ -38,18 +40,33 @@ class CommitView extends React.Component<Props>
         const diffs = commit.diffs || {}
         return (
             <div>
-                <Typography>
-                    Location: <span className={classes.breadcrumbRoot} onClick={this.onClickBack}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
-                </Typography>
-                <Typography variant="headline">
-                    {/*Revision <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>*/}
-                    {commit.message}
-                </Typography>
-                <div className={classes.commitInfo}>
-                    <UserAvatar className={classes.userAvatar} username={this.props.username} userPicture={this.props.userPicture} />
+                <div className={classes.commitHeader}>
+                    <div className={classes.commitInfoContainer}>
+                        <Typography>
+                            Location: <span className={classes.breadcrumbRoot} onClick={this.onClickBack}>History</span> / <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>
+                        </Typography>
+                        <Typography variant="headline">
+                            {/*Revision <code className={classes.titleCommitHash}>{(commit.commit || '').substring(0, 8)}</code>*/}
+                            {commit.message}
+                        </Typography>
+                        <div className={classes.commitInfo}>
+                            {commit.verified !== undefined &&
+                                <div className={classes.linkIconContainer}>
+                                    <LinkIcon classes={{root: classes.linkIcon}}/>
+                                </div>
+                            }
+                            <UserAvatar className={classes.userAvatar} username={this.props.username} userPicture={this.props.userPicture} />
+                            <div>
+                                <Typography>{commit.user}</Typography>
+                                <Typography>{moment(commit.time).calendar()}</Typography>
+                            </div>
+                        </div>
+                    </div>
                     <div>
-                        <Typography>{commit.user}</Typography>
-                        <Typography>{moment(commit.time).calendar()}</Typography>
+                        <SecuredText
+                            commit={commit.commit}
+                            classes={{ root: classes.securedText }}
+                        />
                     </div>
                 </div>
 
@@ -95,9 +112,32 @@ interface DispatchProps {
     createDiscussion: typeof createDiscussion
 }
 
-const styles = () => createStyles({
+const styles = (theme: Theme)=> createStyles({
+    commitHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+    commitInfoContainer: {
+        flexGrow: 1
+    },
+    securedText: {
+        textAlign: 'right'
+    },
     file: {
         padding: '30px 12px',
+    },
+    linkIcon: {
+        fontSize: 16,
+    },
+    linkIconContainer:{
+        position: 'absolute',
+        top: 0,
+        left: 26,
+        borderRadius: '50%',
+        width: 16,
+        height: 16,
+        backgroundColor: theme.palette.secondary.main,
+        color: 'white',
     },
     breadcrumbRoot: {
         color: '#fd6314', //theme.palette.secondary.main,
@@ -111,6 +151,7 @@ const styles = () => createStyles({
     },
     commitInfo: {
         display: 'flex',
+        position: 'relative',
         marginBottom: 24,
     },
     startDiscussionSectionWrapper: {

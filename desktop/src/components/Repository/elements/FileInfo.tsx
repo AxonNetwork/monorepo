@@ -8,7 +8,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import { selectFile } from 'redux/repository/repoActions'
 import Breadcrumbs from './FileList/Breadcrumbs'
-import { IRepoFile, ITimelineEvent } from 'common'
+import { IRepoFile } from 'common'
 import autobind from 'utils/autobind'
 import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
@@ -41,9 +41,8 @@ class FileInfo extends React.Component<Props>
                     </div>
                     <SecuredText
                         lastUpdated={this.props.file.modified}
-                        firstVerified={this.props.firstVerified}
-                        lastVerified={this.props.lastVerified}
                         classes={{ root: classes.securedText }}
+                        file={file.name}
                     />
                 </div>
 
@@ -100,8 +99,6 @@ class FileInfo extends React.Component<Props>
 
 interface Props {
     file: IRepoFile
-    firstVerified?: ITimelineEvent
-    lastVerified?: ITimelineEvent
     repoRoot: string
 
     selectFile: typeof selectFile

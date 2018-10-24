@@ -22,6 +22,7 @@ import { RepoPage } from 'redux/repository/repoReducer'
 import FileViewer from './FileViewer'
 import UserAvatar from 'components/UserAvatar'
 import Timeline from './Timeline/Timeline'
+import SecuredText from './FileInfo/SecuredText'
 
 import autobind from 'utils/autobind'
 
@@ -84,6 +85,11 @@ class RepoHomePage extends React.Component<Props>
                 </div>
 
                 <div className={classes.boxes}>
+                    <Card className={classes.box}>
+                        <CardContent>
+                            <SecuredText />
+                        </CardContent>
+                    </Card>
                     <Card className={classnames(classes.usersContainer, classes.box)}>
                         <CardContent>
                             <Typography variant="h6">Team</Typography>
