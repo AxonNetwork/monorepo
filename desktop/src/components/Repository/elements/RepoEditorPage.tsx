@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { IGlobalState } from 'redux/store'
@@ -258,4 +258,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoEditorPage))
+)(withStyles(styles)(RepoEditorPage))*/

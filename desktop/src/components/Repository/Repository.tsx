@@ -6,7 +6,7 @@ import RepoInfo from './elements/RepoInfo'
 import RepoHomePage from './elements/RepoHomePage'
 import RepoFilesPage from './elements/RepoFilesPage'
 import RepoHistoryPage from './elements/RepoHistoryPage'
-import RepoEditorPage from './elements/RepoEditorPage'
+// import RepoEditorPage from './elements/RepoEditorPage'
 import RepoDiscussionPage from './elements/RepoDiscussionPage'
 import RepoSettingsPage from './elements/RepoSettingsPage'
 import autobind from 'utils/autobind'
@@ -32,9 +32,9 @@ class Repository extends React.Component<Props>
                         {this.props.repoPage === RepoPage.Files &&
                             <RepoFilesPage />
                         }
-                        {this.props.repoPage === RepoPage.Manuscript &&
+                        {/*this.props.repoPage === RepoPage.Manuscript &&
                             <RepoEditorPage />
-                        }
+                        */}
                         {this.props.repoPage === RepoPage.History &&
                             <RepoHistoryPage />
                         }

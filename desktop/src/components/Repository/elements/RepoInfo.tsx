@@ -44,14 +44,14 @@ class RepoInfo extends React.Component<Props>
                     pages={[
                         [RepoPage.Home, 'Home'],
                         [RepoPage.Files, 'Files'],
-                        [RepoPage.Manuscript, 'Manuscript'],
+                        // [RepoPage.Manuscript, 'Manuscript'],
                         [RepoPage.History, 'History'],
                         [RepoPage.Discussion, 'Discussion'],
-                        [RepoPage.Settings, 'Settings']
+                        [RepoPage.Settings, 'Settings'],
 
                     ]}
                     activePage={this.props.repoPage}
-                    onTabSelect={(repoPage: RepoPage) => this.props.navigateRepoPage({ repoPage })}
+                    onTabSelect={(repoPage: RepoPage) => { this.props.navigateRepoPage({ repoPage }) }}
                     menuLabelsHidden={this.props.menuLabelsHidden}
                 />
             </div >
