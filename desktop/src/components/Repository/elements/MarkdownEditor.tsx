@@ -42,14 +42,13 @@ class MarkdownEditor extends React.Component<Props, State>
                 <Breadcrumbs
                     repoRoot={this.props.repoRoot}
                     selectedFolder={filename}
-                    selectFile={this.props.selectFile}
                     classes={{ root: classes.breadcrumbs }}
                 />
 
                 <div className={classes.toolbar}>
                     <IconButton
                         onClick={this.onClickSave}
-                        disabled={modified}
+                        disabled={!modified}
                     >
                         <SaveIcon />
                     </IconButton>
