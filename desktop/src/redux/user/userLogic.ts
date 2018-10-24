@@ -73,7 +73,7 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
         const inRedux = Object.keys(getState().user.users)
         const toFetch = action.payload.userIDs.filter(id => !inRedux.includes(id))
         if (toFetch.length <= 0) {
-            return { users: [] }
+            return { users: {} }
         }
         const userList = await ServerRelay.fetchUsers(toFetch)
 

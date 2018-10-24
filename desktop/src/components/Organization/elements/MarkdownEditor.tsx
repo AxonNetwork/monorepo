@@ -3,7 +3,6 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
 import SaveIcon from '@material-ui/icons/Save'
@@ -17,10 +16,10 @@ class MarkdownEditor extends React.Component<Props, State>
 {
     _inputText: HTMLTextAreaElement | null = null
 
-    constructor(props: Props){
+    constructor(props: Props) {
         super(props)
         this.state = {
-            contents: props.defaultContents || ""
+            contents: props.defaultContents || '',
         }
     }
 

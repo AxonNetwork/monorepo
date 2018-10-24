@@ -23,18 +23,15 @@ class FileList extends React.Component<Props>
         const names = sortFolders(files)
         return (
             <React.Fragment>
-                <Breadcrumbs
-                    repoRoot={this.props.repoRoot}
-                    selectedFolder={selectedFolder}
-                    selectFile={this.props.selectFile}
-                />
+                <Breadcrumbs repoRoot={this.props.repoRoot} selectedFolder={selectedFolder} />
+
                 {names.length === 0 &&
                     <div className={classes.emptyRepoText}>
                         <Typography>There's nothing here yet.</Typography>
                         <Typography>
                             <span>Start by adding files to your </span>
                             <a href="#"
-                                onClick={()=>shell.openItem(this.props.repoRoot)}
+                                onClick={() => shell.openItem(this.props.repoRoot)}
                                 className={classes.link}
                             >
                                 Repository Folder
@@ -70,7 +67,7 @@ class FileList extends React.Component<Props>
 interface Props {
     repoRoot: string
     files: {[name: string]: IRepoFile}
-    selectedFolder: string|undefined
+    selectedFolder: string | undefined
     selectFile: Function
     classes: any
 }
@@ -93,12 +90,12 @@ const styles = (theme: Theme) => createStyles({
     emptyRepoText: {
         marginTop: theme.spacing.unit * 2,
         '& p': {
-            marginTop: theme.spacing.unit * 2
-        }
+            marginTop: theme.spacing.unit * 2,
+        },
     },
     link: {
-        color: theme.palette.secondary.main
-    }
+        color: theme.palette.secondary.main,
+    },
 })
 
 export default withStyles(styles)(FileList)

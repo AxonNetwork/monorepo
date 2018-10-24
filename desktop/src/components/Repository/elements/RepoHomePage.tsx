@@ -27,30 +27,29 @@ import autobind from 'utils/autobind'
 @autobind
 class RepoHomePage extends React.Component<Props>
 {
+    renderLoadingSpinner() {
+        const { classes } = this.props
+        return (
+            <div className={classes.loadingWrapper}>
+                <CircularProgress size={100} className={classes.loading} />
+            </div>
+        )
+    }
+
     render() {
         const { repo, classes } = this.props
 
-        let loading = false
         if (repo === undefined) {
-            loading = true
+            return this.renderLoadingSpinner()
         } else if (!repo.sharedUsers || repo.sharedUsers.length === 0) {
-            loading = true
+            return this.renderLoadingSpinner()
         } else {
             // @@TODO: this is probably horrible for performance in the render() function
             for (let userID of (repo.sharedUsers || [])) {
                 if (!this.props.users[userID]) {
-                    loading = true
-                    break
+                    return this.renderLoadingSpinner()
                 }
             }
-        }
-
-        if (loading) {
-            return (
-                <div className={classes.loadingWrapper}>
-                    <CircularProgress size={100} className={classes.loading} />
-                </div>
-            )
         }
 
         const commitList = (repo.commitList || []).slice(0, 5)

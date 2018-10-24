@@ -1,14 +1,13 @@
+import fs from 'fs'
+import path from 'path'
 import React from 'react'
-import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
-// import { IGlobalState } from 'redux/store'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import Breadcrumbs from 'components/Repository/elements/FileList/Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
 import autobind from 'utils/autobind'
-import fs from 'fs'
-import path from 'path'
 
 
 @autobind
