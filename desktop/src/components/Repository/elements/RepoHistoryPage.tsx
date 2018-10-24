@@ -27,7 +27,7 @@ class RepoHistoryPage extends React.Component<Props>
             return (
                 <div className={classes.timelinePage}>
                     <Typography className={classes.noHistoryMessage}>
-                        This is the history view.  Right now, it's empty because nobody has committed any files to the repository.  Try adding some files and then committing them using the <BackupIcon /> button in the header.
+                        This is the history view.  Right now, it's empty because nobody has committed any files to the repository.<br/><br/>Add some files and then commit them using the <BackupIcon /> button above.
                     </Typography>
                 </div>
             )
