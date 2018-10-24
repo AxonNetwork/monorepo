@@ -1,12 +1,20 @@
+import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import EditIcon from '@material-ui/icons/Edit'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import { selectFile } from 'redux/repository/repoActions'
 import Breadcrumbs from './FileList/Breadcrumbs'
 import { IRepoFile, ITimelineEvent } from 'common'
 import autobind from 'utils/autobind'
 import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import FileViewer from './FileViewer'
+const shell = (window as any).require('electron').shell
+
 
 @autobind
 class FileInfo extends React.Component<Props>
@@ -17,14 +25,20 @@ class FileInfo extends React.Component<Props>
             return <div>Loading...</div>
         }
 
+        // @@TODO: filetype standardization
+        const extensions = [ '.md', '.markdown', '.mdown' ]
+        const canQuickEdit = extensions.includes(path.extname(this.props.file.name).toLowerCase())
+
         return (
             <React.Fragment>
                 <div className={classes.headerContainer}>
-                    <Breadcrumbs
-                        repoRoot={this.props.repoRoot}
-                        selectedFolder={file.name}
-                        classes={{ root: classes.breadcrumbs }}
-                    />
+                    <div className={classes.headerLeft}>
+                        <Breadcrumbs
+                            repoRoot={this.props.repoRoot}
+                            selectedFolder={file.name}
+                            classes={{ root: classes.breadcrumbs }}
+                        />
+                    </div>
                     <SecuredText
                         lastUpdated={this.props.file.modified}
                         firstVerified={this.props.firstVerified}
@@ -36,6 +50,16 @@ class FileInfo extends React.Component<Props>
                 <div className={classes.infoContainer}>
 
                     <div className={classes.fileViewerContainer}>
+                        <div className={classes.fileViewerToolbar}>
+                            {canQuickEdit &&
+                            <Button mini color="secondary" aria-label="Quick edit" className={classes.toolbarButton} onClick={this.onClickQuickEdit}>
+                                <EditIcon /> Quick edit
+                            </Button>
+                            }
+                            <Button mini color="secondary" aria-label="Open" className={classes.toolbarButton} onClick={this.onClickOpen}>
+                                <OpenInNewIcon /> Open
+                            </Button>
+                        </div>
                         <FileViewer filename={file.name} repoRoot={this.props.repoRoot} />
                     </div>
 
@@ -64,6 +88,14 @@ class FileInfo extends React.Component<Props>
             </React.Fragment>
         )
     }
+
+    onClickQuickEdit() {
+        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, editing: true } })
+    }
+
+    onClickOpen() {
+        shell.openItem(path.join(this.props.repoRoot, this.props.file.name))
+    }
 }
 
 interface Props {
@@ -71,6 +103,9 @@ interface Props {
     firstVerified?: ITimelineEvent
     lastVerified?: ITimelineEvent
     repoRoot: string
+
+    selectFile: typeof selectFile
+
     classes: any
 }
 
@@ -78,8 +113,10 @@ const styles = (theme: Theme) => createStyles({
     headerContainer: {
         display: 'flex',
     },
-    breadcrumbs: {
+    headerLeft: {
         flexGrow: 1,
+    },
+    breadcrumbs: {
     },
     securedText: {
         textAlign: 'right',
@@ -129,6 +166,22 @@ const styles = (theme: Theme) => createStyles({
         maxWidth: 720,
         flexGrow: 1,
     },
+    fileViewerToolbar: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+    toolbarButton: {
+        margin: 0,
+        padding: '0 8px',
+    },
 })
 
-export default withStyles(styles)(FileInfo)
+const mapDispatchToProps = {
+    selectFile,
+}
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(withStyles(styles)(FileInfo))
+

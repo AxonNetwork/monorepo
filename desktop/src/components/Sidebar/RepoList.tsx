@@ -5,7 +5,6 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
-import Divider from '@material-ui/core/Divider'
 
 import { IRepo } from 'common'
 import autobind from 'utils/autobind'
@@ -46,7 +45,6 @@ class RepoList extends React.Component<Props>
                                     <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                 }
                                 </ListItem>
-                                <Divider />
                             </React.Fragment>
                         )
                     })
@@ -58,7 +56,7 @@ class RepoList extends React.Component<Props>
 
 interface Props {
     repos: {[folderPath: string]: IRepo}
-    selectedRepo?: string|null
+    selectedRepo?: string | null
     currentPage: string
     selectRepo: Function
     classes: any

@@ -73,7 +73,8 @@ class Sidebar extends React.Component<Props, State>
                             selectRepo={this.props.selectRepo}
                         />
                     </Collapse>
-                    <ListItem button onClick={this.onClickExpandOrganizations} className={classes.sidebarItemText}>
+
+                    <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
                         <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         {this.state.orgOpen ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
@@ -194,6 +195,9 @@ const styles = (theme: Theme) => createStyles({
     sidebarItemText: {
         color: 'rgb(212, 212, 212)',
     },
+    sidebarItemTextOrganizations: {
+        marginTop: 20,
+    },
     sidebarItemIconWrapper: {
         '& svg': {
             fill: 'rgb(212, 212, 212)',
@@ -222,8 +226,8 @@ const mapStateToProps = (state: IGlobalState) => {
     const orgIDs = user.orgs || []
     const orgList = orgIDs
         .filter((id: string) => state.org.orgs[id] !== undefined)
-        .map((id: string) => state.org.orgs[id]||{})
-    const orgs = keyBy(orgList, "orgID")
+        .map((id: string) => state.org.orgs[id] || {})
+    const orgs = keyBy(orgList, 'orgID')
     return {
         repos: state.repository.repos,
         selectedRepo: state.repository.selectedRepo,

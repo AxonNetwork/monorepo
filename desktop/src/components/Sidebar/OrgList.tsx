@@ -4,11 +4,11 @@ import { createStyles, withStyles, Theme } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import Divider from '@material-ui/core/Divider'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
+import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import { IOrganization } from 'common'
@@ -18,7 +18,7 @@ import autobind from 'utils/autobind'
 @autobind
 class OrgList extends React.Component<Props, State>
 {
-    state={
+    state = {
         dialogOpen: false,
     }
 
@@ -43,7 +43,6 @@ class OrgList extends React.Component<Props, State>
                                     >
                                         <ListItemText primary={org.name} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                     </ListItem>
-                                    <Divider />
                                 </React.Fragment>
                             )
                         })
@@ -76,7 +75,6 @@ class OrgList extends React.Component<Props, State>
                     </DialogActions>
                 </Dialog>
             </React.Fragment>
-
         )
     }
 
@@ -89,7 +87,7 @@ class OrgList extends React.Component<Props, State>
     }
 
     onClickCreateOrganization() {
-        if(this._inputName !== null && this._inputName.value !== undefined){
+        if (this._inputName !== null && this._inputName.value !== undefined) {
             const name = this._inputName.value
             this.props.createOrg({ name })
         }
@@ -100,7 +98,7 @@ class OrgList extends React.Component<Props, State>
 
 interface Props {
     orgs: {[orgID: string]: IOrganization}
-    selectedOrg?: string|null
+    selectedOrg?: string | null
     selectOrg: Function
     createOrg: Function
     classes: any
@@ -124,8 +122,8 @@ const styles = (theme: Theme) => createStyles({
         color: 'rgb(212, 212, 212)',
     },
     dialog: {
-        minWidth: 350
-    }
+        minWidth: 350,
+    },
 })
 
 export default withStyles(styles)(OrgList)

@@ -24,6 +24,8 @@ class FileViewer extends React.Component<Props, State>
         // @@TODO: filetype standardization
         switch (extension) {
         case 'md':
+        case 'mdown':
+        case 'markdown':
             return (
                 <Card>
                     <CardContent classes={{ root: classes.mdRoot }}>
