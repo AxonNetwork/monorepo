@@ -16,16 +16,16 @@ import autobind from 'utils/autobind'
 
 
 @autobind
-class Repositories extends React.Component<Props>
+class RepositoryCard extends React.Component<Props>
 {
-    render(){
+    render() {
         const { repo, numDiscussions, classes } = this.props
-        if(!repo){
+        if (!repo) {
             return null
         }
         const numFiles = Object.keys(repo.files || {}).length
-        const lastCommitHash = repo.commitList ? repo.commitList[0] : ""
-        const lastCommit = (repo.commits || {})[lastCommitHash || ""] || {}
+        const lastCommitHash = repo.commitList ? repo.commitList[0] : ''
+        const lastCommit = (repo.commits || {})[lastCommitHash || ''] || {}
         const lastUpdated = lastCommit.time
 
         return(
@@ -37,7 +37,7 @@ class Repositories extends React.Component<Props>
                     <Typography variant="h6">{repo.repoID}</Typography>
                     {lastUpdated &&
                         <Typography className={classes.lastUpdated}>
-                            {"Last updated " + moment(lastUpdated).fromNow()}
+                            {'Last updated ' + moment(lastUpdated).fromNow()}
                         </Typography>
                     }
                     {!lastUpdated &&
@@ -114,19 +114,20 @@ const styles = (theme: Theme) => createStyles({
         borderColor: theme.palette.grey[300],
         borderRadius: 5,
         marginRight: theme.spacing.unit * 3,
+        marginBottom: theme.spacing.unit * 3,
         cursor: 'pointer',
-        '&:hover':{
-            backgroundColor: theme.palette.grey[100]
-        }
+        '&:hover': {
+            backgroundColor: theme.palette.grey[100],
+        },
     },
     lastUpdated: {
-        fontStyle: 'italic'
+        fontStyle: 'italic',
     },
     statButtons: {
         display: 'flex',
         justifyContent: 'flex-end',
-        margin: '32px -20px -24px'
-    }
+        margin: '32px -20px -24px',
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
@@ -134,7 +135,7 @@ const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
     const repoPath = Object.keys(repos).find((path: string) => (
         repos[path].repoID === props.repoID
     ))
-    const repo = repos[repoPath || ""]
+    const repo = repos[repoPath || '']
     const numDiscussions = (state.discussion.discussionsByRepo[props.repoID] || []).length
     return {
         repo,
@@ -150,4 +151,4 @@ const mapDispatchToProps = {
 export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(Repositories))
+)(withStyles(styles)(RepositoryCard))

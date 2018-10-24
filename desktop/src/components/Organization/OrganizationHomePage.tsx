@@ -17,7 +17,7 @@ import { OrgPage } from 'redux/org/orgReducer'
 @autobind
 class OrganizationHomePage extends React.Component<Props>
 {
-    render(){
+    render() {
         const { org, classes } = this.props
         const hasReadme = org.readme && org.readme.length > 0
         return(
@@ -77,7 +77,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 2,
-        marginRight: 128,
+        marginRight: 30,
     },
     box: {
         marginRight: theme.spacing.unit * 3,
@@ -88,12 +88,12 @@ const styles = (theme: Theme) => createStyles({
     },
     editButton: {
         position: 'absolute',
-        right: 0
+        right: 0,
     },
     membersBox: {
-       minWidth: 350,
-       flexGrow: 1,
-        marginRight: theme.spacing.unit * 6,
+        minWidth: 260,
+        flexGrow: 1,
+        // marginRight: theme.spacing.unit * 6,
     },
     noReadmeContainer: {
         backgroundColor: '#f1f1f1',

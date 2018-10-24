@@ -23,11 +23,11 @@ import autobind from 'utils/autobind'
 @autobind
 class Repositories extends React.Component<Props, State>
 {
-    state={
-        dialogOpen: false
+    state = {
+        dialogOpen: false,
     }
 
-    render(){
+    render() {
         const { reposToAdd, org, classes } = this.props
         return(
             <React.Fragment>
@@ -37,9 +37,7 @@ class Repositories extends React.Component<Props, State>
                     </div>
                     <div className={classes.repoCards}>
                         {org.repos.map(id =>
-                            <RepositoryCard
-                                repoID={id}
-                            />
+                            <RepositoryCard repoID={id} />,
                         )}
                         <Card className={classes.newRepoCard}>
                             <Button
@@ -63,7 +61,7 @@ class Repositories extends React.Component<Props, State>
                                 return(
                                     <ListItem
                                         button
-                                        onClick={()=>this.onClickAddRepo(repoID)}
+                                        onClick={() => this.onClickAddRepo(repoID)}
                                     >
                                         <ListItemText primary={repoID} />
                                     </ListItem>
@@ -121,26 +119,28 @@ const styles = (theme: Theme) => createStyles({
     root: {}, // pass through styles
     header: {
         display: 'flex',
-        marginBottom: theme.spacing.unit * 2
+        marginBottom: theme.spacing.unit * 2,
     },
     repoCards: {
-        display: 'flex'
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     newRepoCard: {
         padding: 0,
-        width: 100
+        width: 100,
+        marginBottom: 24,
     },
     newRepoButton: {
         height: '100%',
         width: '100%',
         border: '1px solid',
         borderColor: theme.palette.grey[300],
-    }
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
     const repos = state.repository.repos
-    const org = state.org.orgs[state.org.selectedOrg || ""] || {}
+    const org = state.org.orgs[state.org.selectedOrg || ''] || {}
     const reposToAdd = Object.keys(repos)
         // repo is not already part of org
         .filter((path: string) => org.repos.indexOf(repos[path].repoID) < 0)
