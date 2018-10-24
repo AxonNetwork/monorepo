@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import BackupIcon from '@material-ui/icons/Backup'
 import SyncIcon from '@material-ui/icons/Sync'
+import FolderIcon from '@material-ui/icons/Folder'
 import Tooltip from '@material-ui/core/Tooltip'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -16,6 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { IRepo } from 'common'
 import { pullRepo, checkpointRepo } from 'redux/repository/repoActions'
 import autobind from 'utils/autobind'
+const shell = (window as any).require('electron').shell
 
 
 @autobind
@@ -40,7 +42,7 @@ class PushPullButtons extends React.Component<Props, State>
                 <Tooltip title="Download the latest work from the group">
                     <IconButton
                         color="secondary"
-                        classes={{ root: [classes.button, classes.buttonPull].join(' ') }}
+                        classes={{ root: classes.button }}
                         disabled={!repo.behindRemote || pullLoading}
                         onClick={this.onClickPull}
                     >
@@ -58,6 +60,17 @@ class PushPullButtons extends React.Component<Props, State>
                     >
                         {!checkpointLoading && <BackupIcon className={classes.icon} />}
                         {checkpointLoading  && <CircularProgress size={24} className={classes.buttonLoading} />}
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Open this folder on your computer">
+                    <IconButton
+                        color="secondary"
+                        classes={{ root: classes.button }}
+                        disabled={false}
+                        onClick={this.onClickOpenFolder}
+                    >
+                        <FolderIcon className={classes.icon} />
                     </IconButton>
                 </Tooltip>
 
@@ -103,6 +116,10 @@ class PushPullButtons extends React.Component<Props, State>
         this.props.checkpointRepo({ folderPath: this.props.repo.path, repoID: this.props.repo.repoID, message })
         this.setState({ pushDialogOpen: false })
     }
+
+    onClickOpenFolder() {
+        shell.openItem(this.props.repo.path)
+    }
 }
 
 
@@ -125,8 +142,6 @@ const styles = (theme: Theme) => createStyles({
     root: {}, // overridable
     button: {
         padding: 4,
-    },
-    buttonPull: {
         marginRight: 16,
     },
     icon: {
