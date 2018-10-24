@@ -3,7 +3,7 @@ import { NavigationActionType, INavigationAction } from './navigationActions'
 import { IOrgAction, OrgActionType } from 'redux/org/orgActions'
 
 const initialState = {
-    currentPage: 'new',
+    currentPage: 'welcome',
 }
 
 export interface INavigationState {

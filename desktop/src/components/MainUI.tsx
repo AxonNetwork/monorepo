@@ -8,6 +8,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import Sidebar from './Sidebar/Sidebar'
 import Login from './Login/LoginPage'
 import NewRepository from './NewRepository/NewRepository'
+import Welcome from './NewRepository/Welcome'
 import Settings from './Settings/Settings'
 import OrganizationPage from './Organization/OrganizationPage'
 import Repository from './Repository/Repository'
@@ -52,6 +53,9 @@ class MainUI extends React.Component<Props, State>
                     </div>
 
                     <div className={classes.mainUIContentWrapper}>
+                        {currentPage === 'welcome' &&
+                            <Welcome />
+                        }
                         {currentPage === 'new' &&
                             <NewRepository />
                         }
