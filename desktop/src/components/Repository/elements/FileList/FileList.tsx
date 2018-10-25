@@ -98,8 +98,8 @@ class FileList extends React.Component<Props, State>
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.onClickCreateNewFile}>Create</Button>
-                        <Button onClick={this.onClickCancelNewFile}>Cancel</Button>
+                        <Button color="secondary" onClick={this.onClickCreateNewFile}>Create</Button>
+                        <Button color="secondary" onClick={this.onClickCancelNewFile}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
             </React.Fragment>

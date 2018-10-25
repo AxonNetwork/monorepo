@@ -1,3 +1,4 @@
+import { uniq } from 'lodash'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { DiscussionActionType, IDiscussionAction } from '../discussion/discussionActions'
 import { IRepo, ITimelineEvent } from '../../common'
@@ -83,7 +84,8 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [path]: {
                         ...(state.repos[path] || {}),
-                        repoID: repoID,
+                        repoID,
+                        path,
                         hasBeenFetched: true,
                     },
                 },
@@ -98,6 +100,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [path]: {
                         ...(state.repos[path] || {}),
+                        path,
                         files,
                     },
                 },
@@ -118,6 +121,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [path]: {
                         ...(state.repos[path] || {}),
+                        path,
                         commits,
                         commitList,
                     },
@@ -133,6 +137,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [repoRoot]: {
                         ...(state.repos[repoRoot] || {}),
+                        path: repoRoot,
                         commits: {
                             ...((state.repos[repoRoot] || {}).commits || {}),
                             [commit]: {
@@ -185,6 +190,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [path]: {
                         ...state.repos[path],
+                        path,
                         sharedUsers: sharedUsers,
                     },
                 },
@@ -199,10 +205,11 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [repoRoot]: {
                         ...(state.repos[repoRoot] || {}),
-                        sharedUsers: [
+                        path: repoRoot,
+                        sharedUsers: uniq([
                             ...((state.repos[repoRoot] || {}).sharedUsers || []),
                             userID,
-                        ],
+                        ]),
                     },
                 },
             }
@@ -210,14 +217,15 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
 
         case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
             const { repoRoot, userID } = action.payload
-            const sharedUsers = ((state.repos[repoRoot] || {}).sharedUsers || []).filter(id => id !== userID)
+            const sharedUsers = uniq(((state.repos[repoRoot] || {}).sharedUsers || []).filter(id => id !== userID))
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     [repoRoot]: {
                         ...(state.repos[repoRoot] || {}),
-                        sharedUsers: sharedUsers,
+                        path: repoRoot,
+                        sharedUsers,
                     },
                 },
             }
@@ -231,6 +239,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [folderPath]: {
                         ...state.repos[folderPath],
+                        path: folderPath,
                         behindRemote: false,
                     },
                 },
@@ -245,6 +254,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                     ...state.repos,
                     [path]: {
                         ...state.repos[path],
+                        path,
                         behindRemote: true,
                     },
                 },

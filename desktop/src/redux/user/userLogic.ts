@@ -178,7 +178,7 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
             repoID: repoID,
             name: name,
             email: emails[0],
-         })
+        })
         await dispatch(selectRepo({ repoID, path }))
         return {}
     },

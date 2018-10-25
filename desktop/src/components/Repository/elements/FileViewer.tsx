@@ -19,6 +19,10 @@ class FileViewer extends React.Component<Props, State>
 
     render() {
         const { filename, classes } = this.props
+        if (!filename) {
+            return null
+        }
+
         const extension = path.extname(filename).toLowerCase().substring(1)
 
         // @@TODO: filetype standardization
@@ -81,6 +85,10 @@ class FileViewer extends React.Component<Props, State>
     }
 
     readFile() {
+        if (!this.props.filename) {
+            return
+        }
+
         fs.readFile(path.join(this.props.repoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
             if (err) {
                 // @@TODO: display error in UI
@@ -93,6 +101,10 @@ class FileViewer extends React.Component<Props, State>
     }
 
     isTextFile(filename: string) {
+        if (!filename) {
+            return false
+        }
+
         const extension = path.extname(filename).toLowerCase().substring(1)
         return [
             'md',

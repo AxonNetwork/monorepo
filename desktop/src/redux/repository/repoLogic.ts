@@ -80,7 +80,7 @@ const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
         // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
-        if (!(getState().repository.repos[repoID] || {}).hasBeenFetched) {
+        if (!(getState().repository.repos[path] || {}).hasBeenFetched) {
             await dispatch(fetchFullRepo({ repoID, path }))
         }
         return { repoID, path }

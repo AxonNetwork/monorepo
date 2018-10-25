@@ -31,6 +31,11 @@ class SharedUsers extends React.Component<Props, State>
 
     render() {
         const { repo, users, classes } = this.props
+
+        if (!repo) {
+            return null
+        }
+
         return (
             <Card className={classes.root}>
                 <CardContent>
@@ -85,7 +90,7 @@ class SharedUsers extends React.Component<Props, State>
     }
 
     onClickAddUser() {
-        if (this._inputUser === null) {
+        if (this._inputUser === null || !this.props.repo) {
             return
         }
 
@@ -97,6 +102,10 @@ class SharedUsers extends React.Component<Props, State>
     }
 
     onClickRemoveMember(userID: string) {
+        if (!this.props.repo) {
+            return
+        }
+
         const repoID = this.props.repo.repoID
         const repoRoot = this.props.repo.path
         this.props.removeCollaborator({ repoID, repoRoot, userID })
@@ -112,7 +121,7 @@ class SharedUsers extends React.Component<Props, State>
 }
 
 interface Props {
-    repo: IRepo
+    repo: IRepo | undefined
     users: {[userID: string]: IUser}
     addCollaborator: typeof addCollaborator
     removeCollaborator: typeof removeCollaborator
