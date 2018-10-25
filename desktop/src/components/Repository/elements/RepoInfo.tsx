@@ -84,21 +84,23 @@ const styles = (theme: Theme) => createStyles({
     },
     headline: {
         marginRight: '8px',
-        display: 'inline-block',
+        display: 'block',
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
     },
     version: {
-        display: 'inline-block',
+        // display: 'inline-block',
     },
     caption: {
         fontSize: '10pt',
     },
     titleContainer: {
         paddingBottom: 20,
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     pushPullButtons: {
-        display: 'inline',
+        display: 'flex',
         marginLeft: 30,
     },
     spacer: {

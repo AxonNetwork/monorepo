@@ -64,7 +64,7 @@ class RepoHomePage extends React.Component<Props>
                 <div className={classnames(classes.readmeContainer, classes.box, { [classes.readmeContainerNoReadme]: !readmeExists })}>
                     {readmeExists &&
                         <React.Fragment>
-                            <FileViewer filename={'README.md'} repoRoot={repo.path} />
+                            <FileViewer filename={'README.md'} repoRoot={repo.path} classes={{ mdRoot: classes.readmeViewer, codeRoot: classes.readmeViewer }} />
                             <IconButton
                                 onClick={this.onClickAddReadme}
                                 className={classes.editReadmeButton}
@@ -231,6 +231,7 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
+        flexWrap: 'wrap',
     },
     loading: {
         color: theme.palette.secondary.main,
@@ -246,7 +247,8 @@ const styles = (theme: Theme) => createStyles({
         margin: '0 20px 20px 0',
     },
     readmeContainer: {
-        maxWidth: 640,
+        // maxWidth: 640,
+        flexBasis: 640,
         flexShrink: 1,
         flexGrow: 1,
         position: 'relative',
@@ -263,6 +265,7 @@ const styles = (theme: Theme) => createStyles({
         padding: 30,
         textAlign: 'center',
         cursor: 'pointer',
+        flexBasis: 320,
     },
     readmeContainerNoReadmeContents: {
         position: 'relative',
@@ -282,7 +285,8 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         flexWrap: 'wrap',
-        flexGrow: 1,
+        flexGrow: 3,
+        flexBasis: 320,
     },
     usersContainer: {
         flexGrow: 0,
@@ -339,6 +343,9 @@ const styles = (theme: Theme) => createStyles({
     },
     link: {
         color: theme.palette.secondary.main,
+    },
+    readmeViewer: {
+        minWidth: 'auto',
     },
 })
 
