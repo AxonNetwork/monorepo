@@ -98,8 +98,12 @@ function startNode() {
     const appPath = require('electron').app.getAppPath()
     const fs = require('fs')
     const nodePath = path.join(appPath, '../desktop/build-resources/binaries/conscience-node')
+
+    fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
+
     console.log('nodePath ~>', nodePath)
-    nodeProc = spawn(nodePath)
+    const env = Object.assign({}, process.env, { HELLOVAR: 'hihihi' })
+    nodeProc = spawn(nodePath, [], { env })
     nodeProc.stdout.on('data', data => {
         fs.appendFileSync('/tmp/conscience-stdout', data)
     })
