@@ -1,4 +1,4 @@
-import { keyBy } from 'lodash'
+import { keyBy, uniq } from 'lodash'
 import { makeLogic } from '../reduxUtils'
 import { IUser, ISharedRepoInfo } from '../../common'
 import {
@@ -70,8 +70,8 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
     type: UserActionType.FETCH_USER_DATA,
     async process({ action, getState }) {
-        const inRedux = Object.keys(getState().user.users)
-        const toFetch = action.payload.userIDs.filter(id => !inRedux.includes(id))
+        const knownUsers = getState().user.users
+        const toFetch = uniq(action.payload.userIDs).filter(userID => !knownUsers[userID])
         if (toFetch.length <= 0) {
             return { users: {} }
         }
