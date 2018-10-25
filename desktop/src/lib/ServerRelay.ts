@@ -2,9 +2,9 @@ import querystring from 'querystring'
 import axios from 'axios'
 import { IUser, IComment, IDiscussion, IOrganization } from '../common'
 
-// @@TODO: this should come from process.env
-// const API_URL = 'http://demo.conscience.network/api',
-const API_URL = 'http://localhost:8080/api'
+const API_URL = process.env.API_URL
+const fs = (window as any).require('fs')
+fs.appendFileSync('/tmp/blah', 'API_URL ~> ' + API_URL + '\n')
 
 const ServerRelay = {
     setJWT(token: string | undefined) {
@@ -235,7 +235,7 @@ const ServerRelay = {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
 
-    async createOrg(name: string){
+    async createOrg(name: string) {
         const response = await axios.post(API_URL + '/create-organization', { name })
         return response.data as IOrganization
     },
@@ -254,7 +254,7 @@ const ServerRelay = {
         return response.data as IOrganization
     },
 
-    async updateOrg(orgID: string, name: string|undefined, description: string|undefined, readme: string|undefined) {
+    async updateOrg(orgID: string, name: string | undefined, description: string | undefined, readme: string | undefined) {
         const response = await axios.post(API_URL + '/update-organization', {
             orgID,
             name,

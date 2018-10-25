@@ -1,9 +1,10 @@
-import path from 'path';
-import merge from 'webpack-merge';
+import path from 'path'
+import merge from 'webpack-merge'
 
-import OfflinePlugin from 'offline-plugin';
+import OfflinePlugin from 'offline-plugin'
+import Dotenv from 'dotenv-webpack'
 
-import BaseWebpackConfig from './webpack.config.base.babel';
+import BaseWebpackConfig from './webpack.config.base.babel'
 
 export default merge(BaseWebpackConfig, {
     // The point or points to enter the application.
@@ -29,6 +30,9 @@ export default merge(BaseWebpackConfig, {
 
     // A list of used webpack plugins
     plugins: [
+        new Dotenv({
+            path: path.join(__dirname, '.env.production'), // Path to .env file (this is the default)
+        }),
     // It's always better if OfflinePlugin is the last plugin added
         new OfflinePlugin(),
     ],

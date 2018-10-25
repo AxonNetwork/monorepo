@@ -10,6 +10,7 @@ const ipcMain = electron.ipcMain;
 const path = require('path');
 const url = require('url');
 const fork = require('child_process').fork;
+const spawn = require('child_process').spawn;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -45,8 +46,9 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    createWindow();
-    startRepoServer();
+    createWindow()
+    startRepoServer()
+    startNode()
 });
 
 // Quit when all windows are closed.
@@ -90,6 +92,25 @@ function startRepoServer() {
         console.error(`Repo Process error:\n${data}`);
     });
 }
+
+var nodeProc = null
+function startNode() {
+    const appPath = require('electron').app.getAppPath()
+    const fs = require('fs')
+    const nodePath = path.join(appPath, '../desktop/build-resources/binaries/conscience-node')
+    console.log('nodePath ~>', nodePath)
+    nodeProc = spawn(nodePath)
+    nodeProc.stdout.on('data', data => {
+        fs.appendFileSync('/tmp/conscience-stdout', data)
+    })
+    nodeProc.stderr.on('data', data => {
+        fs.appendFileSync('/tmp/conscience-stderr', data)
+    })
+}
+
+app.on('will-quit', () => {
+    nodeProc.kill()
+})
 
 // Add React Dev Tools
 const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');

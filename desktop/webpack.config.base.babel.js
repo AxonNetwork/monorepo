@@ -124,7 +124,7 @@ export default {
     // Enforces case sensitive paths.
         new CaseSensitivePathsPlugin(),
         // Supports dotenv file
-        new DotenvPlugin(),
+        // new DotenvPlugin(),
         // Warns when multiple versions of the same package exist in a build
         new DuplicatePackageCheckerPlugin(),
         // Load pre-build dll reference files
@@ -153,6 +153,10 @@ export default {
                 from: 'public/**/*',
                 to: '[name].[ext]',
                 ignore: ['index.ejs'],
+            },
+            {
+                from: 'src/rpc/noderpc.proto',
+                to: 'noderpc.proto',
             },
         ]),
     ],

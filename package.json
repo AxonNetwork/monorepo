@@ -8,7 +8,6 @@
   "author": "Chong Guo <armourcy@gmail.com>",
   "homepage": ".",
   "license": "MIT",
-  "main": "desktop/electron/electron.js",
   "scripts": {
     "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source",
     "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
@@ -99,7 +98,6 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.22.2",
     "morgan": "^1.9.1",
-    "node-sass": "^4.9.3",
     "nodemon": "^1.18.4",
     "offline-plugin": "^5.0.5",
     "parse-diff": "^0.4.2",
@@ -128,7 +126,6 @@
     "redux-logger": "^3.0.6",
     "redux-logic": "^2.0.0",
     "redux-saga": "^0.16.0",
-    "sass-loader": "^7.1.0",
     "style-loader": "^0.23.0",
     "through2": "^2.0.3",
     "tinycolor2": "^1.4.1",

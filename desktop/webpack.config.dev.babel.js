@@ -1,7 +1,7 @@
-import path from 'path';
-import merge from 'webpack-merge';
-
-import BaseWebpackConfig from './webpack.config.base.babel';
+import path from 'path'
+import merge from 'webpack-merge'
+import Dotenv from 'dotenv-webpack'
+import BaseWebpackConfig from './webpack.config.base.babel'
 
 export default merge(BaseWebpackConfig, {
     // The point or points to enter the application.
@@ -42,4 +42,8 @@ export default merge(BaseWebpackConfig, {
     // https://webpack.js.org/configuration/devtool
     devtool: 'eval-source-map',
     target: 'electron-renderer',
+
+    plugins: [
+        new Dotenv(),
+    ]
 });

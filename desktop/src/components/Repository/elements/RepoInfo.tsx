@@ -100,7 +100,6 @@ const styles = (theme: Theme) => createStyles({
         flexWrap: 'wrap',
     },
     pushPullButtons: {
-        display: 'flex',
         marginLeft: 30,
     },
     spacer: {

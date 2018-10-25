@@ -1,12 +1,13 @@
+import path from 'path'
 import _Promise from 'bluebird'
 import { ILocalRepo, IRef } from '../common'
 
-const PROTO_PATH = process.env.PROTO_PATH
+const appPath = (window as any).require('electron').remote.app.getAppPath()
+const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
 
 const protoLoader = (window as any).require('@grpc/proto-loader')
 const grpcLibrary = (window as any).require('grpc')
-
-const packageDefinition = protoLoader.loadSync(PROTO_PATH, {})
+const packageDefinition = protoLoader.loadSync(protoPath, {})
 const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
 const noderpc = packageObject.noderpc
 
@@ -32,7 +33,7 @@ interface IRPCClient {
         message: string
         timestamp: Long
         files: string[]
-        verified?: Long
+        verified?: Long,
     }[] }>
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
     getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>
