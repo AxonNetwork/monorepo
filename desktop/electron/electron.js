@@ -1,33 +1,36 @@
 
 
-const electron = require('electron');
+const fixPath = require('fix-path')
+fixPath()
 
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-const Menu = electron.Menu;
-const ipcMain = electron.ipcMain;
+const electron = require('electron')
 
-const path = require('path');
-const url = require('url');
-const fork = require('child_process').fork;
-const spawn = require('child_process').spawn;
+const app = electron.app
+const BrowserWindow = electron.BrowserWindow
+const Menu = electron.Menu
+const ipcMain = electron.ipcMain
+
+const path = require('path')
+const url = require('url')
+const fork = require('child_process').fork
+const spawn = require('child_process').spawn
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow; let
-    repoServer;
+let mainWindow
+let repoServer
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false } });
-    mainWindow.maximize();
+    mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false } })
+    mainWindow.maximize()
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
         pathname: path.join(__dirname, '../dist-bundle/prod/index.html'),
         protocol: 'file:',
         slashes: true,
-    });
+    })
 
     mainWindow.loadURL(startUrl);
 
@@ -95,14 +98,13 @@ function startRepoServer() {
 
 var nodeProc = null
 function startNode() {
-    const appPath = require('electron').app.getAppPath()
     const fs = require('fs')
-    const nodePath = path.join(appPath, '../desktop/build-resources/binaries/conscience-node')
-
     fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
 
-    console.log('nodePath ~>', nodePath)
-    const env = Object.assign({}, process.env, { HELLOVAR: 'hihihi' })
+    const utils = require('./utils')
+    const nodePath = path.join(utils.getAppPath(), '../desktop/build-resources/binaries/conscience-node')
+    const env = utils.getEnv()
+
     nodeProc = spawn(nodePath, [], { env })
     nodeProc.stdout.on('data', data => {
         fs.appendFileSync('/tmp/conscience-stdout', data)

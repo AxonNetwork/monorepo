@@ -7,6 +7,7 @@ const mkdirp = require('mkdirp')
 const git = require('isomorphic-git')
 const fs = require('fs')
 const fileType = require('./fileType')
+const utils = require('../utils')
 
 git.plugins.set('fs', fs)
 
@@ -92,7 +93,7 @@ async function pullRepo(folderPath) {
 
 async function execCmd(cmd, cwd) {
     return new Promise(async (resolve, reject) => {
-        exec(cmd, { cwd }, (error, stdout, stderr) => {
+        exec(cmd, { cwd, env: utils.getEnv() }, (error, stdout, stderr) => {
             if (error) {
                 reject(error)
             } else {
@@ -121,13 +122,9 @@ async function cloneRepo(repoID, location) {
 function spawnCmd(cmd, args, cwd) {
     return new Promise((resolve, reject) => {
         let stdout = '', stderr = ''
-        let proc = spawn(cmd, args, { cwd })
-        proc.stdout.on('data', (data) => {
-            stdout += data
-        })
-        proc.stderr.on('data', (data) => {
-            stderr += data
-        })
+        let proc = spawn(cmd, args, { cwd, env: utils.getEnv() })
+        proc.stdout.on('data', (data) => { stdout += data })
+        proc.stderr.on('data', (data) => { stderr += data })
         proc.on('close', (code) => {
             if (code !== 0) {
                 return reject(new Error(stderr))
