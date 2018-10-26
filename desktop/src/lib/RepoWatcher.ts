@@ -1,5 +1,6 @@
 import events from 'events'
 import * as rpc from 'rpc'
+import { join } from 'path'
 const fs = (window as any).require('fs')
 
 const watching: {
@@ -42,12 +43,42 @@ function loop() {
     setTimeout(loop, 5000)
 }
 
+function logg(text: string){
+    fs.appendFileSync('/tmp/logs.txt', text + '\n')
+}
+
+function getMtimeRecurse(folder: string){
+    const stat = fs.statSync(folder)
+    if(!stat.isDirectory){
+        return stat.mtime.getTime()
+    }
+    let subfiles
+    try {
+        subfiles = fs.readdirSync(folder)
+        .map((name: string) => join(folder, name))
+    }catch(_){
+        return stat.mtime.getTime()
+    }
+    if(subfiles.length === 0){
+        return stat.mtime.getTime()
+    }
+    const mtimes = subfiles.map((path: string) => getMtimeRecurse(path))
+    const max = mtimes.reduce((a: number, b: number) => {
+        return Math.max(a, b)
+    })
+    return max
+}
+
 async function checkForChange(path: string) {
     const repo = watching[path]
     if (repo === undefined) {
         return
     }
-    const mtime = fs.statSync(repo.path).mtimeMs
+
+    // const mtime = fs.statSync(repo.path).mtime.getTime()
+    const mtime = getMtimeRecurse(path)
+    logg('checking ' + path)
+    logg(mtime.toString())
     if (mtime > repo.mtime && repo.mtime !== 0) {
         repo.emitter.emit('file_change')
     }
