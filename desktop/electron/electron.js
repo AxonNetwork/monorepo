@@ -7,9 +7,11 @@ fixPath()
 const electron = require('electron')
 
 const app = electron.app
+const shell = electron.shell
 const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
 const ipcMain = electron.ipcMain
+const createMenu = require('./menu')
 
 const fs = require('fs')
 const path = require('path')
@@ -53,6 +55,9 @@ function createWindow() {
 app.on('ready', () => {
     createWindow()
     startNode()
+
+    const menu = createMenu(app, shell)
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 });
 
 // Quit when all windows are closed.
