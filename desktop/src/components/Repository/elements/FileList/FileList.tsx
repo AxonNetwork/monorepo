@@ -14,14 +14,14 @@ import TableBody from '@material-ui/core/TableBody'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
+import BackupIcon from '@material-ui/icons/Backup'
+import FolderIcon from '@material-ui/icons/Folder'
 import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from './Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
 import { IRepoFile } from 'common'
 import autobind from 'utils/autobind'
-
-const shell = (window as any).require('electron').shell
 
 
 @autobind
@@ -49,18 +49,11 @@ class FileList extends React.Component<Props, State>
                 </div>
 
                 {names.length === 0 &&
-                    <div className={classes.emptyRepoText}>
-                        <Typography>There's nothing here yet.</Typography>
-                        <Typography>
-                            <span>Start by adding files to your </span>
-                            <a href="#"
-                                onClick={() => shell.openItem(this.props.repoRoot)}
-                                className={classes.link}
-                            >
-                                Repository Folder
-                            </a>
-                        </Typography>
-                    </div>
+                    <Typography className={classes.emptyRepoMessage}>
+                        This is the file list view.  Right now, it's empty because nobody has committed any files to the repository.<br/><br/>
+                        Add some files and then commit them using the <BackupIcon /> button above.<br/>
+                        Open this folder on your computer by using the <FolderIcon /> button.
+                    </Typography>
                 }
                 {names.length > 0 &&
                     <Card className={classes.fileListCard}>
@@ -179,10 +172,22 @@ const styles = (theme: Theme) => createStyles({
     tableCell: {
         borderBottom: 'none',
     },
-    emptyRepoText: {
-        marginTop: theme.spacing.unit * 2,
-        '& p': {
-            marginTop: theme.spacing.unit * 2,
+    emptyRepoMessage: {
+        fontSize: '1.1rem',
+        color: '#9c9c9c',
+        maxWidth: 640,
+        margin: '0 auto',
+        background: '#f1f1f1',
+        padding: 20,
+        borderRadius: 10,
+        border: '3px solid #9c9c9c',
+        marginTop: 30,
+        textAlign: 'center',
+        lineHeight: '2rem',
+
+        '& svg': {
+            verticalAlign: 'text-bottom',
+            margin: '0 5px',
         },
     },
     link: {
