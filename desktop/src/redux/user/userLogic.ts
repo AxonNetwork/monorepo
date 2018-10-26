@@ -22,7 +22,7 @@ import {
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
     getSharedRepos, fetchOrgs, gotNodeUsername,
 } from './userActions'
-import { selectRepo, getLocalRepos } from '../repository/repoActions'
+import { selectRepo, getLocalRepos, watchRepo } from '../repository/repoActions'
 import { fetchOrgInfo } from '../org/orgActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
@@ -179,6 +179,7 @@ const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoS
             name: name,
             email: emails[0],
         })
+        await dispatch(watchRepo({ repoID, path }))
         await dispatch(selectRepo({ repoID, path }))
         return {}
     },

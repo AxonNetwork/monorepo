@@ -43,6 +43,7 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
         await ServerRelay.createRepo(repoID)
 
         await dispatch(addRepoToOrg({ orgID, repoID }))
+        await dispatch(watchRepo({ repoID, path }))
         await dispatch(selectRepo({ repoID, path }))
         return { repoID, path, orgID }
     },

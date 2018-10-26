@@ -43,10 +43,6 @@ function loop() {
     setTimeout(loop, 5000)
 }
 
-function logg(text: string){
-    fs.appendFileSync('/tmp/logs.txt', text + '\n')
-}
-
 function getMtimeRecurse(folder: string){
     const stat = fs.statSync(folder)
     if(!stat.isDirectory){
@@ -75,10 +71,7 @@ async function checkForChange(path: string) {
         return
     }
 
-    // const mtime = fs.statSync(repo.path).mtime.getTime()
     const mtime = getMtimeRecurse(path)
-    logg('checking ' + path)
-    logg(mtime.toString())
     if (mtime > repo.mtime && repo.mtime !== 0) {
         repo.emitter.emit('file_change')
     }
