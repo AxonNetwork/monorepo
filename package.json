@@ -7,6 +7,7 @@
   },
   "author": "Chong Guo <armourcy@gmail.com>",
   "homepage": ".",
+  "main": "desktop/electron/electron.js",
   "license": "MIT",
   "scripts": {
     "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source",
@@ -22,7 +23,7 @@
     "eslint": "eslint -f codeframe \"**/*.js\"",
     "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
     "lint": "yarn eslint && yarn tslint",
-    "electron-dev": "ELECTRON_START_URL=http://localhost:3004 electron .",
+    "electron-dev": "NODE_ENV=development ELECTRON_START_URL=http://localhost:3004 electron .",
     "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
   },
   "dependencies": {

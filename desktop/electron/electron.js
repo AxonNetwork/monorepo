@@ -50,7 +50,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     createWindow()
-    startRepoServer()
+    // startRepoServer()
     startNode()
 });
 
@@ -71,30 +71,30 @@ app.on('activate', () => {
     }
 });
 
-function startRepoServer() {
-    const program = path.resolve(__dirname, './repo-process/index.js');
-    const parameters = [];
-    const options = {
-        stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-    };
-    repoServer = fork(program, parameters, options);
+// function startRepoServer() {
+//     const program = path.resolve(__dirname, './repo-process/index.js');
+//     const parameters = [];
+//     const options = {
+//         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+//     };
+//     repoServer = fork(program, parameters, options);
 
-    ipcMain.on('message', (event, arg) => {
-        repoServer.send(JSON.stringify(arg));
-    });
+//     ipcMain.on('message', (event, arg) => {
+//         repoServer.send(JSON.stringify(arg));
+//     });
 
-    repoServer.on('message', (message) => {
-        mainWindow.webContents.send('message', JSON.stringify(message));
-    });
+//     repoServer.on('message', (message) => {
+//         mainWindow.webContents.send('message', JSON.stringify(message));
+//     });
 
-    repoServer.stdout.on('data', (data) => {
-        console.log(`Repo Process:\n${data}`);
-    });
+//     repoServer.stdout.on('data', (data) => {
+//         console.log(`Repo Process:\n${data}`);
+//     });
 
-    repoServer.stderr.on('data', (data) => {
-        console.error(`Repo Process error:\n${data}`);
-    });
-}
+//     repoServer.stderr.on('data', (data) => {
+//         console.error(`Repo Process error:\n${data}`);
+//     });
+// }
 
 var nodeProc = null
 function startNode() {
@@ -102,8 +102,13 @@ function startNode() {
     fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
 
     const utils = require('./utils')
-    const nodePath = path.join(utils.getAppPath(), '../desktop/build-resources/binaries/conscience-node')
+    const nodePath = process.env.NODE_ENV === 'development'
+        ? path.join(utils.getAppPath(), 'desktop/build-resources/binaries/conscience-node')
+        : path.join(utils.getAppPath(), '../desktop/build-resources/binaries/conscience-node')
     const env = utils.getEnv()
+
+    fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
+    fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
 
     nodeProc = spawn(nodePath, [], { env })
     nodeProc.stdout.on('data', data => {
@@ -115,7 +120,9 @@ function startNode() {
 }
 
 app.on('will-quit', () => {
-    nodeProc.kill()
+    if (nodeProc) {
+        nodeProc.kill()
+    }
 })
 
 // Add React Dev Tools

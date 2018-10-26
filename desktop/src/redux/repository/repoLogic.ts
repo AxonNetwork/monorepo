@@ -14,7 +14,7 @@ import { RepoActionType,
     ISelectRepoAction, ISelectRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
-    IRevertFilesAction, IRevertFilesSuccessAction,
+    // IRevertFilesAction, IRevertFilesSuccessAction,
     IPullRepoAction, IPullRepoSuccessAction,
     IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
@@ -23,9 +23,10 @@ import { RepoActionType,
 import { fetchUserData } from '../user/userActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { addRepoToOrg } from '../org/orgActions'
-import ConscienceRelay from 'lib/ConscienceRelay'
+// import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
+import spawnCmd from 'utils/spawnCmd'
 import * as rpc from '../../rpc'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
@@ -194,7 +195,14 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }) {
         const { repoRoot, commit } = action.payload
-        const diffBlob = await ConscienceRelay.getDiff(repoRoot, commit)
+
+        let diffBlob: string
+        try {
+            diffBlob = await spawnCmd('git', ['show', commit], repoRoot)
+        } catch (err) {
+            console.log(`ERROR running git show ${commit} ~>`, err)
+            throw err
+        }
 
         const lines = diffBlob.split('\n')
         let filename = ''
@@ -224,14 +232,14 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     },
 })
 
-const revertFilesLogic = makeLogic<IRevertFilesAction, IRevertFilesSuccessAction>({
-    type: RepoActionType.REVERT_FILES,
-    async process({ action }) {
-        const { repoRoot, files, commit } = action.payload
-        await ConscienceRelay.revertFiles(repoRoot, files, commit)
-        return {}
-    },
-})
+// const revertFilesLogic = makeLogic<IRevertFilesAction, IRevertFilesSuccessAction>({
+//     type: RepoActionType.REVERT_FILES,
+//     async process({ action }) {
+//         const { repoRoot, files, commit } = action.payload
+//         await ConscienceRelay.revertFiles(repoRoot, files, commit)
+//         return {}
+//     },
+// })
 
 const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
     type: RepoActionType.PULL_REPO,
@@ -305,7 +313,7 @@ export default [
     fetchRemoteRefsLogic,
     checkpointRepoLogic,
     getDiffLogic,
-    revertFilesLogic,
+    // revertFilesLogic,
     pullRepoLogic,
     addCollaboratorLogic,
     removeCollaboratorLogic,

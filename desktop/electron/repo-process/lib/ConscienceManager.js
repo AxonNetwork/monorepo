@@ -7,7 +7,7 @@ const mkdirp = require('mkdirp')
 const git = require('isomorphic-git')
 const fs = require('fs')
 const fileType = require('./fileType')
-const utils = require('../utils')
+const utils = require('../../utils')
 
 git.plugins.set('fs', fs)
 

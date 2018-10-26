@@ -1,7 +1,11 @@
 const path = require('path')
 
 module.exports.getAppPath = function() {
-    return require('electron').app.getAppPath()
+    try {
+        return require('electron').app.getAppPath()
+    } catch (err) {
+        return require('electron').remote.app.getAppPath()
+    }
 }
 
 module.exports.getEnv = function() {
