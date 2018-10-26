@@ -1,14 +1,14 @@
 {
-  "name": "express-webpack-react-redux-typescript-boilerplate",
+  "name": "conscience-desktop-app",
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Armour/express-webpack-react-redux-typescript-boilerplate.git"
+    "url": "conscience://desktop-app"
   },
-  "author": "Chong Guo <armourcy@gmail.com>",
+  "author": "Conscience <hi@conscience.network>",
   "homepage": ".",
   "main": "desktop/electron/electron.js",
-  "license": "MIT",
+  "license": "Copyright Conscience, Inc., 2018",
   "scripts": {
     "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source",
     "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
