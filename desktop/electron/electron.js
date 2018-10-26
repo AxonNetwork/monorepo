@@ -1,6 +1,7 @@
 
 
 const fixPath = require('fix-path')
+// on OSX, electron loses the user's PATH
 fixPath()
 
 const electron = require('electron')
@@ -10,6 +11,7 @@ const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
 const ipcMain = electron.ipcMain
 
+const fs = require('fs')
 const path = require('path')
 const url = require('url')
 const fork = require('child_process').fork
@@ -50,7 +52,6 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     createWindow()
-    // startRepoServer()
     startNode()
 });
 
@@ -71,52 +72,32 @@ app.on('activate', () => {
     }
 });
 
-// function startRepoServer() {
-//     const program = path.resolve(__dirname, './repo-process/index.js');
-//     const parameters = [];
-//     const options = {
-//         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-//     };
-//     repoServer = fork(program, parameters, options);
+function getEnv() {
+    const appPath      = app.getAppPath()
+    const binariesPath = process.env.NODE_ENV === 'development'
+        ? path.join(appPath, 'desktop/build-resources/binaries')
+        : path.join(appPath, '../desktop/build-resources/binaries')
 
-//     ipcMain.on('message', (event, arg) => {
-//         repoServer.send(JSON.stringify(arg));
-//     });
-
-//     repoServer.on('message', (message) => {
-//         mainWindow.webContents.send('message', JSON.stringify(message));
-//     });
-
-//     repoServer.stdout.on('data', (data) => {
-//         console.log(`Repo Process:\n${data}`);
-//     });
-
-//     repoServer.stderr.on('data', (data) => {
-//         console.error(`Repo Process error:\n${data}`);
-//     });
-// }
+    const env = Object.assign({}, process.env, {
+        CONSCIENCE_APP_PATH: appPath,
+        CONSCIENCE_BINARIES_PATH: binariesPath,
+        PATH: binariesPath + ':' + process.env.PATH + ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
+    })
+    return env
+}
 
 var nodeProc = null
 function startNode() {
-    const fs = require('fs')
+    const env = getEnv()
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node')
+
     fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
-
-    const utils = require('./utils')
-    const nodePath = process.env.NODE_ENV === 'development'
-        ? path.join(utils.getAppPath(), 'desktop/build-resources/binaries/conscience-node')
-        : path.join(utils.getAppPath(), '../desktop/build-resources/binaries/conscience-node')
-    const env = utils.getEnv()
-
     fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
     fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
 
     nodeProc = spawn(nodePath, [], { env })
-    nodeProc.stdout.on('data', data => {
-        fs.appendFileSync('/tmp/conscience-stdout', data)
-    })
-    nodeProc.stderr.on('data', data => {
-        fs.appendFileSync('/tmp/conscience-stderr', data)
-    })
+    nodeProc.stdout.on('data', data => { fs.appendFileSync('/tmp/conscience-stdout', data) })
+    nodeProc.stderr.on('data', data => { fs.appendFileSync('/tmp/conscience-stderr', data) })
 }
 
 app.on('will-quit', () => {

@@ -14,7 +14,6 @@ import { RepoActionType,
     ISelectRepoAction, ISelectRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
-    // IRevertFilesAction, IRevertFilesSuccessAction,
     IPullRepoAction, IPullRepoSuccessAction,
     IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
@@ -23,7 +22,6 @@ import { RepoActionType,
 import { fetchUserData } from '../user/userActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { addRepoToOrg } from '../org/orgActions'
-// import ConscienceRelay from 'lib/ConscienceRelay'
 import ServerRelay from 'lib/ServerRelay'
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'

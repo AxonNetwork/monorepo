@@ -1,17 +1,15 @@
 const path = (window as any).require('path')
 const spawn = (window as any).require('child_process').spawn
 
-function getAppPath() {
-    return (window as any).require('electron').remote.app.getAppPath()
-}
-
 function getEnv() {
+    const appPath = (window as any).require('electron').remote.app.getAppPath()
+
     const binariesPath = process.env.NODE_ENV === 'development'
-        ? path.join(getAppPath(), 'desktop/build-resources/binaries')
-        : path.join(getAppPath(), '../desktop/build-resources/binaries')
+        ? path.join(appPath, 'desktop/build-resources/binaries')
+        : path.join(appPath, '../desktop/build-resources/binaries')
 
     const env = Object.assign({}, process.env, {
-        CONSCIENCE_APP_PATH: getAppPath(),
+        CONSCIENCE_APP_PATH: appPath,
         CONSCIENCE_BINARIES_PATH: binariesPath,
         PATH: binariesPath + ':' + process.env.PATH + ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
     })

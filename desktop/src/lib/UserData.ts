@@ -4,11 +4,10 @@ const { app } = (window as any).require('electron').remote
 const fs = (window as any).require('fs')
 
 export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
-export const CONSCIENCE_LOCATION = path.join(app.getPath('documents'), 'Conscience')
 
 interface ICommentTimestamp {
     [repoID: string]: {
-        [discussionID: string]: number
+        [discussionID: string]: number,
     }
 }
 
