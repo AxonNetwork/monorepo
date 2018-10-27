@@ -24,7 +24,9 @@
     "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
     "lint": "yarn eslint && yarn tslint",
     "electron-dev": "NODE_ENV=development ELECTRON_START_URL=http://localhost:3004 electron .",
-    "electron-build": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
+    "electron-build": "build -ml --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
+    "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
+    "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -223,6 +225,7 @@
     "appId": "com.conscience.app",
     "productName": "Conscience",
     "asar": true,
+    "npmRebuild": "false",
     "directories": {
       "buildResources": "desktop/build-resources",
       "output": "desktop/dist-app"
