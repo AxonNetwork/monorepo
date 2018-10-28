@@ -36,6 +36,9 @@ export default merge(BaseWebpackConfig, {
         open: true,
         // Served index.html (contains 404 page in react-router) in place of any 404 responses
         historyApiFallback: true,
+        watchOptions: {
+            ignored: /node_modules/
+        }
     },
 
     // Source map mode
