@@ -77,6 +77,10 @@ const styles = () => createStyles({
             padding: 'inherit',
             borderRadius: 'unset',
         },
+        '& img': {
+            display: 'block',
+            margin: '30px auto',
+        },
     },
 })
 
