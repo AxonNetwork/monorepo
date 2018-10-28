@@ -50,7 +50,7 @@ class File extends React.Component<Props>
         const name = path.basename(file.name)
         return (
             <React.Fragment>
-                <TableRow hover={canClickFile} onClick={this.selectFile} className={classes.tableRow}>
+                <TableRow hover={canClickFile} onClick={this.selectFile} className={classes.tableRow} classes={{ hover: classes.tableRowHover }}>
                     <TableCell scope="row" className={classes.tableCell}>
                         <div className={classes.listItem}>
                             <FileIcon fileType={file.type} status={file.status}/>
@@ -96,6 +96,11 @@ const styles = createStyles({
 
     // This is here so that it can be overridden by FileList or other parent components
     tableRow: {},
+    tableRowHover: {
+        '&:hover': {
+            backgroundColor: 'rgba(124, 170, 255, 0.13) !important',
+        },
+    },
 
     // This is here so that it can be overridden by FileList or other parent components
     tableCell: {
