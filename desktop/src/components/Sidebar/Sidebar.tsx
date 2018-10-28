@@ -63,7 +63,7 @@ class Sidebar extends React.Component<Props, State>
                 <List>
                     <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
                         <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        {this.state.repoOpen ? <ExpandLess /> : <ExpandMore />}
+                        {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
                     </ListItem>
                     <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
                         <RepoList
@@ -76,7 +76,7 @@ class Sidebar extends React.Component<Props, State>
 
                     <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
                         <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        {this.state.orgOpen ? <ExpandLess /> : <ExpandMore />}
+                        {this.state.orgOpen ? <ExpandMore /> : <ExpandLess />}
                     </ListItem>
                     <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
                         <OrgList
