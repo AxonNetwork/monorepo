@@ -64,7 +64,7 @@ const styles = () => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        codeColorScheme: state.user.codeColorScheme,
+        codeColorScheme: state.user.userSettings.codeColorScheme,
     }
 }
 

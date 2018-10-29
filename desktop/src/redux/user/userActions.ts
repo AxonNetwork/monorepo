@@ -56,13 +56,9 @@ export enum UserActionType {
     READ_LOCAL_CONFIG_SUCCESS = 'READ_LOCAL_CONFIG_SUCCESS',
     READ_LOCAL_CONFIG_FAILED = 'READ_LOCAL_CONFIG_FAILED',
 
-    SET_CODE_COLOR_SCHEME = 'SET_CODE_COLOR_SCHEME',
-    SET_CODE_COLOR_SCHEME_SUCCESS = 'SET_CODE_COLOR_SCHEME_SUCCESS',
-    SET_CODE_COLOR_SCHEME_FAILED = 'SET_CODE_COLOR_SCHEME_FAILED',
-
-    HIDE_MENU_LABELS = 'HIDE_MENU_LABELS',
-    HIDE_MENU_LABELS_SUCCESS = 'HIDE_MENU_LABELS_SUCCESS',
-    HIDE_MENU_LABELS_FAILED = 'HIDE_MENU_LABELS_FAILED',
+    SET_LOCAL_CONFIG = 'SET_LOCAL_CONFIG',
+    SET_LOCAL_CONFIG_SUCCESS = 'SET_LOCAL_CONFIG_SUCCESS',
+    SET_LOCAL_CONFIG_FAILED = 'SET_LOCAL_CONFIG_FAILED',
 
     UPLOAD_USER_PICTURE = 'UPLOAD_USER_PICTURE',
     UPLOAD_USER_PICTURE_SUCCESS = 'UPLOAD_USER_PICTURE_SUCCESS',
@@ -267,38 +263,6 @@ export interface IFetchOrgsSuccessAction {
 
 export type IFetchOrgsFailedAction = FailedAction<UserActionType.FETCH_ORGS_FAILED>
 
-export interface ISetCodeColorSchemeAction {
-    type: UserActionType.SET_CODE_COLOR_SCHEME
-    payload: {
-        codeColorScheme: string,
-    }
-}
-
-export interface ISetCodeColorSchemeSuccessAction {
-    type: UserActionType.SET_CODE_COLOR_SCHEME_SUCCESS
-    payload: {
-        codeColorScheme: string,
-    }
-}
-
-export type ISetCodeColorSchemeFailedAction = FailedAction<UserActionType.SET_CODE_COLOR_SCHEME_FAILED>
-
-export interface IHideMenuLabelsAction {
-    type: UserActionType.HIDE_MENU_LABELS
-    payload: {
-        menuLabelsHidden: boolean,
-    }
-}
-
-export interface IHideMenuLabelsSuccessAction {
-    type: UserActionType.HIDE_MENU_LABELS_SUCCESS
-    payload: {
-        menuLabelsHidden: boolean,
-    }
-}
-
-export type IHideMenuLabelsFailedAction = FailedAction<UserActionType.HIDE_MENU_LABELS_FAILED>
-
 export interface IReadLocalConfigAction {
     type: UserActionType.READ_LOCAL_CONFIG
     payload: {}
@@ -312,6 +276,22 @@ export interface IReadLocalConfigSuccessAction {
 }
 
 export type IReadLocalConfigFailedAction = FailedAction<UserActionType.READ_LOCAL_CONFIG_FAILED>
+
+export interface ISetLocalConfigAction {
+    type: UserActionType.SET_LOCAL_CONFIG
+    payload: {
+        config: IUserDataContents,
+    }
+}
+
+export interface ISetLocalConfigSuccessAction {
+    type: UserActionType.SET_LOCAL_CONFIG_SUCCESS
+    payload: {
+        config: IUserDataContents,
+    }
+}
+
+export type ISetLocalConfigFailedAction = FailedAction<UserActionType.SET_LOCAL_CONFIG_FAILED>
 
 export interface ISawCommentAction {
     type: UserActionType.SAW_COMMENT
@@ -429,13 +409,9 @@ export type IUserAction =
     IReadLocalConfigSuccessAction |
     IReadLocalConfigFailedAction |
 
-    ISetCodeColorSchemeAction |
-    ISetCodeColorSchemeSuccessAction |
-    ISetCodeColorSchemeFailedAction |
-
-    IHideMenuLabelsAction |
-    IHideMenuLabelsSuccessAction |
-    IHideMenuLabelsFailedAction |
+    ISetLocalConfigAction |
+    ISetLocalConfigSuccessAction |
+    ISetLocalConfigFailedAction |
 
     ISawCommentAction |
     ISawCommentSuccessAction |
@@ -467,8 +443,7 @@ export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): I
 export const fetchOrgs = (payload: IFetchOrgsAction['payload']): IFetchOrgsAction => ({ type: UserActionType.FETCH_ORGS, payload })
 
 export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {}): IReadLocalConfigAction => ({ type: UserActionType.READ_LOCAL_CONFIG, payload })
-export const setCodeColorScheme = (payload: ISetCodeColorSchemeAction['payload']): ISetCodeColorSchemeAction => ({ type: UserActionType.SET_CODE_COLOR_SCHEME, payload })
-export const hideMenuLabels = (payload: IHideMenuLabelsAction['payload']): IHideMenuLabelsAction => ({ type: UserActionType.HIDE_MENU_LABELS, payload })
+export const setLocalConfig = (payload: ISetLocalConfigAction['payload']): ISetLocalConfigAction => ({ type: UserActionType.SET_LOCAL_CONFIG, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 

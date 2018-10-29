@@ -22,6 +22,7 @@ import Breadcrumbs from './Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
 import { FileMode } from 'redux/repository/repoReducer'
 import { IRepoFile } from 'common'
+import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 
 
@@ -69,6 +70,7 @@ class FileList extends React.Component<Props, State>
                                                 repoRoot={this.props.repoRoot}
                                                 key={name}
                                                 selectFile={this.props.selectFile}
+                                                fileExtensionsHidden={this.props.fileExtensionsHidden}
                                                 classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
                                             />
                                         )
@@ -131,6 +133,7 @@ interface Props {
     repoRoot: string
     files: {[name: string]: IRepoFile}
     selectedFolder: string | undefined
+    fileExtensionsHidden: boolean | undefined
 
     selectFile: typeof selectFile
 
@@ -196,12 +199,18 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden,
+    }
+}
+
 const mapDispatchToProps = {
     selectFile,
 }
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(FileList))
 

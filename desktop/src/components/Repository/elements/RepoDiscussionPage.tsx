@@ -218,7 +218,7 @@ const mapStateToProps = (state: IGlobalState) => {
         discussionsByRepo: state.discussion.discussionsByRepo,
         comments: state.discussion.comments,
         selected: selectedDiscussion,
-        newestViewedCommentTimestamp: (state.user.newestViewedCommentTimestamp[repoID] || {}),
+        newestViewedCommentTimestamp: (state.user.userSettings.newestViewedCommentTimestamp[repoID] || {}),
         newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
