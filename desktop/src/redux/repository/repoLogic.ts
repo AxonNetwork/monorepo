@@ -115,6 +115,8 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
             modified: new Date(file.modified * 1000),
             type: fileType(file.name),
             status: file.stagedStatus,
+            mergeConflict : file.mergeConflict,
+            mergeUnresolved : file.mergeUnresolved,
         } as IRepoFile))
         const files = keyBy(filesList, 'name')
 

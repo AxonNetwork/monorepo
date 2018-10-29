@@ -26,6 +26,8 @@ interface IRPCClient {
         size: Long,
         modified: number,
         stagedStatus: string,
+        mergeConflict: boolean,
+        mergeUnresolved: boolean,
     }[] } >
     getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: {
         commitHash: string
@@ -42,6 +44,7 @@ interface IRPCClient {
     signMessageAsync: (params: { message: Buffer }) => Promise<{ signature: Buffer }>
     ethAddressAsync: (params: {}) => Promise<{ address: string }>
     setUserPermissionsAsync: (params: { repoID: string, username: string, puller: boolean, pusher: boolean, admin: boolean }) => Promise<{}>
+    getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
     // @@TODO: convert to enum
     UserType: {
