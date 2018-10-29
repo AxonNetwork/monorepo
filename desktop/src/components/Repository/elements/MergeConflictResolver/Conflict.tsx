@@ -6,27 +6,29 @@ import CheckIcon from '@material-ui/icons/Check'
 import MergeTypeIcon from '@material-ui/icons/MergeType'
 
 import CodeViewer from '../CodeViewer'
-import { IChunk } from 'utils/mergeConflict'
+import { IChunkConflict } from 'utils/mergeConflict'
 import autobind from 'utils/autobind'
 
 
 @autobind
 class Conflict extends React.Component<Props, State>
 {
+	_inputCombination: HTMLInputElement | null = null
+
 	state = {
 		combined: false,
 	}
 
 	render(){
-		const { language, upstreamChunk, localChunk, classes } = this.props
-        const upstreamContent = upstreamChunk.lines.join("\n")
-        const localContent = ((localChunk || {}).lines || []).join("\n")
+		const { language, chunk, classes } = this.props
+        const upstreamContent = chunk.linesUpstream.join("\n")
+        const localContent = chunk.linesLocal.join("\n")
         if(!this.state.combined){
 	        return(
 	        	<div>
 		            <div className={classes.toolbar}>
 		            	<Button
-		            		onClick={() => this.onClickAcceptContent(upstreamContent)}
+		            		onClick={() => this.props.onAccept(upstreamContent)}
 			            	className={classes.button}
 		            	>
 		            		<CheckIcon />
@@ -40,7 +42,7 @@ class Conflict extends React.Component<Props, State>
 		            		Combine and Edit
 		            	</Button>
 		            	<Button
-		            		onClick={() => this.onClickAcceptContent(localContent)}
+		            		onClick={() => this.props.onAccept(localContent)}
 		            		className={classes.button}
 	            		>
 		            		<CheckIcon />
@@ -72,7 +74,7 @@ class Conflict extends React.Component<Props, State>
 	        	<div>
 	        		<div className={classes.toolbar}>
 		            	<Button
-		            		onClick={() => this.onClickAcceptContent("asdf")}
+		            		onClick={this.onClickAcceptCombination}
 			            	className={classes.button}
 		            	>
 		            		<CheckIcon />
@@ -91,14 +93,11 @@ class Conflict extends React.Component<Props, State>
 	        			multiline
 						rowsMax={32}
 		        		defaultValue={combined}
+		        		inputRef={ x => this._inputCombination = x }
 	        		/>
 	        	</div>
     		)
         }
-	}
-
-	onClickAcceptContent(content: string){
-
 	}
 
 	onClickCombineAndEdit() {
@@ -108,12 +107,20 @@ class Conflict extends React.Component<Props, State>
 	onClickUncombine() {
 		this.setState({ combined: false })
 	}
+
+	onClickAcceptCombination() {
+		if(this._inputCombination === null){
+			return
+		}
+		const combination = this._inputCombination.value
+		this.props.onAccept(combination)
+	}
 }
 
 interface Props {
 	language: string
-	upstreamChunk: IChunk
-	localChunk: IChunk
+	chunk: IChunkConflict
+	onAccept: (content: string) => void
 	classes: any
 }
 

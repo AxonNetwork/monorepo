@@ -7,7 +7,7 @@ import CodeViewer from '../CodeViewer'
 import Conflict from './Conflict'
 
 import { IGlobalState } from 'redux/store'
-import { ChunkType, parseMergeConflict } from 'utils/mergeConflict'
+import { ChunkType, IChunk, IChunkConflict, IChunkNoConflict, parseMergeConflict, combineChunks } from 'utils/mergeConflict'
 import fs from 'fs'
 import path from 'path'
 import autobind from 'utils/autobind'
@@ -16,12 +16,21 @@ import autobind from 'utils/autobind'
 @autobind
 class MergeConflictResolver extends React.Component<Props, State>
 {
+    state={
+        chunks: [] as IChunk[]
+    }
+
+    componentDidMount(){
+        const { repoRoot, filename } = this.props
+        const fileContents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
+        const chunks = parseMergeConflict(fileContents)
+        this.setState({ chunks })
+    }
 
     render() {
-        const { repoRoot, filename, classes } = this.props
-        const contents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
+        const { filename, classes } = this.props
+        const { chunks } = this.state
         const language = path.extname(filename).toLowerCase().substring(1)
-        const chunks = parseMergeConflict(contents)
 
         return (
             <div>
@@ -41,14 +50,14 @@ class MergeConflictResolver extends React.Component<Props, State>
                             </Card>
                         )
                     }
-                    if(ch.type === ChunkType.Upstream){
+                    if(ch.type === ChunkType.Conflict){
                         return (
                             <Card className={classes.chunk}>
                                 <CardContent>
                                     <Conflict
                                         language={language}
-                                        upstreamChunk={ch}
-                                        localChunk={chunks[i+1]}
+                                        chunk={ch as IChunkConflict}
+                                        onAccept={(content: string)=>this.chunkContentAccepted(content, i)}
                                         classes={{codeContainer: classes.codeContainer}}
                                     />
                                 </CardContent>
@@ -60,6 +69,27 @@ class MergeConflictResolver extends React.Component<Props, State>
             }
             </div>
         )
+    }
+
+    chunkContentAccepted(chunkContent: string, index: number){
+        const chunks = this.state.chunks
+        const oldChunk = chunks[index]
+        const newChunk = {
+            type: ChunkType.NoConflict,
+            lineStart: oldChunk.lineStart,
+            lines: chunkContent.split("\n")
+        } as IChunkNoConflict
+        chunks.splice(index, 1, newChunk)
+
+        const newContent = combineChunks(chunks)
+        const filepath = path.join(this.props.repoRoot, this.props.filename)
+        try{
+            fs.writeFileSync(filepath, newContent, {encoding: 'utf8'})
+        }catch(err){
+            console.error('error saving ~>', err)
+        }
+        const reParsed = parseMergeConflict(newContent)
+        this.setState({ chunks: reParsed })
     }
 }
 
@@ -74,7 +104,9 @@ interface StateProps {}
 
 interface DispatchProps {}
 
-interface State {}
+interface State {
+    chunks: IChunk[]
+}
 
 const styles = (theme: Theme) => createStyles({
     chunk: {
