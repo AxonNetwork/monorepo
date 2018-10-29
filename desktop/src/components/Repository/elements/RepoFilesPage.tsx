@@ -3,13 +3,14 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import FileList from './FileList/FileList'
 import FileInfo from './FileInfo'
+import MergeConflictResolver from './MergeConflictResolver/MergeConflictResolver'
+import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
 import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
 import { IGetDiffAction, IRevertFilesAction, ISelectFileAction, ISelectCommitAction,
     selectFile, selectCommit, navigateRepoPage, getDiff, revertFiles } from 'redux/repository/repoActions'
-import { RepoPage } from 'redux/repository/repoReducer'
+import { RepoPage, FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
-import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
 
 
 @autobind
@@ -29,25 +30,40 @@ class RepoFilesPage extends React.Component<Props>
         const files = repo.files || {}
 
         if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
-            if (!selectedFile.editing) {
-                const relPath = selectedFile.file.replace(repo.path + '/', '')
-                return (
-                    <div className={classes.fileInfoContainer}>
-                        <FileInfo
-                            file={files[relPath]}
+            switch(selectedFile.mode) {
+                case FileMode.Edit: {
+                    return (
+                        <MarkdownEditor
                             repoRoot={repo.path}
+                            filename={selectedFile.file}
+                            defaultContents={selectedFile.defaultEditorContents}
                         />
-                    </div>
-                )
+                    )
+                }
 
-            } else {
-                return (
-                    <MarkdownEditor
-                        repoRoot={repo.path}
-                        filename={selectedFile.file}
-                        defaultContents={selectedFile.defaultEditorContents}
-                    />
-                )
+                case FileMode.ResolveConflict: {
+                    return (
+                        <MergeConflictResolver
+                            repoRoot={repo.path}
+                            filename={selectedFile.file}
+                        />
+
+                    )
+                }
+
+                case FileMode.View:
+                default: {
+                    const relPath = selectedFile.file.replace(repo.path + '/', '')
+                    return (
+                        <div className={classes.fileInfoContainer}>
+                            <FileInfo
+                                file={files[relPath]}
+                                repoRoot={repo.path}
+                            />
+                        </div>
+                    )
+                }
+
             }
         } else {
             const selectedFolder = selectedFile !== undefined ? selectedFile.file : undefined

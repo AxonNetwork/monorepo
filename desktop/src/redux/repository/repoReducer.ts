@@ -12,6 +12,12 @@ export enum RepoPage {
     Settings,
 }
 
+export enum FileMode {
+    View,
+    Edit,
+    ResolveConflict,
+}
+
 
 const initialState = {
     repos: {},
@@ -30,7 +36,7 @@ export interface IRepoState {
     selectedFile: {
         file: string
         isFolder: boolean
-        editing: boolean
+        mode: FileMode
         defaultEditorContents?: string | undefined,
     } | undefined
     selectedCommit: string | undefined

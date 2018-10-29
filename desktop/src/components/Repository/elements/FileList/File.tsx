@@ -5,8 +5,10 @@ import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
+import deepOrange from '@material-ui/core/colors/deepOrange'
 import EditIcon from '@material-ui/icons/Edit'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 import Tooltip from '@material-ui/core/Tooltip'
 import FileIcon from './FileIcon'
 
@@ -15,8 +17,9 @@ import bytes from 'bytes'
 import path from 'path'
 const shell = (window as any).require('electron').shell
 
+import { IRepoFile } from 'common'
+import { FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
-import { IRepoFile } from '../../../../common'
 
 
 @autobind
@@ -24,7 +27,7 @@ class File extends React.Component<Props>
 {
     selectFile() {
         const isFolder = this.props.file.type === 'folder'
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder, editing: false } })
+        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder, mode: FileMode.View } })
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {
@@ -35,7 +38,12 @@ class File extends React.Component<Props>
 
     openEditor(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, editing: true } })
+        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.Edit } })
+    }
+
+    openMergeResolver(e: React.MouseEvent<HTMLElement>) {
+        e.stopPropagation()
+        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.ResolveConflict } })
     }
 
     canQuickEdit() {
@@ -50,7 +58,12 @@ class File extends React.Component<Props>
         const name = path.basename(file.name)
         return (
             <React.Fragment>
-                <TableRow hover={canClickFile} onClick={this.selectFile} className={classes.tableRow} classes={{ hover: classes.tableRowHover }}>
+                <TableRow 
+                    hover={canClickFile} 
+                    onClick={this.selectFile} 
+                    className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : "")} 
+                    classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
+                >
                     <TableCell scope="row" className={classes.tableCell}>
                         <div className={classes.listItem}>
                             <FileIcon fileType={file.type} status={file.status}/>
@@ -60,10 +73,15 @@ class File extends React.Component<Props>
                     <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
                     <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
                     <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
+                        {file.mergeConflict &&
+                            <Tooltip title="Resolve merge conflict">
+                                <IconButton onClick={this.openMergeResolver} className={classes.editIconButton}><CompareArrowsIcon /></IconButton>
+                            </Tooltip>
+                        }
                         {this.canQuickEdit() &&
-                        <Tooltip title="Quick edit">
-                            <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
-                        </Tooltip>
+                            <Tooltip title="Quick edit">
+                                <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
+                            </Tooltip>
                         }
                         <Tooltip title="Open this file with another app">
                             <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
@@ -100,6 +118,14 @@ const styles = createStyles({
         '&:hover': {
             backgroundColor: 'rgba(124, 170, 255, 0.13) !important',
         },
+    },
+    mergeConflict: {
+        backgroundColor: deepOrange[300]
+    },
+    mergeConflictHover: {
+        '&:hover': {
+            backgroundColor: deepOrange[400] + " !important"
+        }
     },
 
     // This is here so that it can be overridden by FileList or other parent components

@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { selectFile } from 'redux/repository/repoActions'
+import { FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
 
 @autobind
@@ -32,7 +33,7 @@ class Breadcrumbs extends React.Component<Props>
 
         const { repoRoot, selectedFolder } = this.props
         const parts = this.getParts(repoRoot, selectedFolder)
-        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true, editing: false } })
+        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true, mode: FileMode.View } })
     }
 
     getParts(repoRoot: string, selectedFolder: string | undefined) {

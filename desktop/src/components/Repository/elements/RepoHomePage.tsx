@@ -18,7 +18,7 @@ import { IRepo, IUser, IDiscussion } from 'common'
 import { IGlobalState } from 'redux/store'
 import { selectCommit, selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { selectDiscussion } from 'redux/discussion/discussionActions'
-import { RepoPage } from 'redux/repository/repoReducer'
+import { RepoPage, FileMode } from 'redux/repository/repoReducer'
 import FileViewer from './FileViewer'
 import UserAvatar from 'components/UserAvatar'
 import Timeline from './Timeline/Timeline'
@@ -205,7 +205,7 @@ class RepoHomePage extends React.Component<Props>
         const defaultEditorContents =
             `# ${repo.repoID}\n\nWrite some instructions or a welcome message here to help others understand the work that you're doing.  Markdown syntax is fully supported.  When you're done, save the file and commit it to the repository.\n\n## Contributors\n\n${contributors}`
 
-        this.props.selectFile({ selectedFile: { file: 'README.md', isFolder: false, editing: true, defaultEditorContents } })
+        this.props.selectFile({ selectedFile: { file: 'README.md', isFolder: false, mode: FileMode.Edit, defaultEditorContents } })
         this.props.navigateRepoPage({ repoPage: RepoPage.Files })
     }
 }

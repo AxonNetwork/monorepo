@@ -1,6 +1,6 @@
 import { IRepoFile, ITimelineEvent } from '../../common'
 import { FailedAction } from '../reduxUtils'
-import { RepoPage } from './repoReducer'
+import { RepoPage, FileMode } from './repoReducer'
 
 export enum RepoActionType {
     CREATE_REPO = 'CREATE_REPO',
@@ -296,7 +296,7 @@ export interface ISelectFileAction {
         selectedFile: {
             file: string
             isFolder: boolean
-            editing: boolean
+            mode: FileMode
             defaultEditorContents?: string,
         } | undefined,
     }

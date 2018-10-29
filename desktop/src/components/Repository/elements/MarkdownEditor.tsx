@@ -12,6 +12,7 @@ import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import Breadcrumbs from 'components/Repository/elements/FileList/Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
+import { FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
 
 
@@ -97,13 +98,13 @@ class MarkdownEditor extends React.Component<Props, State>
 
     onClickClose() {
         if (this.state.fileExistsOnDisk) {
-            this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, editing: false } })
+            this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, mode: FileMode.View } })
         } else {
             const dir = path.dirname(this.props.filename)
             if (dir === '.') {
                 this.props.selectFile({ selectedFile: undefined })
             } else {
-                this.props.selectFile({ selectedFile: { file: dir, isFolder: true, editing: false } })
+                this.props.selectFile({ selectedFile: { file: dir, isFolder: true, mode: FileMode.View } })
             }
         }
     }

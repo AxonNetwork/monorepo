@@ -20,6 +20,7 @@ import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from './Breadcrumbs'
 import { selectFile } from 'redux/repository/repoActions'
+import { FileMode } from 'redux/repository/repoReducer'
 import { IRepoFile } from 'common'
 import autobind from 'utils/autobind'
 
@@ -115,7 +116,7 @@ class FileList extends React.Component<Props, State>
         const basepath = this.props.selectedFolder || '.'
         const fullpath = path.join(basepath, filename)
 
-        this.props.selectFile({ selectedFile: { file: fullpath, isFolder: false, editing: true } })
+        this.props.selectFile({ selectedFile: { file: fullpath, isFolder: false, mode: FileMode.Edit } })
     }
 
     onClickCancelNewFile() {

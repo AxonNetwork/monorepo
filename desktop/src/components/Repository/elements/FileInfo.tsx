@@ -13,6 +13,7 @@ import autobind from 'utils/autobind'
 import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
 import FileViewer from './FileViewer'
+import { FileMode } from 'redux/repository/repoReducer'
 const shell = (window as any).require('electron').shell
 
 
@@ -89,7 +90,7 @@ class FileInfo extends React.Component<Props>
     }
 
     onClickQuickEdit() {
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, editing: true } })
+        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.Edit } })
     }
 
     onClickOpen() {

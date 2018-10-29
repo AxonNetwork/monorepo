@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
-import { RepoPage } from 'redux/repository/repoReducer'
+import { RepoPage, FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
 import FileViewer from '../Repository/elements/FileViewer'
 
@@ -45,7 +45,7 @@ class FileLink extends React.Component<Props, State>
     }
 
     goToFile() {
-        this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, editing: false } })
+        this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, mode: FileMode.View } })
         this.props.navigateRepoPage({ repoPage: RepoPage.Files })
     }
 
