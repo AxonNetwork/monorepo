@@ -13,9 +13,9 @@ import { IOrganization } from 'common'
 
 class OrganizationPage extends React.Component<Props>
 {
-    render(){
+    render() {
         const { org, orgPage, classes } = this.props
-        if(org === undefined){
+        if (org === undefined) {
             return null
         }
 
@@ -40,7 +40,7 @@ class OrganizationPage extends React.Component<Props>
                     <Tabs
                         pages={[
                             [OrgPage.Home, 'Home'],
-                            [OrgPage.Settings, 'Settings']
+                            [OrgPage.Settings, 'Settings'],
                         ]}
                         activePage={this.props.orgPage}
                         onTabSelect={(orgPage: OrgPage) => this.props.navigateOrgPage({ orgPage })}
@@ -81,31 +81,31 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'space-between',
         width: '100%',
         borderBottom: '1px solid #e4e4e4',
-        marginBottom: theme.spacing.unit * 2
+        marginBottom: theme.spacing.unit * 2,
     },
     orgInfoContainer: {
         display: 'flex',
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing.unit,
     },
     orgInfo: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
     },
     orgPicture: {
         width: 100,
         borderRadius: 10,
-        marginRight: theme.spacing.unit * 4
+        marginRight: theme.spacing.unit * 4,
     },
     headline: {
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing.unit,
     },
     description: {
         fontStyle: 'italic',
         marginBottom: theme.spacing.unit,
-        fontSize: '12pt'
+        fontSize: '12pt',
     },
     tabContainer: {
         display: 'flex',
@@ -153,9 +153,9 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const org = state.org.orgs[state.org.selectedOrg || ""]
+    const org = state.org.orgs[state.org.selectedOrg || '']
     const orgPage = state.org.orgPage
-    const menuLabelsHidden = state.user.menuLabelsHidden
+    const menuLabelsHidden = state.user.userSettings.menuLabelsHidden
     return {
         org,
         orgPage,
@@ -164,7 +164,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    navigateOrgPage
+    navigateOrgPage,
 }
 
 export default connect(

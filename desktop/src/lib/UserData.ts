@@ -16,6 +16,7 @@ export interface IUserDataContents {
     ignoredSharedRepos?: string[]
     codeColorScheme?: string
     menuLabelsHidden?: boolean
+    fileExtensionsHidden?: boolean
     newestViewedCommentTimestamp?: ICommentTimestamp
 }
 
@@ -68,6 +69,26 @@ const UserData = {
         })
     },
 
+    async merge(newData: IUserDataContents) {
+        let data: IUserDataContents
+        try {
+            data = await UserData.readAll()
+        } catch (err) {
+            data = {}
+        }
+
+        data = { ...data, ...newData }
+
+        UserData.__cached = data
+
+        return new Promise((resolve, reject) => {
+            fs.writeFile(CONFIG_PATH, JSON.stringify(data), (err: Error) => {
+                if (err) { return reject(err) }
+                resolve()
+            })
+        })
+    },
+
     async getJWT() {
         return ((await UserData.get('jwt')) || undefined) as string
     },
@@ -86,18 +107,6 @@ const UserData = {
         ignoredSharedRepos.push(repoID)
         ignoredSharedRepos = uniq(ignoredSharedRepos)
         await UserData.set('ignoredSharedRepos', ignoredSharedRepos)
-    },
-
-    async codeColorScheme() {
-        return UserData.get('codeColorScheme')
-    },
-
-    async setCodeColorScheme(codeColorScheme: string) {
-        await UserData.set('codeColorScheme', codeColorScheme)
-    },
-
-    async hideMenuLabels(menuLabelsHidden: boolean) {
-        await UserData.set('menuLabelsHidden', menuLabelsHidden)
     },
 
     async setNewestViewedCommentTimestamp(repoID: string, discussionID: string, commentTimestamp: number) {

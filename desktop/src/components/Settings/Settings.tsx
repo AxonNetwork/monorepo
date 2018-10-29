@@ -16,7 +16,7 @@ import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
 import DeleteIcon from '@material-ui/icons/Delete'
 
-import { setCodeColorScheme, hideMenuLabels, logout, uploadUserPicture, modifyUserEmail } from 'redux/user/userActions'
+import { setLocalConfig, logout, uploadUserPicture, modifyUserEmail } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 import CodeViewer from '../Repository/elements/CodeViewer'
@@ -29,12 +29,17 @@ class Settings extends React.Component<Props>
     _inputNewEmail!: HTMLInputElement | null
 
     onChangeCodeColorScheme(evt: any) {
-        this.props.setCodeColorScheme({ codeColorScheme: evt.target.value })
+        this.props.setLocalConfig({ config: { codeColorScheme: evt.target.value } })
     }
 
     onChangeHideMenuLabels(evt: any) {
         const menuLabelsHidden = evt.target.checked
-        this.props.hideMenuLabels({ menuLabelsHidden })
+        this.props.setLocalConfig({ config: { menuLabelsHidden } })
+    }
+
+    onChangeHideFileExtensions(evt: any) {
+        const fileExtensionsHidden = evt.target.checked
+        this.props.setLocalConfig({ config: { fileExtensionsHidden } })
     }
 
     render() {
@@ -114,6 +119,15 @@ class Settings extends React.Component<Props>
                                 />
                             }
                             label="Hide menu labels" />
+
+                            <FormControlLabel control={
+                                <Checkbox
+                                    checked={this.props.fileExtensionsHidden}
+                                    onChange={this.onChangeHideFileExtensions}
+                                    value="hideFileExtensions"
+                                />
+                            }
+                            label="Hide file extensions" />
                         </section>
 
 
@@ -159,13 +173,16 @@ interface Props {
     currentUser: string | undefined
     currentUserPicture: string | undefined
     currentUserEmails: string[]
+
     codeColorScheme: string | undefined
-    setCodeColorScheme: typeof setCodeColorScheme
     menuLabelsHidden: boolean | undefined
-    hideMenuLabels: typeof hideMenuLabels
+    fileExtensionsHidden: boolean | undefined
+
+    setLocalConfig: typeof setLocalConfig
     logout: typeof logout
     uploadUserPicture: typeof uploadUserPicture
     modifyUserEmail: typeof modifyUserEmail
+
     classes: any
 }
 
@@ -248,14 +265,14 @@ const mapStateToProps = (state: IGlobalState) => {
         currentUser: state.user.currentUser,
         currentUserPicture: (state.user.users[ state.user.currentUser || '' ] || {}).picture,
         currentUserEmails: (state.user.users[ state.user.currentUser || '' ] || {}).emails || [],
-        codeColorScheme: state.user.codeColorScheme,
-        menuLabelsHidden: state.user.menuLabelsHidden,
+        codeColorScheme: state.user.userSettings.codeColorScheme,
+        menuLabelsHidden: state.user.userSettings.menuLabelsHidden,
+        fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden,
     }
 }
 
 const mapDispatchToProps = {
-    setCodeColorScheme,
-    hideMenuLabels,
+    setLocalConfig,
     logout,
     uploadUserPicture,
     modifyUserEmail,

@@ -5,31 +5,40 @@ import { IUser, ISharedRepoInfo } from '../../common'
 const initialState = {
     users: {},
     usersByEmail: {},
+
     currentUser: undefined,
     nodeUsername: undefined,
-    error: undefined,
     sharedRepos: {},
-    codeColorScheme: undefined,
-    menuLabelsHidden: false,
     checkedLocalUser: false,
-    newestViewedCommentTimestamp: {},
+    userSettings: {
+        codeColorScheme: 'pojoaque',
+        menuLabelsHidden: false,
+        fileExtensionsHidden: false,
+        newestViewedCommentTimestamp: {},
+    },
+
+    error: undefined,
 }
 
 export interface IUserState {
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string} // value is userID
+
     currentUser: string | undefined
     nodeUsername: string | undefined
-    error: Error | undefined
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
-    codeColorScheme: string | undefined
-    menuLabelsHidden: boolean
-    checkedLocalUser: boolean
-    newestViewedCommentTimestamp: {
-        [repoID: string]: {
-            [discussionID: string]: number,
+    userSettings: {
+        codeColorScheme: string | undefined
+        menuLabelsHidden: boolean
+        fileExtensionsHidden: boolean
+        newestViewedCommentTimestamp: {
+            [repoID: string]: {
+                [discussionID: string]: number,
+            },
         },
     }
+    checkedLocalUser: boolean
+    error: Error | undefined
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -152,25 +161,23 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             const { config } = action.payload
             return {
                 ...state,
-                codeColorScheme: config.codeColorScheme,
-                menuLabelsHidden: config.menuLabelsHidden || false,
-                newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
+                userSettings: {
+                    codeColorScheme: config.codeColorScheme,
+                    menuLabelsHidden: config.menuLabelsHidden || false,
+                    fileExtensionsHidden: config.fileExtensionsHidden || false,
+                    newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
+                },
             }
         }
 
-        case UserActionType.SET_CODE_COLOR_SCHEME_SUCCESS: {
-            const { codeColorScheme } = action.payload
+        case UserActionType.SET_LOCAL_CONFIG_SUCCESS: {
+            const { config } = action.payload
             return {
                 ...state,
-                codeColorScheme,
-            }
-        }
-
-        case UserActionType.HIDE_MENU_LABELS_SUCCESS: {
-            const { menuLabelsHidden } = action.payload
-            return {
-                ...state,
-                menuLabelsHidden,
+                userSettings: {
+                    ...state.userSettings,
+                    ...config,
+                },
             }
         }
 
@@ -185,11 +192,14 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             const { repoID, discussionID, commentTimestamp } = action.payload
             return {
                 ...state,
-                newestViewedCommentTimestamp: {
-                    ...state.newestViewedCommentTimestamp,
-                    [repoID]: {
-                        ...(state.newestViewedCommentTimestamp[repoID] || {}),
-                        [discussionID]: commentTimestamp,
+                userSettings: {
+                    ...state.userSettings,
+                    newestViewedCommentTimestamp: {
+                        ...state.userSettings.newestViewedCommentTimestamp,
+                        [repoID]: {
+                            ...(state.userSettings.newestViewedCommentTimestamp[repoID] || {}),
+                            [discussionID]: commentTimestamp,
+                        },
                     },
                 },
             }

@@ -56,6 +56,15 @@ class File extends React.Component<Props>
         const { file, selectFile, classes } = this.props
         const canClickFile = !!selectFile
         const name = path.basename(file.name)
+
+        let displayname: string
+        if (this.props.fileExtensionsHidden) {
+            const parts = name.split('.')
+            displayname = (parts.length > 1) ? parts.slice(0, -1).join('.') : parts[0]
+        } else {
+            displayname = name
+        }
+
         return (
             <React.Fragment>
                 <TableRow 
@@ -67,7 +76,7 @@ class File extends React.Component<Props>
                     <TableCell scope="row" className={classes.tableCell}>
                         <div className={classes.listItem}>
                             <FileIcon fileType={file.type} status={file.status}/>
-                            <Typography variant="subheading" className={classes.filename}>{name}</Typography>
+                            <Typography variant="subheading" className={classes.filename}>{displayname}</Typography>
                         </div>
                     </TableCell>
                     <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
@@ -97,6 +106,7 @@ interface Props {
     file: IRepoFile
     repoRoot: string
     selectFile: Function
+    fileExtensionsHidden: boolean | undefined
     classes: any
 }
 

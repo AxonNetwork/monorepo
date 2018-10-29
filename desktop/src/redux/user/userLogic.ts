@@ -15,8 +15,9 @@ import {
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IFetchOrgsAction, IFetchOrgsSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
-    ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
-    IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
+    ISetLocalConfigAction, ISetLocalConfigSuccessAction,
+    // ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
+    // IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
@@ -223,21 +224,12 @@ const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigS
     },
 })
 
-const setCodeColorSchemeLogic = makeLogic<ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction>({
-    type: UserActionType.SET_CODE_COLOR_SCHEME,
+const setLocalConfigLogic = makeLogic<ISetLocalConfigAction, ISetLocalConfigSuccessAction>({
+    type: UserActionType.SET_LOCAL_CONFIG,
     async process({ action }) {
-        const { codeColorScheme } = action.payload
-        await UserData.setCodeColorScheme(codeColorScheme)
-        return { codeColorScheme }
-    },
-})
-
-const hideMenuLabelsLogic = makeLogic<IHideMenuLabelsAction, IHideMenuLabelsSuccessAction>({
-    type: UserActionType.HIDE_MENU_LABELS,
-    async process({ action }) {
-        const { menuLabelsHidden } = action.payload
-        await UserData.hideMenuLabels(menuLabelsHidden)
-        return { menuLabelsHidden }
+        const { config } = action.payload
+        await UserData.merge(config)
+        return { config }
     },
 })
 
@@ -273,8 +265,7 @@ export default [
     fetchOrgsLogic,
     sawCommentLogic,
     readLocalConfigLogic,
-    setCodeColorSchemeLogic,
-    hideMenuLabelsLogic,
+    setLocalConfigLogic,
     uploadUserPictureLogic,
     modifyUserEmailLogic,
 ]

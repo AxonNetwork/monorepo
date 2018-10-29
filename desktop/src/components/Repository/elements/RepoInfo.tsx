@@ -111,7 +111,7 @@ const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
     const repo = state.repository.repos[selected]
     const repoPage = state.repository.repoPage
-    const menuLabelsHidden = state.user.menuLabelsHidden
+    const menuLabelsHidden = state.user.userSettings.menuLabelsHidden
     const pullLoading = state.ui.pullLoading
     const checkpointLoading = state.ui.checkpointLoading
     return {
