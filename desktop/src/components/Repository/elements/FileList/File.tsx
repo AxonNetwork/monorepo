@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 import EditIcon from '@material-ui/icons/Edit'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
-import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 import Tooltip from '@material-ui/core/Tooltip'
 import FileIcon from './FileIcon'
 
@@ -46,11 +45,6 @@ class File extends React.Component<Props>
         this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.Edit } })
     }
 
-    openMergeResolver(e: React.MouseEvent<HTMLElement>) {
-        e.stopPropagation()
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.ResolveConflict } })
-    }
-
     canQuickEdit() {
         // @@TODO: filetype standardization
         const extensions = [ '.md', '.markdown', '.mdown', '.txt' ]
@@ -70,12 +64,11 @@ class File extends React.Component<Props>
             displayname = name
         }
 
-        return (
-            <React.Fragment>
-                <TableRow 
-                    hover={canClickFile} 
-                    onClick={this.selectFile} 
-                    className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : "")} 
+        const fileRow = (
+                <TableRow
+                    hover={canClickFile}
+                    onClick={this.selectFile}
+                    className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : "")}
                     classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
                 >
                     <TableCell scope="row" className={classes.tableCell}>
@@ -87,11 +80,6 @@ class File extends React.Component<Props>
                     <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
                     <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
                     <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
-                        {file.mergeConflict &&
-                            <Tooltip title="Resolve merge conflict">
-                                <IconButton onClick={this.openMergeResolver} className={classes.editIconButton}><CompareArrowsIcon /></IconButton>
-                            </Tooltip>
-                        }
                         {this.canQuickEdit() &&
                             <Tooltip title="Quick edit">
                                 <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
@@ -102,8 +90,17 @@ class File extends React.Component<Props>
                         </Tooltip>
                     </TableCell>
                 </TableRow>
-            </React.Fragment>
         )
+        if(file.mergeConflict){
+            return (
+                <Tooltip title="This file has a merge conflict. Click to resolve.">
+                    {fileRow}
+                </Tooltip>
+            )
+        } else{
+            return fileRow
+
+        }
     }
 }
 
