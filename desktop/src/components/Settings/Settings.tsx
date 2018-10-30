@@ -19,7 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { setLocalConfig, logout, uploadUserPicture, modifyUserEmail } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
-import CodeViewer from '../Repository/elements/CodeViewer'
+import CodeViewer from '../Repository/elements/FileViewer/CodeViewer'
 import schemes from 'utils/codeColorSchemes'
 
 @autobind

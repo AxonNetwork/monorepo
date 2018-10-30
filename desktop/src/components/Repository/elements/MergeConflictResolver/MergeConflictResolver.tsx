@@ -3,7 +3,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import CodeViewer from '../CodeViewer'
+import CodeViewer from '../FileViewer/CodeViewer'
 import Conflict from './Conflict'
 import Breadcrumbs from '../FileList/Breadcrumbs'
 

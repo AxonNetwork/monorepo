@@ -5,7 +5,7 @@ import Popper from '@material-ui/core/Popper'
 import { selectFile, navigateRepoPage } from 'redux/repository/repoActions'
 import { RepoPage, FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
-import FileViewer from '../Repository/elements/FileViewer'
+import FileViewer from '../Repository/elements/FileViewer/FileViewer'
 
 @autobind
 class FileLink extends React.Component<Props, State>

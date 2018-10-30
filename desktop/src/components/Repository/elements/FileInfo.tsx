@@ -12,7 +12,7 @@ import { IRepoFile } from 'common'
 import autobind from 'utils/autobind'
 import SecuredText from './FileInfo/SecuredText'
 import CreateDiscussion from './Discussion/CreateDiscussion'
-import FileViewer from './FileViewer'
+import FileViewer from './FileViewer/FileViewer'
 import { FileMode } from 'redux/repository/repoReducer'
 const shell = (window as any).require('electron').shell
 

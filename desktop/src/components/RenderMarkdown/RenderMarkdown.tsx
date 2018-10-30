@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import FileLink from './FileLink'
 import DiscussionLink from './DiscussionLink'
 import CommentLink from './CommentLink'
-import CodeViewer from 'components/Repository/elements/CodeViewer'
+import CodeViewer from 'components/Repository/elements/FileViewer/CodeViewer'
 import shortcodes from './remark-references'
 import autobind from 'utils/autobind'
 

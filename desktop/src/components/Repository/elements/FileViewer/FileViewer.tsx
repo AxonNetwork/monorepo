@@ -6,6 +6,7 @@ import CardContent from '@material-ui/core/CardContent'
 import autobind from 'utils/autobind'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import CodeViewer from './CodeViewer'
+import DataViewer from './DataViewer'
 const fs = (window as any).require('fs')
 
 
@@ -61,6 +62,14 @@ class FileViewer extends React.Component<Props, State>
                 <Card>
                     <CardContent classes={{ root: classes.codeRoot }}>
                         <CodeViewer language={extension} contents={this.state.fileContents} />
+                    </CardContent>
+                </Card>
+            )
+        case 'csv':
+            return(
+                <Card>
+                    <CardContent classes={{ root: classes.dataRoot }}>
+                        <DataViewer fileType={extension} contents={this.state.fileContents} />
                     </CardContent>
                 </Card>
             )
@@ -121,6 +130,7 @@ class FileViewer extends React.Component<Props, State>
             'rs',
             'r',
             'txt',
+            'csv',
         ].includes(extension)
     }
 }
@@ -152,6 +162,8 @@ const styles = () => createStyles({
         paddingBottom: '0 !important',
         minWidth: 680,
     },
+    dataRoot: {
+    }
 })
 
 export default withStyles(styles)(FileViewer)

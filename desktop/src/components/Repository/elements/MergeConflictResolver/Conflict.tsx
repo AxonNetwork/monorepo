@@ -9,7 +9,7 @@ import CheckIcon from '@material-ui/icons/Check'
 import MergeTypeIcon from '@material-ui/icons/MergeType'
 import UndoIcon from '@material-ui/icons/Undo'
 
-import CodeViewer from '../CodeViewer'
+import CodeViewer from '../FileViewer/CodeViewer'
 import { IChunkConflict } from 'utils/mergeConflict'
 import autobind from 'utils/autobind'
 
