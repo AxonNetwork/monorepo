@@ -289,16 +289,18 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     type: RepoActionType.WATCH_REPO,
     async process({ action }, dispatch, done) {
         const { repoID, path } = action.payload
-        const watcher = RepoWatcher.watch(repoID, path)
-        watcher.on('file_change', () => {
-            dispatch(fetchRepoFiles({ path, repoID }))
-        })
-        watcher.on('behind_remote', () => {
-            dispatch(behindRemote({path}))
-        })
-        watcher.on('end', () => {
-            done()
-        })
+        const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists
+        if (watcher) {
+            watcher.on('file_change', () => {
+                dispatch(fetchRepoFiles({ path, repoID }))
+            })
+            watcher.on('behind_remote', () => {
+                dispatch(behindRemote({path}))
+            })
+            watcher.on('end', () => {
+                done()
+            })
+        }
     },
 })
 

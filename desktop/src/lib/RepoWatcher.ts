@@ -9,15 +9,23 @@ const watching: {
         mtime: number,
         emitter: events.EventEmitter,
         watcher: any,
-    } | undefined,
+    },
 } = {}
 
 const RepoWatcher = {
     watch(repoID: string, path: string) {
+        if (watching[path]) {
+            return null
+        }
+
         const emitter = new events.EventEmitter()
         const watcher = chokidar.watch(path, {
             persistent: true,
             ignoreInitial: true,
+            ignored: [
+                /\.git$/,
+                /\/node_modules\b/,
+            ],
         })
 
         watching[path] = {
