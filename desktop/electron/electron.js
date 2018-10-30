@@ -25,7 +25,7 @@ const spawn = require('child_process').spawn
 let mainWindow
 let repoServer
 
-fs.writeFileSync('/tmp/conscience-version', '0.1.0')
+fs.writeFileSync('/tmp/conscience-version', '0.0.9')
 
 function createWindow() {
     // Create the browser window.
