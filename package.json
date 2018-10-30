@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "1.0.0",
+  "version": "0.0.9",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -82,6 +82,7 @@
     "dotenv-webpack": "^1.5.7",
     "duplicate-package-checker-webpack-plugin": "^3.0.0",
     "electron-devtools-installer": "^2.2.4",
+    "electron-updater": "^3.1.5",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "file-loader": "^2.0.0",
@@ -240,9 +241,12 @@
       "desktop/build-resources/binaries/*"
     ],
     "mac": {
-      "target": "pkg",
       "category": "financial",
-      "icon": "icons/icon.png"
+      "icon": "icons/icon.png",
+      "publish": {
+        "provider": "s3",
+        "bucket": "conscience-app-releases"
+      }
     },
     "pkg": {
       "allowRootDirectory": true,
@@ -252,10 +256,18 @@
     "linux": {
       "target": [
         "deb"
-      ]
+      ],
+      "publish": {
+        "provider": "s3",
+        "bucket": "conscience-app-releases"
+      }
     },
     "win": {
       "target": "nsis"
+    },
+    "publish": {
+      "provider": "s3",
+      "bucket": "conscience-app-releases"
     }
   }
 }

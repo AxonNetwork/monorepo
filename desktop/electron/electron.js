@@ -19,10 +19,13 @@ const url = require('url')
 const fork = require('child_process').fork
 const spawn = require('child_process').spawn
 
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 let repoServer
+
+fs.writeFileSync('/tmp/conscience-version', '0.1.0')
 
 function createWindow() {
     // Create the browser window.
@@ -53,9 +56,33 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+
+    function writeLog() {
+        let str = Array.prototype.join.call(arguments, ' ')
+        fs.appendFileSync('/tmp/auto-update', str + '\n')
+    }
+    const { autoUpdater } = require('electron-updater')
+    const app = require('electron').app
+    autoUpdater.updateConfigPath = path.join(app.getAppPath(), 'dev-app-update.yml');
+    console.log('yayaya', path.join(app.getAppPath(), 'dev-app-update.yml'))
+    autoUpdater.logger = {
+        info: writeLog.bind(null, '[auto-update info]'),
+        warn: writeLog.bind(null, '[auto-update warn]'),
+        error: writeLog.bind(null, '[auto-update error]'),
+    }
+    autoUpdater.on('update-available', () => {
+        writeLog('update-available :D')
+    })
+    autoUpdater.on('update-not-available', () => {
+        writeLog('update-not-available :( :( :(')
+    })
+    autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
+
+
+
+
     createWindow()
     startNode()
-
     const menu = createMenu(app, shell)
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 });
