@@ -1,9 +1,13 @@
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
+import FormControl from '@material-ui/core/FormControl'
+import Input from '@material-ui/core/Input'
 import CheckIcon from '@material-ui/icons/Check'
 import MergeTypeIcon from '@material-ui/icons/MergeType'
+import UndoIcon from '@material-ui/icons/Undo'
 
 import CodeViewer from '../CodeViewer'
 import { IChunkConflict } from 'utils/mergeConflict'
@@ -32,7 +36,7 @@ class Conflict extends React.Component<Props, State>
 			            	className={classes.button}
 		            	>
 		            		<CheckIcon />
-		            		Accept Incoming Chunk
+		            		Accept Incoming Content
 		            	</Button>
 		            	<Button
 		            		onClick={this.onClickCombineAndEdit}
@@ -46,55 +50,66 @@ class Conflict extends React.Component<Props, State>
 		            		className={classes.button}
 	            		>
 		            		<CheckIcon />
-		            		Accept Local Chunk
+		            		Keep Local Content
 		            	</Button>
 		            </div>
-		            <div className={classes.split}>
-		                <div className={classes.column}>
-		                    <CodeViewer
-		                        language={language}
-		                        contents={upstreamContent}
-		                        classes={{codeContainer: classes.codeContainer}}
-		                    />
-		                </div>
-		                <div className={classes.divider}></div>
-		                <div className={classes.column}>
-		                    <CodeViewer
-		                        language={language}
-		                        contents={localContent}
-		                        classes={{codeContainer: classes.codeContainer}}
-		                    />
-		                </div>
-		            </div>
+		        	<Card className={classes.card}>
+			        	<CardContent>
+				            <div className={classes.split}>
+				                <div className={classes.column}>
+				                    <CodeViewer
+				                        language={language}
+				                        contents={upstreamContent}
+				                        classes={{codeContainer: classes.codeContainer}}
+				                    />
+				                </div>
+				                <div className={classes.divider}></div>
+				                <div className={classes.column}>
+				                    <CodeViewer
+				                        language={language}
+				                        contents={localContent}
+				                        classes={{codeContainer: classes.codeContainer}}
+				                    />
+				                </div>
+				            </div>
+			            </CardContent>
+		            </Card>
 	            </div>
 			)
         }else{
         	const combined = upstreamContent + "\n" + localContent
         	return(
-	        	<div>
+        		<div>
 	        		<div className={classes.toolbar}>
 		            	<Button
 		            		onClick={this.onClickAcceptCombination}
 			            	className={classes.button}
 		            	>
 		            		<CheckIcon />
-		            		Accept
+		            		Save
 		            	</Button>
 		            	<Button
 		            		onClick={this.onClickUncombine}
 			            	className={classes.button}
 		            	>
-		            		<CheckIcon />
-		            		Undo Combine
+		            		<UndoIcon />
+		            		Undo
 		            	</Button>
 	        		</div>
-	        		<TextField
-	        			fullWidth
-	        			multiline
-						rowsMax={32}
-		        		defaultValue={combined}
-		        		inputRef={ x => this._inputCombination = x }
-	        		/>
+		        	<Card className={classes.card}>
+		        		<CardContent>
+			        		<FormControl fullWidth>
+				        		<Input
+				        			fullWidth
+				        			multiline
+									rowsMax={32}
+					        		defaultValue={combined}
+					        		inputRef={ x => this._inputCombination = x }
+					        		classes={{ input: classes.input }}
+				        		/>
+			        		</FormControl>
+		        		</CardContent>
+		        	</Card>
 	        	</div>
     		)
         }
@@ -130,9 +145,13 @@ interface State{
 
 const styles = (theme: Theme) => createStyles({
 	button: {
-		border: '1px solid ' + theme.palette.grey[300],
-		marginBottom: -1,
-		textTransform: 'none'
+		marginBottom: -3,
+		textTransform: 'none',
+        color: 'white',
+        backgroundColor: '#313133',
+        '&:hover': {
+        	backgroundColor: '#454547',
+        },
 	},
 	toolbar: {
 		display: 'flex',
@@ -146,11 +165,19 @@ const styles = (theme: Theme) => createStyles({
 		flexGrow: 1,
 		paddingTop: 8
 	},
+	card: {
+		border: '2px solid #313133'
+	},
 	divider: {
-		backgroundColor: theme.palette.grey[300],
+		backgroundColor: '#313133',
 		width: 1,
 		marginRight: 8,
 		marginLeft: 8,
+	},
+	input: {
+		fontSize: "0.8rem",
+		fontFamily: 'Consolas, "Bitstream Vera Sans Mono", "Courier New", Courier, monospace',
+
 	},
 	codeContainer: {} //passthrough
 })

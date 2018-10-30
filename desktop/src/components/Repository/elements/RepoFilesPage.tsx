@@ -46,6 +46,7 @@ class RepoFilesPage extends React.Component<Props>
                         <MergeConflictResolver
                             repoRoot={repo.path}
                             filename={selectedFile.file}
+                            selectFile={this.props.selectFile}
                         />
 
                     )

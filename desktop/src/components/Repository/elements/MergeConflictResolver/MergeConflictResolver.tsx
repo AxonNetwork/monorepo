@@ -1,12 +1,13 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CodeViewer from '../CodeViewer'
 import Conflict from './Conflict'
+import Breadcrumbs from '../FileList/Breadcrumbs'
 
-import { IGlobalState } from 'redux/store'
+import { FileMode } from 'redux/repository/repoReducer'
 import { ChunkType, IChunk, IChunkConflict, IChunkNoConflict, parseMergeConflict, combineChunks } from 'utils/mergeConflict'
 import fs from 'fs'
 import path from 'path'
@@ -34,10 +35,22 @@ class MergeConflictResolver extends React.Component<Props, State>
 
         return (
             <div>
+                <Breadcrumbs
+                    repoRoot={this.props.repoRoot}
+                    selectedFolder={filename}
+                    classes={{ root: classes.breadcrumbs }}
+                />
+                <Typography variant="h6" className={classes.title}>
+                    Resolve Merge Conflicts
+                </Typography>
+
             {
                 chunks.map((ch, i) => {
                     if(ch.type === ChunkType.NoConflict){
                         const content = ch.lines.join("\n")
+                        if(content === ""){
+                            return null
+                        }
                         return (
                             <Card className={classes.chunk}>
                                 <CardContent>
@@ -52,16 +65,14 @@ class MergeConflictResolver extends React.Component<Props, State>
                     }
                     if(ch.type === ChunkType.Conflict){
                         return (
-                            <Card className={classes.chunk}>
-                                <CardContent>
-                                    <Conflict
-                                        language={language}
-                                        chunk={ch as IChunkConflict}
-                                        onAccept={(content: string)=>this.chunkContentAccepted(content, i)}
-                                        classes={{codeContainer: classes.codeContainer}}
-                                    />
-                                </CardContent>
-                            </Card>
+                            <div className={classes.chunk}>
+                                <Conflict
+                                    language={language}
+                                    chunk={ch as IChunkConflict}
+                                    onAccept={(content: string)=>this.chunkContentAccepted(content, i)}
+                                    classes={{codeContainer: classes.codeContainer}}
+                                />
+                            </div>
                         )
                     }
                     return null
@@ -90,42 +101,39 @@ class MergeConflictResolver extends React.Component<Props, State>
         }
         const reParsed = parseMergeConflict(newContent)
         this.setState({ chunks: reParsed })
+
+        // if no more conflicts, switch to viewer
+        if(reParsed.length === 1){
+            this.props.selectFile({ selectedFile: { file: this.props.filename, isFolder: false, mode: FileMode.View } })
+        }
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
-
-interface OwnProps {
+interface Props {
     repoRoot: string
     filename: string
+    selectFile: Function
+    classes: any
 }
-
-interface StateProps {}
-
-interface DispatchProps {}
 
 interface State {
     chunks: IChunk[]
 }
 
 const styles = (theme: Theme) => createStyles({
+    title:{
+        marginBottom: theme.spacing.unit
+    },
     chunk: {
         marginBottom: theme.spacing.unit
     },
     codeContainer: {
         padding: 0,
         overflowX: 'hidden',
+    },
+    breadcrumbs: {
+        marginBottom: theme.spacing.unit * 2
     }
 })
 
-
-const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    return {}
-}
-
-const mapDispatchToProps = {}
-
-export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(MergeConflictResolver))
+export default withStyles(styles)(MergeConflictResolver)

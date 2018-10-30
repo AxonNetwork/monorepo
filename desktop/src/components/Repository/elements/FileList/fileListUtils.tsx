@@ -39,6 +39,7 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
                 size: 0,
                 modified: new Date(0),
                 diff: '',
+                mergeConflict: false,
                 ...(merged[folderName] || {}),
             }
 
@@ -48,6 +49,9 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
             merged[folderName].size += file.size
             if (merged[folderName].modified < file.modified) {
                 merged[folderName].modified = file.modified
+            }
+            if (file.mergeConflict){
+                merged[folderName].mergeConflict = true
             }
         }
     }

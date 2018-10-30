@@ -26,8 +26,13 @@ import autobind from 'utils/autobind'
 class File extends React.Component<Props>
 {
     selectFile() {
-        const isFolder = this.props.file.type === 'folder'
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder, mode: FileMode.View } })
+        const { file } = this.props
+        const isFolder = file.type === 'folder'
+        if(file.mergeConflict) {
+            this.props.selectFile({ selectedFile: { file: file.name, isFolder, mode: FileMode.ResolveConflict } })
+        }else {
+            this.props.selectFile({ selectedFile: { file: file.name, isFolder, mode: FileMode.View } })
+        }
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {

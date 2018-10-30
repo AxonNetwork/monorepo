@@ -67,7 +67,9 @@ export function parseMergeConflict(contents: string) {
 				break
 
 			case LineType.UpstreamStart:
-				chunks.push(currentChunk)
+				if(currentChunk.type === ChunkType.Conflict || currentChunk.lines.length > 0){
+					chunks.push(currentChunk)
+				}
 				currentChunk = {
 					type: ChunkType.Conflict,
 					lineStart: i+1,
@@ -94,7 +96,9 @@ export function parseMergeConflict(contents: string) {
 				isUpstream = undefined
 				break
 		}
-		if( i === lines.length-1 && lineType !== LineType.ConflictEnd){
+		if( i === lines.length-1 && 
+			(currentChunk.type === ChunkType.Conflict  || currentChunk.lines.length > 0)
+		){
 			chunks.push(currentChunk)
 		}
 	}
