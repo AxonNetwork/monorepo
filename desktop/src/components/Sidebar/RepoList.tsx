@@ -24,7 +24,7 @@ class RepoList extends React.Component<Props>
                         const files = repo.files
                         if (files !== undefined) {
                             isChanged = Object.keys(files).some(
-                                (name) => files[name].status === 'M' || files[name].status === '?',
+                                (name) => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U',
                             )
                         }
                         const isSelected = currentPage === 'repo' && repo.path === selectedRepo

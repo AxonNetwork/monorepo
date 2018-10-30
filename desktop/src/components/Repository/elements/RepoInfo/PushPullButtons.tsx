@@ -14,8 +14,12 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
 import { IRepo } from 'common'
-import { pullRepo, checkpointRepo } from 'redux/repository/repoActions'
+import { pullRepo, checkpointRepo, selectFile } from 'redux/repository/repoActions'
+import { FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
 const shell = (window as any).require('electron').shell
 
@@ -23,7 +27,10 @@ const shell = (window as any).require('electron').shell
 @autobind
 class PushPullButtons extends React.Component<Props, State>
 {
-    state = { pushDialogOpen: false }
+    state = {
+        pushDialogOpen: false,
+        mergeConflictDialogOpen: false,
+    }
 
     _inputCommitMessage: HTMLInputElement | null = null
 
@@ -34,8 +41,10 @@ class PushPullButtons extends React.Component<Props, State>
         // @@TODO: calculate this in the reducer, and only when `files` changes
         const filesChanged = Object.keys(files).some((name) => {
             const file = files[name]
-            return (file.status === 'M' || file.status === '?')
+            return (file.status === 'M' || file.status === '?' || file.status === 'U')
         })
+
+        const mergeConflicts = Object.keys(files).filter((name => files[name].mergeConflict))
 
         return (
             <div className={classes.root}>
@@ -73,6 +82,28 @@ class PushPullButtons extends React.Component<Props, State>
                     </IconButton>
                 </Tooltip>
 
+
+                <Dialog open={this.state.mergeConflictDialogOpen}>
+                    <DialogTitle>Resolve Merge Conflicts</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Looks like you have some merge conflicts in the follow files. Click on the file to resolve the conflicts before committing your changes.
+                        </DialogContentText>
+                        <List>
+                        {
+                            mergeConflicts.map(file => (
+                                <ListItem button onClick={()=>this.onClickOpenMergeConflict(file)}>
+                                    <ListItemText primary={file} />
+                                </ListItem>
+                            ))
+                        }
+                        </List>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.onClickCloseMergeConflictDialog} color="secondary" autoFocus>Okay</Button>
+                    </DialogActions>
+                </Dialog>
+
                 <Dialog open={this.state.pushDialogOpen}>
                     <DialogTitle>Commit your changes</DialogTitle>
                     <DialogContent>
@@ -100,11 +131,27 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickOpenPushDialog() {
-        this.setState({ pushDialogOpen: true })
+        const files = this.props.repo.files || {}
+        const mergeConflict = Object.keys(files).some((name => files[name].mergeConflict))
+        if(mergeConflict) {
+            this.setState({ mergeConflictDialogOpen: true })
+
+        } else {
+            this.setState({ pushDialogOpen: true })
+        }
     }
 
     onClickCancelPushDialog() {
         this.setState({ pushDialogOpen: false })
+    }
+
+    onClickCloseMergeConflictDialog() {
+        this.setState({ mergeConflictDialogOpen: false })
+    }
+
+    onClickOpenMergeConflict(file: string){
+        this.setState({ mergeConflictDialogOpen: false })
+        this.props.selectFile({ selectedFile: { file, isFolder: false, mode: FileMode.ResolveConflict } })
     }
 
     onClickPush() {
@@ -125,6 +172,7 @@ class PushPullButtons extends React.Component<Props, State>
 interface Props {
     pullRepo: typeof pullRepo
     checkpointRepo: typeof checkpointRepo
+    selectFile: typeof selectFile
 
     repo: IRepo
 
@@ -135,6 +183,7 @@ interface Props {
 
 interface State {
     pushDialogOpen: boolean
+    mergeConflictDialogOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -164,6 +213,7 @@ const styles = (theme: Theme) => createStyles({
 const mapDispatchToProps = {
     pullRepo,
     checkpointRepo,
+    selectFile,
 }
 
 export default connect(

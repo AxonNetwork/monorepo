@@ -39,7 +39,7 @@ function FileIcon(props: FileIconProps) {
         default:
             icon = <HelpOutlineIcon />
     }
-    if (status === 'M' || status === '?') {
+    if (status === 'M' || status === '?' || status === 'U') {
         icon = (
             <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
                 {icon}
