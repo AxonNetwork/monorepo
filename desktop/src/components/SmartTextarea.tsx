@@ -1,4 +1,4 @@
-import { endsWith } from 'lodash'
+import path from 'path'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -131,7 +131,8 @@ class SmartTextarea extends React.Component<Props, State>
                             {file}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@image' && fileNames.filter((f: string) => endsWith(f, '.jpg')).map((file: string) => (
+                    {/* @@TODO: filetype standardization */}
+                    {this.state.embedType === '@image' && fileNames.filter((f: string) => ['.png', '.jpg', '.jpe', '.jpeg'].includes(path.extname(f))).map((file: string) => (
                         <MenuItem
                             onClick={() => this.handleClose('@image', file)}
                             classes={{root: classes.menuItem}}
