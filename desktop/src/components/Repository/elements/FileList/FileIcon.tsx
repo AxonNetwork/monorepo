@@ -35,7 +35,7 @@ function FileIcon(props: FileIconProps) {
         case 'folder':
             icon = <FolderIcon />
             break
-        case 'unkown':
+        case 'unknown':
         default:
             icon = <HelpOutlineIcon />
     }
