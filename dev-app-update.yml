@@ -1,0 +1,2 @@
+provider: s3
+bucket: conscience-app-releases
