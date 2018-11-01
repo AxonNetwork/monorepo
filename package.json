@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -242,7 +242,15 @@
     ],
     "mac": {
       "category": "financial",
-      "icon": "icons/icon.png"
+      "icon": "icons/icon.png",
+      "binaries": [
+        "desktop/build-resources/binaries/conscience",
+        "desktop/build-resources/binaries/conscience-node",
+        "desktop/build-resources/binaries/conscience_decode",
+        "desktop/build-resources/binaries/conscience_encode",
+        "desktop/build-resources/binaries/conscience_diff",
+        "desktop/build-resources/binaries/git-remote-conscience"
+      ]
     },
     "pkg": {
       "allowRootDirectory": true,
