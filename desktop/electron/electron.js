@@ -25,7 +25,7 @@ const spawn = require('child_process').spawn
 let mainWindow
 let repoServer
 
-fs.writeFileSync('/tmp/conscience-version', '0.0.9')
+// fs.writeFileSync('/tmp/conscience-version', '0.1.0')
 
 function createWindow() {
     // Create the browser window.
@@ -57,32 +57,28 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
 
-    function writeLog() {
-        let str = Array.prototype.join.call(arguments, ' ')
-        fs.appendFileSync('/tmp/auto-update', str + '\n')
-    }
+    // function writeLog() {
+    //     let str = Array.prototype.join.call(arguments, ' ')
+    //     // fs.appendFileSync('/tmp/auto-update', str + '\n')
+    // }
     const { autoUpdater } = require('electron-updater')
-    const app = require('electron').app
-    autoUpdater.updateConfigPath = path.join(app.getAppPath(), 'dev-app-update.yml');
-    console.log('yayaya', path.join(app.getAppPath(), 'dev-app-update.yml'))
-    autoUpdater.logger = {
-        info: writeLog.bind(null, '[auto-update info]'),
-        warn: writeLog.bind(null, '[auto-update warn]'),
-        error: writeLog.bind(null, '[auto-update error]'),
-    }
-    autoUpdater.on('update-available', () => {
-        writeLog('update-available :D')
-    })
-    autoUpdater.on('update-not-available', () => {
-        writeLog('update-not-available :( :( :(')
-    })
+    // autoUpdater.logger = {
+    //     info: writeLog.bind(null, '[auto-update info]'),
+    //     warn: writeLog.bind(null, '[auto-update warn]'),
+    //     error: writeLog.bind(null, '[auto-update error]'),
+    // }
+    // autoUpdater.on('update-available', () => {
+    //     writeLog('update-available :D')
+    // })
+    // autoUpdater.on('update-not-available', () => {
+    //     writeLog('update-not-available :( :( :(')
+    // })
     autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
-
-
 
 
     createWindow()
     startNode()
+    const app = require('electron').app
     const menu = createMenu(app, shell)
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 });
@@ -114,6 +110,7 @@ function getEnv() {
         CONSCIENCE_APP_PATH: appPath,
         CONSCIENCE_BINARIES_PATH: binariesPath,
         PATH: binariesPath + ':' + process.env.PATH + ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
+        BUGSNAG_ENABLED: '1',
     })
     return env
 }
@@ -123,13 +120,13 @@ function startNode() {
     const env = getEnv()
     const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node')
 
-    fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
-    fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
-    fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
+    // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
+    // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
+    // fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
 
     nodeProc = spawn(nodePath, [], { env })
-    nodeProc.stdout.on('data', data => { fs.appendFileSync('/tmp/conscience-stdout', data) })
-    nodeProc.stderr.on('data', data => { fs.appendFileSync('/tmp/conscience-stderr', data) })
+    // nodeProc.stdout.on('data', data => { fs.appendFileSync('/tmp/conscience-stdout', data) })
+    // nodeProc.stderr.on('data', data => { fs.appendFileSync('/tmp/conscience-stderr', data) })
 }
 
 app.on('will-quit', () => {

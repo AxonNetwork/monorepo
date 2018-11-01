@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "0.0.9",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -242,11 +242,7 @@
     ],
     "mac": {
       "category": "financial",
-      "icon": "icons/icon.png",
-      "publish": {
-        "provider": "s3",
-        "bucket": "conscience-app-releases"
-      }
+      "icon": "icons/icon.png"
     },
     "pkg": {
       "allowRootDirectory": true,
@@ -255,12 +251,8 @@
     },
     "linux": {
       "target": [
-        "deb"
-      ],
-      "publish": {
-        "provider": "s3",
-        "bucket": "conscience-app-releases"
-      }
+        "appImage"
+      ]
     },
     "win": {
       "target": "nsis"
