@@ -10,13 +10,11 @@ import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { pickBy } from 'lodash'
 
 import SharedRepos from './elements/SharedRepos'
 import { IGlobalState } from 'redux/store'
 import { createRepo } from 'redux/repository/repoActions'
-import { cloneSharedRepo } from 'redux/user/userActions'
-import { IOrganization, ISharedRepoInfo } from 'common'
+import { IOrganization } from 'common'
 import autobind from 'utils/autobind'
 
 @autobind
@@ -94,10 +92,7 @@ class NewRepository extends React.Component<Props, State>
                     </form>
                 </Grid>
                 <Grid item className={classes.column} xs={12} sm={6}>
-                    <SharedRepos
-                        sharedRepos={this.props.sharedRepos}
-                        cloneSharedRepo={this.props.cloneSharedRepo}
-                    />
+                    <SharedRepos />
                 </Grid>
             </Grid>
         )
@@ -105,12 +100,10 @@ class NewRepository extends React.Component<Props, State>
 }
 
 interface Props {
-    sharedRepos: {[repoID: string]: ISharedRepoInfo}
     orgs: {[orgID: string]: IOrganization}
     selectedOrg: string
     createRepoLoading: boolean
     createRepo: typeof createRepo
-    cloneSharedRepo: typeof cloneSharedRepo
     classes: any
 }
 
@@ -142,18 +135,10 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const sharedRepos = state.user.sharedRepos || {}
-    const repos = state.repository.repos
-    const repoList = Object.keys(repos).map(r => repos[r].repoID)
-    const filteredSharedRepos = pickBy(
-        sharedRepos,
-        r => repoList.indexOf(r.repoID) < 0,
-    )
     const orgs = state.org.orgs
     const selectedOrg = state.org.selectedOrg || ""
     const createRepoLoading = state.ui.createRepoLoading
     return {
-        sharedRepos: filteredSharedRepos,
         orgs,
         selectedOrg,
         createRepoLoading,
@@ -162,7 +147,6 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     createRepo,
-    cloneSharedRepo,
 }
 
 export default connect(

@@ -13,6 +13,7 @@ import {
     IGetSharedReposAction, IGetSharedReposSuccessAction,
     ICloneSharedRepoAction, ICloneSharedRepoSuccessAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
+    IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction,
     IFetchOrgsAction, IFetchOrgsSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetLocalConfigAction, ISetLocalConfigSuccessAction,
@@ -216,6 +217,16 @@ const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRe
     },
 })
 
+const unshareRepoFromSelfLogic = makeLogic<IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction>({
+    type: UserActionType.UNSHARE_REPO_FROM_SELF,
+    async process({ action, getState }) {
+        const { repoID } = action.payload
+        const userID = getState().user.currentUser || ""
+        await ServerRelay.unshareRepo(repoID, userID)
+        return { repoID }
+    },
+})
+
 const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigSuccessAction>({
     type: UserActionType.READ_LOCAL_CONFIG,
     async process(_) {
@@ -262,6 +273,7 @@ export default [
     getSharedReposLogic,
     cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
+    unshareRepoFromSelfLogic,
     fetchOrgsLogic,
     sawCommentLogic,
     readLocalConfigLogic,

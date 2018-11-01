@@ -44,6 +44,10 @@ export enum UserActionType {
     IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
     IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
 
+    UNSHARE_REPO_FROM_SELF = 'UNSHARE_REPO_FROM_SELF',
+    UNSHARE_REPO_FROM_SELF_SUCCESS = 'UNSHARE_REPO_FROM_SELF_SUCCESS',
+    UNSHARE_REPO_FROM_SELF_FAILED = 'UNSHARE_REPO_FROM_SELF_FAILED',
+
     FETCH_ORGS = 'FETCH_ORGS',
     FETCH_ORGS_SUCCESS = 'FETCH_ORGS_SUCCESS',
     FETCH_ORGS_FAILED = 'FETCH_ORGS_FAILED',
@@ -246,6 +250,22 @@ export interface IIgnoreSharedRepoSuccessAction {
 
 export type IIgnoreSharedRepoFailedAction = FailedAction<UserActionType.IGNORE_SHARED_REPO_FAILED>
 
+export interface IUnshareRepoFromSelfAction {
+    type: UserActionType.UNSHARE_REPO_FROM_SELF
+    payload: {
+        repoID: string,
+    }
+}
+
+export interface IUnshareRepoFromSelfSuccessAction {
+    type: UserActionType.UNSHARE_REPO_FROM_SELF_SUCCESS
+    payload: {
+        repoID: string,
+    }
+}
+
+export type IUnshareRepoFromSelfFailedAction = FailedAction<UserActionType.UNSHARE_REPO_FROM_SELF_FAILED>
+
 export interface IFetchOrgsAction {
     type: UserActionType.FETCH_ORGS
     payload: {
@@ -401,6 +421,10 @@ export type IUserAction =
     IIgnoreSharedRepoSuccessAction |
     IIgnoreSharedRepoFailedAction |
 
+    IUnshareRepoFromSelfAction |
+    IUnshareRepoFromSelfSuccessAction |
+    IUnshareRepoFromSelfFailedAction |
+
     IFetchOrgsAction |
     IFetchOrgsSuccessAction |
     IFetchOrgsFailedAction |
@@ -439,6 +463,7 @@ export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALA
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
 export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })
 export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): IIgnoreSharedRepoAction => ({ type: UserActionType.IGNORE_SHARED_REPO, payload })
+export const unshareRepoFromSelf = (payload: IUnshareRepoFromSelfAction['payload']): IUnshareRepoFromSelfAction => ({ type: UserActionType.UNSHARE_REPO_FROM_SELF, payload })
 
 export const fetchOrgs = (payload: IFetchOrgsAction['payload']): IFetchOrgsAction => ({ type: UserActionType.FETCH_ORGS, payload })
 

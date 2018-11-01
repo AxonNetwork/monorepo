@@ -1,6 +1,7 @@
 import { fromPairs } from 'lodash'
 import { UserActionType, IUserAction } from './userActions'
 import { IUser, ISharedRepoInfo } from '../../common'
+import { pickBy } from 'lodash'
 
 const initialState = {
     users: {},
@@ -140,6 +141,19 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 sharedRepos: {
                     [repoID]: { repoID, ignored: true },
                 },
+            }
+        }
+
+        case UserActionType.UNSHARE_REPO_FROM_SELF_SUCCESS: {
+            const { repoID } = action.payload
+            const sharedRepos = state.sharedRepos
+            const updated = pickBy(
+                sharedRepos,
+                r => r.repoID !== repoID
+            )
+            return {
+                ...state,
+                sharedRepos: updated
             }
         }
 
