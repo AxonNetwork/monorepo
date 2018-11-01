@@ -64,7 +64,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             multiline
                             fullWidth
                             variant="outlined"
-                            rows="40"
+                            rows="38"
                             defaultValue={this.state.contents}
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
@@ -162,9 +162,10 @@ interface State {
 
 const styles = (theme: Theme) => createStyles({
     root: {
+        display: 'flex',
+        flexDirection: 'column',
         height: '100%',
         paddingBottom: 30,
-        marginRight: 32,
     },
     toolbar: {
         display: 'flex',
@@ -172,11 +173,13 @@ const styles = (theme: Theme) => createStyles({
     },
     columnContainer: {
         display: 'flex',
+        flexGrow: 1,
         height: '100%',
     },
     textareaWrapper: {
         flexGrow: 1,
         width: '50%',
+        height: '100%',
         marginRight: 30,
 
         '& textarea': {
@@ -187,6 +190,8 @@ const styles = (theme: Theme) => createStyles({
     renderedWrapper: {
         flexGrow: 1,
         width: '50%',
+        height: '100%',
+        overflowY: 'scroll'
     },
 })
 
