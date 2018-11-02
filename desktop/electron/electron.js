@@ -1,5 +1,5 @@
 
-
+const psTree = require('ps-tree')
 const fixPath = require('fix-path')
 // on OSX, electron loses the user's PATH
 fixPath()
@@ -129,9 +129,30 @@ function startNode() {
     nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
 }
 
-app.on('will-quit', () => {
+let isKilled = false
+
+app.on('before-quit', (event) => {
+    if(isKilled){
+        return
+    }
+    event.preventDefault()
     if (nodeProc) {
-        nodeProc.kill()
+        psTree(nodeProc.pid, (err, children) => {
+            if (err) { return console.log('err', err) }
+            children.map(c => parseInt(c.PID, 10)).forEach(pid => {
+                try {
+                    process.kill(pid)
+                } catch(err) { console.log('err killing child', err) }
+            })
+            try {
+                process.kill(nodeProc.pid)
+            } catch(err) { console.log('err killing parent', err) }
+            isKilled=true
+            app.quit()
+        })
+    } else{
+        isKilled=true
+        app.quit()
     }
 })
 
