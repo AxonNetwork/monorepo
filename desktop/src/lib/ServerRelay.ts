@@ -3,8 +3,6 @@ import axios from 'axios'
 import { IUser, IComment, IDiscussion, IOrganization } from '../common'
 
 const API_URL = process.env.API_URL
-const fs = (window as any).require('fs')
-fs.appendFileSync('/tmp/blah', 'API_URL ~> ' + API_URL + '\n')
 
 const ServerRelay = {
     setJWT(token: string | undefined) {

@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -263,7 +263,8 @@
       ]
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "icons/icon.ico"
     },
     "publish": {
       "provider": "s3",

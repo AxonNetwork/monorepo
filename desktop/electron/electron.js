@@ -103,13 +103,13 @@ app.on('activate', () => {
 function getEnv() {
     const appPath      = app.getAppPath()
     const binariesPath = process.env.NODE_ENV === 'development'
-        ? path.join(appPath, 'desktop/build-resources/binaries')
-        : path.join(appPath, '../desktop/build-resources/binaries')
+        ? path.join(appPath, 'desktop', 'build-resources', 'binaries')
+        : path.join(appPath, '..', 'desktop', 'build-resources', 'binaries')
 
     const env = Object.assign({}, process.env, {
         CONSCIENCE_APP_PATH: appPath,
         CONSCIENCE_BINARIES_PATH: binariesPath,
-        PATH: binariesPath + ':' + process.env.PATH + ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
+        PATH: [ binariesPath, process.env.PATH ].join(path.delimiter), // ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
         BUGSNAG_ENABLED: '1',
     })
     return env
@@ -118,15 +118,15 @@ function getEnv() {
 var nodeProc = null
 function startNode() {
     const env = getEnv()
-    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node')
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node.exe')
 
     // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
     // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
     // fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
 
     nodeProc = spawn(nodePath, [], { env })
-    // nodeProc.stdout.on('data', data => { fs.appendFileSync('/tmp/conscience-stdout', data) })
-    // nodeProc.stderr.on('data', data => { fs.appendFileSync('/tmp/conscience-stderr', data) })
+    nodeProc.stdout.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stdout.txt', data) })
+    nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
 }
 
 app.on('will-quit', () => {
