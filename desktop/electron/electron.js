@@ -101,10 +101,11 @@ app.on('activate', () => {
 });
 
 function getEnv() {
-    const appPath      = app.getAppPath()
+    const appPath = app.getAppPath()
+
     const binariesPath = process.env.NODE_ENV === 'development'
-        ? path.join(appPath, 'desktop', 'build-resources', 'binaries')
-        : path.join(appPath, '..', 'desktop', 'build-resources', 'binaries')
+        ? path.join(appPath, 'desktop', 'build-resources', 'binaries', getPlatformBinaryFolder())
+        : path.join(appPath, '..', 'desktop', 'build-resources', 'binaries', getPlatformBinaryFolder())
 
     const env = Object.assign({}, process.env, {
         CONSCIENCE_APP_PATH: appPath,
@@ -118,7 +119,7 @@ function getEnv() {
 var nodeProc = null
 function startNode() {
     const env = getEnv()
-    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node.exe')
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node' + getPlatformBinaryExtension())
 
     // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
     // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
@@ -166,3 +167,27 @@ app.on('ready', () => {
             .catch(err => console.log('An error occurred: ', err));
     });
 });
+
+function getPlatformBinaryFolder() {
+    switch (process.platform) {
+    case 'darwin':
+    case 'linux':
+        return process.platform
+    case 'win32':
+        return 'windows'
+    default:
+        throw new Error(`unknown process.platform '${process.platform}'`)
+    }
+}
+
+function getPlatformBinaryExtension() {
+    switch (process.platform) {
+    case 'darwin':
+    case 'linux':
+        return ''
+    case 'win32':
+        return '.exe'
+    default:
+        throw new Error(`unknown process.platform '${process.platform}'`)
+    }
+}

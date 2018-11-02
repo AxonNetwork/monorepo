@@ -237,12 +237,10 @@
       "desktop/dist-bundle/**/*",
       "node_modules/**/*"
     ],
-    "extraResources": [
-      "desktop/build-resources/binaries/*"
-    ],
     "mac": {
       "category": "financial",
       "icon": "icons/icon.png",
+      "extraResources": ["desktop/build-resources/binaries/darwin/*"],
       "binaries": [
         "desktop/build-resources/binaries/conscience",
         "desktop/build-resources/binaries/conscience-node",
@@ -258,13 +256,13 @@
       "scripts": "pkg-scripts"
     },
     "linux": {
-      "target": [
-        "appImage"
-      ]
+      "target": ["appImage"],
+      "extraResources": ["desktop/build-resources/binaries/linux/*"]
     },
     "win": {
       "target": "nsis",
-      "icon": "icons/icon.ico"
+      "icon": "icons/icon.ico",
+      "extraResources": ["desktop/build-resources/binaries/windows/*"]
     },
     "publish": {
       "provider": "s3",
