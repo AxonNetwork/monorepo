@@ -126,8 +126,8 @@ function startNode() {
     // fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
 
     nodeProc = spawn(nodePath, [], { env })
-    nodeProc.stdout.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stdout.txt', data) })
-    nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
+    // nodeProc.stdout.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stdout.txt', data) })
+    // nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
 }
 
 let isKilled = false

@@ -185,6 +185,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
             return {
                 ...state,
                 repoPage,
+                selectedFile: undefined,
             }
         }
 
