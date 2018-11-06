@@ -53,7 +53,26 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
     type: RepoActionType.GET_LOCAL_REPOS,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
-        const repoList: ILocalRepo[] = await rpcClient.getLocalReposAsync()
+
+        // if attempt to fetch local repos 3 times in case node isn't running yet
+        const repoList = await new Promise<ILocalRepo[]>(async (resolve, reject) => {
+            let repeat = 10
+            const attempt = async function(){
+                try{
+                    const result = await rpcClient.getLocalReposAsync()
+                    resolve(result)
+                }catch(err){
+                    repeat -= 1
+                    if(repeat > 0){
+                        setTimeout(attempt, 200)
+                    }else{
+                        reject(err)
+                    }
+                }
+            }
+            attempt()
+        })
+
         let repos = {} as {[path: string]: ILocalRepo}
 
         for (let repo of repoList) {

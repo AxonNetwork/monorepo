@@ -70,7 +70,7 @@ export function initClient() {
 
         // @@TODO: this invalidates the whole purpose of streaming the response.  redo this later.
         client.getLocalReposAsync = (params: any = {}) => {
-            return new Promise<ILocalRepo[]>((resolve) => {
+            return new Promise<ILocalRepo[]>((resolve, reject) => {
                 const emitter = client.getLocalRepos(params)
                 let repos = [] as ILocalRepo[]
                 emitter.on('data', (repo: ILocalRepo) => {
@@ -78,6 +78,9 @@ export function initClient() {
                 })
                 emitter.on('end', () => {
                     resolve(repos)
+                })
+                emitter.on('error', (err: any) => {
+                    reject(err)
                 })
             })
         }

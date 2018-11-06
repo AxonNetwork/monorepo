@@ -81,6 +81,13 @@ app.on('ready', () => {
     const app = require('electron').app
     const menu = createMenu(app, shell)
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
+
+    ipcMain.on('restart_node', (event, arg) => {
+        killNode(() => {
+            startNode()
+            mainWindow.webContents.send('node_restarted')
+        })
+    })
 });
 
 // Quit when all windows are closed.
@@ -116,6 +123,7 @@ function getEnv() {
     return env
 }
 
+let isKilled = false
 var nodeProc = null
 function startNode() {
     const env = getEnv()
@@ -130,13 +138,10 @@ function startNode() {
     // nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
 }
 
-let isKilled = false
-
-app.on('before-quit', (event) => {
+function killNode(cb) {
     if(isKilled){
-        return
+        cb()
     }
-    event.preventDefault()
     if (nodeProc) {
         psTree(nodeProc.pid, (err, children) => {
             if (err) { return console.log('err', err) }
@@ -149,12 +154,19 @@ app.on('before-quit', (event) => {
                 process.kill(nodeProc.pid)
             } catch(err) { console.log('err killing parent', err) }
             isKilled=true
-            app.quit()
+            cb()
         })
     } else{
         isKilled=true
-        app.quit()
+        cb()
     }
+}
+
+app.on('before-quit', (event) => {
+    event.preventDefault()
+    killNode(() => {
+        app.quit()
+    })
 })
 
 // Add React Dev Tools

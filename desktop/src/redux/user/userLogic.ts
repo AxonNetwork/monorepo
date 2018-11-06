@@ -28,6 +28,7 @@ import { selectRepo, getLocalRepos, watchRepo } from '../repository/repoActions'
 import { fetchOrgInfo } from '../org/orgActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
+import ElectronRelay from '../../lib/ElectronRelay'
 import * as rpc from '../../rpc'
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
@@ -36,8 +37,10 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         const { email, password } = action.payload
 
         // Login and set the JWT
-        const { userID, emails, name, username, picture, jwt } = await ServerRelay.login(email, password)
+        const { userID, emails, name, username, picture, jwt, mnemonic } = await ServerRelay.login(email, password)
         await UserData.setJWT(jwt)
+        await UserData.setMnemonic(mnemonic)
+        await ElectronRelay.restartNode()
 
         dispatch(getSharedRepos({ userID }))
         dispatch(fetchOrgs({ userID }))
@@ -53,11 +56,12 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
         const { payload } = action
         const rpcClient = rpc.initClient()
         const { signature } = await rpcClient.setUsernameAsync({ username: payload.username })
-
         const hexSignature = signature.toString('hex')
 
+        const mnemonic = await UserData.getMnemonic()
+
         // Create the user, login, and set the JWT
-        const { userID, emails, name, username, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature)
+        const { userID, emails, name, username, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature, mnemonic)
         await UserData.set('jwt', jwt)
 
         // Fetch the user's data

@@ -21,6 +21,7 @@ const ServerRelay = {
             username: string
             picture: string
             token: string
+            mnemonic: string
         }
 
         let resp
@@ -38,6 +39,7 @@ const ServerRelay = {
             username: resp.data.username,
             picture: resp.data.picture,
             jwt: resp.data.token,
+            mnemonic: resp.data.mnemonic,
         }
     },
 
@@ -69,7 +71,7 @@ const ServerRelay = {
         }
     },
 
-    async signup(name: string, username: string, email: string, password: string, hexSignature: string) {
+    async signup(name: string, username: string, email: string, password: string, hexSignature: string, mnemonic: string) {
         interface IResponse {
             userID: string
             emails: string[]
@@ -80,7 +82,7 @@ const ServerRelay = {
 
         let resp
         try {
-            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, username, email, password, hexSignature })
+            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, username, email, password, hexSignature, mnemonic })
         } catch (err) {
             throw err.response.data.error
         }
