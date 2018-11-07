@@ -19,3 +19,6 @@ declare module 'react-syntax-highlighter/prism' {
     export default SyntaxHighlighter
 }
 
+
+declare module 'tomlify-j0.4'
+declare module 'toml-j0.4'

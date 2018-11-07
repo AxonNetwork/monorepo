@@ -39,8 +39,9 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         // Login and set the JWT
         const { userID, emails, name, username, picture, jwt, mnemonic } = await ServerRelay.login(email, password)
         await UserData.setJWT(jwt)
+        await ElectronRelay.killNode()
         await UserData.setMnemonic(mnemonic)
-        await ElectronRelay.restartNode()
+        await ElectronRelay.startNode()
 
         dispatch(getSharedRepos({ userID }))
         dispatch(fetchOrgs({ userID }))
@@ -114,8 +115,11 @@ const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchU
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
     type: UserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
+        console.log("HERE")
         const rpcClient = rpc.initClient()
+        console.log("init client")
         const { username, signature } = await rpcClient.getUsernameAsync({})
+        console.log("USERNAME: ", username)
 
         if (!username || username === '') {
             throw new Error('No node user')

@@ -1,6 +1,7 @@
 import path from 'path'
 import { uniq } from 'lodash'
-import toml from '@iarna/toml'
+import toml from 'toml-j0.4'
+import tomlify from 'tomlify-j0.4'
 const { app } = (window as any).require('electron').remote
 const fs = (window as any).require('fs')
 
@@ -133,9 +134,18 @@ const UserData = {
 
     async setMnemonic(mnemonic: string) {
         const contents = fs.readFileSync(CONSCIENCERC_PATH)
-        let parsed = toml.parse(contents) as any
+        let parsed = toml.parse(contents.toString()) as any
         parsed.node.EthereumBIP39Seed = mnemonic
-        const updated = toml.stringify(parsed)
+        var updated = tomlify.toToml(parsed, {
+            space: 2,
+            replace: function (key: string, value: any) {
+                // prevent tomlify from turning port number into a floating point
+                if(key === 'P2PListenPort') {
+                    return value.toFixed(0)
+                }
+                return false
+            }
+        })
         fs.writeFileSync(CONSCIENCERC_PATH, updated)
     }
 }

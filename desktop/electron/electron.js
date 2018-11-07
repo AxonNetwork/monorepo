@@ -82,11 +82,16 @@ app.on('ready', () => {
     const menu = createMenu(app, shell)
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 
-    ipcMain.on('restart_node', (event, arg) => {
+    ipcMain.on('start_node', () => {
+        startNode()
+        mainWindow.webContents.send('node_started')
+    })
+
+    ipcMain.on('kill_node', () => {
         killNode(() => {
-            startNode()
-            mainWindow.webContents.send('node_restarted')
+            mainWindow.webContents.send('node_killed')
         })
+
     })
 });
 
@@ -163,10 +168,12 @@ function killNode(cb) {
 }
 
 app.on('before-quit', (event) => {
-    event.preventDefault()
-    killNode(() => {
-        app.quit()
-    })
+    if(!isKilled){
+        event.preventDefault()
+        killNode(() => {
+            app.quit()
+        })
+    }
 })
 
 // Add React Dev Tools
