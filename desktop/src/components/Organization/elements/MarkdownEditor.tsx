@@ -8,6 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import SaveIcon from '@material-ui/icons/Save'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
+import FormattingHelp from 'components/FormattingHelp'
 import autobind from 'utils/autobind'
 
 
@@ -53,6 +54,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
                         />
+                        <FormattingHelp />
                     </div>
 
                     <div className={classes.renderedWrapper}>

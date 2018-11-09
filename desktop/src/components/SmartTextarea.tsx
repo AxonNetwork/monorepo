@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import autobind from 'utils/autobind'
+import FormattingHelp from './FormattingHelp'
 import { IDiscussion, IRepoFile } from 'common'
 
 @autobind
@@ -118,6 +119,8 @@ class SmartTextarea extends React.Component<Props, State>
                     className={classes.textField}
                     inputRef={x => this._inputTextarea = x}
                 />
+                <FormattingHelp />
+
                 <Menu
                     anchorEl={this.state.anchorEl}
                     open={this.state.embedType !== null}
@@ -132,7 +135,7 @@ class SmartTextarea extends React.Component<Props, State>
                         </MenuItem>
                     ))}
                     {/* @@TODO: filetype standardization */}
-                    {this.state.embedType === '@image' && fileNames.filter((f: string) => ['.png', '.jpg', '.jpe', '.jpeg'].includes(path.extname(f))).map((file: string) => (
+                    {this.state.embedType === '@image' && fileNames.filter((f: string) => ['.png', '.jpg', '.jpe', '.jpeg', '.gif'].includes(path.extname(f))).map((file: string) => (
                         <MenuItem
                             onClick={() => this.handleClose('@image', file)}
                             classes={{root: classes.menuItem}}

@@ -11,6 +11,7 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'components/RenderMarkdown/RenderMarkdown'
 import Breadcrumbs from 'components/Repository/elements/FileList/Breadcrumbs'
+import FormattingHelp from 'components/FormattingHelp'
 import { selectFile } from 'redux/repository/repoActions'
 import { FileMode } from 'redux/repository/repoReducer'
 import autobind from 'utils/autobind'
@@ -69,6 +70,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
                         />
+                        <FormattingHelp />
                     </div>
 
                     <div className={classes.renderedWrapper}>
