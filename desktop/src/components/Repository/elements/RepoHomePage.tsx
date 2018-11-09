@@ -205,8 +205,8 @@ class RepoHomePage extends React.Component<Props>
         const defaultEditorContents =
             `# ${repo.repoID}\n\nWrite some instructions or a welcome message here to help others understand the work that you're doing.  Markdown syntax is fully supported.  When you're done, save the file and commit it to the repository.\n\n## Contributors\n\n${contributors}`
 
-        this.props.selectFile({ selectedFile: { file: 'README.md', isFolder: false, mode: FileMode.Edit, defaultEditorContents } })
         this.props.navigateRepoPage({ repoPage: RepoPage.Files })
+        this.props.selectFile({ selectedFile: { file: 'README.md', isFolder: false, mode: FileMode.Edit, defaultEditorContents } })
     }
 }
 
