@@ -8,6 +8,7 @@ const initialState = {
     checkpointLoading: false,
     pullLoading: false,
     updateOrgLoading: false,
+    cloneSharedRepoLoading: undefined,
 }
 
 export interface IUIState {
@@ -16,9 +17,10 @@ export interface IUIState {
     checkpointLoading: boolean
     pullLoading: boolean
     updateOrgLoading: boolean
+    cloneSharedRepoLoading: string | undefined
 }
 
-const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
+const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
     switch(action.type){
         case UserActionType.SIGNUP:
         case UserActionType.LOGIN:
@@ -73,6 +75,19 @@ const uiReducer = (state: IUIState= initialState, action: IUserAction | IRepoAct
             return {
                 ...state,
                 pullLoading: false
+            }
+
+        case UserActionType.CLONE_SHARED_REPO:
+            return {
+                ...state,
+                cloneSharedRepoLoading: action.payload.repoID,
+            }
+
+        case UserActionType.CLONE_SHARED_REPO_SUCCESS:
+        case UserActionType.CLONE_SHARED_REPO_FAILED:
+            return {
+                ...state,
+                cloneSharedRepoLoading: undefined,
             }
 
         case OrgActionType.UPDATE_ORG:

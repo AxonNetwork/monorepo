@@ -1,4 +1,5 @@
 import React from 'react'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { values } from 'lodash'
 import Typography from '@material-ui/core/Typography'
@@ -8,7 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import CancelIcon from '@material-ui/icons/Cancel'
+// import CancelIcon from '@material-ui/icons/Cancel'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { pickBy } from 'lodash'
 import { cloneSharedRepo, unshareRepoFromSelf } from 'redux/user/userActions'
@@ -18,7 +20,7 @@ import { IGlobalState } from 'redux/store'
 class SharedRepos extends React.Component<Props>
 {
     render() {
-        const { sharedRepos } = this.props
+        const { sharedRepos, classes } = this.props
         return (
             <React.Fragment>
                 <Typography variant="headline">
@@ -30,13 +32,19 @@ class SharedRepos extends React.Component<Props>
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} />
                                 <ListItemSecondaryAction>
-                                    <IconButton onClick={() => this.props.cloneSharedRepo({ repoID: repo.repoID })}>
-                                        <ControlPointIcon />
-                                    </IconButton>
+                                    {this.props.cloneSharedRepoLoading === repo.repoID &&
+                                        <CircularProgress size={24} className={classes.buttonLoading} />
+                                    }
 
-                                   <IconButton onClick={() => this.props.unshareRepoFromSelf({ repoID: repo.repoID })}>
+                                    {this.props.cloneSharedRepoLoading !== repo.repoID &&
+                                        <IconButton onClick={() => this.props.cloneSharedRepo({ repoID: repo.repoID })}>
+                                            <ControlPointIcon />
+                                        </IconButton>
+                                    }
+
+                                   {/*<IconButton onClick={() => this.props.unshareRepoFromSelf({ repoID: repo.repoID })}>
                                         <CancelIcon />
-                                    </IconButton>
+                                    </IconButton>*/}
                                 </ListItemSecondaryAction>
                             </ListItem>
                         ))
@@ -49,9 +57,19 @@ class SharedRepos extends React.Component<Props>
 
 interface Props {
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    cloneSharedRepoLoading: string | undefined
     cloneSharedRepo: typeof cloneSharedRepo
     unshareRepoFromSelf: typeof unshareRepoFromSelf
+
+    classes?: any
 }
+
+const styles = (theme: Theme) => createStyles({
+    buttonLoading: {
+        color: theme.palette.secondary.main,
+        margin: 12,
+    },
+})
 
 const mapStateToProps = (state: IGlobalState) => {
     const sharedRepos = state.user.sharedRepos || {}
@@ -61,11 +79,13 @@ const mapStateToProps = (state: IGlobalState) => {
         sharedRepos,
         r => repoList.indexOf(r.repoID) < 0,
     )
+    const cloneSharedRepoLoading = state.ui.cloneSharedRepoLoading
 
     const userID = state.user.currentUser
     return {
         sharedRepos: filteredSharedRepos,
         userID,
+        cloneSharedRepoLoading,
     }
 }
 
@@ -77,4 +97,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(SharedRepos)
+)(withStyles(styles)(SharedRepos))
