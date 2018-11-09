@@ -176,7 +176,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 userSettings: {
-                    codeColorScheme: config.codeColorScheme,
+                    codeColorScheme: config.codeColorScheme || 'pojoaque',
                     menuLabelsHidden: config.menuLabelsHidden || false,
                     fileExtensionsHidden: config.fileExtensionsHidden || false,
                     newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
