@@ -45,14 +45,16 @@ class PushPullButtons extends React.Component<Props, State>
         })
 
         const mergeConflicts = Object.keys(files).filter((name => files[name].mergeConflict))
+        const pullEnabled = !repo.behindRemote || pullLoading
+        const pushEnabled = !filesChanged || checkpointLoading
 
         return (
             <div className={classes.root}>
-                <Tooltip title="Download the latest work from the group">
+                <Tooltip title="Download the latest work from the group" open={pullEnabled ? undefined : false}>
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
-                        disabled={!repo.behindRemote || pullLoading}
+                        disabled={pullEnabled}
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
@@ -60,11 +62,11 @@ class PushPullButtons extends React.Component<Props, State>
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Send your latest work to the group">
+                <Tooltip title="Send your latest work to the group" open={pushEnabled ? undefined : false}>
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
-                        disabled={!filesChanged || checkpointLoading}
+                        disabled={pushEnabled}
                         onClick={this.onClickOpenPushDialog}
                     >
                         {!checkpointLoading && <BackupIcon className={classes.icon} />}
@@ -87,7 +89,7 @@ class PushPullButtons extends React.Component<Props, State>
                     <DialogTitle>Resolve Merge Conflicts</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Looks like you have some merge conflicts in the follow files. Click on the file to resolve the conflicts before committing your changes.
+                            Looks like you have some merge conflicts in the following files. Click on the file to resolve the conflicts before committing your changes.
                         </DialogContentText>
                         <List>
                         {
