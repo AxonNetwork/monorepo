@@ -26,6 +26,7 @@
     "electron-dev": "NODE_ENV=development ELECTRON_START_URL=http://localhost:3004 electron .",
     "electron-build": "build -ml --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
     "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
+    "electron-build-win": "build -w --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
     "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
   },
   "dependencies": {
