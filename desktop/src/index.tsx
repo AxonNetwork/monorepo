@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { createBrowserHistory } from 'history'
 import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 import * as React from 'react'

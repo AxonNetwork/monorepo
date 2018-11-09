@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -229,7 +229,6 @@
     "appId": "com.conscience.app",
     "productName": "Conscience",
     "asar": true,
-    "npmRebuild": "false",
     "directories": {
       "buildResources": "desktop/build-resources",
       "output": "desktop/dist-app"
@@ -246,12 +245,12 @@
         "desktop/build-resources/binaries/darwin/*"
       ],
       "binaries": [
-        "desktop/build-resources/binaries/conscience",
-        "desktop/build-resources/binaries/conscience-node",
-        "desktop/build-resources/binaries/conscience_decode",
-        "desktop/build-resources/binaries/conscience_encode",
-        "desktop/build-resources/binaries/conscience_diff",
-        "desktop/build-resources/binaries/git-remote-conscience"
+        "desktop/build-resources/binaries/darwin/conscience",
+        "desktop/build-resources/binaries/darwin/conscience-node",
+        "desktop/build-resources/binaries/darwin/conscience_decode",
+        "desktop/build-resources/binaries/darwin/conscience_encode",
+        "desktop/build-resources/binaries/darwin/conscience_diff",
+        "desktop/build-resources/binaries/darwin/git-remote-conscience"
       ]
     },
     "pkg": {
