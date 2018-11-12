@@ -128,8 +128,8 @@ const UserData = {
 
     async getMnemonic() {
         const contents = fs.readFileSync(CONSCIENCERC_PATH)
-        const parsed = toml.parse(contents) as any
-        return (parsed.node || {}).EthereumBIP39Seed || ""
+        const parsed = toml.parse(contents.toString()) as any
+        return (parsed.node || {}).EthereumBIP39Seed || ''
     },
 
     async setMnemonic(mnemonic: string) {
@@ -140,14 +140,14 @@ const UserData = {
             space: 2,
             replace: function (key: string, value: any) {
                 // prevent tomlify from turning port number into a floating point
-                if(key === 'P2PListenPort') {
+                if (key === 'P2PListenPort') {
                     return value.toFixed(0)
                 }
                 return false
-            }
+            },
         })
         fs.writeFileSync(CONSCIENCERC_PATH, updated)
-    }
+    },
 }
 
 export default UserData
