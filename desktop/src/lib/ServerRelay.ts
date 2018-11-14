@@ -28,6 +28,11 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/login', { email, password })
         } catch (err) {
+            if (err.response.status === 403) {
+                return new Error('Access denied')
+            } else if (err.response.status === 400) {
+                return new Error(err.response.data.error)
+            }
             throw err.response.data.error
         }
 
@@ -57,6 +62,11 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/login-with-key', { username, hexSignature })
         } catch (err) {
+            if (err.response.status === 403) {
+                return new Error('Access denied')
+            } else if (err.response.status === 400) {
+                return new Error(err.response.data.error)
+            }
             throw err.response.data.error
         }
 
@@ -84,6 +94,11 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/create-user', { name, username, email, password, hexSignature, mnemonic })
         } catch (err) {
+            if (err.response.status === 403) {
+                return new Error('Access denied')
+            } else if (err.response.status === 400) {
+                return new Error(err.response.data.error)
+            }
             throw err.response.data.error
         }
 

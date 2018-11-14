@@ -1,6 +1,6 @@
 {
   "name": "conscience-desktop-app",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -68,6 +68,8 @@
     "babel-loader": "^8.0.2",
     "babel-plugin-prismjs": "^1.0.2",
     "body-parser": "^1.18.3",
+    "bugsnag-js": "^4.7.3",
+    "bugsnag-react": "^1.1.1",
     "bytes": "^3.0.0",
     "chokidar": "^2.0.4",
     "colors": "^1.3.2",

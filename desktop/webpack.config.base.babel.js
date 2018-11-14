@@ -20,6 +20,9 @@ const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json'
 const ImmutableManifest = path.join(__dirname, 'dist-bundle/dll/immutable_manifest.json')
 const devMode = process.env.NODE_ENV !== 'production';
 
+const PACKAGE = require('../package.json')
+const appVersion = PACKAGE.version // grabs the version number from package.json
+
 export default {
     // The base directory, an absolute path, for resolving entry points and loaders from configuration
     context: path.resolve(__dirname),
@@ -121,7 +124,10 @@ export default {
 
     // A list of used webpack plugins
     plugins: [
-    // Enforces case sensitive paths.
+        new webpack.DefinePlugin({
+            'process.env.APP_VERSION': JSON.stringify(require('../package.json').version),
+        }),
+        // Enforces case sensitive paths.
         new CaseSensitivePathsPlugin(),
         // Supports dotenv file
         // new DotenvPlugin(),

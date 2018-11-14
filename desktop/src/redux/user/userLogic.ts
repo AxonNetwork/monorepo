@@ -1,3 +1,4 @@
+import { bugsnagClient } from 'bugsnag'
 import { keyBy, uniq } from 'lodash'
 import { makeLogic } from '../reduxUtils'
 import { IUser, ISharedRepoInfo } from '../../common'
@@ -33,11 +34,16 @@ import * as rpc from '../../rpc'
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
-    async process({ action }, dispatch): Promise<ILoginSuccessAction['payload']> {
+    async process({ action }, dispatch) {
         const { email, password } = action.payload
 
         // Login and set the JWT
-        const { userID, emails, name, username, picture, jwt, mnemonic } = await ServerRelay.login(email, password)
+        const resp = await ServerRelay.login(email, password)
+        if (resp instanceof Error) {
+            return resp
+        }
+        const { userID, emails, name, username, picture, jwt, mnemonic } = resp
+        bugsnagClient.user = { userID, emails, name, username, jwt, mnemonic, loginMethod: 'login' }
         await UserData.setJWT(jwt)
         await ElectronRelay.killNode()
         await UserData.setMnemonic(mnemonic)
@@ -62,7 +68,12 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
         const mnemonic = await UserData.getMnemonic()
 
         // Create the user, login, and set the JWT
-        const { userID, emails, name, username, jwt } = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature, mnemonic)
+        const resp = await ServerRelay.signup(payload.name, payload.username, payload.email, payload.password, hexSignature, mnemonic)
+        if (resp instanceof Error) {
+            return resp
+        }
+        const { userID, emails, name, username, jwt } = resp
+        bugsnagClient.user = { userID, emails, name, username, jwt, mnemonic, loginMethod: 'signup' }
         await UserData.set('jwt', jwt)
 
         // Fetch the user's data
@@ -115,20 +126,22 @@ const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchU
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
     type: UserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
-        console.log("HERE")
         const rpcClient = rpc.initClient()
-        console.log("init client")
         const { username, signature } = await rpcClient.getUsernameAsync({})
-        console.log("USERNAME: ", username)
 
         if (!username || username === '') {
-            throw new Error('No node user')
+            return new Error('No node user')
         } else {
-            dispatch(gotNodeUsername({username}))
+            dispatch(gotNodeUsername({ username }))
         }
 
         const hexSignature = signature.toString('hex')
-        const { userID, emails, name, picture } = await ServerRelay.loginWithKey(username, hexSignature)
+        const resp = await ServerRelay.loginWithKey(username, hexSignature)
+        if (resp instanceof Error) {
+            return resp
+        }
+        const { userID, emails, name, picture } = resp
+        bugsnagClient.user = { userID, emails, name, username, loginMethod: 'checkNodeUser' }
 
         dispatch(getSharedRepos({ userID }))
         dispatch(fetchOrgs({ userID }))

@@ -38,7 +38,7 @@ interface IRPCClient {
         verified?: Long,
     }[] }>
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
-    getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: number, refs: IRef[] }>
+    getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
     getAllRemoteRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
     isBehindRemoteAsync: (params: { repoID: string, path: string}) => Promise<{ path: string, isBehindRemote: boolean}>
     signMessageAsync: (params: { message: Buffer }) => Promise<{ signature: Buffer }>
@@ -96,7 +96,7 @@ export function initClient() {
                     refMap[ref.refName] = ref.commitHash
                 }
 
-                if (total <= page * REF_PAGE_SIZE) {
+                if (total.toNumber() <= (page + 1) * REF_PAGE_SIZE) {
                     break
                 }
                 page++
