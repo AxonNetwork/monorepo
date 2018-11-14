@@ -124,6 +124,7 @@ function getEnv() {
         CONSCIENCE_BINARIES_PATH: binariesPath,
         PATH: [ binariesPath, process.env.PATH ].join(path.delimiter), // ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
         BUGSNAG_ENABLED: '1',
+        RELEASE_STAGE: process.env.NODE_ENV === 'development' ? 'dev' : 'prod',
     })
     return env
 }
