@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { ErrorBoundary } from './bugsnag'
 import { createBrowserHistory } from 'history'
 import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 import * as React from 'react'
@@ -10,6 +11,9 @@ import store from './redux/store'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
 import { isProduction } from 'utils'
 import 'typeface-roboto'
+
+console.log('app version ~>', process.env.APP_VERSION)
+console.log('env ~>', process.env)
 
 store.dispatch(readLocalConfig())
 store.dispatch(checkBalanceAndHitFaucet())
@@ -27,7 +31,9 @@ const history = createBrowserHistory()
 const render = (Component: any) => {
   ReactDom.render(
     <AppContainer>
-      <Component store={store} history={history} />
+        <ErrorBoundary>
+            <Component store={store} history={history} />
+        </ErrorBoundary>
     </AppContainer>,
     document.getElementById('root'),
   )

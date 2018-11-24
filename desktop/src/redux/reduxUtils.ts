@@ -6,7 +6,7 @@ interface ActionType {
 }
 
 interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType extends ActionType> {
-    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload'] | void>
+    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload'] | Error | void>
 }
 
 // interface ProcessFuncNoReturn<HandledActionType extends ActionType> {
@@ -26,11 +26,18 @@ export function makeLogic
         process: async (depObj, dispatch, done) => {
             try {
                 const retval = await Promise.resolve((opts.process as any)(depObj, dispatch, done))
-                dispatch({ type: opts.type + '_SUCCESS', payload: retval })
+                if (retval instanceof Error) {
+                    dispatch({ type: opts.type + '_FAILED', error: true, payload: retval })
+                } else {
+                    dispatch({ type: opts.type + '_SUCCESS', payload: retval })
+                }
+                done()
+
             } catch (err) {
                 dispatch({ type: opts.type + '_FAILED', error: true, payload: err })
+                done()
+                throw err
             }
-            done()
         },
     })
 }
