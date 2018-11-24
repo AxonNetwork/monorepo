@@ -9,6 +9,7 @@ const initialState = {
     pullLoading: false,
     updateOrgLoading: false,
     cloneSharedRepoLoading: undefined,
+    cloneRepoProgress: {}
 }
 
 export interface IUIState {
@@ -18,6 +19,12 @@ export interface IUIState {
     pullLoading: boolean
     updateOrgLoading: boolean
     cloneSharedRepoLoading: string | undefined
+    cloneRepoProgress: {
+        [repoID: string]: {
+            fetched:number
+            toFetch: number
+        }
+    }
 }
 
 const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
@@ -77,18 +84,25 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                 pullLoading: false
             }
 
-        case UserActionType.CLONE_SHARED_REPO:
+        case UserActionType.CLONE_SHARED_REPO_PROGRESS:
+            const { repoID, fetched, toFetch } = action.payload
             return {
                 ...state,
-                cloneSharedRepoLoading: action.payload.repoID,
+                cloneRepoProgress: {
+                    ...state.cloneRepoProgress,
+                    [repoID]: {
+                        fetched: fetched,
+                        toFetch: toFetch,
+                    }
+                }
             }
 
-        case UserActionType.CLONE_SHARED_REPO_SUCCESS:
-        case UserActionType.CLONE_SHARED_REPO_FAILED:
-            return {
-                ...state,
-                cloneSharedRepoLoading: undefined,
-            }
+        // case UserActionType.CLONE_SHARED_REPO_SUCCESS:
+        // case UserActionType.CLONE_SHARED_REPO_FAILED:
+        //     return {
+        //         ...state,
+        //         cloneSharedRepoLoading: undefined,
+        //     }
 
         case OrgActionType.UPDATE_ORG:
             return {

@@ -12,7 +12,8 @@ service NodeRPC {
   rpc InitRepo(InitRepoRequest) returns (InitRepoResponse) {}
   rpc CheckpointRepo(CheckpointRepoRequest) returns (CheckpointRepoResponse) {}
   rpc PullRepo(PullRepoRequest) returns (PullRepoResponse) {}
-  rpc CloneRepo(CloneRepoRequest) returns (CloneRepoResponse) {}
+  rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
+  rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponsePacket) {}
   rpc GetObject(GetObjectRequest) returns (stream GetObjectResponsePacket) {}
   rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
   rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
@@ -84,8 +85,25 @@ message CloneRepoRequest {
     string email = 4;
 }
 
-message CloneRepoResponse {
-    string path = 1;
+message CloneRepoResponsePacket {
+    int64 toFetch = 1;
+    int64 fetched = 2;
+}
+
+message FetchFromCommitRequest {
+    string repoID = 1;
+    string path = 2;
+    string commit = 3;
+}
+
+message FetchFromCommitResponsePacket {
+    bytes objHash = 1;
+    int32 objType = 2;
+    uint64 objLen = 3;
+    int64 toFetch = 4;
+    int64 fetched = 5;
+    bytes data = 6;
+    bool end = 7;
 }
 
 message GetObjectRequest {
