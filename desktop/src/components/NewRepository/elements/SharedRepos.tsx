@@ -13,7 +13,8 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 import { pickBy } from 'lodash'
-import { cloneSharedRepo, unshareRepoFromSelf } from 'redux/user/userActions'
+import { cloneRepo } from 'redux/repository/repoActions'
+import { unshareRepoFromSelf } from 'redux/user/userActions'
 import { ISharedRepoInfo } from 'common'
 import { IGlobalState } from 'redux/store'
 
@@ -34,14 +35,13 @@ class SharedRepos extends React.Component<Props>
                             let percentDownloaded
                             if(isDownloading){
                                 percentDownloaded = Math.floor(100*(repoProgress.fetched||0)/(repoProgress.toFetch||1))
-                                console.log(percentDownloaded)
                             }
                             return(
                                 <React.Fragment>
                                     <ListItem key={repo.repoID}>
                                         <ListItemText primary={repo.repoID} />
                                         <ListItemSecondaryAction>
-                                            <IconButton onClick={() => this.props.cloneSharedRepo({ repoID: repo.repoID })}>
+                                            <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })}>
                                                 <ControlPointIcon />
                                             </IconButton>
 
@@ -71,7 +71,7 @@ interface Props {
         fetched: number,
         toFetch: number
     }}
-    cloneSharedRepo: typeof cloneSharedRepo
+    cloneRepo: typeof cloneRepo
     unshareRepoFromSelf: typeof unshareRepoFromSelf
 
     classes?: any
@@ -109,7 +109,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    cloneSharedRepo,
+    cloneRepo,
     unshareRepoFromSelf,
 }
 

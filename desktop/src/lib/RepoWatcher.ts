@@ -111,6 +111,7 @@ async function checkBehindRemote(path: string) {
     if (repo === undefined) {
         return
     }
+    repo.emitter.emit('behind_remote')
     const rpcClient = rpc.initClient()
     try {
         const res = await rpcClient.isBehindRemoteAsync({repoID: repo.repoID, path: repo.path})

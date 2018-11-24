@@ -1,6 +1,6 @@
 import { bugsnagClient } from 'bugsnag'
 import { keyBy, uniq } from 'lodash'
-import { makeLogic, makeContinuousLogic } from '../reduxUtils'
+import { makeLogic } from '../reduxUtils'
 import { IUser, ISharedRepoInfo } from '../../common'
 import {
     UserActionType,
@@ -12,7 +12,6 @@ import {
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
-    ICloneSharedRepoAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction,
     IFetchOrgsAction, IFetchOrgsSuccessAction,
@@ -23,9 +22,9 @@ import {
     ISawCommentAction, ISawCommentSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
-    getSharedRepos, cloneSharedRepoProgress, fetchOrgs, gotNodeUsername,
+    getSharedRepos, fetchOrgs, gotNodeUsername,
 } from './userActions'
-import { selectRepo, getLocalRepos, watchRepo } from '../repository/repoActions'
+import { getLocalRepos } from '../repository/repoActions'
 import { fetchOrgInfo } from '../org/orgActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
@@ -189,39 +188,6 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
       },
 })
 
-const cloneSharedRepoLogic = makeContinuousLogic<ICloneSharedRepoAction>({
-    type: UserActionType.CLONE_SHARED_REPO,
-    async process({ action, getState }, dispatch, done) {
-        const { repoID } = action.payload
-        const state = getState()
-        const { name, emails } = state.user.users[state.user.currentUser || '']
-
-        const rpcClient = rpc.initClient()
-        const stream = rpcClient.cloneRepo({
-            repoID: repoID,
-            name: name,
-            email: emails[0],
-        })
-        dispatch(cloneSharedRepoProgress({ repoID, fetched: 0, toFetch: 0 }))
-        stream.on('data', async (data: any) => {
-            const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
-            const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
-            console.log(toFetch)
-            console.log(fetched)
-            await dispatch(cloneSharedRepoProgress({ repoID, fetched, toFetch }))
-        })
-        stream.on('end', async () => {
-            const path= ""
-            await dispatch(watchRepo({ repoID, path }))
-            await dispatch(selectRepo({ repoID, path }))
-            done()
-        })
-        stream.on('error', (err: any) => {
-            throw err
-        })
-    },
-})
-
 const fetchOrgsLogic = makeLogic<IFetchOrgsAction, IFetchOrgsSuccessAction>({
     type: UserActionType.FETCH_ORGS,
     async process({ action }, dispatch) {
@@ -306,7 +272,6 @@ export default [
     checkBalanceAndHitFaucetLogic,
     logoutLogic,
     getSharedReposLogic,
-    cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
     unshareRepoFromSelfLogic,
     fetchOrgsLogic,

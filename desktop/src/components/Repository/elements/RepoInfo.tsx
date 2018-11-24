@@ -32,7 +32,7 @@ class RepoInfo extends React.Component<Props>
 
                     <PushPullButtons
                         repo={repo}
-                        pullLoading={this.props.pullLoading}
+                        pullProgress={this.props.pullProgress}
                         checkpointLoading={this.props.checkpointLoading}
                         classes={{ root: classes.pushPullButtons }}
                     />
@@ -63,7 +63,7 @@ interface Props {
     repo: IRepo | undefined
     repoPage: RepoPage
     menuLabelsHidden: boolean
-    pullLoading: boolean
+    pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
 
     navigateRepoPage: typeof navigateRepoPage
@@ -109,16 +109,16 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const selected = state.repository.selectedRepo || ''
-    const repo = state.repository.repos[selected]
+    const repo = state.repository.repos[selected] || {}
     const repoPage = state.repository.repoPage
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden
-    const pullLoading = state.ui.pullLoading
+    const pullProgress = state.ui.pullRepoProgress[repo.path||""]
     const checkpointLoading = state.ui.checkpointLoading
     return {
         repo,
         repoPage,
         menuLabelsHidden,
-        pullLoading,
+        pullProgress,
         checkpointLoading,
     }
 }

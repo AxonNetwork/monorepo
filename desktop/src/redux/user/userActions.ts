@@ -36,11 +36,6 @@ export enum UserActionType {
     FETCH_SHARED_REPOS_SUCCESS = 'FETCH_SHARED_REPOS_SUCCESS',
     FETCH_SHARED_REPOS_FAILED = 'FETCH_SHARED_REPOS_FAILED',
 
-    CLONE_SHARED_REPO = 'CLONE_SHARED_REPO',
-    CLONE_SHARED_REPO_PROGRESS = 'CLONE_SHARED_REPO_PROGRESS',
-    CLONE_SHARED_REPO_SUCCESS = 'CLONE_SHARED_REPO_SUCCESS',
-    CLONE_SHARED_REPO_FAILED = 'CLONE_SHARED_REPO_FAILED',
-
     IGNORE_SHARED_REPO = 'IGNORE_SHARED_REPO',
     IGNORE_SHARED_REPO_SUCCESS = 'IGNORE_SHARED_REPO_SUCCESS',
     IGNORE_SHARED_REPO_FAILED = 'IGNORE_SHARED_REPO_FAILED',
@@ -221,29 +216,6 @@ export interface IGetSharedReposSuccessAction {
 
 export type IGetSharedReposFailedAction = FailedAction<UserActionType.FETCH_SHARED_REPOS_FAILED>
 
-export interface ICloneSharedRepoAction {
-    type: UserActionType.CLONE_SHARED_REPO
-    payload: {
-        repoID: string,
-    }
-}
-
-export interface ICloneSharedRepoProgressAction {
-    type: UserActionType.CLONE_SHARED_REPO_PROGRESS
-    payload: {
-        repoID: string,
-        toFetch: number,
-        fetched: number,
-    }
-}
-
-export interface ICloneSharedRepoSuccessAction {
-    type: UserActionType.CLONE_SHARED_REPO_SUCCESS
-    payload: {}
-}
-
-export type ICloneSharedRepoFailedAction = FailedAction<UserActionType.CLONE_SHARED_REPO_FAILED>
-
 export interface IIgnoreSharedRepoAction {
     type: UserActionType.IGNORE_SHARED_REPO
     payload: {
@@ -423,11 +395,6 @@ export type IUserAction =
     IGetSharedReposSuccessAction |
     IGetSharedReposFailedAction |
 
-    ICloneSharedRepoAction |
-    ICloneSharedRepoProgressAction |
-    ICloneSharedRepoSuccessAction |
-    ICloneSharedRepoFailedAction |
-
     IIgnoreSharedRepoAction |
     IIgnoreSharedRepoSuccessAction |
     IIgnoreSharedRepoFailedAction |
@@ -472,8 +439,7 @@ export const gotNodeUsername = (payload: IGotNodeUsernameAction['payload']) => (
 export const checkBalanceAndHitFaucet = () => ({ type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET, payload: {}})
 
 export const getSharedRepos = (payload: IGetSharedReposAction['payload']): IGetSharedReposAction => ({ type: UserActionType.FETCH_SHARED_REPOS, payload })
-export const cloneSharedRepo = (payload: ICloneSharedRepoAction['payload']): ICloneSharedRepoAction => ({ type: UserActionType.CLONE_SHARED_REPO, payload })
-export const cloneSharedRepoProgress = (payload: ICloneSharedRepoProgressAction['payload']): ICloneSharedRepoProgressAction => ({ type: UserActionType.CLONE_SHARED_REPO_PROGRESS, payload })
+
 export const ignoreSharedRepo = (payload: IIgnoreSharedRepoAction['payload']): IIgnoreSharedRepoAction => ({ type: UserActionType.IGNORE_SHARED_REPO, payload })
 export const unshareRepoFromSelf = (payload: IUnshareRepoFromSelfAction['payload']): IUnshareRepoFromSelfAction => ({ type: UserActionType.UNSHARE_REPO_FROM_SELF, payload })
 

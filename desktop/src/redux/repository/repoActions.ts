@@ -48,7 +48,13 @@ export enum RepoActionType {
     CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
     CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
 
+    CLONE_REPO = 'CLONE_REPO',
+    CLONE_REPO_PROGRESS = 'CLONE_REPO_PROGRESS',
+    CLONE_REPO_SUCCESS = 'CLONE_REPO_SUCCESS',
+    CLONE_REPO_FAILED = 'CLONE_REPO_FAILED',
+
     PULL_REPO = 'PULL_REPO',
+    PULL_REPO_PROGRESS = 'PULL_REPO_PROGRESS',
     PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
     PULL_REPO_FAILED = 'PULL_REPO_FAILED',
 
@@ -273,11 +279,43 @@ export interface ICheckpointRepoSuccessAction {
 
 export type ICheckpointRepoFailedAction = FailedAction<RepoActionType.CHECKPOINT_REPO_FAILED>
 
+export interface ICloneRepoAction {
+    type: RepoActionType.CLONE_REPO
+    payload: {
+        repoID: string,
+    }
+}
+
+export interface ICloneRepoProgressAction {
+    type: RepoActionType.CLONE_REPO_PROGRESS
+    payload: {
+        repoID: string,
+        toFetch: number,
+        fetched: number,
+    }
+}
+
+export interface ICloneRepoSuccessAction {
+    type: RepoActionType.CLONE_REPO_SUCCESS
+    payload: {}
+}
+
+export type ICloneRepoFailedAction = FailedAction<RepoActionType.CLONE_REPO_FAILED>
+
 export interface IPullRepoAction {
     type: RepoActionType.PULL_REPO
     payload: {
         folderPath: string
         repoID: string,
+    }
+}
+
+export interface IPullRepoProgressAction {
+    type: RepoActionType.PULL_REPO_PROGRESS
+    payload: {
+        folderPath: string
+        toFetch: number
+        fetched: number
     }
 }
 
@@ -436,7 +474,13 @@ export type IRepoAction =
     ICheckpointRepoSuccessAction |
     ICheckpointRepoFailedAction |
 
+    ICloneRepoAction |
+    ICloneRepoProgressAction |
+    ICloneRepoSuccessAction |
+    ICloneRepoFailedAction |
+
     IPullRepoAction |
+    IPullRepoProgressAction |
     IPullRepoSuccessAction |
     IPullRepoFailedAction |
 
@@ -470,7 +514,10 @@ export const selectCommit = (payload: ISelectCommitAction['payload']): ISelectCo
 export const navigateRepoPage = (payload: INavigateRepoPageAction['payload']): INavigateRepoPageAction => ({ type: RepoActionType.NAVIGATE_REPO_PAGE, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
+export const cloneRepo = (payload: ICloneRepoAction['payload']): ICloneRepoAction => ({ type: RepoActionType.CLONE_REPO, payload })
+export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']): ICloneRepoProgressAction => ({ type: RepoActionType.CLONE_REPO_PROGRESS, payload })
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
+export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): IPullRepoProgressAction => ({ type: RepoActionType.PULL_REPO_PROGRESS, payload })
 export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
 export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
