@@ -278,15 +278,24 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
             email: emails[0],
         })
         dispatch(cloneRepoProgress({ repoID, fetched: 0, toFetch: 0 }))
+        var path = ""
+        var success = false
         stream.on('data', async (data: any) => {
-            const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
-            const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
-            await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
+            if(data.progress !== undefined){
+                const fetched = data.progress.fetched !== undefined ? data.progress.fetched.toNumber() : 0
+                const toFetch = data.progress.toFetch !== undefined ? data.progress.toFetch.toNumber() : 0
+                await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
+            }
+            if(data.success !== undefined){
+                path = data.success.path
+                success = true
+            }
         })
         stream.on('end', async () => {
-            const path= ""
-            await dispatch(watchRepo({ repoID, path }))
-            await dispatch(selectRepo({ repoID, path }))
+            if(success){
+                await dispatch(watchRepo({ repoID, path }))
+                await dispatch(selectRepo({ repoID, path }))
+            }
             done()
         })
         stream.on('error', (err: any) => {
