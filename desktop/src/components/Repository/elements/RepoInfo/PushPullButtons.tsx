@@ -35,7 +35,17 @@ class PushPullButtons extends React.Component<Props, State>
     _inputCommitMessage: HTMLInputElement | null = null
 
     render() {
-        const { repo, pullLoading, checkpointLoading, classes } = this.props
+        const { repo, pullProgress, checkpointLoading, classes } = this.props
+
+        let pullLoading = pullProgress !== undefined
+        let percentPulled
+        if(pullLoading){
+            percentPulled = Math.floor(100*((pullProgress || {} as any).fetched||0)/((pullProgress || {} as any).toFetch||1))
+            if(percentPulled === 100){
+                // pull complete
+                pullLoading = false
+            }
+        }
 
         const files = repo.files || {}
         // @@TODO: calculate this in the reducer, and only when `files` changes
@@ -58,7 +68,14 @@ class PushPullButtons extends React.Component<Props, State>
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
-                        {pullLoading  && <CircularProgress size={24} className={classes.buttonLoading} />}
+                        {pullLoading  &&
+                            <CircularProgress
+                                size={24}
+                                className={classes.buttonLoading}
+                                value={percentPulled}
+                                variant="determinate"
+                            />
+                        }
                     </IconButton>
                 </Tooltip>
 
@@ -178,7 +195,7 @@ interface Props {
 
     repo: IRepo
 
-    pullLoading: boolean
+    pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
     classes: any
 }

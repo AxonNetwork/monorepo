@@ -14,11 +14,14 @@ import { RepoActionType,
     ISelectRepoAction, ISelectRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
-    IPullRepoAction, IPullRepoSuccessAction,
+    ICloneRepoAction,
+    IPullRepoAction,
     IWatchRepoAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers, fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote } from './repoActions'
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers,
+    fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote, cloneRepoProgress,
+    pullRepoProgress } from './repoActions'
 import { fetchUserData } from '../user/userActions'
 import { getDiscussions } from '../discussion/discussionActions'
 import { addRepoToOrg } from '../org/orgActions'
@@ -261,14 +264,56 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 //     },
 // })
 
-const pullRepoLogic = makeLogic<IPullRepoAction, IPullRepoSuccessAction>({
+const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
+    type: RepoActionType.CLONE_REPO,
+    async process({ action, getState }, dispatch, done) {
+        const { repoID } = action.payload
+        const state = getState()
+        const { name, emails } = state.user.users[state.user.currentUser || '']
+
+        const rpcClient = rpc.initClient()
+        const stream = rpcClient.cloneRepo({
+            repoID: repoID,
+            name: name,
+            email: emails[0],
+        })
+        dispatch(cloneRepoProgress({ repoID, fetched: 0, toFetch: 0 }))
+        stream.on('data', async (data: any) => {
+            const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
+            const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
+            await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
+        })
+        stream.on('end', async () => {
+            const path= ""
+            await dispatch(watchRepo({ repoID, path }))
+            await dispatch(selectRepo({ repoID, path }))
+            done()
+        })
+        stream.on('error', (err: any) => {
+            throw err
+        })
+    },
+})
+
+const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
     type: RepoActionType.PULL_REPO,
-    async process({ action }, dispatch) {
+    async process({ action }, dispatch, done) {
         const { folderPath, repoID } = action.payload
         const rpcClient = rpc.initClient()
-        await rpcClient.pullRepoAsync({ path: folderPath })
-        await dispatch(fetchFullRepo({ path: folderPath, repoID }))
-        return { folderPath }
+        const stream = rpcClient.pullRepo({ path: folderPath })
+        dispatch(pullRepoProgress({ folderPath, fetched: 0, toFetch: 0 }))
+        stream.on('data', async (data: any) => {
+            const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
+            const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
+            await dispatch(pullRepoProgress({ folderPath, fetched, toFetch }))
+        })
+        stream.on('end', async () => {
+            await dispatch(fetchFullRepo({ path: folderPath, repoID }))
+            done()
+        })
+        stream.on('error', (err: any) => {
+            throw err
+        })
     },
 })
 
@@ -336,6 +381,7 @@ export default [
     checkpointRepoLogic,
     getDiffLogic,
     // revertFilesLogic,
+    cloneRepoLogic,
     pullRepoLogic,
     addCollaboratorLogic,
     removeCollaboratorLogic,

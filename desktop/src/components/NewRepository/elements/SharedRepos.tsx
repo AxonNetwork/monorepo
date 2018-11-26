@@ -10,17 +10,18 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 // import CancelIcon from '@material-ui/icons/Cancel'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 import { pickBy } from 'lodash'
-import { cloneSharedRepo, unshareRepoFromSelf } from 'redux/user/userActions'
+import { cloneRepo } from 'redux/repository/repoActions'
+import { unshareRepoFromSelf } from 'redux/user/userActions'
 import { ISharedRepoInfo } from 'common'
 import { IGlobalState } from 'redux/store'
 
 class SharedRepos extends React.Component<Props>
 {
     render() {
-        const { sharedRepos, classes } = this.props
+        const { sharedRepos, classes, cloneRepoProgress } = this.props
         return (
             <React.Fragment>
                 <Typography variant="headline">
@@ -28,26 +29,35 @@ class SharedRepos extends React.Component<Props>
                 </Typography>
                 <List>
                     {
-                        values(sharedRepos).map(repo => (
-                            <ListItem key={repo.repoID}>
-                                <ListItemText primary={repo.repoID} />
-                                <ListItemSecondaryAction>
-                                    {this.props.cloneSharedRepoLoading === repo.repoID &&
-                                        <CircularProgress size={24} className={classes.buttonLoading} />
-                                    }
+                        values(sharedRepos).map(repo => {
+                            const repoProgress = cloneRepoProgress[repo.repoID]
+                            const isDownloading = repoProgress !== undefined
+                            let percentDownloaded
+                            if(isDownloading){
+                                percentDownloaded = Math.floor(100*(repoProgress.fetched||0)/(repoProgress.toFetch||1))
+                            }
+                            return(
+                                <React.Fragment>
+                                    <ListItem key={repo.repoID}>
+                                        <ListItemText primary={repo.repoID} />
+                                        <ListItemSecondaryAction>
+                                            <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })}>
+                                                <ControlPointIcon />
+                                            </IconButton>
 
-                                    {this.props.cloneSharedRepoLoading !== repo.repoID &&
-                                        <IconButton onClick={() => this.props.cloneSharedRepo({ repoID: repo.repoID })}>
-                                            <ControlPointIcon />
-                                        </IconButton>
-                                    }
-
-                                   {/*<IconButton onClick={() => this.props.unshareRepoFromSelf({ repoID: repo.repoID })}>
-                                        <CancelIcon />
-                                    </IconButton>*/}
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))
+                                           {/*<IconButton onClick={() => this.props.unshareRepoFromSelf({ repoID: repo.repoID })}>
+                                                <CancelIcon />
+                                            </IconButton>*/}
+                                        </ListItemSecondaryAction>
+                                        {isDownloading &&
+                                            <div className={classes.progressBar}>
+                                                <LinearProgress color="secondary" variant="determinate" value={percentDownloaded} />
+                                            </div>
+                                        }
+                                    </ListItem>
+                                </React.Fragment>
+                            )
+                        })
                     }
                 </List>
             </React.Fragment>
@@ -57,8 +67,11 @@ class SharedRepos extends React.Component<Props>
 
 interface Props {
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
-    cloneSharedRepoLoading: string | undefined
-    cloneSharedRepo: typeof cloneSharedRepo
+    cloneRepoProgress: {[repoID: string]:{
+        fetched: number,
+        toFetch: number
+    }}
+    cloneRepo: typeof cloneRepo
     unshareRepoFromSelf: typeof unshareRepoFromSelf
 
     classes?: any
@@ -69,6 +82,12 @@ const styles = (theme: Theme) => createStyles({
         color: theme.palette.secondary.main,
         margin: 12,
     },
+    progressBar: {
+        position: 'absolute',
+        left: 24,
+        right: 64,
+        bottom: 4,
+    }
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -79,18 +98,18 @@ const mapStateToProps = (state: IGlobalState) => {
         sharedRepos,
         r => repoList.indexOf(r.repoID) < 0,
     )
-    const cloneSharedRepoLoading = state.ui.cloneSharedRepoLoading
+    const cloneRepoProgress = state.ui.cloneRepoProgress
 
     const userID = state.user.currentUser
     return {
         sharedRepos: filteredSharedRepos,
         userID,
-        cloneSharedRepoLoading,
+        cloneRepoProgress,
     }
 }
 
 const mapDispatchToProps = {
-    cloneSharedRepo,
+    cloneRepo,
     unshareRepoFromSelf,
 }
 

@@ -6,7 +6,8 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 
-import { cloneSharedRepo, ignoreSharedRepo } from '../../redux/user/userActions'
+import { cloneRepo } from 'redux/repository/repoActions'
+import { ignoreSharedRepo } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'utils/autobind'
 
@@ -30,7 +31,7 @@ class SharedReposDialog extends React.Component<Props, State>
 
     cloneRepo() {
         this.handleClose()
-        this.props.cloneSharedRepo({ repoID: this.props.sharedRepoID })
+        this.props.cloneRepo({ repoID: this.props.sharedRepoID })
     }
 
     ignoreSharedRepo() {
@@ -67,7 +68,7 @@ class SharedReposDialog extends React.Component<Props, State>
 
 interface Props {
     sharedRepoID: string|undefined
-    cloneSharedRepo: Function
+    cloneRepo: Function
     ignoreSharedRepo: Function
 }
 
@@ -88,7 +89,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    cloneSharedRepo,
+    cloneRepo,
     ignoreSharedRepo,
 }
 

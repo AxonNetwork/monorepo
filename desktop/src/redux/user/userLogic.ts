@@ -12,7 +12,6 @@ import {
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
-    ICloneSharedRepoAction, ICloneSharedRepoSuccessAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction,
     IFetchOrgsAction, IFetchOrgsSuccessAction,
@@ -25,7 +24,7 @@ import {
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
     getSharedRepos, fetchOrgs, gotNodeUsername,
 } from './userActions'
-import { selectRepo, getLocalRepos, watchRepo } from '../repository/repoActions'
+import { getLocalRepos } from '../repository/repoActions'
 import { fetchOrgInfo } from '../org/orgActions'
 import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
@@ -189,25 +188,6 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
       },
 })
 
-const cloneSharedRepoLogic = makeLogic<ICloneSharedRepoAction, ICloneSharedRepoSuccessAction>({
-    type: UserActionType.CLONE_SHARED_REPO,
-    async process({ action, getState }, dispatch) {
-        const { repoID } = action.payload
-        const state = getState()
-        const { name, emails } = state.user.users[state.user.currentUser || '']
-
-        const rpcClient = rpc.initClient()
-        const { path } = await rpcClient.cloneRepoAsync({
-            repoID: repoID,
-            name: name,
-            email: emails[0],
-        })
-        await dispatch(watchRepo({ repoID, path }))
-        await dispatch(selectRepo({ repoID, path }))
-        return {}
-    },
-})
-
 const fetchOrgsLogic = makeLogic<IFetchOrgsAction, IFetchOrgsSuccessAction>({
     type: UserActionType.FETCH_ORGS,
     async process({ action }, dispatch) {
@@ -292,7 +272,6 @@ export default [
     checkBalanceAndHitFaucetLogic,
     logoutLogic,
     getSharedReposLogic,
-    cloneSharedRepoLogic,
     ignoreSharedRepoLogic,
     unshareRepoFromSelfLogic,
     fetchOrgsLogic,

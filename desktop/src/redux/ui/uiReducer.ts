@@ -8,7 +8,8 @@ const initialState = {
     checkpointLoading: false,
     pullLoading: false,
     updateOrgLoading: false,
-    cloneSharedRepoLoading: undefined,
+    pullRepoProgress: {},
+    cloneRepoProgress: {},
 }
 
 export interface IUIState {
@@ -17,7 +18,18 @@ export interface IUIState {
     checkpointLoading: boolean
     pullLoading: boolean
     updateOrgLoading: boolean
-    cloneSharedRepoLoading: string | undefined
+    pullRepoProgress: {
+        [path: string]: {
+            fetched:number
+            toFetch: number
+        }
+    }
+    cloneRepoProgress: {
+        [repoID: string]: {
+            fetched:number
+            toFetch: number
+        }
+    }
 }
 
 const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
@@ -64,31 +76,33 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                 checkpointLoading: false
             }
 
-        case RepoActionType.PULL_REPO:
+        case RepoActionType.PULL_REPO_PROGRESS: {
+            const { folderPath, fetched, toFetch } = action.payload
             return {
                 ...state,
-                pullLoading: true
+                    pullRepoProgress: {
+                    ...state.pullRepoProgress,
+                    [folderPath]: {
+                        fetched: fetched,
+                        toFetch: toFetch,
+                    }
+                }
             }
+        }
 
-        case RepoActionType.PULL_REPO_SUCCESS:
-        case RepoActionType.PULL_REPO_FAILED:
+        case RepoActionType.CLONE_REPO_PROGRESS: {
+            const { repoID, fetched, toFetch } = action.payload
             return {
                 ...state,
-                pullLoading: false
+                cloneRepoProgress: {
+                    ...state.cloneRepoProgress,
+                    [repoID]: {
+                        fetched: fetched,
+                        toFetch: toFetch,
+                    }
+                }
             }
-
-        case UserActionType.CLONE_SHARED_REPO:
-            return {
-                ...state,
-                cloneSharedRepoLoading: action.payload.repoID,
-            }
-
-        case UserActionType.CLONE_SHARED_REPO_SUCCESS:
-        case UserActionType.CLONE_SHARED_REPO_FAILED:
-            return {
-                ...state,
-                cloneSharedRepoLoading: undefined,
-            }
+        }
 
         case OrgActionType.UPDATE_ORG:
             return {
