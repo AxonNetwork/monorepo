@@ -1,0 +1,41 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "extends": [
+    "airbnb"
+  ],
+  "rules": {
+    "import/export": "error",
+    "import/first": "error",
+    "import/no-commonjs": "error",
+    "import/no-deprecated": "error",
+    "import/no-duplicates": "error",
+    "import/no-unresolved": "error",
+    "import/no-webpack-loader-syntax": "error",
+    "linebreak-style": "off",
+    "indent": [
+      "error",
+      4
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "warn",
+          "error",
+          "info"
+        ]
+      }
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ]
+  }
+}

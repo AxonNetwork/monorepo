@@ -1,0 +1,43 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+        "react-hot-loader/babel"
+      ]
+    }
+  },
+  "plugins": [
+    [
+      "prismjs",
+      {
+        "languages": [
+          "javascript",
+          "css",
+          "markup",
+          "cpp",
+          "bash",
+          "docker",
+          "go",
+          "json",
+          "markdown",
+          "python",
+          "jsx",
+          "tsx",
+          "scss",
+          "typescript"
+        ],
+        "plugins": [
+          "autolinker",
+          "command-line"
+        ],
+        "theme": "default",
+        "css": true
+      }
+    ],
+    "@babel/plugin-syntax-dynamic-import"
+  ]
+}
