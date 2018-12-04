@@ -1,0 +1,4 @@
+{
+	"private": true,
+	"workspaces": ["conscience-lib", "conscience-components", "conscience-webapp"]
+}

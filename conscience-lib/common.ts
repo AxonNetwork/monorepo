@@ -87,3 +87,18 @@ export interface IOrganization {
     members: string[] //userID[]
     repos: string[] //repoID[]
 }
+
+export enum RepoPage {
+    Home,
+    Files,
+    Manuscript,
+    History,
+    Discussion,
+    Settings,
+}
+
+export enum FileMode {
+    View,
+    Edit,
+    ResolveConflict,
+}
