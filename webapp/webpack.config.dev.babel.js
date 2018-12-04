@@ -7,14 +7,14 @@ export default merge(BaseWebpackConfig, {
   // The point or points to enter the application.
   entry: {
     app: [
-      './frontend/src/index',
+      './src/index',
     ],
   },
 
   // Affecting the output of the compilation
   output: {
     // path: the output directory as an absolute path (required)
-    path: path.resolve(__dirname, 'frontend/dist/dev'),
+    path: path.resolve(__dirname, 'dist/dev'),
     // filename: specifies the name of entry output file (required)
     filename: '[name].[hash:10].js',
     // chunkFilename: specifies the name of non-entry output files (e.g. dynamic import component)

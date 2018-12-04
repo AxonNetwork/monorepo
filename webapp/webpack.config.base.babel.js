@@ -16,10 +16,10 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
 
-const ReactManifest = './frontend/dist/dll/react_manifest.json';
-const I18nextManifest = './frontend/dist/dll/i18next_manifest.json';
-const ImmutableManifest = './frontend/dist/dll/immutable_manifest.json';
-const MaterializeManifest = './frontend/dist/dll/materialize_manifest.json';
+const ReactManifest = './dist/dll/react_manifest.json';
+const I18nextManifest = './dist/dll/i18next_manifest.json';
+const ImmutableManifest = './dist/dll/immutable_manifest.json';
+const MaterializeManifest = './dist/dll/materialize_manifest.json';
 const devMode = process.env.NODE_ENV !== 'production';
 
 export default {
@@ -48,7 +48,7 @@ export default {
               // Workaround for at-loader not respecting "exclude" property
               // https://github.com/s-panferov/awesome-typescript-loader/issues/492
               reportFiles: [
-                'frontend/src/**/*.{ts,tsx}',
+                'src/**/*.{ts,tsx}',
               ],
             },
           },
@@ -149,17 +149,17 @@ export default {
     // Generate html file to dist folder
     new HtmlWebpackPlugin({
       title: 'Boilerplate',
-      template: path.resolve(__dirname, 'frontend/public/index.ejs'),
+      template: path.resolve(__dirname, 'public/index.ejs'),
     }),
     // Add dll reference files to html
     new AddAssetHtmlPlugin({
-      filepath: path.resolve(__dirname, 'frontend/dist/dll/*_dll.js'),
+      filepath: path.resolve(__dirname, 'dist/dll/*_dll.js'),
       includeSourcemap: false,
     }),
     // Copy static files to build dir
     new CopyWebpackPlugin([
       {
-        from: 'frontend/public/**/*',
+        from: 'public/**/*',
         to: '[name].[ext]',
         ignore: ['index.ejs'],
       },
@@ -171,7 +171,7 @@ export default {
     // What directories should be searched when resolving modules
     modules: [
       'node_modules',
-      'frontend/src',
+      'src',
     ],
     // Automatically resolve certain extensions (Ex. import 'folder/name(.ext)')
     extensions: [

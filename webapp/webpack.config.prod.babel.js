@@ -8,13 +8,13 @@ import BaseWebpackConfig from './webpack.config.base.babel';
 export default merge(BaseWebpackConfig, {
   // The point or points to enter the application.
   entry: {
-    app: './frontend/src/index',
+    app: './src/index',
   },
 
   // Affecting the output of the compilation
   output: {
     // path: the output directory as an absolute path (required)
-    path: path.resolve(__dirname, 'frontend/dist/prod'),
+    path: path.resolve(__dirname, 'dist/prod'),
     // filename: specifies the name of entry output file (required)
     filename: '[name].[chunkhash:10].js',
     // chunkFilename: specifies the name of non-entry output files (e.g. dynamic import component)

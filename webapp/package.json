@@ -9,7 +9,7 @@
   "homepage": ".",
   "license": "Copyright Conscience, Inc., 2018",
   "scripts": {
-    "clean": "trash frontend/dist .awcache coverage",
+    "clean": "trash dist .awcache coverage",
     "dll": "cross-env NODE_ENV=production webpack --config webpack.config.dll.babel.js",
     "dev": "yarn clean && yarn dll && concurrently --raw \"yarn dev-client\"",
     "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.babel.js",
@@ -31,6 +31,8 @@
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
+    "@material-ui/core": "^3.6.1",
+    "@material-ui/icons": "^3.0.1",
     "@types/i18next": "^11.9.3",
     "@types/i18next-browser-languagedetector": "^2.0.1",
     "@types/materialize-css": "^1.0.5",
@@ -98,6 +100,7 @@
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
+    "redux-logic": "^2.0.3",
     "redux-saga": "^0.16.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
@@ -151,8 +154,7 @@
     },
     "moduleDirectories": [
       "node_modules",
-      "frontend/src",
-      "backend"
+      "src"
     ],
     "moduleFileExtensions": [
       "js",
