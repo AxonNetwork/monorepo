@@ -1,11 +1,12 @@
-import { createBrowserHistory } from 'history'
 import OfflinePluginRuntime from 'offline-plugin/runtime'
 import React from 'react'
 import ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import App from 'App'
+import history from 'redux/history'
 import createStore from 'redux/store'
+import { whoami } from 'redux/user/userActions'
 import { isProduction } from 'utils'
 
 // Webpack offline plugin
@@ -19,10 +20,9 @@ if (isProduction) {
 const initialState = {};
 
 // Create browser history
-const history = createBrowserHistory();
-
 // Configure store
 const store = createStore(initialState, history);
+store.dispatch(whoami({}))
 
 // Create render function
 const render = (Component: any) => {

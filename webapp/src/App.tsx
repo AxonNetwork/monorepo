@@ -3,7 +3,7 @@ import { History } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Store } from 'redux'
-import router from 'router'
+import Router from 'Router'
 import { IGlobalState } from 'redux/store'
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
@@ -36,7 +36,7 @@ export default (props: IAppProps) => (
 		<MuiThemeProvider theme={theme}>
 			<CssBaseline />
 			<ConnectedRouter history={props.history}>
-				{router}
+                <Router />
 			</ConnectedRouter>
 		</MuiThemeProvider>
 	</Provider>

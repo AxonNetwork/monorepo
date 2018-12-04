@@ -1,6 +1,10 @@
 import { FailedAction } from '../reduxUtils'
 
 export enum UserActionType {
+    WHO_AM_I = 'WHO_AM_I',
+    WHO_AM_I_SUCCESS = 'WHO_AM_I_SUCCESS',
+    WHO_AM_I_FAILED = 'WHO_AM_I_FAILED',
+
     LOGIN = 'LOGIN',
     LOGIN_SUCCESS = 'LOGIN_SUCCESS',
     LOGIN_FAILED = 'LOGIN_FAILED',
@@ -13,6 +17,24 @@ export enum UserActionType {
     LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
     LOGOUT_FAILED = 'LOGOUT_FAILED',
 }
+
+export interface IWhoAmIAction {
+    type: UserActionType.WHO_AM_I
+    payload: {}
+}
+
+export interface IWhoAmISuccessAction {
+    type: UserActionType.WHO_AM_I_SUCCESS
+    payload: {
+        userID: string
+        emails: string[]
+        name: string
+        username: string
+        picture: string,
+    }
+}
+
+export type IWhoAmIFailedAction = FailedAction<UserActionType.WHO_AM_I_FAILED>
 
 export interface ILoginAction {
     type: UserActionType.LOGIN
@@ -71,6 +93,10 @@ export interface ILogoutSuccessAction {
 export type ILogoutFailedAction = FailedAction<UserActionType.LOGOUT_FAILED>
 
 export type IUserAction =
+    IWhoAmIAction |
+    IWhoAmISuccessAction |
+    IWhoAmIFailedAction |
+
     ILoginAction |
     ILoginSuccessAction |
     ILoginFailedAction |
@@ -83,6 +109,7 @@ export type IUserAction =
     ISignupSuccessAction |
     ISignupFailedAction
 
+export const whoami = (payload: IWhoAmIAction['payload']): IWhoAmIAction => ({ type: UserActionType.WHO_AM_I, payload })
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
