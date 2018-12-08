@@ -4,11 +4,14 @@ import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RepoInfo from './RepoInfo'
-import RepoFiles from './RepoFiles'
+import RepoFilesPage from './RepoFilesPage'
+import RepoHistoryPage from './RepoHistoryPage'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, RepoPage } from 'conscience-lib/common'
-import { autobind, repoPageToString } from 'conscience-lib/utils'
+import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
+import path from 'path'
+
 
 @autobind
 class Repository extends React.Component<Props>
@@ -37,19 +40,22 @@ class Repository extends React.Component<Props>
 				</div>
 			)
 		}
+		const repoPage = stringToRepoPage(path.basename(this.props.location.pathname))
+
 		return (
 			<div className={classes.repository}>
 				<RepoInfo
 					repo={repo}
-					repoPage={RepoPage.Files}
+					repoPage={repoPage}
 					menuLabelsHidden={false}
 					navigateRepoPage={this.navigateRepoPage}
 				/>
 				<div className={classes.subpage}>
 					<Switch>
-						<Route path='/repo/:repoID/files/:filepath+' component={RepoFiles} />
-						<Route path='/repo/:repoID/files' component={RepoFiles} />
-						<Route path='/repo/:repoID' component={RepoFiles} />
+						<Route path='/repo/:repoID/files/:filepath+' component={RepoFilesPage} />
+						<Route path='/repo/:repoID/files' component={RepoFilesPage} />
+						<Route path='/repo/:repoID/history' component={RepoHistoryPage} />
+						<Route path='/repo/:repoID' component={RepoFilesPage} />
 					</Switch>
 				</div>
 			</div>
