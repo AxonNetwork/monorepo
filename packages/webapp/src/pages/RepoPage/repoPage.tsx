@@ -2,7 +2,7 @@ import React from 'react'
 import { Switch, Route } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import RepoList from './components/RepoList'
-import RepoInfo from './components/RepoInfo'
+import Repository from './components/Repository'
 
 
 class RepoPage extends React.Component<Props>
@@ -14,7 +14,7 @@ class RepoPage extends React.Component<Props>
 				<main className={classes.main}>
 					<Switch>
 						<Route exact path='/repo' component={RepoList} />
-						<Route path='/repo/:repoID' component={RepoInfo} />
+						<Route path='/repo/:repoID' component={Repository} />
 					</Switch>
 				</main>
 			</div>

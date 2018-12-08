@@ -9,7 +9,7 @@ import { IGlobalState } from 'redux/store'
 
 function Routes(
 	{ loggedIn }: {loggedIn: boolean}
-){
+	){
 	return (
 		<div>
 		    <Header />

@@ -17,7 +17,7 @@ import FolderIcon from '@material-ui/icons/Folder'
 import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from './Breadcrumbs'
-import { IRepoFile } from 'conscience-lib/common'
+import { IRepoFile, FileMode } from 'conscience-lib/common'
 import path from 'path'
 import autobind from 'conscience-lib/utils/autobind'
 

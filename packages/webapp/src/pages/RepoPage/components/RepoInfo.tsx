@@ -1,88 +1,91 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { RouteComponentProps } from 'react-router'
-import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import FileList from 'conscience-components/FileList'
-import { getRepo } from 'redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
-import { IRepo } from 'conscience-lib/common'
-import autobind from 'conscience-lib/utils/autobind'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import Tabs from 'conscience-components/Tabs'
+import { IRepo, RepoPage } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
+
 
 @autobind
 class RepoInfo extends React.Component<Props>
 {
-	componentWillMount(){
-		const repoID = this.props.match.params.repoID
-		this.props.getRepo({ repoID })
-	}
 
-	selectFile(file: any){
-		console.log("Selected File: ", file)
-	}
+    render() {
+        const { repo, classes } = this.props
+        if (repo === undefined) {
+            return null
+        }
+        const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
+        return (
+            <div className={classes.repoInfo}>
+                <div className={classes.titleContainer}>
+                    <Typography variant="headline" className={classes.headline}>{repo.repoID}</Typography>
+                    <Typography className={classes.version}>{version}</Typography>
+                </div>
 
-	render() {
-		const { repo, classes } = this.props
-		if((repo || {}).files === undefined) {
-			return (
-				<div className={classes.progressContainer}>
-					<CircularProgress color="secondary" />
-				</div>
-			)
-		}
-		const files = repo.files || {}
-		return (
-			<div className={classes.fileList}>
-				<FileList
-					repoRoot=""
-					files={files}
-					selectFile={this.selectFile}
-					selectedFolder={undefined}
-					fileExtensionsHidden={false}
-				/>
+                <div className={classes.spacer}></div>
+`
+                <Tabs
+                    pages={[
+                        [RepoPage.Home, 'Home'],
+                        [RepoPage.Files, 'Files'],
+                        [RepoPage.History, 'History'],
+                        [RepoPage.Discussion, 'Discussion'],
+                        [RepoPage.Settings, 'Settings'],
 
-			</div>
-		)
-	}
-}
-
-interface MatchParams {
-	repoID: string
-}
-
-interface Props extends RouteComponentProps<MatchParams>{
-	repo: IRepo
-	getRepo: typeof getRepo
-	classes: any
-}
-
-const styles = (theme: Theme) => createStyles({
-	progressContainer: {
-		width: '100%',
-		display: 'flex',
-		justifyContent: 'center',
-		marginTop: 256,
-	},
-	fileList: {
-		marginTop: 32,
-	}
-})
-
-const mapStateToProps = (state: IGlobalState, props: Props) => {
-	const repoID = props.match.params.repoID
-	const repo = state.repo.repos[repoID]
-    return {
-    	repo
+                    ]}
+                    activePage={this.props.repoPage}
+                    onTabSelect={this.props.navigateRepoPage}
+                    menuLabelsHidden={this.props.menuLabelsHidden}
+                />
+            </div >
+        )
     }
 }
 
-const mapDispatchToProps = {
-	getRepo
+interface Props {
+    repo: IRepo | undefined
+    repoPage: RepoPage
+    menuLabelsHidden: boolean
+    navigateRepoPage: (repoPage: RepoPage) => void
+
+    classes: any
 }
 
-const RepoInfoContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(RepoInfo))
+const styles = (theme: Theme) => createStyles({
+    repoInfo: {
+        borderBottom: '1px solid #e4e4e4',
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexShrink: 0,
+    },
+    locationLink: {
+        color: theme.palette.secondary.main,
+        cursor: 'pointer',
+    },
+    headline: {
+        marginRight: '8px',
+        display: 'block',
+        fontSize: '2rem',
+        color: 'rgba(0, 0, 0, 0.7)',
+    },
+    version: {
+        // display: 'inline-block',
+    },
+    caption: {
+        fontSize: '10pt',
+    },
+    titleContainer: {
+        paddingBottom: 20,
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    pushPullButtons: {
+        marginLeft: 30,
+    },
+    spacer: {
+        flexGrow: 1,
+    },
+})
 
-export default RepoInfoContainer
+export default withStyles(styles)(RepoInfo)

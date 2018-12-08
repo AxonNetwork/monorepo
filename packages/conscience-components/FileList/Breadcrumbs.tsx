@@ -54,13 +54,18 @@ class Breadcrumbs extends React.Component<Props>
         return (
             <Typography className={classes.root}>
                 <span>Location: </span>
-                {!this.state.showBasePath &&
-                    <span className={classes.crumb} onClick={this.showBasePath}>...</span>
+                {basePath !== "." &&
+                    <React.Fragment>
+                        {!this.state.showBasePath &&
+                            <span className={classes.crumb} onClick={this.showBasePath}>...</span>
+                        }
+                        {this.state.showBasePath &&
+                            <span>{basePath.substring(1).split('/').join(' / ')}</span>
+                        }
+                        <span> / </span>
+                    </React.Fragment>
                 }
-                {this.state.showBasePath &&
-                    <span>{basePath.substring(1).split('/').join(' / ')}</span>
-                }
-                <span> / </span>
+
                 {parts.map((p, i) => {
                     return (
                         <React.Fragment key={p + i}>
