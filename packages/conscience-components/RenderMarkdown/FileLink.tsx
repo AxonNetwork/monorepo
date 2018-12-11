@@ -42,7 +42,8 @@ class FileLink extends React.Component<Props, State>
     }
 
     goToFile() {
-        this.props.onSelectFile(this.props.filename)
+        const filename = this.props.filename
+        this.props.selectFile({ filename })
     }
 
     showPopper() {
@@ -57,7 +58,7 @@ class FileLink extends React.Component<Props, State>
 interface Props {
     filename: string
     repoRoot: string
-    onSelectFile: (filename: string) => void
+    selectFile: (payload: {filename: string}) => void
     classes: any
 }
 

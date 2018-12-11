@@ -15,13 +15,14 @@ class DiscussionLink extends React.Component<Props>
     }
 
     onClick() {
-        this.props.onSelectDiscussion(this.props.discussionID)
+        const discussionID = this.props.discussionID
+        this.props.selectDiscussion({ discussionID })
     }
 }
 
 interface Props {
     discussionID: string
-    onSelectDiscussion: (discussionID: string) => void
+    selectDiscussion: (payload: {discussionID: string}) => void
     discussionSubject: string
     classes: any
 }

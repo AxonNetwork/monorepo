@@ -57,6 +57,7 @@ class Repository extends React.Component<Props>
 						<Route path='/repo/:repoID/files/:filepath+' component={RepoFilesPage} />
 						<Route path='/repo/:repoID/files' component={RepoFilesPage} />
 						<Route path='/repo/:repoID/history' component={RepoHistoryPage} />
+						<Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
 						<Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
 						<Route path='/repo/:repoID/settings' component={RepoSettingsPage} />
 						<Route path='/repo/:repoID' component={RepoHomePage} />

@@ -58,8 +58,8 @@ class CommentLink extends React.Component<Props, State>
                                     users={users}
                                     discussions={this.props.discussions}
                                     codeColorScheme={this.props.codeColorScheme}
-                                    onSelectFile={this.props.onSelectFile}
-                                    onSelectDiscussion={this.props.onSelectDiscussion}
+                                    selectFile={this.props.selectFile}
+                                    selectDiscussion={this.props.selectDiscussion}
                                 />
                             </CommentWrapper>
                     </Popper>
@@ -83,8 +83,8 @@ interface Props {
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     codeColorScheme?: string | undefined
-    onSelectFile: (filename: string) => void
-    onSelectDiscussion: (discussionID: string) => void
+    selectFile: (payload: {filename: string}) => void
+    selectDiscussion: (payload: {discussionID: string}) => void
     repoRoot: string | undefined
     classes: any
 }

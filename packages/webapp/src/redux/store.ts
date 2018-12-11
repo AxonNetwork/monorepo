@@ -6,6 +6,7 @@ import logic from './logic'
 import reducer from './reducer'
 import { IUserState } from './user/userReducer'
 import { IRepoState } from './repo/repoReducer'
+import { IDiscussionState } from './discussion/discussionReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
@@ -39,5 +40,6 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
 export interface IGlobalState {
     user: IUserState
     repo: IRepoState
+    discussion: IDiscussionState
     router?: RouterState
 }

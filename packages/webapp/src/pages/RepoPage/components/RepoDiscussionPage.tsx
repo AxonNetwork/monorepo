@@ -2,7 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import DiscussionsPane from 'conscience-components/DiscussionsPane'
+import { History } from 'history'
+import { getDiscussions, createDiscussion, createComment } from 'redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
+import { IRepo, IUser, IDiscussion, IComment } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -10,12 +14,53 @@ import { autobind } from 'conscience-lib/utils'
 class RepoFilesPage extends React.Component<Props>
 {
 
+    selectFile(payload: {filename: string}) {
+		const repoID = this.props.match.params.repoID
+		const filename = payload.filename
+		if(filename === undefined) {
+			this.props.history.push(`/repo/${repoID}/files`)
+		}else {
+			this.props.history.push(`/repo/${repoID}/files/${filename}`)
+		}
+
+    }
+
+	selectDiscussion(payload: {discussionID: string | undefined}) {
+		const repoID = this.props.match.params.repoID
+		const discussionID = payload.discussionID
+		if(discussionID === undefined) {
+			this.props.history.push(`/repo/${repoID}/discussion`)
+		}else {
+			this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
+		}
+	}
+
+	sawComment(payload: any) {
+		console.log('sawComment: ', payload)
+	}
+
 	render() {
 		// const { classes } = this.props
-
+		const discussionID = this.props.match.params.discussionID
 		return (
 			<div>
-				<h1>Discussion Page</h1>
+				<DiscussionsPane
+					repo={this.props.repo}
+					user={this.props.user}
+					discussions={this.props.discussions}
+					users={this.props.users}
+					comments={this.props.comments}
+					selectedID={discussionID}
+					newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp}
+					newestCommentTimestampPerDiscussion={this.props.newestCommentTimestampPerDiscussion}
+					discussionIDsSortedByNewestComment={this.props.discussionIDsSortedByNewestComment}
+					getDiscussions={this.props.getDiscussions}
+					selectFile={this.selectFile}
+					selectDiscussion={this.selectDiscussion}
+					createDiscussion={this.props.createDiscussion}
+					createComment={this.props.createComment}
+					sawComment={this.sawComment}
+				/>
 			</div>
 		)
 	}
@@ -23,19 +68,55 @@ class RepoFilesPage extends React.Component<Props>
 
 interface MatchParams {
 	repoID: string
+	discussionID: string | undefined
 }
 
 interface Props extends RouteComponentProps<MatchParams>{
+    repo: IRepo
+    user: IUser
+    discussions: {[discussionID: string]: IDiscussion}
+    users: {[email: string]: IUser}
+    comments: {[commentID: string]: IComment}
+    newestViewedCommentTimestamp: {[discussionID: string]: number}
+    newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
+    discussionIDsSortedByNewestComment: string[]
+
+    getDiscussions: (payload: {repoID: string}) => void
+    selectFile: (payload: {filename: string}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
+    createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
+    createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
+    sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
+
+    history: History
 	classes: any
 }
 
 const styles = (theme: Theme) => createStyles({})
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
-    return {}
+	const repoID = props.match.params.repoID
+	const repo = state.repo.repos[repoID] || {}
+	const users = state.user.users
+	const user = users[state.user.currentUser || ''] || {}
+    return {
+    	repo,
+    	user,
+    	users,
+    	discussions: state.discussion.discussions,
+    	comments: state.discussion.comments,
+	    // newestViewedCommentTimestamp: (state.user.userSettings.newestViewedCommentTimestamp[repoID] || {}),
+	    newestViewedCommentTimestamp: {},
+        newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
+        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
+    }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	getDiscussions,
+	createDiscussion,
+	createComment,
+}
 
 const RepoFilesPageContainer = connect(
     mapStateToProps,

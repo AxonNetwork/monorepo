@@ -5,6 +5,7 @@ import {
     IGetFileContentsAction, IGetFileContentsSuccessAction,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
+import { getDiscussions } from '../discussion/discussionActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
@@ -25,6 +26,7 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
     async process({ action }, dispatch) {
         const { repoID } = action.payload
         const repo = await ServerRelay.getRepo(repoID)
+        dispatch(getDiscussions({ repoID }))
         return { repo }
     }
 })

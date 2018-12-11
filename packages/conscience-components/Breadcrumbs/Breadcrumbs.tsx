@@ -1,10 +1,11 @@
 import React from 'react'
-import path from 'path'
 import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { FileMode } from 'conscience-lib/common'
-import autobind from 'conscience-lib/utils/autobind'
+import { autobind } from 'conscience-lib/utils'
+import path from 'path'
+
 
 @autobind
 class Breadcrumbs extends React.Component<Props>

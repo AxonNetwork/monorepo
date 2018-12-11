@@ -5,6 +5,7 @@ import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import FileViewer from './ConnectedFileViewer'
+import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import FileList from 'conscience-components/FileList'
 import { IGlobalState } from 'redux/store'
 import { IRepo } from 'conscience-lib/common'
@@ -39,13 +40,21 @@ class RepoFilesPage extends React.Component<Props>
 		const file = files[selected]
 		if(file !== undefined) {
 			return(
-				<FileViewer filename={selected} repoID={repoID} />
+				<div>
+					<Breadcrumbs
+						repoRoot={repo.repoID}
+						selectedFolder={selected}
+						selectFile={this.selectFile}
+						classes={{root: classes.breadcrumbs}}
+					/>
+					<FileViewer filename={selected} repoID={repoID} />
+				</div>
 			)
 		}
 		return (
 			<div>
 				<FileList
-					repoRoot="protocol"
+					repoRoot={repo.repoID}
 					files={files}
 					selectFile={this.selectFile}
 					selectedFolder={selected}
@@ -57,8 +66,8 @@ class RepoFilesPage extends React.Component<Props>
 }
 
 interface MatchParams {
-	filepath: string
 	repoID: string
+	filepath: string | undefined
 }
 
 interface Props extends RouteComponentProps<MatchParams>{
@@ -73,6 +82,9 @@ const styles = (theme: Theme) => createStyles({
 		display: 'flex',
 		justifyContent: 'center',
 		marginTop: 256,
+	},
+	breadcrumbs: {
+		marginBottom: 32,
 	}
 })
 

@@ -53,7 +53,7 @@ class RenderMarkdown extends React.Component<Props>
                 <FileLink
                     filename={contents}
                     repoRoot={repoRoot}
-                    onSelectFile={this.props.onSelectFile}
+                    selectFile={this.props.selectFile}
                 />
             )
         case 'discussion':
@@ -62,7 +62,7 @@ class RenderMarkdown extends React.Component<Props>
                 <DiscussionLink
                     discussionID={contents}
                     discussionSubject={subject}
-                    onSelectDiscussion={this.props.onSelectDiscussion}
+                    selctDiscussion={this.props.selctDiscussion}
                 />
             )
         case 'comment':
@@ -74,8 +74,8 @@ class RenderMarkdown extends React.Component<Props>
                     repoRoot={repoRoot}
                     discussions={discussions}
                     codeColorScheme={this.props.codeColorScheme}
-                    onSelectFile={this.props.onSelectFile}
-                    onSelectDiscussion={this.props.onSelectDiscussion}
+                    selectFile={this.props.selectFile}
+                    selctDiscussion={this.props.selctDiscussion}
                 />
             )
         default:
@@ -91,8 +91,8 @@ interface Props {
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     codeColorScheme?: string | undefined
-    onSelectFile: (filename: string) => void
-    onSelectDiscussion: (discussionID: string) => void
+    selectFile: (payload: {filename: string}) => void
+    selectDiscussion: (payload: {discussionID: string}) => void
     classes: any
 }
 
