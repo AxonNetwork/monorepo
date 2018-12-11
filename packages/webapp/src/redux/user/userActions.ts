@@ -1,4 +1,5 @@
 import { FailedAction } from '../reduxUtils'
+import { IUser } from 'conscience-lib/common'
 
 export enum UserActionType {
     WHO_AM_I = 'WHO_AM_I',
@@ -16,6 +17,14 @@ export enum UserActionType {
     LOGOUT = 'LOGOUT',
     LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
     LOGOUT_FAILED = 'LOGOUT_FAILED',
+
+    FETCH_USER_DATA = 'FETCH_USER_DATA',
+    FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS',
+    FETCH_USER_DATA_FAILED = 'FETCH_USER_DATA_FAILED',
+
+    SAW_COMMENT = 'SAW_COMMENT',
+    SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
+    SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
 }
 
 export interface IWhoAmIAction {
@@ -92,6 +101,42 @@ export interface ILogoutSuccessAction {
 
 export type ILogoutFailedAction = FailedAction<UserActionType.LOGOUT_FAILED>
 
+export interface IFetchUserDataAction {
+    type: UserActionType.FETCH_USER_DATA
+    payload: {
+        userIDs: string[],
+    }
+}
+
+export interface IFetchUserDataSuccessAction {
+    type: UserActionType.FETCH_USER_DATA_SUCCESS
+    payload: {
+        users: { [userID: string]: IUser },
+    }
+}
+
+export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
+
+export interface ISawCommentAction {
+    type: UserActionType.SAW_COMMENT
+    payload: {
+        repoID: string
+        discussionID: string
+        commentTimestamp: number,
+    }
+}
+
+export interface ISawCommentSuccessAction {
+    type: UserActionType.SAW_COMMENT_SUCCESS
+    payload: {
+        repoID: string
+        discussionID: string
+        commentTimestamp: number,
+    }
+}
+
+export type ISawCommentFailedAction = FailedAction<UserActionType.SAW_COMMENT_FAILED>
+
 export type IUserAction =
     IWhoAmIAction |
     IWhoAmISuccessAction |
@@ -107,9 +152,21 @@ export type IUserAction =
 
     ISignupAction |
     ISignupSuccessAction |
-    ISignupFailedAction
+    ISignupFailedAction |
+
+    IFetchUserDataAction |
+    IFetchUserDataSuccessAction |
+    IFetchUserDataFailedAction |
+
+    ISawCommentAction |
+    ISawCommentSuccessAction |
+    ISawCommentFailedAction
 
 export const whoami = (payload: IWhoAmIAction['payload']): IWhoAmIAction => ({ type: UserActionType.WHO_AM_I, payload })
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
 export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, payload: {} })
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
+
+export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
+
+export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })

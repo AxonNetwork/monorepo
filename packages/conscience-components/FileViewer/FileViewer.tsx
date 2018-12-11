@@ -36,8 +36,8 @@ class FileViewer extends React.Component<Props, State>
                             users={this.props.users}
                             discussions={this.props.discussions}
                             codeColorScheme={this.props.codeColorScheme}
-                            onSelectFile={this.props.onSelectFile}
-                            onSelectDiscussion={this.props.onSelectDiscussion}
+                            selectFile={this.props.selectFile}
+                            selectDiscussion={this.props.selectDiscussion}
                         />
                     </CardContent>
                 </Card>
@@ -100,8 +100,8 @@ interface Props {
     discussions: {[userID: string]: IDiscussion}
     codeColorScheme?: string | undefined
     backgroundColor?: string
-    onSelectFile: (filename: string) => void
-    onSelectDiscussion: (discussionID: string) => void
+    selectFile: (payload: {filename: string}) => void
+    selectDiscussion: (payload: {discussionID: string}) => void
     classes: any
 }
 

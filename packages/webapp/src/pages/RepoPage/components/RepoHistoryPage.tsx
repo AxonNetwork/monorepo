@@ -13,7 +13,7 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoHistoryPage extends React.Component<Props>
 {
-	selectCommit(commit: any){
+	selectCommit(payload: {commit: string}){
 		console.log('commit: ', commit)
 	}
 
@@ -46,7 +46,7 @@ class RepoHistoryPage extends React.Component<Props>
 }
 
 interface MatchParams {
-	filepath: string
+	commit: string | undefined
 	repoID: string
 }
 

@@ -43,7 +43,6 @@ class RenderMarkdown extends React.Component<Props>
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
         const { comments, users, discussions, repoRoot } = this.props
-        console.log(node)
 
         switch (identifier) {
         case 'image':
@@ -62,7 +61,7 @@ class RenderMarkdown extends React.Component<Props>
                 <DiscussionLink
                     discussionID={contents}
                     discussionSubject={subject}
-                    selctDiscussion={this.props.selctDiscussion}
+                    selectDiscussion={this.props.selectDiscussion}
                 />
             )
         case 'comment':
@@ -75,7 +74,7 @@ class RenderMarkdown extends React.Component<Props>
                     discussions={discussions}
                     codeColorScheme={this.props.codeColorScheme}
                     selectFile={this.props.selectFile}
-                    selctDiscussion={this.props.selctDiscussion}
+                    selectDiscussion={this.props.selectDiscussion}
                 />
             )
         default:

@@ -66,7 +66,7 @@ class Thread extends React.Component<Props, State>
             repoID: this.props.repo.repoID,
             discussionID: this.props.discussionID,
             text: comment,
-            callback: (err: Error) => {
+            callback: (err?: Error) => {
                 if (err) {
                     this.setState({ createCommentError: err.toString() })
                 } else {

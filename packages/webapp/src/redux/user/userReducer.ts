@@ -8,6 +8,13 @@ const initialState = {
 
 	currentUser: undefined,
     checkedLoggedIn: false,
+    
+    userSettings: {
+        codeColorScheme: 'pojoaque',
+        menuLabelsHidden: false,
+        fileExtensionsHidden: false,
+        newestViewedCommentTimestamp: {},
+    },
 }
 
 export interface IUserState {
@@ -15,7 +22,18 @@ export interface IUserState {
     usersByEmail: {[email: string]: string} // value is userID
 
     currentUser: string | undefined
-    checkedLoggedIn: boolean,
+    checkedLoggedIn: boolean
+
+    userSettings: {
+        codeColorScheme: string | undefined
+        menuLabelsHidden: boolean
+        fileExtensionsHidden: boolean
+        newestViewedCommentTimestamp: {
+            [repoID: string]: {
+                [discussionID: string]: number
+            },
+        },
+    }
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -51,6 +69,45 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             return {
                 ...state,
                 checkedLoggedIn: true,
+            }
+        }
+
+        case UserActionType.FETCH_USER_DATA_SUCCESS: {
+            const { users } = action.payload
+            const usersByEmail = {} as {[email: string]: string}
+            for (let userID of Object.keys(users)) {
+                for (let email of (users[userID].emails || [])) {
+                    usersByEmail[email] = userID
+                }
+            }
+
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    ...action.payload.users,
+                },
+                usersByEmail: {
+                    ...state.usersByEmail,
+                    ...usersByEmail,
+                },
+            }
+        }
+
+        case UserActionType.SAW_COMMENT_SUCCESS: {
+            const { repoID, discussionID, commentTimestamp } = action.payload
+            return {
+                ...state,
+                userSettings: {
+                    ...state.userSettings,
+                    newestViewedCommentTimestamp: {
+                        ...state.userSettings.newestViewedCommentTimestamp,
+                        [repoID]: {
+                            ...(state.userSettings.newestViewedCommentTimestamp[repoID] || {}),
+                            [discussionID]: commentTimestamp,
+                        },
+                    },
+                },
             }
         }
 

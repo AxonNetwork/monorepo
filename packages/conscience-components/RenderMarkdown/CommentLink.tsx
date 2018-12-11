@@ -24,8 +24,6 @@ class CommentLink extends React.Component<Props, State>
         const username = (users[comment.userID] || {} as any).name || comment.userID
         const userPicture = (users[comment.userID] || {} as any).picture
 
-        const enablePopper = true
-
         return (
             <React.Fragment>
                 <a
@@ -37,33 +35,31 @@ class CommentLink extends React.Component<Props, State>
                 >
                     comment {comment.commentID}
                 </a>
-                {enablePopper &&
-                    <Popper
-                        open={this.state.showPopper}
-                        anchorEl={this._ref}
-                        placement="right"
-                        onMouseEnter={this.showPopper}
-                        onMouseLeave={this.hidePopper}
-                        className={classes.popper}
-                    >
-                            <CommentWrapper
-                                username={username}
-                                userPicture={userPicture}
-                                created={comment.created}
-                            >
-                                <RenderMarkdown
-                                    text={comment.text}
-                                    repoRoot={repoRoot || ''}
-                                    comments={comments}
-                                    users={users}
-                                    discussions={this.props.discussions}
-                                    codeColorScheme={this.props.codeColorScheme}
-                                    selectFile={this.props.selectFile}
-                                    selectDiscussion={this.props.selectDiscussion}
-                                />
-                            </CommentWrapper>
-                    </Popper>
-                }
+                <Popper
+                    open={this.state.showPopper}
+                    anchorEl={this._ref}
+                    placement="right"
+                    onMouseEnter={this.showPopper}
+                    onMouseLeave={this.hidePopper}
+                    className={classes.popper}
+                >
+                        <CommentWrapper
+                            username={username}
+                            userPicture={userPicture}
+                            created={comment.created}
+                        >
+                            <RenderMarkdown
+                                text={comment.text}
+                                repoRoot={repoRoot || ''}
+                                comments={comments}
+                                users={users}
+                                discussions={this.props.discussions}
+                                codeColorScheme={this.props.codeColorScheme}
+                                selectFile={this.props.selectFile}
+                                selectDiscussion={this.props.selectDiscussion}
+                            />
+                        </CommentWrapper>
+                </Popper>
             </React.Fragment>
         )
     }

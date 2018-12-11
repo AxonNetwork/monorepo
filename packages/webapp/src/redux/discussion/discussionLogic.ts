@@ -6,8 +6,8 @@ import { DiscussionActionType,
     IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction,
     ICreateCommentAction, ICreateCommentSuccessAction,
     getCommentsForDiscussion } from './discussionActions'
-// import { navigateRepoPage } from 'redux/repo/repoActions'
-// import { fetchUserData, sawComment } from 'redux/user/userActions'
+import { push as pushToHistory } from 'connected-react-router'
+import { fetchUserData, sawComment } from 'redux/user/userActions'
 import { IDiscussion, IComment } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
@@ -33,8 +33,9 @@ const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussi
     async process({ action }, dispatch) {
         const { repoID, subject, commentText } = action.payload
         const { comment, discussion } = await ServerRelay.createDiscussion(repoID, subject, commentText)
-        // dispatch(selectDiscussion({ discussionID: discussion.discussionID }))
-        // dispatch(navigateRepoPage({ repoPage: RepoPage.Discussion }))
+
+        dispatch(pushToHistory(`/repo/${repoID}/discussion/${discussion.discussionID}`))
+
         return { comment, discussion }
     },
 })
@@ -46,8 +47,8 @@ const getCommentsForDiscussionLogic = makeLogic<IGetCommentsForDiscussionAction,
         const commentsList = await ServerRelay.getCommentsForDiscussion(discussionID)
         const comments = keyBy(commentsList, 'commentID') as {[commentID: string]: IComment}
 
-        // let userIDs = commentsList.map(c => c.userID)
-        // dispatch(fetchUserData({ userIDs }))
+        let userIDs = commentsList.map(c => c.userID)
+        dispatch(fetchUserData({ userIDs }))
 
         return { discussionID, comments }
     },
@@ -59,7 +60,7 @@ const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccess
         const { repoID, discussionID, text, callback } = action.payload
         try {
             const comment = await ServerRelay.createComment(repoID, discussionID, text)
-            // dispatch(sawComment({ repoID, discussionID, commentTimestamp: comment.created }))
+            dispatch(sawComment({ repoID, discussionID, commentTimestamp: comment.created }))
             callback()
             return { comment }
         } catch (err) {

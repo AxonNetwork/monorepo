@@ -14,7 +14,10 @@ const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction
         const repos = {
         	protocol: {
         		repoID: "protocol"
-        	}
+        	},
+            testmcjones: {
+                repoID: "testmcjones"
+            }
         }
 
         return { repos }

@@ -164,6 +164,7 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: theme.spacing.unit,
     },
     threadPane: {
+        position: 'relative',
         marginLeft: 20,
         height: '100%',
         width: '100%',
@@ -179,7 +180,7 @@ const styles = (theme: Theme) => createStyles({
         padding: theme.spacing.unit,
     },
     startNewDiscussionPrompt: {
-        backgroundColor: theme.palette.grey[300],
+        fontSize: '1.8rem',
         padding: theme.spacing.unit,
     },
     sidebarListItemSubtext: {
@@ -211,39 +212,3 @@ const styles = (theme: Theme) => createStyles({
 })
 
 export default withStyles(styles)(RepoDiscussionPage)
-
-// const mapStateToProps = (state: IGlobalState) => {
-//     const repo = state.repository.repos[ state.repository.selectedRepo || '' ] || {}
-//     const repoID = repo.repoID || ''
-//     let selectedDiscussion = state.discussion.selected
-//     if (selectedDiscussion && selectedDiscussion !== '<new discussion>' && (state.discussion.discussions[selectedDiscussion] || {}).repoID !== repoID) {
-//         selectedDiscussion = undefined
-//     }
-//     return {
-//         repo,
-//         repoID,
-//         users: state.user.users,
-//         discussions: state.discussion.discussions,
-//         discussionsByRepo: state.discussion.discussionsByRepo,
-//         comments: state.discussion.comments,
-//         selected: selectedDiscussion,
-//         newestViewedCommentTimestamp: (state.user.userSettings.newestViewedCommentTimestamp[repoID] || {}),
-//         newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
-//         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
-//     }
-// }
-
-// const mapDispatchToProps = {
-//     getDiscussions,
-//     selectDiscussion,
-//     createDiscussion,
-//     createComment,
-// }
-
-// const RepoDiscussionPageContainer = connect(
-//     mapStateToProps,
-//     mapDispatchToProps,
-// )(withStyles(styles)(RepoDiscussionPage))
-
-// export default RepoDiscussionPageContainer
-

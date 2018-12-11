@@ -1,5 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { History } from 'history'
 import FileViewer from 'conscience-components/FileViewer'
 import { getFileContents } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
@@ -16,8 +18,8 @@ class ConnectedFileViewer extends React.Component<Props>
 			<FileViewer {...other}
 				repoRoot={repoID}
 				fileContents={fileContents}
-			    onSelectFile={this.onSelectFile}
-			    onSelectDiscussion={this.onSelectDiscussion}
+			    selectFile={this.selectFile}
+			    selectDiscussion={this.selectDiscussion}
 			/>
 		)
 	}
@@ -42,16 +44,28 @@ class ConnectedFileViewer extends React.Component<Props>
     	this.props.getFileContents({ repoID, filename })
     }
 
-    onSelectFile(filename: string) {
-    	console.log('selected file: ', filename)
+	selectFile(payload: {filename: string}) {
+    	const repoID = this.props.repoID
+    	const filename = payload.filename
+    	if(filename === undefined) {
+    		this.props.history.push(`/repo/${repoID}/file`)
+    	}else{
+    		this.props.history.push(`/repo/${repoID}/file/${filename}`)
+    	}
     }
 
-    onSelectDiscussion(discussionID: string) {
-    	console.log('selected discussion: ', discussionID)
+	selectDiscussion(payload: {discussionID: string}) {
+    	const repoID = this.props.repoID
+    	const discussionID = payload.discussionID
+    	if(discussionID === undefined) {
+    		this.props.history.push(`/repo/${repoID}/discussion`)
+    	}else{
+    		this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
+    	}
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps
+type Props = OwnProps & StateProps & DispatchProps & { history: History }
 
 interface OwnProps {
     filename: string
@@ -92,7 +106,9 @@ const mapDispatchToProps = {
 	getFileContents
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ConnectedFileViewer)
+export default withRouter(
+	connect(
+	    mapStateToProps,
+	    mapDispatchToProps,
+	)(ConnectedFileViewer) as any
+)
