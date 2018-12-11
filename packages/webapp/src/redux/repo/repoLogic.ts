@@ -2,6 +2,7 @@ import {
 	RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
     IGetRepoAction, IGetRepoSuccessAction,
+    IGetFileContentsAction, IGetFileContentsSuccessAction,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import ServerRelay from 'conscience-lib/ServerRelay'
@@ -28,7 +29,18 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
     }
 })
 
+const getFileContents = makeLogic<IGetFileContentsAction, IGetFileContentsSuccessAction>({
+    type: RepoActionType.GET_FILE_CONTENTS,
+    async process({ action }, dispatch) {
+        const { repoID, filename } = action.payload
+        const resp = await ServerRelay.getFileContents(repoID, filename)
+        const contents = resp.contents
+        return { repoID, filename, contents}
+    }
+})
+
 export default [
 	getRepoListLogic,
 	getRepoLogic,
+    getFileContents,
 ]

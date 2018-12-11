@@ -27,6 +27,25 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 			}
 		}
 
+		case RepoActionType.GET_FILE_CONTENTS_SUCCESS: {
+			const { repoID, filename, contents } = action.payload
+			return {
+				repos: {
+					...state.repos,
+					[repoID]: {
+						...state.repos[repoID],
+						files: {
+							...state.repos[repoID].files,
+							[filename]: {
+								...(state.repos[repoID].files || {})[filename],
+								contents: contents
+							}
+						}
+					}
+				}
+			}
+		}
+
 		default:
 			return state
 	}

@@ -16,8 +16,9 @@ export function repoPageToString(repoPage: RepoPage){
     }
 }
 
-export function stringToRepoPage(str: string){
-     switch(str){
+export function stringToRepoPage(pathname: string){
+    const base = pathname.split('/')[3]
+    switch(base){
         case 'files':
             return RepoPage.Files
         case 'history':

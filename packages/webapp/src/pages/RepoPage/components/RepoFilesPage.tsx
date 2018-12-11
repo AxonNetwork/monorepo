@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router'
 import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import FileViewer from './ConnectedFileViewer'
 import FileList from 'conscience-components/FileList'
 import { IGlobalState } from 'redux/store'
 import { IRepo } from 'conscience-lib/common'
@@ -34,6 +35,13 @@ class RepoFilesPage extends React.Component<Props>
 			)
 		}
 		const selected = this.props.match.params.filepath || ""
+		const repoID = this.props.match.params.repoID || ""
+		const file = files[selected]
+		if(file !== undefined) {
+			return(
+				<FileViewer filename={selected} repoID={repoID} />
+			)
+		}
 		return (
 			<div>
 				<FileList

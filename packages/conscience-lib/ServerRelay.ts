@@ -189,6 +189,14 @@ const ServerRelay = {
         return response.data
     },
 
+    async getFileContents(repoID: string, filename: string) {
+        interface IResponse {
+            contents: string
+        }
+        const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename)
+        return response.data
+    },
+
     async getDiscussionsForRepo(repoID: string) {
         interface IResponse {
             discussions: IDiscussion[]
