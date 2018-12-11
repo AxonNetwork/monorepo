@@ -41,7 +41,6 @@ class TimelineEvent extends React.Component<Props>
 
 interface Props {
     event: ITimelineEvent
-    : string
     username: string | undefined
     userPicture: string | undefined
     classes: any

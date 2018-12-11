@@ -82,7 +82,7 @@ interface Props {
     commitList: string[] | undefined
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string}
-    selectCommit?: Function
+    selectCommit?: (payload: {selectedCommit: string}) => void
     classes: any
 }
 

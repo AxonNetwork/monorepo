@@ -5,18 +5,15 @@ import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Timeline from 'conscience-components/Timeline'
+import CommitView from 'conscience-components/CommitView'
 import { IGlobalState } from 'redux/store'
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoHistoryPage extends React.Component<Props>
 {
-	selectCommit(payload: {commit: string}){
-		console.log('commit: ', commit)
-	}
-
 	render() {
 		const { repo, classes } = this.props
 		const commits = repo.commits
@@ -28,21 +25,47 @@ class RepoHistoryPage extends React.Component<Props>
 			)
 		}
 		const commitList = Object.keys(commits)
-
-		return (
-			<div>
-                <Timeline
-                    repoID={repo.repoID}
-                    page={1}
-                    commits={repo.commits}
-                    commitList={commitList}
-                    selectCommit={this.selectCommit}
-                    users={{}}
-                    usersByEmail={{}}
-                />
-			</div>
-		)
+		const selectedCommit = this.props.match.params.commit
+		if(selectedCommit === undefined) {
+			return (
+	            <Timeline
+	                repoID={repo.repoID}
+	                page={1}
+	                commits={repo.commits}
+	                commitList={commitList}
+	                selectCommit={this.selectCommit}
+	                users={{}}
+	                usersByEmail={{}}
+	            />
+			)
+		}else {
+			return (
+				<CommitView
+					repoID={repo.repoID}
+					repoRoot={repo.repoID} // fix this
+					user={this.props.user}
+					commit={commits[selectedCommit]}
+					codeColorScheme={undefined}
+					getDiff={this.getDiff}
+					selectCommit={this.selectCommit}
+				/>
+			)
+		}
 	}
+
+	selectCommit(payload: {selectedCommit: string | undefined}){
+		const repoID = this.props.match.params.repoID
+		const commit = payload.selectedCommit
+		if(commit === undefined) {
+			this.props.history.push(`/repo/${repoID}/history`)
+		}else {
+			this.props.history.push(`/repo/${repoID}/history/${commit}`)
+		}
+	}
+
+    getDiff(payload: {repoRoot: string, commit: string}){
+    	console.log('get diff: ', payload)
+    }
 }
 
 interface MatchParams {
@@ -52,6 +75,7 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams>{
 	repo: IRepo
+	user: IUser
 	history: History
 	classes: any
 }
@@ -68,8 +92,10 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const repoID = props.match.params.repoID
 	const repo = state.repo.repos[repoID]
+	const user = state.user.users[state.user.currentUser || ''] || {}
     return {
-    	repo
+    	repo,
+    	user,
     }
 }
 
