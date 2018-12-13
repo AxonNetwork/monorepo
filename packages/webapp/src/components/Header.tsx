@@ -1,37 +1,113 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router'
+import { Link } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-
 import AppBar from '@material-ui/core/AppBar'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import IconButton from '@material-ui/core/IconButton'
+import UserAvatar from 'conscience-components/UserAvatar'
+import { IGlobalState } from 'redux/store'
+import { IUser } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 const logo = require('../assets/logo-invert.png')
 
-class Header extends React.Component<Props> {
+
+@autobind
+class Header extends React.Component<Props, State> {
+	state={
+		anchorEl: null
+	}
+
 	render() {
-		const { classes } = this.props
+		const { user, classes } = this.props
 		return (
 			<AppBar position="static" className={classes.appbar}>
-				<img
-					src={logo}
-					className={classes.img}
-					alt="Conscience Logo"
-					/>
+				<Link to='/repo'>
+					<img
+						src={logo}
+						className={classes.img}
+						alt="Conscience Logo"
+						/>
+				</Link>
+				{user !== undefined &&
+					<div className={classes.avatar}>
+						<IconButton onClick={this.openUserMenu}>
+							<UserAvatar
+								username={user.name}
+								userPicture={user.picture}
+							/>
+						</IconButton>
+						<Menu
+							anchorEl={this.state.anchorEl}
+							open={Boolean(this.state.anchorEl)}
+							onClose={this.handleClose}
+						>
+							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
+						</Menu>
+					</div>
+				}
 			</AppBar>
 		)
 	}
+
+	openUserMenu(event: React.MouseEvent<HTMLElement>){
+		this.setState({ anchorEl: event.currentTarget })
+	}
+
+	selectItem(selection?: string){
+		this.handleClose()
+		switch(selection){
+			case 'settings':
+				this.props.history.push('/settings')
+		}
+	}
+
+	handleClose(){
+		this.setState({ anchorEl: null })
+	}
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
+	user: IUser | undefined
 	classes: any
+}
+
+interface State {
+	anchorEl: HTMLElement | null
 }
 
 const styles = (theme: Theme) => createStyles({
 	appbar: {
-		paddingLeft: 8
+		paddingLeft: 8,
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
 	},
 	img: {
 		width: 64,
 		height: 64,
+	},
+	avatar: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginRight: 64,
 	}
 })
 
-export default withStyles(styles)(Header)
+const mapStateToProps = (state: IGlobalState) => {
+	const user = state.user.users[state.user.currentUser || '']
+    return {
+    	user,
+    }
+}
+
+const mapDispatchToProps = {}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(withRouter(Header)))

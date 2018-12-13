@@ -5,6 +5,7 @@ import Header from 'components/Header'
 import LoginPage from 'pages/LoginPage'
 import HomePage from 'pages/HomePage'
 import RepoPage from 'pages/RepoPage'
+import SettingsPage from 'pages/SettingsPage'
 import { IGlobalState } from 'redux/store'
 
 function Routes(
@@ -16,7 +17,14 @@ function Routes(
 		    <Switch>
 				<Route exact path='/login' component={LoginPage} />
 				<PrivateRoute path='/repo' component={RepoPage} loggedIn={loggedIn} />
-				<Route component={HomePage} />
+				<PrivateRoute path='/settings' component={SettingsPage} loggedIn={loggedIn} />
+				<Route render={() => (
+					<React.Fragment>
+						{loggedIn && <Redirect to='/repo' />}
+						{!loggedIn && <HomePage />}
+					</React.Fragment>
+					)}
+				/>
 		    </Switch>
 		</div>
 	)

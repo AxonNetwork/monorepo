@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
-import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import FileViewer from './ConnectedFileViewer'
@@ -72,7 +71,6 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams>{
 	repo: IRepo
-	history: History
 	classes: any
 }
 

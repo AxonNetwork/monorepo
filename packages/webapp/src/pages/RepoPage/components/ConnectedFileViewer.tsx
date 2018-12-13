@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { History } from 'history'
+import { withRouter, RouteComponentProps } from 'react-router'
 import FileViewer from 'conscience-components/FileViewer'
 import { getFileContents } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
@@ -65,7 +64,7 @@ class ConnectedFileViewer extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { history: History }
+type Props = OwnProps & StateProps & DispatchProps & RouteComponentProps<any>
 
 interface OwnProps {
     filename: string
@@ -106,9 +105,7 @@ const mapDispatchToProps = {
 	getFileContents
 }
 
-export default withRouter(
-	connect(
-	    mapStateToProps,
-	    mapDispatchToProps,
-	)(ConnectedFileViewer) as any
-)
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withRouter(ConnectedFileViewer))
