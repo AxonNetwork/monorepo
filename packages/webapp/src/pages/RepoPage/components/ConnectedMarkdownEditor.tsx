@@ -1,23 +1,28 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
-import FileViewer from 'conscience-components/FileViewer'
-import { getFileContents } from 'redux/repo/repoActions'
+import MarkdownEditor from 'conscience-components/MarkdownEditor'
+import { getFileContents, saveFileContents } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind, isTextFile } from 'conscience-lib/utils'
 
 
 @autobind
-class ConnectedFileViewer extends React.Component<Props>
+class ConnectedMarkdownEditor extends React.Component<Props>
 {
 	render() {
-		const { repoID, ...other} = this.props
 		return(
-			<FileViewer
-                {...other}
+			<MarkdownEditor
+                repo={this.props.repo}
+                filename={this.props.filename}
+                comments={this.props.comments}
+                users={this.props.users}
+                discussions={this.props.discussions}
+                codeColorScheme={this.props.codeColorScheme}
 			    selectFile={this.selectFile}
 			    selectDiscussion={this.selectDiscussion}
+                saveFileContents={this.props.saveFileContents}
 			/>
 		)
 	}
@@ -42,6 +47,10 @@ class ConnectedFileViewer extends React.Component<Props>
     	this.props.getFileContents({ repoID, filename })
     }
 
+    saveFileContents(payload: {contents: string}) {
+        console.log(payload.contents)
+    }
+
 	selectFile(payload: {filename: string | undefined, mode: FileMode}) {
     	const repoID = this.props.repoID
     	const filename = payload.filename
@@ -63,45 +72,48 @@ class ConnectedFileViewer extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & RouteComponentProps<any>
+type Props = StateProps & DispatchProps & RouteComponentProps<MatchParams>
 
-interface OwnProps {
+interface MatchParams {
     filename: string
 	repoID: string
 }
 
 interface StateProps {
+    filename: string
+    repoID: string
     repo: IRepo
-    comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
+    comments: {[commentID: string]: IComment}
     codeColorScheme?: string | undefined
-    backgroundColor?: string
 }
 
 interface DispatchProps {
 	getFileContents: typeof getFileContents
+    saveFileContents: typeof saveFileContents
 }
 
-const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-	const repo = state.repo.repos[ownProps.repoID]
-	const comments = {}
-	const users = {}
-	const discussions = {}
+const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
+    const { repoID, filename } = ownProps.match.params
+	const repo = state.repo.repos[repoID]
 
 	return {
+        filename,
+        repoID,
 		repo,
-		comments,
-		users,
-		discussions
+        users: state.user.users,
+		discussions: state.discussion.discussions,
+        comments: state.discussion.comments,
     }
 }
 
 const mapDispatchToProps = {
-	getFileContents
+	getFileContents,
+    saveFileContents,
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withRouter(ConnectedFileViewer))
+)(withRouter(ConnectedMarkdownEditor))

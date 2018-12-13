@@ -2,9 +2,10 @@ import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import { autobind } from 'conscience-lib/utils'
-import { IComment, IUser, IDiscussion } from 'conscience-lib/common'
 import CommentWrapper from '../CommentWrapper'
 import RenderMarkdown from '../RenderMarkdown'
+import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
+
 
 @autobind
 class CommentLink extends React.Component<Props, State>
@@ -16,7 +17,7 @@ class CommentLink extends React.Component<Props, State>
     _ref!: HTMLAnchorElement
 
     render() {
-        const { commentID, comments, users, repoRoot, classes } = this.props
+        const { commentID, comments, users, repo, classes } = this.props
         const comment = comments[commentID]
         if (comment === undefined) {
             return null
@@ -50,7 +51,7 @@ class CommentLink extends React.Component<Props, State>
                         >
                             <RenderMarkdown
                                 text={comment.text}
-                                repoRoot={repoRoot || ''}
+                                repo={repo}
                                 comments={comments}
                                 users={users}
                                 discussions={this.props.discussions}
@@ -78,10 +79,10 @@ interface Props {
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
+    repo: IRepo
     codeColorScheme?: string | undefined
-    selectFile: (payload: {filename: string}) => void
-    selectDiscussion: (payload: {discussionID: string}) => void
-    repoRoot: string | undefined
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     classes: any
 }
 

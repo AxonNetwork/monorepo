@@ -9,6 +9,7 @@ import RepoFilesPage from './RepoFilesPage'
 import RepoHistoryPage from './RepoHistoryPage'
 import RepoDiscussionPage from './RepoDiscussionPage'
 import RepoSettingsPage from './RepoSettingsPage'
+import ConnectedMarkdownEditor from './ConnectedMarkdownEditor'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, RepoPage } from 'conscience-lib/common'
@@ -54,7 +55,8 @@ class Repository extends React.Component<Props>
 				/>
 				<div className={classes.subpage}>
 					<Switch>
-						<Route path='/repo/:repoID/files/:filepath+' component={RepoFilesPage} />
+						<Route path='/repo/:repoID/edit/:filename+' component={ConnectedMarkdownEditor} />
+						<Route path='/repo/:repoID/files/:filename+' component={RepoFilesPage} />
 						<Route path='/repo/:repoID/files' component={RepoFilesPage} />
 						<Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
 						<Route path='/repo/:repoID/history' component={RepoHistoryPage} />

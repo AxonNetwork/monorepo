@@ -22,7 +22,7 @@ class DiscussionLink extends React.Component<Props>
 
 interface Props {
     discussionID: string
-    selectDiscussion: (payload: {discussionID: string}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     discussionSubject: string
     classes: any
 }

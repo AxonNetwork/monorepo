@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from '../RenderMarkdown'
 import CodeViewer from '../CodeViewer'
 import DataViewer from '../DataViewer'
-import { IComment, IUser, IDiscussion } from 'conscience-lib/common'
+import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import path from 'path'
 
@@ -14,12 +14,14 @@ import path from 'path'
 class FileViewer extends React.Component<Props, State>
 {
     render() {
-        const { filename, classes } = this.props
-        if (!filename) {
+        const { filename, repo, classes } = this.props
+        if (!filename || !repo) {
             return null
         }
 
         const extension = path.extname(filename).toLowerCase().substring(1)
+
+        const fileContents = ((repo.files || {})[filename] || {}).contents || ''
 
         // @@TODO: filetype standardization
         switch (extension) {
@@ -30,8 +32,8 @@ class FileViewer extends React.Component<Props, State>
                 <Card>
                     <CardContent classes={{ root: classes.mdRoot }}>
                         <RenderMarkdown
-                            text={this.props.fileContents}
-                            repoRoot={this.props.repoRoot}
+                            text={fileContents}
+                            repo={this.props.repo}
                             comments={this.props.comments}
                             users={this.props.users}
                             discussions={this.props.discussions}
@@ -48,7 +50,7 @@ class FileViewer extends React.Component<Props, State>
         case 'png':
         case 'tif':
         case 'tiff':
-            return <img src={'file://' + path.join(this.props.repoRoot, filename)} className={classes.imageEmbed} />
+            return <img src={'file://' + path.join(repo.path, filename)} className={classes.imageEmbed} />
         case 'go':
         case 'js':
         case 'jsx':
@@ -67,7 +69,7 @@ class FileViewer extends React.Component<Props, State>
                     <CardContent classes={{ root: classes.codeRoot }}>
                         <CodeViewer
                             language={extension}
-                            contents={this.props.fileContents}
+                            contents={fileContents}
                             codeColorScheme={this.props.codeColorScheme}
                             backgroundColor={this.props.backgroundColor}
                         />
@@ -80,7 +82,7 @@ class FileViewer extends React.Component<Props, State>
                     <CardContent classes={{ root: classes.dataRoot }}>
                         <DataViewer
                             fileType={extension}
-                            contents={this.props.fileContents}
+                            contents={fileContents}
                         />
                     </CardContent>
                 </Card>
@@ -93,15 +95,14 @@ class FileViewer extends React.Component<Props, State>
 
 interface Props {
     filename: string
-    repoRoot: string
-    fileContents: string
+    repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     codeColorScheme?: string | undefined
     backgroundColor?: string
-    selectFile: (payload: {filename: string}) => void
-    selectDiscussion: (payload: {discussionID: string}) => void
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     classes: any
 }
 

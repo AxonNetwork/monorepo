@@ -14,7 +14,6 @@ import FileIcon from './FileIcon'
 import moment from 'moment'
 import bytes from 'bytes'
 import path from 'path'
-// const shell = (window as any).require('electron').shell
 
 import { IRepoFile, FileMode } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
@@ -25,23 +24,22 @@ class File extends React.Component<Props>
 {
     selectFile() {
         const { file } = this.props
-        const isFolder = file.type === 'folder'
         if(file.mergeConflict) {
-            this.props.selectFile({ selectedFile: { file: file.name, isFolder, mode: FileMode.ResolveConflict } })
+            this.props.selectFile({ filename: file.name, mode: FileMode.ResolveConflict })
         }else {
-            this.props.selectFile({ selectedFile: { file: file.name, isFolder, mode: FileMode.View } })
+            this.props.selectFile({ filename: file.name, mode: FileMode.View })
         }
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        console.log(this.props)
-        // shell.openItem(path.join(this.props.repoRoot, this.props.file.name))
+        const shell = (window as any).require('electron').shell
+        shell.openItem(path.join(this.props.repoRoot, this.props.file.name))
     }
 
     openEditor(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        this.props.selectFile({ selectedFile: { file: this.props.file.name, isFolder: false, mode: FileMode.Edit } })
+        this.props.selectFile({ filename: this.props.file.name, mode: FileMode.Edit })
     }
 
     canQuickEdit() {
@@ -84,9 +82,11 @@ class File extends React.Component<Props>
                                 <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
                             </Tooltip>
                         }
-                        <Tooltip title="Open this file with another app">
-                            <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
-                        </Tooltip>
+                        {this.props.openFileIcon &&
+                            <Tooltip title="Open this file with another app">
+                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
+                            </Tooltip>
+                        }
                     </TableCell>
                 </TableRow>
         )
@@ -106,8 +106,9 @@ class File extends React.Component<Props>
 interface Props {
     file: IRepoFile
     repoRoot: string
-    selectFile: Function
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     fileExtensionsHidden: boolean | undefined
+    openFileIcon?: boolean
     classes: any
 }
 

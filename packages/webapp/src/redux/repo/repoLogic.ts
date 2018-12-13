@@ -3,6 +3,7 @@ import {
     IGetRepoListAction, IGetRepoListSuccessAction,
     IGetRepoAction, IGetRepoSuccessAction,
     IGetFileContentsAction, IGetFileContentsSuccessAction,
+    ISaveFileContentsAction, ISaveFileContentsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
@@ -45,6 +46,20 @@ const getFileContentsLogic = makeLogic<IGetFileContentsAction, IGetFileContentsS
     }
 })
 
+const saveFileContentsLogic = makeLogic<ISaveFileContentsAction, ISaveFileContentsSuccessAction>({
+    type: RepoActionType.SAVE_FILE_CONTENTS,
+    async process({ action }, dispatch) {
+        const { repoID, filename, contents, callback } = action.payload
+        try{
+            await ServerRelay.saveFileContents(repoID, filename, contents)
+        }catch(err){
+            callback(err)
+        }
+        callback()
+        return { repoID, filename, contents}
+    }
+})
+
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }, dispatch) {
@@ -59,5 +74,6 @@ export default [
 	getRepoListLogic,
 	getRepoLogic,
     getFileContentsLogic,
+    saveFileContentsLogic,
     getDiffLogic,
 ]

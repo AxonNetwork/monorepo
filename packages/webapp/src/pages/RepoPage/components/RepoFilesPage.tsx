@@ -7,20 +7,22 @@ import FileViewer from './ConnectedFileViewer'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import FileList from 'conscience-components/FileList'
 import { IGlobalState } from 'redux/store'
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
-	selectFile(file: any){
+	selectFile(payload: {filename: string | undefined, mode: FileMode}){
 		const repoID = this.props.match.params.repoID
-		if(file.selectedFile === undefined){
+		const { filename, mode } = payload
+		if(filename === undefined){
 			this.props.history.push(`/repo/${repoID}/files`)
-		}else{
-			const filepath = file.selectedFile.file
-			this.props.history.push(`/repo/${repoID}/files/${filepath}`)
+		}else if(mode === FileMode.View){
+			this.props.history.push(`/repo/${repoID}/files/${filename}`)
+		}else {
+			this.props.history.push(`/repo/${repoID}/edit/${filename}`)
 		}
 	}
 
@@ -34,7 +36,7 @@ class RepoFilesPage extends React.Component<Props>
 				</div>
 			)
 		}
-		const selected = this.props.match.params.filepath || ""
+		const selected = this.props.match.params.filename || ""
 		const repoID = this.props.match.params.repoID || ""
 		const file = files[selected]
 		if(file !== undefined) {
@@ -66,7 +68,7 @@ class RepoFilesPage extends React.Component<Props>
 
 interface MatchParams {
 	repoID: string
-	filepath: string | undefined
+	filename: string | undefined
 }
 
 interface Props extends RouteComponentProps<MatchParams>{

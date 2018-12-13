@@ -26,13 +26,14 @@ class Breadcrumbs extends React.Component<Props>
 
     selectCrumb(index: number) {
         if (index === 0) {
-            this.props.selectFile({ selectedFile: undefined })
+            this.props.selectFile({ filename: undefined, mode: FileMode.View })
             return
         }
 
         const { repoRoot, selectedFolder } = this.props
         const parts = this.getParts(repoRoot, selectedFolder)
-        this.props.selectFile({ selectedFile: { file: parts.slice(1, index + 1).join('/'), isFolder: true, mode: FileMode.View } })
+        const filename = parts.slice(1, index + 1).join('/')
+        this.props.selectFile({ filename, mode: FileMode.View })
     }
 
     getParts(repoRoot: string, selectedFolder: string | undefined) {
@@ -87,7 +88,7 @@ class Breadcrumbs extends React.Component<Props>
 interface Props {
     repoRoot: string
     selectedFolder: string | undefined
-    selectFile: Function
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     classes: any
 }
 

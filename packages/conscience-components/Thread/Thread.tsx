@@ -114,7 +114,7 @@ class Thread extends React.Component<Props, State>
                                     <div ref={ ref => this._commentRefs[c.created] = {ref, created: c.created} }></div>
                                     <RenderMarkdown
                                         text={c.text}
-                                        repoRoot={repo.repoID}
+                                        repo={repo}
                                         comments={comments}
                                         users={users}
                                         discussions={discussions}

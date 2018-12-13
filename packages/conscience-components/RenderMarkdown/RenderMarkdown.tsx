@@ -7,7 +7,7 @@ import DiscussionLink from './DiscussionLink'
 import CommentLink from './CommentLink'
 import CodeViewer from '../CodeViewer'
 import shortcodes from './remark-references'
-import { IComment, IUser, IDiscussion }  from 'conscience-lib/common'
+import { IRepo, IComment, IUser, IDiscussion, FileMode }  from 'conscience-lib/common'
 import { autobind }  from 'conscience-lib/utils'
 import path from 'path'
 
@@ -42,17 +42,22 @@ class RenderMarkdown extends React.Component<Props>
 
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
-        const { comments, users, discussions, repoRoot } = this.props
+        const { repo, comments, users, discussions } = this.props
 
         switch (identifier) {
         case 'image':
-            return <img src={'file://' + path.join(this.props.repoRoot, contents)} className={this.props.classes.embeddedImage} />
+            return <img src={'file://' + path.join(repo.path||'', contents)} className={this.props.classes.embeddedImage} />
         case 'file':
             return (
                 <FileLink
                     filename={contents}
-                    repoRoot={repoRoot}
+                    repo={repo}
+                    comments={comments}
+                    users={users}
+                    discussions={discussions}
+                    codeColorScheme={this.props.codeColorScheme}
                     selectFile={this.props.selectFile}
+                    selectDiscussion={this.props.selectDiscussion}
                 />
             )
         case 'discussion':
@@ -70,7 +75,7 @@ class RenderMarkdown extends React.Component<Props>
                     commentID={contents}
                     comments={comments}
                     users={users}
-                    repoRoot={repoRoot}
+                    repo={repo}
                     discussions={discussions}
                     codeColorScheme={this.props.codeColorScheme}
                     selectFile={this.props.selectFile}
@@ -85,13 +90,13 @@ class RenderMarkdown extends React.Component<Props>
 
 interface Props {
     text: string
-    repoRoot: string
+    repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     codeColorScheme?: string | undefined
-    selectFile: (payload: {filename: string}) => void
-    selectDiscussion: (payload: {discussionID: string}) => void
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     classes: any
 }
 

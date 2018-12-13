@@ -72,6 +72,7 @@ class FileList extends React.Component<Props, State>
                                                 key={name}
                                                 selectFile={this.props.selectFile}
                                                 fileExtensionsHidden={this.props.fileExtensionsHidden}
+                                                openFileIcon={this.props.openFileIcon}
                                                 classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
                                             />
                                         )
@@ -119,7 +120,7 @@ class FileList extends React.Component<Props, State>
         const basepath = this.props.selectedFolder || '.'
         const fullpath = path.join(basepath, filename)
 
-        this.props.selectFile({ selectedFile: { file: fullpath, isFolder: false, mode: FileMode.Edit } })
+        this.props.selectFile({ filename: fullpath, mode: FileMode.Edit })
     }
 
     onClickCancelNewFile() {
@@ -135,8 +136,9 @@ interface Props {
     files: {[name: string]: IRepoFile}
     selectedFolder: string | undefined
     fileExtensionsHidden: boolean | undefined
+    openFileIcon?: boolean
 
-    selectFile: Function
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
 
     classes: any
 }

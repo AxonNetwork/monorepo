@@ -197,6 +197,14 @@ const ServerRelay = {
         return response.data
     },
 
+    async saveFileContents(repoID: string, filename: string, contents: string) {
+        interface IResponse {}
+        const response = await axios.post<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename, {
+            contents,
+        })
+        return response.data
+    },
+
     async getDiff(repoID: string, commit: string) {
         interface IResponse {
             diffs: {[filename: string]: string}
