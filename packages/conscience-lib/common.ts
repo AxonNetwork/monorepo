@@ -46,7 +46,7 @@ export interface ITimelineEvent {
     message: string
     files: string[]
     verified?: Date
-    diffs?: {[commit: string]: string}
+    diffs?: {[filename: string]: string}
 }
 
 export interface IComment {

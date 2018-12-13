@@ -6,6 +6,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Timeline from 'conscience-components/Timeline'
 import CommitView from 'conscience-components/CommitView'
+import { getDiff } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -63,9 +64,11 @@ class RepoHistoryPage extends React.Component<Props>
 		}
 	}
 
-    getDiff(payload: {repoRoot: string, commit: string}){
-    	console.log('get diff: ', payload)
-    }
+	getDiff(payload: {repoRoot: string, commit: string}){
+		const repoID = payload.repoRoot
+		const commit = payload.commit
+		this.props.getDiff({ repoID, commit })
+	}
 }
 
 interface MatchParams {
@@ -76,6 +79,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams>{
 	repo: IRepo
 	user: IUser
+	getDiff: (payload: {repoID: string, commit: string}) => void
 	history: History
 	classes: any
 }
@@ -99,7 +103,9 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	getDiff,
+}
 
 const RepoHistoryPageContainer = connect(
     mapStateToProps,

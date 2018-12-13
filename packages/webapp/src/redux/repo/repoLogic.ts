@@ -3,6 +3,7 @@ import {
     IGetRepoListAction, IGetRepoListSuccessAction,
     IGetRepoAction, IGetRepoSuccessAction,
     IGetFileContentsAction, IGetFileContentsSuccessAction,
+    IGetDiffAction, IGetDiffSuccessAction,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import { getDiscussions } from '../discussion/discussionActions'
@@ -34,7 +35,7 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
     }
 })
 
-const getFileContents = makeLogic<IGetFileContentsAction, IGetFileContentsSuccessAction>({
+const getFileContentsLogic = makeLogic<IGetFileContentsAction, IGetFileContentsSuccessAction>({
     type: RepoActionType.GET_FILE_CONTENTS,
     async process({ action }, dispatch) {
         const { repoID, filename } = action.payload
@@ -44,8 +45,19 @@ const getFileContents = makeLogic<IGetFileContentsAction, IGetFileContentsSucces
     }
 })
 
+const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
+    type: RepoActionType.GET_DIFF,
+    async process({ action }, dispatch) {
+        const { repoID, commit } = action.payload
+        const resp = await ServerRelay.getDiff(repoID, commit)
+        const diffs = resp.diffs
+        return { repoID, commit, diffs}
+    }
+})
+
 export default [
 	getRepoListLogic,
 	getRepoLogic,
-    getFileContents,
+    getFileContentsLogic,
+    getDiffLogic,
 ]

@@ -13,6 +13,10 @@ export enum RepoActionType {
     GET_FILE_CONTENTS = 'GET_FILE_CONTENTS',
     GET_FILE_CONTENTS_SUCCESS = 'GET_FILE_CONTENTS_SUCCESS',
     GET_FILE_CONTENTS_FAILED = 'GET_FILE_CONTENTS_FAILED',
+
+    GET_DIFF = 'GET_DIFF',
+    GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
+    GET_DIFF_FAILED = 'GET_DIFF_FAILED',
 }
 
 export interface IGetRepoListAction {
@@ -64,6 +68,25 @@ export interface IGetFileContentsSuccessAction {
 
 export type IGetFileContentsFailedAction = FailedAction<RepoActionType.GET_FILE_CONTENTS_FAILED>
 
+export interface IGetDiffAction {
+    type: RepoActionType.GET_DIFF
+    payload: {
+        repoID: string
+        commit: string
+    }
+}
+
+export interface IGetDiffSuccessAction {
+    type: RepoActionType.GET_DIFF_SUCCESS
+    payload: {
+        repoID: string
+        commit: string
+        diffs: {[filename: string]: string}
+    }
+}
+
+export type IGetDiffFailedAction = FailedAction<RepoActionType.GET_DIFF_FAILED>
+
 export type IRepoAction =
     IGetRepoListAction |
     IGetRepoListSuccessAction |
@@ -75,8 +98,13 @@ export type IRepoAction =
 
     IGetFileContentsAction |
     IGetFileContentsSuccessAction |
-    IGetFileContentsFailedAction
+    IGetFileContentsFailedAction |
+
+    IGetDiffAction |
+    IGetDiffSuccessAction |
+    IGetDiffFailedAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getRepo = (payload: IGetRepoAction['payload']): IGetRepoAction => ({ type: RepoActionType.GET_REPO, payload })
 export const getFileContents = (payload: IGetFileContentsAction['payload']): IGetFileContentsAction => ({ type: RepoActionType.GET_FILE_CONTENTS, payload })
+export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })

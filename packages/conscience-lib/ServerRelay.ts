@@ -197,6 +197,14 @@ const ServerRelay = {
         return response.data
     },
 
+    async getDiff(repoID: string, commit: string) {
+        interface IResponse {
+            diffs: {[filename: string]: string}
+        }
+        const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/diff/' + commit)
+        return response.data
+    },
+
     async getDiscussionsForRepo(repoID: string) {
         interface IResponse {
             discussions: IDiscussion[]
