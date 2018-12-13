@@ -11,7 +11,7 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class RepoFilesPage extends React.Component<Props>
+class RepoDiscussionPage extends React.Component<Props>
 {
 
     selectFile(payload: {filename: string}) {
@@ -118,9 +118,9 @@ const mapDispatchToProps = {
 	createComment,
 }
 
-const RepoFilesPageContainer = connect(
+const RepoDiscussionPageContainer = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoFilesPage))
+)(withStyles(styles)(RepoDiscussionPage))
 
-export default RepoFilesPageContainer
+export default RepoDiscussionPageContainer

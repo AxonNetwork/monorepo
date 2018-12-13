@@ -9,9 +9,11 @@ import { autobind, removeEmail, extractEmail } from 'conscience-lib/utils'
 @autobind
 class Timeline extends React.Component<Props, State>
 {
-    state = {
-        page: 0,
-        rowsPerPage: 10,
+    constructor(props: Props){
+        super(props)
+        const page = props.page || 0
+        const rowsPerPage = props.defaultRowsPerPage || 10
+        this.state = { page, rowsPerPage }
     }
 
     selectCommit(commit: string) {
@@ -30,7 +32,7 @@ class Timeline extends React.Component<Props, State>
     }
 
     render() {
-        const { classes } = this.props
+        const { hidePagination, classes } = this.props
         const { page, rowsPerPage } = this.state
         const commitList = this.props.commitList || []
         const commits = this.props.commits || {}
@@ -38,7 +40,7 @@ class Timeline extends React.Component<Props, State>
         const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(c => commits[c])
         return (
             <div>
-                {commitList.length > this.state.rowsPerPage &&
+                {!hidePagination && commitList.length > this.state.rowsPerPage &&
                     <TablePagination
                         component="div"
                         count={commitList.length}
@@ -76,8 +78,9 @@ class Timeline extends React.Component<Props, State>
 
 interface Props {
     repoID: string
-    page: number
-    // timeline: ITimelineEvent[]
+    page?: number
+    defaultRowsPerPage?: number
+    hidePagination?: boolean
     commits: {[commit: string]: ITimelineEvent} | undefined
     commitList: string[] | undefined
     users: {[userID: string]: IUser}

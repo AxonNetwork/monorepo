@@ -184,6 +184,14 @@ const ServerRelay = {
         return response.data.sharedRepos
     },
 
+    async getRepoList() {
+        interface IResponse {
+            repoIDs: string[]
+        }
+        const response = await axios.get<IResponse>(API_URL + '/repolist')
+        return response.data.repoIDs
+    }
+
     async getRepo(repoID: string) {
         const response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
         return response.data

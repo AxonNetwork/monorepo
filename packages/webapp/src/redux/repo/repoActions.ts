@@ -31,7 +31,7 @@ export interface IGetRepoListAction {
 export interface IGetRepoListSuccessAction {
     type: RepoActionType.GET_REPO_LIST_SUCCESS
     payload: {
-        repos: {[repoID: string]: IRepo}
+        repoList: string[]
     }
 }
 

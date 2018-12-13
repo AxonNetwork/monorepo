@@ -8,21 +8,14 @@ import {
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import { getDiscussions } from '../discussion/discussionActions'
+import { fetchUserData } from '../user/userActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
     async process({ action }, dispatch) {
-        const repos = {
-        	protocol: {
-        		repoID: "protocol"
-        	},
-            testmcjones: {
-                repoID: "testmcjones"
-            }
-        }
-
-        return { repos }
+        const repoList = await ServerRelay.getRepoList()
+        return { repoList }
     }
 })
 
@@ -32,6 +25,7 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
         const { repoID } = action.payload
         const repo = await ServerRelay.getRepo(repoID)
         dispatch(getDiscussions({ repoID }))
+        dispatch(fetchUserData({ userIDs: repo.sharedUsers || [] }))
         return { repo }
     }
 })

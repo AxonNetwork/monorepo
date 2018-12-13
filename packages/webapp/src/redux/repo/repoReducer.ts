@@ -3,23 +3,27 @@ import { IRepo } from 'conscience-lib/common'
 
 const initialState = {
 	repos: {},
+	repoList: [],
 }
 
 export interface IRepoState {
 	repos: {[repoID: string]: IRepo}
+	repoList: string[]
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
 	switch(action.type) {
 		case RepoActionType.GET_REPO_LIST_SUCCESS: {
 			return {
-				repos: action.payload.repos
+				...state,
+				repoList: action.payload.repoList
 			}
 		}
 
 		case RepoActionType.GET_REPO_SUCCESS: {
 			const { repo } = action.payload
 			return {
+				...state,
 				repos: {
 					...state.repos,
 					[repo.repoID]: repo
@@ -31,6 +35,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 		case RepoActionType.SAVE_FILE_CONTENTS_SUCCESS: {
 			const { repoID, filename, contents } = action.payload
 			return {
+				...state,
 				repos: {
 					...state.repos,
 					[repoID]: {

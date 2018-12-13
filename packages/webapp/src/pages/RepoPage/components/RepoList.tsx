@@ -13,10 +13,10 @@ import autobind from 'conscience-lib/utils/autobind'
 class RepoList extends React.Component<Props>
 {
 	render() {
-		const { repoIDs, classes } = this.props
+		const { repoList, classes } = this.props
 		return (
 			<List className={classes.list}>
-				{repoIDs.map(id=>(
+				{repoList.map(id=>(
 					<Link to={`/repo/${id}`} className={classes.link}>
 						<ListItem button>
 							<ListItemText primary={id} />
@@ -29,7 +29,7 @@ class RepoList extends React.Component<Props>
 }
 
 interface Props {
-	repoIDs: string[]
+	repoList: string[]
 	classes: any
 }
 
@@ -41,9 +41,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-	const repoIDs = Object.keys(state.repo.repos)
     return {
-    	repoIDs
+    	repoList: state.repo.repoList
     }
 }
 
