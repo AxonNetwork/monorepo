@@ -8,6 +8,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
 import UserAvatar from 'conscience-components/UserAvatar'
+import { logout } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import { IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -46,6 +47,7 @@ class Header extends React.Component<Props, State> {
 							onClose={this.handleClose}
 						>
 							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
+							<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
 						</Menu>
 					</div>
 				}
@@ -62,6 +64,10 @@ class Header extends React.Component<Props, State> {
 		switch(selection){
 			case 'settings':
 				this.props.history.push('/settings')
+				return
+			case 'logout':
+				this.props.logout()
+				return
 		}
 	}
 
@@ -72,6 +78,7 @@ class Header extends React.Component<Props, State> {
 
 interface Props extends RouteComponentProps {
 	user: IUser | undefined
+	logout: typeof logout
 	classes: any
 }
 
@@ -105,7 +112,9 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	logout
+}
 
 export default connect(
     mapStateToProps,

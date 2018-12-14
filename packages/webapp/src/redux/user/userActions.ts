@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IUser } from 'conscience-lib/common'
+import { IUser, IUserSettings } from 'conscience-lib/common'
 
 export enum UserActionType {
     WHO_AM_I = 'WHO_AM_I',
@@ -25,6 +25,22 @@ export enum UserActionType {
     SAW_COMMENT = 'SAW_COMMENT',
     SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
     SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
+
+    GET_USER_SETTINGS = 'GET_USER_SETTINGS',
+    GET_USER_SETTINGS_SUCCESS = 'GET_USER_SETTINGS_SUCCESS',
+    GET_USER_SETTINGS_FAILED = 'GET_USER_SETTINGS_FAILED',
+
+    UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS',
+    UPDATE_USER_SETTINGS_SUCCESS = 'UPDATE_USER_SETTINGS_SUCCESS',
+    UPDATE_USER_SETTINGS_FAILED = 'UPDATE_USER_SETTINGS_FAILED',
+
+    UPLOAD_USER_PICTURE = 'UPLOAD_USER_PICTURE',
+    UPLOAD_USER_PICTURE_SUCCESS = 'UPLOAD_USER_PICTURE_SUCCESS',
+    UPLOAD_USER_PICTURE_FAILED = 'UPLOAD_USER_PICTURE_FAILED',
+
+    MODIFY_USER_EMAIL = 'MODIFY_USER_EMAIL',
+    MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
+    MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
 }
 
 export interface IWhoAmIAction {
@@ -137,6 +153,74 @@ export interface ISawCommentSuccessAction {
 
 export type ISawCommentFailedAction = FailedAction<UserActionType.SAW_COMMENT_FAILED>
 
+export interface IGetUserSettingsAction {
+    type: UserActionType.GET_USER_SETTINGS
+    payload: {}
+}
+
+export interface IGetUserSettingsSuccessAction {
+    type: UserActionType.GET_USER_SETTINGS_SUCCESS
+    payload: {
+        settings: IUserSettings
+    }
+}
+
+export type IGetUserSettingsFailedAction = FailedAction<UserActionType.GET_USER_SETTINGS_FAILED>
+
+export interface IUpdateUserSettingsAction {
+    type: UserActionType.UPDATE_USER_SETTINGS
+    payload: {
+        settings: IUserSettings
+    }
+}
+
+export interface IUpdateUserSettingsSuccessAction {
+    type: UserActionType.UPDATE_USER_SETTINGS_SUCCESS
+    payload: {
+        settings: IUserSettings
+    }
+}
+
+export type IUpdateUserSettingsFailedAction = FailedAction<UserActionType.UPDATE_USER_SETTINGS_FAILED>
+
+export interface IUploadUserPictureAction {
+    type: UserActionType.UPLOAD_USER_PICTURE
+    payload: {
+        userID: string,
+        fileInput: any,
+    }
+}
+
+export interface IUploadUserPictureSuccessAction {
+    type: UserActionType.UPLOAD_USER_PICTURE_SUCCESS
+    payload: {
+        userID: string,
+        picture: string,
+    }
+}
+
+export type IUploadUserPictureFailedAction = FailedAction<UserActionType.UPLOAD_USER_PICTURE_FAILED>
+
+export interface IModifyUserEmailAction {
+    type: UserActionType.MODIFY_USER_EMAIL
+    payload: {
+        userID: string
+        email: string
+        add: boolean,
+    }
+}
+
+export interface IModifyUserEmailSuccessAction {
+    type: UserActionType.MODIFY_USER_EMAIL_SUCCESS
+    payload: {
+        userID: string
+        email: string
+        add: boolean,
+    }
+}
+
+export type IModifyUserEmailFailedAction = FailedAction<UserActionType.MODIFY_USER_EMAIL_FAILED>
+
 export type IUserAction =
     IWhoAmIAction |
     IWhoAmISuccessAction |
@@ -160,7 +244,24 @@ export type IUserAction =
 
     ISawCommentAction |
     ISawCommentSuccessAction |
-    ISawCommentFailedAction
+    ISawCommentFailedAction |
+
+    IGetUserSettingsAction |
+    IGetUserSettingsSuccessAction |
+    IGetUserSettingsFailedAction |
+
+    IUpdateUserSettingsAction |
+    IUpdateUserSettingsSuccessAction |
+    IUpdateUserSettingsFailedAction |
+
+    IUploadUserPictureAction |
+    IUploadUserPictureSuccessAction |
+    IUploadUserPictureFailedAction |
+
+    IModifyUserEmailAction |
+    IModifyUserEmailSuccessAction |
+    IModifyUserEmailFailedAction
+
 
 export const whoami = (payload: IWhoAmIAction['payload']): IWhoAmIAction => ({ type: UserActionType.WHO_AM_I, payload })
 export const login = (payload: ILoginAction['payload']): ILoginAction => ({ type: UserActionType.LOGIN, payload })
@@ -170,3 +271,8 @@ export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ t
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
+export const getUserSettings = (payload: IGetUserSettingsAction['payload']): IGetUserSettingsAction => ({ type: UserActionType.GET_USER_SETTINGS, payload })
+export const updateUserSettings = (payload: IUpdateUserSettingsAction['payload']): IUpdateUserSettingsAction => ({ type: UserActionType.UPDATE_USER_SETTINGS, payload })
+
+export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
+export const modifyUserEmail = (payload: IModifyUserEmailAction['payload']): IModifyUserEmailAction => ({ type: UserActionType.MODIFY_USER_EMAIL, payload })

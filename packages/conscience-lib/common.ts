@@ -76,6 +76,20 @@ export interface IUser {
     orgs: string[]
 }
 
+interface ICommentTimestamp {
+    [repoID: string]: {
+        [discussionID: string]: number,
+    }
+}
+
+export interface IUserSettings {
+    ignoredSharedRepos?: string[]
+    codeColorScheme?: string
+    menuLabelsHidden?: boolean
+    fileExtensionsHidden?: boolean
+    newestViewedCommentTimestamp?: ICommentTimestamp
+}
+
 export interface IRef {
     refName: string
     commitHash: string

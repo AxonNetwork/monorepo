@@ -18,7 +18,10 @@ class DiscussionList extends React.Component<Props>
         const newestComment = this.props.newestCommentTimestampPerDiscussion
 
         const order = this.props.order || Object.keys(discussions)
-        const discussionsSorted = order.map(id => discussions[id])
+        let discussionsSorted = order.map(id => discussions[id])
+        if(this.props.maxLength !== undefined){
+        	discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
+        }
 
 		return(
 			<List className={classes.list}>
@@ -66,6 +69,7 @@ class DiscussionList extends React.Component<Props>
 interface Props {
     discussions: {[discussionID: string]: IDiscussion}
     order?: string[]
+    maxLength?: number
     selectedID?: string | undefined
     users: {[email: string]: IUser}
     newestViewedCommentTimestamp: {[discussionID: string]: number}

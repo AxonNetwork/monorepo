@@ -7,7 +7,6 @@ import App from 'App'
 import history from 'redux/history'
 import createStore from 'redux/store'
 import { whoami } from 'redux/user/userActions'
-import { getRepoList } from 'redux/repo/repoActions'
 import { isProduction } from 'utils'
 
 // Webpack offline plugin
@@ -24,7 +23,6 @@ const initialState = {};
 // Configure store
 const store = createStore(initialState, history);
 store.dispatch(whoami({}))
-store.dispatch(getRepoList({}))
 
 // Create render function
 const render = (Component: any) => {

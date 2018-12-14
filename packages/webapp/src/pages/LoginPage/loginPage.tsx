@@ -105,7 +105,7 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = {
 	login
 }
 

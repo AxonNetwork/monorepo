@@ -60,7 +60,7 @@ class RepoHomePage extends React.Component<Props>
 							<DiscussionList
 								repoID={repo.repoID}
 								history={this.props.history}
-								maxLength={3}
+								maxLength={2}
 							/>
 						</CardContent>
 					</Card>

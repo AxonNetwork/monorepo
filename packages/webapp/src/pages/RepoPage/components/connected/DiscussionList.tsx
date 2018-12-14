@@ -15,6 +15,7 @@ class ConnectedDiscussionList extends React.Component<Props>
 			<DiscussionList
 				discussions={this.props.discussions}
 				order={this.props.discussionIDsSortedByNewestComment}
+				maxLength={this.props.maxLength}
 				users={this.props.users}
 				newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp}
 				newestCommentTimestampPerDiscussion={this.props.newestCommentTimestampPerDiscussion}

@@ -2,8 +2,13 @@ import {
     UserActionType,
     IWhoAmIAction, IWhoAmISuccessAction,
     ILoginAction, ILoginSuccessAction,
+    ILogoutAction, ILogoutSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
+    IGetUserSettingsAction, IGetUserSettingsSuccessAction,
+    IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
+    IUploadUserPictureAction, IUploadUserPictureSuccessAction,
+    IModifyUserEmailAction, IModifyUserEmailSuccessAction,
 } from './userActions'
 import { makeLogic } from '../reduxUtils'
 import { IUser } from 'conscience-lib/common'
@@ -45,6 +50,15 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     }
 })
 
+const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
+    type: UserActionType.LOGOUT,
+    async process({ action }, dispatch) {
+        localStorage.setItem('jwt', '')
+        ServerRelay.setJWT('')
+        return {}
+    }
+})
+
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
     type: UserActionType.FETCH_USER_DATA,
     async process({ action, getState }) {
@@ -66,15 +80,55 @@ const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
         const { repoID, discussionID, commentTimestamp } = action.payload
-
         // await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentTimestamp)
         return { repoID, discussionID, commentTimestamp }
     },
 })
 
+const getUserSettingsLogic = makeLogic<IGetUserSettingsAction, IGetUserSettingsSuccessAction>({
+    type: UserActionType.GET_USER_SETTINGS,
+    async process({ getState, action }) {
+        const userID = getState().user.currentUser || ''
+        const settings = await ServerRelay.getUserSettings(userID)
+        return { settings }
+    },
+})
+
+const updateUserSettingsLogic = makeLogic<IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction>({
+    type: UserActionType.UPDATE_USER_SETTINGS,
+    async process({ getState, action }) {
+        let { settings } = action.payload
+        const userID = getState().user.currentUser || ''
+        settings = await ServerRelay.updateUserSettings(userID, settings)
+        return { settings }
+    },
+})
+
+const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPictureSuccessAction>({
+    type: UserActionType.UPLOAD_USER_PICTURE,
+    async process({ action }) {
+        const { fileInput } = action.payload
+        const { userID, picture } = await ServerRelay.uploadUserPicture(fileInput)
+        return { userID, picture: picture + '?' + (new Date().getTime()) }
+    },
+})
+
+const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailSuccessAction>({
+    type: UserActionType.MODIFY_USER_EMAIL,
+    async process({ action }) {
+        const { userID, email, add } = action.payload
+        await ServerRelay.modifyEmail(email, add)
+        return { userID, email, add }
+    },
+})
 export default [
     whoAmILogic,
 	loginLogic,
+    logoutLogic,
     fetchUserDataLogic,
     sawCommentLogic,
+    getUserSettingsLogic,
+    updateUserSettingsLogic,
+    uploadUserPictureLogic,
+    modifyUserEmailLogic
 ]

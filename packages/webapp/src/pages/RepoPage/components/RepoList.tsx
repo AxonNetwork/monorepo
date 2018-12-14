@@ -5,6 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
+import { getRepoList } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'conscience-lib/utils/autobind'
 
@@ -12,6 +13,10 @@ import autobind from 'conscience-lib/utils/autobind'
 @autobind
 class RepoList extends React.Component<Props>
 {
+	componentWillMount(){
+		this.props.getRepoList({})
+	}
+
 	render() {
 		const { repoList, classes } = this.props
 		return (
@@ -30,6 +35,7 @@ class RepoList extends React.Component<Props>
 
 interface Props {
 	repoList: string[]
+	getRepoList: typeof getRepoList
 	classes: any
 }
 
@@ -46,7 +52,9 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	getRepoList
+}
 
 const RepoListContainer = connect(
     mapStateToProps,

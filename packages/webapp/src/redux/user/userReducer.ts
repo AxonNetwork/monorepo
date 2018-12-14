@@ -1,4 +1,4 @@
-import { IUser } from 'conscience-lib/common'
+import { IUser, IUserSettings } from 'conscience-lib/common'
 import { UserActionType, IUserAction } from './userActions'
 import { fromPairs } from 'lodash'
 
@@ -8,7 +8,7 @@ const initialState = {
 
 	currentUser: undefined,
     checkedLoggedIn: false,
-    
+
     userSettings: {
         codeColorScheme: 'pojoaque',
         menuLabelsHidden: false,
@@ -24,16 +24,7 @@ export interface IUserState {
     currentUser: string | undefined
     checkedLoggedIn: boolean
 
-    userSettings: {
-        codeColorScheme: string | undefined
-        menuLabelsHidden: boolean
-        fileExtensionsHidden: boolean
-        newestViewedCommentTimestamp: {
-            [repoID: string]: {
-                [discussionID: string]: number
-            },
-        },
-    }
+    userSettings: IUserSettings
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -65,10 +56,24 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.WHO_AM_I_FAILED: {
+            return {
+                ...state,
+                checkedLoggedIn: true,
+            }
+        }
+
         case UserActionType.LOGIN_FAILED: {
             return {
                 ...state,
                 checkedLoggedIn: true,
+            }
+        }
+
+        case UserActionType.LOGOUT_SUCCESS: {
+            return {
+                ...state,
+                currentUser: undefined
             }
         }
 
@@ -103,9 +108,53 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                     newestViewedCommentTimestamp: {
                         ...state.userSettings.newestViewedCommentTimestamp,
                         [repoID]: {
-                            ...(state.userSettings.newestViewedCommentTimestamp[repoID] || {}),
+                            ...((state.userSettings.newestViewedCommentTimestamp || {})[repoID] || {}),
                             [discussionID]: commentTimestamp,
                         },
+                    },
+                },
+            }
+        }
+
+        case UserActionType.GET_USER_SETTINGS_SUCCESS:
+        case UserActionType.UPDATE_USER_SETTINGS:
+        case UserActionType.UPDATE_USER_SETTINGS_SUCCESS:{
+            const { settings } = action.payload
+            const updated = {
+                codeColorScheme: settings.codeColorScheme !== undefined ? settings.codeColorScheme : state.userSettings.codeColorScheme,
+                menuLabelsHidden: settings.menuLabelsHidden !== undefined ? settings.menuLabelsHidden : state.userSettings.menuLabelsHidden,
+                fileExtensionsHidden: settings.fileExtensionsHidden !== undefined ? settings.fileExtensionsHidden : state.userSettings.fileExtensionsHidden,
+                newestViewedCommentTimestamp: settings.newestViewedCommentTimestamp !== undefined ? settings.newestViewedCommentTimestamp : state.userSettings.newestViewedCommentTimestamp,
+            }
+            return {
+                ...state,
+                userSettings: updated
+            }
+        }
+
+        case UserActionType.UPLOAD_USER_PICTURE_SUCCESS: {
+            const { picture, userID } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        picture,
+                    },
+                },
+            }
+        }
+
+        case UserActionType.MODIFY_USER_EMAIL_SUCCESS: {
+            const { userID, email, add } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        emails: add ? ((state.users[userID] || {}).emails || []).concat(email) : ((state.users[userID] || {}).emails || []).filter(x => x !== email),
                     },
                 },
             }

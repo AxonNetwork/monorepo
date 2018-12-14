@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IComment, IDiscussion, IOrganization } from './common'
+import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -285,6 +285,16 @@ const ServerRelay = {
 
     async modifyEmail(email: string, add: boolean) {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
+    },
+
+    async getUserSettings(userID: string) {
+        const settings = await axios.get<IUserSettings>(API_URL + '/user/settings')
+        return settings.data
+    },
+
+    async updateUserSettings(userID: string, settings: IUserSettings) {
+        const updated = await axios.post<IUserSettings>(API_URL + "/user/settings", { settings })
+        return updated.data
     },
 
     async createOrg(name: string) {
