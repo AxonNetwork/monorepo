@@ -11,11 +11,14 @@ import { autobind, isTextFile } from 'conscience-lib/utils'
 @autobind
 class ConnectedMarkdownEditor extends React.Component<Props>
 {
+    state={ loading: true }
+
 	render() {
 		return(
 			<MarkdownEditor
                 repo={this.props.repo}
                 filename={this.props.filename}
+                loading={this.state.loading}
                 comments={this.props.comments}
                 users={this.props.users}
                 discussions={this.props.discussions}
@@ -44,11 +47,14 @@ class ConnectedMarkdownEditor extends React.Component<Props>
 
     getFileContents() {
     	const { repoID, filename } = this.props
-    	this.props.getFileContents({ repoID, filename })
-    }
-
-    saveFileContents(payload: {contents: string}) {
-        console.log(payload.contents)
+        const self = this
+    	this.props.getFileContents({
+            repoID,
+            filename,
+            callback: (err?: Error) => {
+                self.setState({ loading: false })
+            }
+        })
     }
 
 	selectFile(payload: {filename: string | undefined, mode: FileMode}) {

@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings } from './common'
+import { IRepo, IRepoFile, IUser, IComment, IDiscussion, IOrganization, IUserSettings } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -190,23 +190,26 @@ const ServerRelay = {
         }
         const response = await axios.get<IResponse>(API_URL + '/repolist')
         return response.data.repoIDs
-    }
+    },
 
     async getRepo(repoID: string) {
         const response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
         return response.data
     },
 
-    async getFileContents(repoID: string, filename: string) {
+    async getFile(repoID: string, filename: string) {
         interface IResponse {
-            contents: string
+            exists: boolean
+            file: IRepoFile
         }
         const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename)
         return response.data
     },
 
     async saveFileContents(repoID: string, filename: string, contents: string) {
-        interface IResponse {}
+        interface IResponse {
+            file: IRepoFile
+        }
         const response = await axios.post<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename, {
             contents,
         })

@@ -6,6 +6,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import RenderMarkdown from '../RenderMarkdown'
 import Breadcrumbs from '../Breadcrumbs'
 import FormattingHelp from '../FormattingHelp'
@@ -25,13 +26,17 @@ class MarkdownEditor extends React.Component<Props, State>
     _inputText: HTMLTextAreaElement | null = null
 
     render() {
-        const { filename, repo, classes } = this.props
+        const { filename, loading, repo, classes } = this.props
 
-        const contentsOnDisk = ((repo.files || {})[filename] || {}).contents
-        if (contentsOnDisk === undefined) {
-            return <div className={classes.root}>Loading...</div>
+        if (loading) {
+            return (
+                <div className={classes.progressContainer}>
+                    <CircularProgress color="secondary" />
+                </div>
+            )
         }
-
+        
+        const contentsOnDisk = ((repo.files || {})[filename] || {}).contents
         const modified = contentsOnDisk !== this.state.contents
 
         return (
@@ -153,6 +158,7 @@ class MarkdownEditor extends React.Component<Props, State>
 interface Props {
     repo: IRepo
     filename: string
+    loading: boolean
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
@@ -203,6 +209,12 @@ const styles = (theme: Theme) => createStyles({
         width: '50%',
         height: '100%',
         overflowY: 'scroll'
+    },
+    progressContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: 256,
     },
 })
 

@@ -33,7 +33,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
 		case RepoActionType.GET_FILE_CONTENTS_SUCCESS:
 		case RepoActionType.SAVE_FILE_CONTENTS_SUCCESS: {
-			const { repoID, filename, contents } = action.payload
+			const { repoID, filename, file } = action.payload
 			return {
 				...state,
 				repos: {
@@ -42,10 +42,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 						...state.repos[repoID],
 						files: {
 							...state.repos[repoID].files,
-							[filename]: {
-								...(state.repos[repoID].files || {})[filename],
-								contents: contents
-							}
+							[filename]: file
 						}
 					}
 				}

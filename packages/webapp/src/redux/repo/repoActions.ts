@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, IRepoFile } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -58,6 +58,7 @@ export interface IGetFileContentsAction {
     payload: {
         repoID: string
         filename: string
+        callback?: (error?: Error) => void
     }
 }
 
@@ -66,7 +67,7 @@ export interface IGetFileContentsSuccessAction {
     payload: {
         repoID: string
         filename: string
-        contents: string
+        file: IRepoFile
     }
 }
 
@@ -78,7 +79,7 @@ export interface ISaveFileContentsAction {
         repoID: string
         filename: string
         contents: string
-        callback: (error?: Error) => void,
+        callback: (error?: Error) => void
     }
 }
 
@@ -87,7 +88,7 @@ export interface ISaveFileContentsSuccessAction {
     payload: {
         repoID: string
         filename: string
-        contents: string
+        file: IRepoFile
     }
 }
 
