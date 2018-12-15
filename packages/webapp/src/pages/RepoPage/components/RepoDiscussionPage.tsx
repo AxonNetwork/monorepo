@@ -4,9 +4,10 @@ import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import DiscussionsPane from 'conscience-components/DiscussionsPane'
 import { History } from 'history'
+import { updateUserSettings } from 'redux/user/userActions'
 import { getDiscussions, createDiscussion, createComment } from 'redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser, IDiscussion, IComment } from 'conscience-lib/common'
+import { IRepo, IUser, IDiscussion, IComment, IUserSettings } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -22,7 +23,6 @@ class RepoDiscussionPage extends React.Component<Props>
 		}else {
 			this.props.history.push(`/repo/${repoID}/files/${filename}`)
 		}
-
     }
 
 	selectDiscussion(payload: {discussionID: string | undefined}) {
@@ -35,9 +35,9 @@ class RepoDiscussionPage extends React.Component<Props>
 		}
 	}
 
-	sawComment(payload: any) {
-		console.log('sawComment: ', payload)
-	}
+    sawComment(payload: {repoID: string, discussionID: string, commentTimestamp: number}) {
+    	console.log(payload)
+    }
 
 	render() {
 		// const { classes } = this.props
@@ -86,7 +86,7 @@ interface Props extends RouteComponentProps<MatchParams>{
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
     createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
     createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
-    sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
+    updateUserSettings: (payload: { settings: IUserSettings }) => void
 
     history: History
 	classes: any
@@ -105,8 +105,7 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
     	users,
     	discussions: state.discussion.discussions,
     	comments: state.discussion.comments,
-	    // newestViewedCommentTimestamp: (state.user.userSettings.newestViewedCommentTimestamp[repoID] || {}),
-	    newestViewedCommentTimestamp: {},
+	    newestViewedCommentTimestamp: ((state.user.userSettings.newestViewedCommentTimestamp || {} )[repoID] || {}),
         newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
@@ -116,6 +115,7 @@ const mapDispatchToProps = {
 	getDiscussions,
 	createDiscussion,
 	createComment,
+	updateUserSettings,
 }
 
 const RepoDiscussionPageContainer = connect(

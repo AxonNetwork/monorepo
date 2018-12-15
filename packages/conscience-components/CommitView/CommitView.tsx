@@ -5,9 +5,8 @@ import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
 import DiffViewer from '../DiffViewer'
 import UserAvatar from '../UserAvatar'
-// import CreateDiscussion from '../CreateDiscussion'
-// import SecuredText from './FileInfo/SecuredText'
-import { ITimelineEvent, IUser } from 'conscience-lib/common'
+import SecuredText from '../SecuredText'
+import { IRepo, ITimelineEvent, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 @autobind
@@ -15,13 +14,21 @@ class CommitView extends React.Component<Props>
 {
     componentDidMount() {
         if (this.props.commit && this.props.commit.diffs === undefined) {
-            this.props.getDiff({ repoRoot: this.props.repoRoot, commit: this.props.commit.commit })
+            this.props.getDiff({
+                repoRoot: this.props.repo.path,
+                repoID: this.props.repo.repoID,
+                commit: this.props.commit.commit,
+            })
         }
     }
 
     componentDidUpdate(_: Props) {
         if (this.props.commit && this.props.commit.diffs === undefined) {
-            this.props.getDiff({ repoRoot: this.props.repoRoot, commit: this.props.commit.commit })
+            this.props.getDiff({
+                repoRoot: this.props.repo.path,
+                repoID: this.props.repo.repoID,
+                commit: this.props.commit.commit,
+            })
         }
     }
 
@@ -30,11 +37,11 @@ class CommitView extends React.Component<Props>
     }
 
     render() {
-        const { classes } = this.props
+        const { repo, classes } = this.props
         const commit = this.props.commit || {} as ITimelineEvent
         const diffs = commit.diffs || {}
         return (
-            <div>
+            <div className={classes.root}>
                 <div className={classes.commitHeader}>
                     <div className={classes.commitInfoContainer}>
                         <Typography>
@@ -57,12 +64,15 @@ class CommitView extends React.Component<Props>
                             </div>
                         </div>
                     </div>
-{/*                    <div>
+                    <div>
                         <SecuredText
+                            commits={repo.commits || {}}
+                            commitList={repo.commitList || []}
                             commit={commit.commit}
+                            selectCommit={this.props.selectCommit}
                             classes={{ root: classes.securedText }}
                         />
-                    </div>*/}
+                    </div>
                 </div>
 
                 {Object.keys(diffs).map(filename => (
@@ -73,34 +83,25 @@ class CommitView extends React.Component<Props>
                         codeColorScheme={this.props.codeColorScheme}
                     />
                 ))}
-{/*
-                <div className={classes.startDiscussionSectionWrapper}>
-                    <Typography variant="headline">Start a discussion about these changes</Typography>
-                    <div className={classes.startDiscussionFormWrapper}>
-                        <CreateDiscussion
-                            repoRoot={this.props.repoRoot}
-                            attachedTo={`Commit: ${commit.commit.substr(0, 8)}`}
-                            commentWrapperClasses={{ comment: classes.createDiscussionComment }}
-                        />
-                    </div>
-                </div>*/}
             </div>
         )
     }
 }
 
 interface Props {
-    repoID: string
-    repoRoot: string
+    repo: IRepo
     user: IUser
     commit: ITimelineEvent | undefined
     codeColorScheme?: string | undefined
-    getDiff: (payload: {repoRoot: string, commit: string}) => void
+    getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string}) => void
     selectCommit: (payload: {selectedCommit: string | undefined}) => void
     classes: any
 }
 
 const styles = (theme: Theme)=> createStyles({
+    root: {
+        marginTop: 16,
+    },
     commitHeader: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -166,26 +167,3 @@ const styles = (theme: Theme)=> createStyles({
 })
 
 export default withStyles(styles)(CommitView)
-
-// const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-//     const commit = (ownProps || {}).commit
-//     const commitUser = (commit || {} as any).user || ''
-//     const userEmail = extractEmail(commitUser) || ''
-//     const userID = state.user.usersByEmail[ userEmail ]
-//     const user = state.user.users[ userID || '' ] || {} as IUser
-//     const username = user.name || removeEmail(commitUser)
-//     const userPicture = user.picture
-//     return {
-//         username,
-//         userPicture,
-//     }
-// }
-
-// const mapDispatchToProps = {
-//     createDiscussion,
-// }
-
-// export default connect< StateProps, DispatchProps, OwnProps, IGlobalState >(
-//     mapStateToProps,
-//     mapDispatchToProps,
-// )(withStyles(styles)(CommitView))

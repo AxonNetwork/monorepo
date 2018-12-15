@@ -35,18 +35,6 @@ class ConnectedDiscussionList extends React.Component<Props>
     }
 }
 
-// interface Props {
-//     discussions: {[discussionID: string]: IDiscussion}
-//     order?: string[]
-//     selectedID?: string | undefined
-//     users: {[email: string]: IUser}
-//     newestViewedCommentTimestamp: {[discussionID: string]: number}
-
-//     selectDiscussion: (payload: {discussionID: string | undefined}) => void
-
-// 	classes:any
-// }
-
 type Props = OwnProps & StateProps
 
 interface OwnProps {
@@ -69,8 +57,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 	return {
 		discussions: state.discussion.discussions,
 		users: state.user.users,
-	    // newestViewedCommentTimestamp: (state.user.userSettings.newestViewedCommentTimestamp[repoID] || {}),
-	    newestViewedCommentTimestamp: {},
+	    newestViewedCommentTimestamp: ((state.user.userSettings.newestViewedCommentTimestamp || {})[repoID] || {}),
         newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }

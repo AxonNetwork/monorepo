@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import FileList from 'conscience-components/FileList'
@@ -42,18 +43,30 @@ class RepoFilesPage extends React.Component<Props>
 		if(file !== undefined) {
 			return(
 				<div>
-					<Breadcrumbs
-						repoRoot={repo.repoID}
-						selectedFolder={selected}
-						selectFile={this.selectFile}
-						classes={{root: classes.breadcrumbs}}
-					/>
-					<FileViewer filename={selected} repoID={repoID} />
+					<div className={classes.fileInfo}>
+						<Breadcrumbs
+							repoRoot={repo.repoID}
+							selectedFolder={selected}
+							selectFile={this.selectFile}
+							classes={{root: classes.breadcrumbs}}
+						/>
+						<SecuredText
+							repoID={repo.repoID}
+							history={this.props.history}
+	                        lastUpdated={file.modified}
+	                        filename={file.name}
+						/>
+					</div>
+					<div className={classes.fileViewerContainer}>
+						<div className={classes.fileViewer}>
+							<FileViewer filename={selected} repoID={repoID} />
+						</div>
+					</div>
 				</div>
 			)
 		}
 		return (
-			<div>
+			<div className={classes.fileListContainer}>
 				<FileList
 					repoRoot={repo.repoID}
 					files={files}
@@ -83,8 +96,23 @@ const styles = (theme: Theme) => createStyles({
 		justifyContent: 'center',
 		marginTop: 256,
 	},
-	breadcrumbs: {
-		marginBottom: 32,
+	fileInfo: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 16,
+		marginBottom: 16,
+	},
+	fileViewerContainer: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	fileViewer: {
+		maxWidth: 960
+	},
+	fileListContainer: {
+		marginTop: 16,
 	}
 })
 

@@ -36,8 +36,7 @@ class RepoHistoryPage extends React.Component<Props>
 		}else {
 			return (
 				<CommitView
-					repoID={repo.repoID}
-					repoRoot={repo.repoID} // fix this
+					repo={repo}
 					user={this.props.user}
 					commit={commits[selectedCommit]}
 					codeColorScheme={undefined}
@@ -58,9 +57,8 @@ class RepoHistoryPage extends React.Component<Props>
 		}
 	}
 
-	getDiff(payload: {repoRoot: string, commit: string}){
-		const repoID = payload.repoRoot
-		const commit = payload.commit
+	getDiff(payload: {repoID: string, repoRoot: string | undefined, commit: string}){
+		const { repoID, commit } = payload
 		this.props.getDiff({ repoID, commit })
 	}
 }

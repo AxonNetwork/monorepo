@@ -41,7 +41,6 @@ interface Props {
 
 const styles = (theme: Theme) => createStyles({
 	list: {
-		marginTop: 32,
 		border: '1px solid ' + theme.palette.grey[600],
 	},
 })

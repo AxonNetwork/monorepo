@@ -2,7 +2,7 @@ import React from 'react'
 import { Switch, Route } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import RepoList from './components/RepoList'
-import Repository from './components/Repository'
+import Repository from './RepoRoutes'
 
 
 class RepoPage extends React.Component<Props>
@@ -32,7 +32,8 @@ const styles = (theme: Theme) => createStyles({
 		justifyContent: 'center',
 	},
 	main: {
-		width: '80%'
+		width: '80%',
+		marginTop: 32,
 	}
 })
 

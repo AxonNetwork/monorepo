@@ -5,6 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
+import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
 import Timeline from './connected/Timeline'
 import DiscussionList from './connected/DiscussionList'
@@ -36,6 +37,16 @@ class RepoHomePage extends React.Component<Props>
 				}
 				</div>
 				<div className={classes.sidebarComponents}>
+					{(repo.commitList || []).length > 0 &&
+						<Card className={classes.card}>
+							<CardContent classes={{ root: classes.securedTextCard}} >
+								<SecuredText
+									repoID={repo.repoID}
+									history={this.props.history}
+								/>
+							</CardContent>
+						</Card>
+					}
 					<Card className={classes.card}>
 						<CardContent>
 							<Typography variant="h6">
@@ -95,7 +106,8 @@ interface Props extends RouteComponentProps<MatchParams>{
 
 const styles = (theme: Theme) => createStyles({
 	main: {
-		display: 'flex'
+		display: 'flex',
+		marginTop: 32,
 	},
 	readmeContainer: {
 		flexGrow: 3,
@@ -107,6 +119,9 @@ const styles = (theme: Theme) => createStyles({
 	},
 	card: {
 		marginBottom: 16
+	},
+	securedTextCard: {
+		padding: 16
 	},
 	sharedUsersRow: {
 		display: 'flex',

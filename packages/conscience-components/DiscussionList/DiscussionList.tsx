@@ -83,10 +83,10 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     list: {
         height: '100%',
+        width: '100%',
         padding: 0,
         overflow: 'auto',
         flexGrow: 1,
-        width: 350,
         borderTop: '1px solid #e0e0e0',
     },
     listItem: {

@@ -72,9 +72,9 @@ interface OwnProps {
 
 interface StateProps {
     repo: IRepo
-    comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
+    comments: {[commentID: string]: IComment}
     codeColorScheme?: string | undefined
     backgroundColor?: string
 }
@@ -84,16 +84,12 @@ interface DispatchProps {
 }
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-	const repo = state.repo.repos[ownProps.repoID]
-	const comments = {}
-	const users = {}
-	const discussions = {}
-
 	return {
-		repo,
-		comments,
-		users,
-		discussions
+        repo: state.repo.repos[ownProps.repoID],
+        users: state.user.users,
+        discussions: state.discussion.discussions,
+        comments: state.discussion.comments,
+        codeColorScheme: state.user.userSettings.codeColorScheme,
     }
 }
 

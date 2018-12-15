@@ -91,6 +91,7 @@ const styles = (theme: Theme) => createStyles({
         border: '1px solid',
         borderColor: theme.palette.grey[400],
         overflow: 'scroll',
+        zIndex: 10,
     },
 })
 

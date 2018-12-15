@@ -105,6 +105,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
         users: state.user.users,
 		discussions: state.discussion.discussions,
         comments: state.discussion.comments,
+        codeColorScheme: state.user.userSettings.codeColorScheme,
     }
 }
 

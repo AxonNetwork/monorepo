@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import RepoInfo from './RepoInfo'
-import RepoHomePage from './RepoHomePage'
-import RepoFilesPage from './RepoFilesPage'
-import RepoHistoryPage from './RepoHistoryPage'
-import RepoDiscussionPage from './RepoDiscussionPage'
-import RepoSettingsPage from './RepoSettingsPage'
-import MarkdownEditor from './connected/MarkdownEditor'
+import RepoInfo from './components/RepoInfo'
+import RepoHomePage from './components/RepoHomePage'
+import RepoFilesPage from './components/RepoFilesPage'
+import RepoHistoryPage from './components/RepoHistoryPage'
+import RepoDiscussionPage from './components/RepoDiscussionPage'
+import RepoSettingsPage from './components/RepoSettingsPage'
+import MarkdownEditor from './components/connected/MarkdownEditor'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, RepoPage } from 'conscience-lib/common'
@@ -17,7 +17,7 @@ import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/uti
 
 
 @autobind
-class Repository extends React.Component<Props>
+class RepoRoutes extends React.Component<Props>
 {
 	componentWillMount(){
 		const repoID = this.props.match.params.repoID
@@ -53,7 +53,7 @@ class Repository extends React.Component<Props>
 					menuLabelsHidden={false}
 					navigateRepoPage={this.navigateRepoPage}
 				/>
-				<div className={classes.subpage}>
+				<div>
 					<Switch>
 						<Route path='/repo/:repoID/edit/:filename+' component={MarkdownEditor} />
 						<Route path='/repo/:repoID/files/:filename+' component={RepoFilesPage} />
@@ -88,9 +88,6 @@ const styles = (theme: Theme) => createStyles({
 		justifyContent: 'center',
 		marginTop: 256,
 	},
-	repository: {
-		marginTop: 32
-	},
 	subpage: {
 		marginTop: 32,
 	}
@@ -108,9 +105,7 @@ const mapDispatchToProps = {
 	getRepo
 }
 
-const RepositoryContainer = connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(Repository))
-
-export default RepositoryContainer
+)(withStyles(styles)(RepoRoutes))
