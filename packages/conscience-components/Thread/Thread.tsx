@@ -6,7 +6,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
-import { IUser, IComment, IRepo, IDiscussion } from 'conscience-lib/common'
+import { IUser, IComment, IRepo, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind, checkVisible } from 'conscience-lib/utils'
 import RenderMarkdown from '../RenderMarkdown'
 import SmartTextarea from '../SmartTextarea'
@@ -180,8 +180,8 @@ interface Props {
     newestViewedCommentTimestamp: number
 
     unselect: () => void
-    selectFile: (payload: {filename: string}) => void
-    selectDiscussion: (payload: {discussionID: string}) => void
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
     sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
 

@@ -4,10 +4,10 @@ import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import DiscussionsPane from 'conscience-components/DiscussionsPane'
 import { History } from 'history'
-import { updateUserSettings } from 'redux/user/userActions'
+import { updateUserSettings, sawComment } from 'redux/user/userActions'
 import { getDiscussions, createDiscussion, createComment } from 'redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser, IDiscussion, IComment, IUserSettings } from 'conscience-lib/common'
+import { IRepo, IUser, IDiscussion, IComment, IUserSettings, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -15,7 +15,7 @@ import { autobind } from 'conscience-lib/utils'
 class RepoDiscussionPage extends React.Component<Props>
 {
 
-    selectFile(payload: {filename: string}) {
+    selectFile(payload: {filename: string | undefined, mode: FileMode}) {
 		const repoID = this.props.match.params.repoID
 		const filename = payload.filename
 		if(filename === undefined) {
@@ -25,7 +25,7 @@ class RepoDiscussionPage extends React.Component<Props>
 		}
     }
 
-	selectDiscussion(payload: {discussionID: string | undefined}) {
+    selectDiscussion(payload: {discussionID: string | undefined}) {
 		const repoID = this.props.match.params.repoID
 		const discussionID = payload.discussionID
 		if(discussionID === undefined) {
@@ -40,8 +40,8 @@ class RepoDiscussionPage extends React.Component<Props>
     }
 
 	render() {
-		// const { classes } = this.props
 		const discussionID = this.props.match.params.discussionID
+		
 		return (
 			<div>
 				<DiscussionsPane
@@ -59,7 +59,7 @@ class RepoDiscussionPage extends React.Component<Props>
 					selectDiscussion={this.selectDiscussion}
 					createDiscussion={this.props.createDiscussion}
 					createComment={this.props.createComment}
-					sawComment={this.sawComment}
+					sawComment={this.props.sawComment}
 				/>
 			</div>
 		)
@@ -82,11 +82,10 @@ interface Props extends RouteComponentProps<MatchParams>{
     discussionIDsSortedByNewestComment: string[]
 
     getDiscussions: (payload: {repoID: string}) => void
-    selectFile: (payload: {filename: string}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
     createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
     createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
     updateUserSettings: (payload: { settings: IUserSettings }) => void
+    sawComment:(payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
 
     history: History
 	classes: any
@@ -116,6 +115,7 @@ const mapDispatchToProps = {
 	createDiscussion,
 	createComment,
 	updateUserSettings,
+	sawComment
 }
 
 const RepoDiscussionPageContainer = connect(

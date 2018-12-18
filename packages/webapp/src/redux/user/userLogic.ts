@@ -9,10 +9,11 @@ import {
     IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
+    getUserSettings,
 } from './userActions'
 import { makeLogic } from '../reduxUtils'
-import { IUser } from 'conscience-lib/common'
 import { keyBy, uniq } from 'lodash'
+import { IUser } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
 const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
@@ -31,6 +32,8 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
             return resp
         }
 
+        await dispatch(getUserSettings({}))
+
         return { userID, emails, name, username, picture }
     }
 })
@@ -45,6 +48,8 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
 		}
         const { userID, emails, name, username, picture, jwt } = resp
         localStorage.setItem('jwt', jwt)
+        
+        await dispatch(getUserSettings({}))
 
         return { userID, emails, name, username, picture }
     }
@@ -80,7 +85,7 @@ const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
         const { repoID, discussionID, commentTimestamp } = action.payload
-        // await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentTimestamp)
+        await ServerRelay.sawComment(repoID, discussionID, commentTimestamp)
         return { repoID, discussionID, commentTimestamp }
     },
 })
@@ -88,8 +93,7 @@ const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
 const getUserSettingsLogic = makeLogic<IGetUserSettingsAction, IGetUserSettingsSuccessAction>({
     type: UserActionType.GET_USER_SETTINGS,
     async process({ getState, action }) {
-        const userID = getState().user.currentUser || ''
-        const settings = await ServerRelay.getUserSettings(userID)
+        const settings = await ServerRelay.getUserSettings()
         return { settings }
     },
 })
@@ -98,8 +102,7 @@ const updateUserSettingsLogic = makeLogic<IUpdateUserSettingsAction, IUpdateUser
     type: UserActionType.UPDATE_USER_SETTINGS,
     async process({ getState, action }) {
         let { settings } = action.payload
-        const userID = getState().user.currentUser || ''
-        settings = await ServerRelay.updateUserSettings(userID, settings)
+        settings = await ServerRelay.updateUserSettings(settings)
         return { settings }
     },
 })
@@ -121,6 +124,7 @@ const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailS
         return { userID, email, add }
     },
 })
+
 export default [
     whoAmILogic,
 	loginLogic,

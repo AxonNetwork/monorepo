@@ -111,7 +111,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.SAW_COMMENT_SUCCESS: {
+        case UserActionType.SAW_COMMENT: {
             const { repoID, discussionID, commentTimestamp } = action.payload
             return {
                 ...state,

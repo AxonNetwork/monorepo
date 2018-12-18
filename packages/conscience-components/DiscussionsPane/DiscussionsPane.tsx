@@ -15,7 +15,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
 import UserAvatar from '../UserAvatar'
-import { IUser, IRepo, IDiscussion, IComment } from 'conscience-lib/common'
+import { IUser, IRepo, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
 
 
 class RepoDiscussionPage extends React.Component<Props>
@@ -101,7 +101,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             discussions={discussions}
                             users={users}
                             comments={comments}
-                            newestViewedCommentTimestamp={newestComment[selectedID]}
+                            newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp[selectedID] || 0}
                             unselect={() => this.props.selectDiscussion({ discussionID: undefined })}
                             selectFile={this.props.selectFile}
                             selectDiscussion={this.props.selectDiscussion}
@@ -127,7 +127,7 @@ interface Props {
     discussionIDsSortedByNewestComment: string[]
 
     getDiscussions: (payload: {repoID: string}) => void
-    selectFile: (payload: {filename: string}) => void
+    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
     createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
     createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void

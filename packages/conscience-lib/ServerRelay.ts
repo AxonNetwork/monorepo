@@ -290,14 +290,23 @@ const ServerRelay = {
         await axios.post<{}>(API_URL + '/user/email', { email, add })
     },
 
-    async getUserSettings(userID: string) {
+    async getUserSettings() {
         const settings = await axios.get<IUserSettings>(API_URL + '/user/settings')
         return settings.data
     },
 
-    async updateUserSettings(userID: string, settings: IUserSettings) {
+    async updateUserSettings(settings: IUserSettings) {
         const updated = await axios.post<IUserSettings>(API_URL + "/user/settings", { settings })
         return updated.data
+    },
+
+    async sawComment(repoID: string, discussionID: string, commentTimestamp: number) {
+        interface IResponse {}
+        await axios.post<IResponse>(API_URL + "/user/sawComment", {
+            repoID,
+            discussionID,
+            commentTimestamp
+        })
     },
 
     async createOrg(name: string) {
