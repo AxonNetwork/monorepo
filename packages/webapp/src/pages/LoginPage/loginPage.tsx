@@ -16,9 +16,11 @@ const logo = require('../../assets/logo-invert.png')
 
 @autobind
 class LoginPage extends React.Component<Props> {
+
 	_inputEmail: HTMLInputElement | null = null
 	_inputPassword: HTMLInputElement | null = null
- onClickSubmit(event: React.FormEvent<HTMLFormElement>){
+
+	onClickSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault()
         const email = this._inputEmail !== null ? this._inputEmail.value : ''
         const password = this._inputPassword !== null ? this._inputPassword.value : ''
@@ -27,7 +29,7 @@ class LoginPage extends React.Component<Props> {
 
 	render() {
 		const { checkedLoggedIn, loggedIn, error, classes } = this.props
-		const { from } = this.props.location.state || { from: {pathname: "/" } }
+		const { from } = this.props.location.state || { from: {pathname: "/repo" } }
 		if(!checkedLoggedIn){
 			return <div></div>
 		}

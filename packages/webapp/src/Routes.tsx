@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, Redirect, withRouter } from 'react-router'
+import { History } from 'history'
 import Header from 'components/Header'
 import LoginPage from 'pages/LoginPage'
 import HomePage from 'pages/HomePage'
@@ -9,18 +10,21 @@ import SettingsPage from 'pages/SettingsPage'
 import { IGlobalState } from 'redux/store'
 
 function Routes(
-	{ loggedIn }: {loggedIn: boolean}
+	{ loggedIn, history }: {loggedIn: boolean, history: History}
 	){
+	const location = history.location.pathname
 	return (
 		<div>
-		    <Header />
+			{location !== '/login' &&
+			    <Header />
+			}
 		    <Switch>
 				<Route exact path='/login' component={LoginPage} />
 				<PrivateRoute path='/repo' component={RepoPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/settings' component={SettingsPage} loggedIn={loggedIn} />
 				<Route render={() => (
 					<React.Fragment>
-						{loggedIn && <Redirect to='/repo' />}
+						{loggedIn && <Redirect to='/repo' />}a
 						{!loggedIn && <HomePage />}
 					</React.Fragment>
 					)}
