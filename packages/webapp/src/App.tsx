@@ -9,6 +9,7 @@ import { IGlobalState } from 'redux/store'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import './assets/app.css'
 
 const theme = createMuiTheme({
     palette: {

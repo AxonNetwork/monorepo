@@ -9,6 +9,8 @@ import createStore from 'redux/store'
 import { whoami } from 'redux/user/userActions'
 import { isProduction } from 'utils'
 
+import 'typeface-roboto'
+
 // Webpack offline plugin
 if (isProduction) {
   OfflinePluginRuntime.install();

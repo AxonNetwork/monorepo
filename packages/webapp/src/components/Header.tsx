@@ -23,7 +23,10 @@ class Header extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { user, classes } = this.props
+		const { user, history, classes } = this.props
+		if(history.location.pathname === '/login'){
+			return null
+		}
 		return (
 			<AppBar position="static" className={classes.appbar}>
 				<Link to='/repo'>
