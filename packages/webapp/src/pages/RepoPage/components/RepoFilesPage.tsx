@@ -3,8 +3,10 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Typography from '@material-ui/core/Typography'
 import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
+import CreateDiscussion from './connected/CreateDiscussion'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import FileList from 'conscience-components/FileList'
 import { IGlobalState } from 'redux/store'
@@ -61,6 +63,12 @@ class RepoFilesPage extends React.Component<Props>
 						<div className={classes.fileViewer}>
 							<FileViewer filename={selected} repoID={repoID} />
 						</div>
+						<div className={classes.createDiscussion}>
+							<Typography variant="h5">
+								Start a discussion on {selected}:
+							</Typography>
+							<CreateDiscussion repoID={repo.repoID} attachedTo={selected} />
+						</div>
 					</div>
 				</div>
 			)
@@ -105,11 +113,17 @@ const styles = (theme: Theme) => createStyles({
 	},
 	fileViewerContainer: {
 		display: 'flex',
-		flexDirection: 'row',
+		flexDirection: 'column',
+		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	fileViewer: {
 		maxWidth: 960
+	},
+	createDiscussion: {
+		textAlign: 'center',
+		marginTop: 32,
+		maxWidth: 700,
 	},
 	fileListContainer: {
 		marginTop: 16,

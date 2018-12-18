@@ -15,6 +15,8 @@ const initialState = {
         fileExtensionsHidden: false,
         newestViewedCommentTimestamp: {},
     },
+
+    loginError: undefined,
 }
 
 export interface IUserState {
@@ -25,6 +27,8 @@ export interface IUserState {
     checkedLoggedIn: boolean
 
     userSettings: IUserSettings
+
+    loginError: Error | undefined
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
@@ -53,6 +57,14 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 },
                 currentUser: userID,
                 checkedLoggedIn: true,
+            }
+        }
+
+        case UserActionType.LOGIN_FAILED: {
+            return {
+                ...state,
+                loginError: action.payload,
+                currentUser: undefined,
             }
         }
 

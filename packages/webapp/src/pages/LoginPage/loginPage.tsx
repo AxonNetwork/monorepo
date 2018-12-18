@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import FormHelperText from '@material-ui/core/FormHelperText'
 import { login } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import autobind from 'conscience-lib/utils/autobind'
@@ -25,7 +26,7 @@ class LoginPage extends React.Component<Props> {
 	}
 
 	render() {
-		const { checkedLoggedIn, loggedIn, classes } = this.props
+		const { checkedLoggedIn, loggedIn, error, classes } = this.props
 		const { from } = this.props.location.state || { from: {pathname: "/" } }
 		if(!checkedLoggedIn){
 			return <div></div>
@@ -60,6 +61,9 @@ class LoginPage extends React.Component<Props> {
 							>
 								Login
 							</Button>
+							{error !== undefined &&
+                                <FormHelperText error className={classes.errorMessage}>{error.message}</FormHelperText>
+							}
 						</form>
 					</CardContent>
 				</Card>
@@ -72,6 +76,7 @@ interface Props {
 	location: any
 	checkedLoggedIn: boolean
 	loggedIn: boolean
+	error: Error | undefined
 	login: typeof login
 	classes: any
 }
@@ -99,9 +104,11 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
 	const checkedLoggedIn = state.user.checkedLoggedIn
 	const loggedIn = state.user.currentUser !== undefined
+	const error = state.user.loginError
     return {
     	checkedLoggedIn,
     	loggedIn,
+    	error
     }
 }
 

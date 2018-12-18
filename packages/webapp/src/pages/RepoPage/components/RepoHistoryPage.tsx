@@ -4,7 +4,9 @@ import { RouteComponentProps } from 'react-router'
 import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Typography from '@material-ui/core/Typography'
 import Timeline from './connected/Timeline'
+import CreateDiscussion from './connected/CreateDiscussion'
 import CommitView from 'conscience-components/CommitView'
 import { getDiff } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
@@ -35,14 +37,27 @@ class RepoHistoryPage extends React.Component<Props>
 			)
 		}else {
 			return (
-				<CommitView
-					repo={repo}
-					user={this.props.user}
-					commit={commits[selectedCommit]}
-					codeColorScheme={undefined}
-					getDiff={this.getDiff}
-					selectCommit={this.selectCommit}
-				/>
+				<div className={classes.main}>
+					<CommitView
+						repo={repo}
+						user={this.props.user}
+						commit={commits[selectedCommit]}
+						codeColorScheme={undefined}
+						getDiff={this.getDiff}
+						selectCommit={this.selectCommit}
+					/>
+					<div className={classes.createDiscussionContainer}>
+						<Typography variant="h5">
+							Start a discussion on this commit:
+						</Typography>
+						<div className={classes.createDiscussion}>
+							<CreateDiscussion
+								repoID={repo.repoID}
+								attachedTo={selectedCommit}
+							/>
+						</div>
+					</div>
+				</div>
 			)
 		}
 	}
@@ -82,6 +97,15 @@ const styles = (theme: Theme) => createStyles({
 		display: 'flex',
 		justifyContent: 'center',
 		marginTop: 256,
+	},
+	createDiscussionContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+		marginTop: 32,
+	},
+	createDiscussion: {
+		maxWidth: 700
 	}
 })
 
