@@ -5,6 +5,8 @@ import {
     IGetFileContentsAction, IGetFileContentsSuccessAction,
     ISaveFileContentsAction, ISaveFileContentsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
+    IAddCollaboratorAction, IAddCollaboratorSuccessAction,
+    IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import { getDiscussions } from '../discussion/discussionActions'
@@ -72,7 +74,26 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         const { repoID, commit } = action.payload
         const resp = await ServerRelay.getDiff(repoID, commit)
         const diffs = resp.diffs
-        return { repoID, commit, diffs}
+        return { repoID, commit, diffs }
+    }
+})
+
+const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
+    type: RepoActionType.ADD_COLLABORATOR,
+    async process({ action }, dispatch) {
+        const { repoID, email } = action.payload
+        const { userID } = await ServerRelay.shareRepo(repoID, undefined, email)
+        await dispatch(fetchUserData({ userIDs: [userID] }))
+        return { repoID, userID }
+    }
+})
+
+const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
+    type: RepoActionType.REMOVE_COLLABORATOR,
+    async process({ action }, dispatch) {
+        const { repoID, userID } = action.payload
+        await ServerRelay.unshareRepo(repoID, userID)
+        return { repoID, userID }
     }
 })
 
@@ -82,4 +103,6 @@ export default [
     getFileContentsLogic,
     saveFileContentsLogic,
     getDiffLogic,
+    addCollaboratorLogic,
+    removeCollaboratorLogic,
 ]

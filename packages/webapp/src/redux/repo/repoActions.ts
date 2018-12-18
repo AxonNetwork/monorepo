@@ -21,6 +21,14 @@ export enum RepoActionType {
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
     GET_DIFF_FAILED = 'GET_DIFF_FAILED',
+
+    ADD_COLLABORATOR = 'ADD_COLLABORATOR',
+    ADD_COLLABORATOR_SUCCESS = 'ADD_COLLABORATOR_SUCCESS',
+    ADD_COLLABORATOR_FAILED = 'ADD_COLLABORATOR_FAILED',
+
+    REMOVE_COLLABORATOR = 'REMOVE_COLLABORATOR',
+    REMOVE_COLLABORATOR_SUCCESS = 'REMOVE_COLLABORATOR_SUCCESS',
+    REMOVE_COLLABORATOR_FAILED = 'REMOVE_COLLABORATOR_FAILED',
 }
 
 export interface IGetRepoListAction {
@@ -113,6 +121,42 @@ export interface IGetDiffSuccessAction {
 
 export type IGetDiffFailedAction = FailedAction<RepoActionType.GET_DIFF_FAILED>
 
+export interface IAddCollaboratorAction {
+    type: RepoActionType.ADD_COLLABORATOR
+    payload: {
+        repoID: string
+        email: string
+    }
+}
+
+export interface IAddCollaboratorSuccessAction {
+    type: RepoActionType.ADD_COLLABORATOR_SUCCESS
+    payload: {
+        repoID: string
+        userID: string
+    }
+}
+
+export type IAddCollaboratorFailedAction = FailedAction<RepoActionType.ADD_COLLABORATOR_FAILED>
+
+export interface IRemoveCollaboratorAction {
+    type: RepoActionType.REMOVE_COLLABORATOR
+    payload: {
+        repoID: string
+        userID: string
+    }
+}
+
+export interface IRemoveCollaboratorSuccessAction {
+    type: RepoActionType.REMOVE_COLLABORATOR_SUCCESS
+    payload: {
+        repoID: string
+        userID: string
+    }
+}
+
+export type IRemoveCollaboratorFailedAction = FailedAction<RepoActionType.REMOVE_COLLABORATOR_FAILED>
+
 export type IRepoAction =
     IGetRepoListAction |
     IGetRepoListSuccessAction |
@@ -132,10 +176,22 @@ export type IRepoAction =
 
     IGetDiffAction |
     IGetDiffSuccessAction |
-    IGetDiffFailedAction
+    IGetDiffFailedAction |
+
+    IAddCollaboratorAction |
+    IAddCollaboratorSuccessAction |
+    IAddCollaboratorFailedAction |
+
+    IRemoveCollaboratorAction |
+    IRemoveCollaboratorSuccessAction |
+    IRemoveCollaboratorFailedAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getRepo = (payload: IGetRepoAction['payload']): IGetRepoAction => ({ type: RepoActionType.GET_REPO, payload })
+
 export const getFileContents = (payload: IGetFileContentsAction['payload']): IGetFileContentsAction => ({ type: RepoActionType.GET_FILE_CONTENTS, payload })
 export const saveFileContents = (payload: ISaveFileContentsAction['payload']): ISaveFileContentsAction => ({ type: RepoActionType.SAVE_FILE_CONTENTS, payload })
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
+
+export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
+export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })

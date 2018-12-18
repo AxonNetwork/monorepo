@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import SharedUsers from 'conscience-components/SharedUsers'
+import { addCollaborator, removeCollaborator } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -20,21 +21,13 @@ class RepoFilesPage extends React.Component<Props>
 				<SharedUsers
 					repo={this.props.repo}
 					users={this.props.users}
-					addCollaborator={this.addCollaborator}
-					removeCollaborator={this.removeCollaborator}
+					addCollaborator={this.props.addCollaborator}
+					removeCollaborator={this.props.removeCollaborator}
 					classes={{root: classes.sharedUsers}}
 				/>
 			</div>
 		)
 	}
-
-    addCollaborator(payload: { repoID: string, repoRoot?: string,  email: string }) {
-    	console.log("add collab :", payload)
-    }
-
-    removeCollaborator(payload: { repoID: string, repoRoot?: string,  userID: string }) {
-    	console.log("remove collab :", payload)
-    }
 }
 
 interface MatchParams {
@@ -44,8 +37,8 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams>{
     repo: IRepo | undefined
     users: {[userID: string]: IUser}
-    addCollaborator: (payload: { repoID: string, repoRoot?: string,  email: string }) => void
-    removeCollaborator: (payload: { repoID: string, repoRoot?: string,  userID: string }) => void
+    addCollaborator: typeof addCollaborator
+    removeCollaborator: typeof removeCollaborator
 	classes: any
 }
 
@@ -66,7 +59,10 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	addCollaborator,
+	removeCollaborator,
+}
 
 const RepoFilesPageContainer = connect(
     mapStateToProps,

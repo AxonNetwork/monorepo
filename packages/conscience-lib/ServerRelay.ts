@@ -152,11 +152,13 @@ const ServerRelay = {
         await axios.post<IResponse>(API_URL + '/create-repo', { repoID })
     },
 
-    async shareRepo(repoID: string, userID: string) {
+    async shareRepo(repoID: string, userID: string | undefined, email?: string) {
         interface IResponse {
-            message: string
+            repoID: string
+            userID: string
         }
-        await axios.post<IResponse>(API_URL + '/share-repo', { repoID, userID })
+        const resp = await axios.post<IResponse>(API_URL + '/share-repo', { repoID, userID, email })
+        return resp.data
     },
 
     async getSharedUsers(repoID: string) {

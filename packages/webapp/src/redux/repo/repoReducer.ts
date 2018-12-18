@@ -1,5 +1,6 @@
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepo } from 'conscience-lib/common'
+import { uniq } from 'lodash'
 
 const initialState = {
 	repos: {},
@@ -65,6 +66,39 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                                 diffs,
                             },
                         },
+                    },
+                },
+            }
+        }
+
+        case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
+        	const { repoID, userID } = action.payload
+        	return {
+        		...state,
+        		repos: {
+        			...state.repos,
+        			[repoID]: {
+        				...(state.repos[repoID] || {}),
+        				sharedUsers: [
+        					...((state.repos[repoID] || {}).sharedUsers || []),
+    						userID
+        				]
+        			}
+        		}
+        	}
+        }
+
+        case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
+            const { repoID, userID } = action.payload
+            const sharedUsers = uniq(((state.repos[repoID] || {}).sharedUsers || []).filter(id => id !== userID))
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [repoID]: {
+                        ...(state.repos[repoID] || {}),
+                        path: repoID,
+                        sharedUsers,
                     },
                 },
             }
