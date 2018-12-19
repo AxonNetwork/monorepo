@@ -3,7 +3,12 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
 import LargeAddButton from 'conscience-components/LargeAddButton'
+import ReactMarkdown from 'react-markdown'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import Members from './connected/Members'
 import { getRepoList } from 'redux/repo/repoActions'
@@ -25,17 +30,33 @@ class OrgHomePage extends React.Component<Props>
 				</div>
 			)
 		}
+        const hasReadme = org.readme && org.readme.length > 0
 
 		return (
 			<div className={classes.page}>
 				<div className={classes.main}>
-					<LargeAddButton text="Click to add a welcome message for your team" onClick={this.onClickEditWelcome} />
+					{!hasReadme &&
+						<LargeAddButton text="Click to add a welcome message for your team" onClick={this.onClickEditReadme} />
+					}
+					{hasReadme &&
+						<Card className={classes.readmeCard}>
+                            <IconButton
+                                onClick={this.onClickEditReadme}
+                                className={classes.editButton}
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+							<CardContent>
+								<ReactMarkdown source={org.readme} />
+							</CardContent>
+						</Card>
+					}
 					<RepositoryCards
-						org={this.props.org}
+						repoList={this.props.org.repos}
 						repos={this.props.repos}
 						discussions={this.props.discussions}
 						discussionsByRepo={this.props.discussionsByRepo}
-						addRepoToOrg={this.props.addRepoToOrg}
+						addRepo={this.addRepo}
 						selectRepoAndPage={this.selectRepoAndPage}
 					/>
 				</div>
@@ -57,9 +78,15 @@ class OrgHomePage extends React.Component<Props>
 		this.props.getRepoList({})
 	}
 
-	onClickEditWelcome() {
+	onClickEditReadme() {
 		const orgID = this.props.match.params.orgID
 		this.props.history.push(`/org/${orgID}/editor`)
+	}
+
+	addRepo(payload: { repoID: string }) {
+		const repoID = payload.repoID
+		const orgID = this.props.match.params.orgID
+		this.props.addRepoToOrg({ repoID, orgID })
 	}
 
     selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }){
@@ -122,6 +149,15 @@ const styles = (theme: Theme) => createStyles({
 		display: 'flex',
 		flexDirection: 'column',
 		flexGrow: 1,
+	},
+	readmeCard: {
+		marginBottom: 32,
+		position: 'relative',
+	},
+	editButton: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
 	},
 	sidebar: {
 		minWidth: 350,

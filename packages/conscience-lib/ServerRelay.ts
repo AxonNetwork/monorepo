@@ -22,6 +22,7 @@ const ServerRelay = {
             picture: string
             token: string
             mnemonic: string
+            orgs: string[]
         }
 
         let resp
@@ -45,6 +46,7 @@ const ServerRelay = {
             picture: resp.data.picture,
             jwt: resp.data.token,
             mnemonic: resp.data.mnemonic,
+            orgs: resp.data.orgs,
         }
     },
 
@@ -56,6 +58,7 @@ const ServerRelay = {
             username: string
             picture: string
             token: string
+            orgs: string[]
         }
 
         let resp
@@ -78,6 +81,7 @@ const ServerRelay = {
             username: resp.data.username,
             picture: resp.data.picture,
             jwt: resp.data.token,
+            orgs: resp.data.orgs,
         }
     },
 
@@ -119,6 +123,7 @@ const ServerRelay = {
             username: string
             emails: string[]
             picture: string
+            orgs: string[]
         }
 
         const response = await axios.get<IResponse>(API_URL + '/whoami')
@@ -128,6 +133,7 @@ const ServerRelay = {
             name: response.data.name,
             username: response.data.username,
             picture: response.data.picture,
+            orgs: response.data.orgs,
         }
     },
 
@@ -325,11 +331,11 @@ const ServerRelay = {
         return response.data as IOrganization
     },
 
-    async fetchOrgs(userID: string) {
+    async fetchOrgs() {
         interface IResponse {
             orgs: string[]
         }
-        const response = await axios.get<IResponse>(API_URL + '/organizations?' + querystring.stringify({ userID }))
+        const response = await axios.get<IResponse>(API_URL + '/organizations')
 
         return response.data
     },

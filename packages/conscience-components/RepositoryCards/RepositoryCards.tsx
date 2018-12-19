@@ -12,7 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
-import { IRepo, IDiscussion, IOrganization, RepoPage } from 'conscience-lib/common'
+import { IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -24,15 +24,15 @@ class Repositories extends React.Component<Props, State>
     }
 
     render() {
-        const { repos, org, discussionsByRepo, classes } = this.props
+        const { repos, repoList, discussionsByRepo, classes } = this.props
         let reposToAdd = [] as string[]
         if(this.state.dialogOpen){
             reposToAdd = Object.keys(repos)
             // repo is not already part of org
-            .filter((key: string) => org.repos.indexOf(repos[key].repoID) < 0)
+            .filter((key: string) => repoList.indexOf(repos[key].repoID) < 0)
             .map((key: string) => repos[key].repoID)
         }
-        
+
         return(
             <React.Fragment>
                 <div className={classes.root}>
@@ -40,7 +40,7 @@ class Repositories extends React.Component<Props, State>
                         <Typography variant="h6">Repositories</Typography>
                     </div>
                     <div className={classes.repoCards}>
-                        {org.repos.map(id =>
+                        {repoList.map(id =>
                             <RepositoryCard
                                 repo={repos[id]}
                                 numDiscussions={(discussionsByRepo[id] || []).length}
@@ -92,8 +92,9 @@ class Repositories extends React.Component<Props, State>
     }
 
     onClickAddRepo(repoID: string) {
-        const orgID = this.props.org.orgID
-        this.props.addRepoToOrg({ orgID, repoID })
+        if(this.props.addRepo) {
+            this.props.addRepo({ repoID })
+        }
         this.setState({ dialogOpen: false})
     }
 
@@ -111,12 +112,12 @@ class Repositories extends React.Component<Props, State>
 }
 
 interface Props {
-    org: IOrganization
+    repoList: string[]
     repos: {[repoID: string]: IRepo}
     discussions: {[discussionID: string]: IDiscussion}
     discussionsByRepo: { [repoID: string]: string[] }
-    addRepoToOrg: (payload: { orgID: string, repoID: string }) => void
     selectRepoAndPage: (payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) => void
+    addRepo?: (payload: { repoID: string }) => void
     classes: any
 }
 

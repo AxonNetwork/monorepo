@@ -7,6 +7,7 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
+    getRepo,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import { getDiscussions } from '../discussion/discussionActions'
@@ -17,6 +18,7 @@ const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction
     type: RepoActionType.GET_REPO_LIST,
     async process({ action }, dispatch) {
         const repoList = await ServerRelay.getRepoList()
+        await Promise.all(repoList.map(repoID => dispatch(getRepo({ repoID }))))
         return { repoList }
     }
 })

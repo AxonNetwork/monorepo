@@ -35,13 +35,14 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
 	switch(action.type) {
         case UserActionType.WHO_AM_I_SUCCESS:
         case UserActionType.LOGIN_SUCCESS: {
-            const { userID, emails, name, username, picture } = action.payload
+            const { userID, emails, name, username, picture, orgs } = action.payload
             const user = state.users[userID] || {
                 userID,
                 emails,
                 name,
                 username,
                 picture,
+                orgs,
                 repos: [],
             }
             const usersByEmail = fromPairs(emails.map(email => [ email, userID ]))

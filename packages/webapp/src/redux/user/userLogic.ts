@@ -29,14 +29,15 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
 
         ServerRelay.setJWT(jwt)
         const resp = await ServerRelay.whoami()
-        const { userID, emails, name, username, picture } = resp
+        const { userID, emails, name, username, picture, orgs } = resp
         if (resp instanceof Error) {
             return resp
         }
 
-        await dispatch(getUserSettings({}))
+        await dispatch(getUserSettings({})),
+        await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
-        return { userID, emails, name, username, picture }
+        return { userID, emails, name, username, picture, orgs }
     }
 })
 
@@ -48,12 +49,12 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     	if (resp instanceof Error) {
     		return resp
 		}
-        const { userID, emails, name, username, picture, jwt } = resp
+        const { userID, emails, name, username, picture, jwt, orgs } = resp
         localStorage.setItem('jwt', jwt)
 
         await dispatch(getUserSettings({}))
 
-        return { userID, emails, name, username, picture }
+        return { userID, emails, name, username, picture, orgs }
     }
 })
 
@@ -131,7 +132,7 @@ const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccess
     type: UserActionType.FETCH_USER_ORGS,
     async process({ getState, action }, dispatch) {
         const userID = getState().user.currentUser || ''
-        const { orgs } = await ServerRelay.fetchOrgs(userID)
+        const { orgs } = await ServerRelay.fetchOrgs()
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
         return { userID, orgs }
     },

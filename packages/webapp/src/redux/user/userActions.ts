@@ -61,7 +61,8 @@ export interface IWhoAmISuccessAction {
         emails: string[]
         name: string
         username: string
-        picture: string,
+        picture: string
+        orgs: string[]
     }
 }
 
@@ -82,7 +83,8 @@ export interface ILoginSuccessAction {
         emails: string[]
         name: string
         username: string
-        picture: string,
+        picture: string
+        orgs: string[]
     }
 }
 
