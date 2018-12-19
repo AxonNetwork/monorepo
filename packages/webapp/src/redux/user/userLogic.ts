@@ -9,8 +9,10 @@ import {
     IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
+    IFetchUserOrgsAction, IFetchUserOrgsSuccessAction,
     getUserSettings,
 } from './userActions'
+import { fetchOrgInfo } from '../org/orgActions'
 import { makeLogic } from '../reduxUtils'
 import { keyBy, uniq } from 'lodash'
 import { IUser } from 'conscience-lib/common'
@@ -48,7 +50,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
 		}
         const { userID, emails, name, username, picture, jwt } = resp
         localStorage.setItem('jwt', jwt)
-        
+
         await dispatch(getUserSettings({}))
 
         return { userID, emails, name, username, picture }
@@ -125,6 +127,16 @@ const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailS
     },
 })
 
+const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccessAction>({
+    type: UserActionType.FETCH_USER_ORGS,
+    async process({ getState, action }, dispatch) {
+        const userID = getState().user.currentUser || ''
+        const { orgs } = await ServerRelay.fetchOrgs(userID)
+        await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
+        return { userID, orgs }
+    },
+})
+
 export default [
     whoAmILogic,
 	loginLogic,
@@ -134,5 +146,6 @@ export default [
     getUserSettingsLogic,
     updateUserSettingsLogic,
     uploadUserPictureLogic,
-    modifyUserEmailLogic
+    modifyUserEmailLogic,
+    fetchUserOrgsLogic,
 ]

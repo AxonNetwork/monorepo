@@ -195,7 +195,16 @@ const ServerRelay = {
     },
 
     async getRepo(repoID: string) {
-        const response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
+        let response
+        try{
+            response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
+        }catch(err){
+            // repo does not exist
+            if (err.response.status === 404) {
+                return new Error(err.response.data.error)
+            }
+            throw err.respponse.data.error
+        }
         return response.data
     },
 

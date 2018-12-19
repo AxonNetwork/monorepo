@@ -113,10 +113,17 @@ export enum RepoPage {
     History,
     Discussion,
     Settings,
+    New,
 }
 
 export enum FileMode {
     View,
     Edit,
     ResolveConflict,
+}
+
+export enum OrgPage {
+    Home,
+    Settings,
+    Editor,
 }

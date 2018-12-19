@@ -41,6 +41,12 @@ export enum UserActionType {
     MODIFY_USER_EMAIL = 'MODIFY_USER_EMAIL',
     MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
     MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
+
+    FETCH_USER_ORGS = 'FETCH_USER_ORGS',
+    FETCH_USER_ORGS_SUCCESS = 'FETCH_USER_ORGS_SUCCESS',
+    FETCH_USER_ORGS_FAILED = 'FETCH_USER_ORGS_FAILED',
+
+    ADDED_ORG = 'ADDED_ORG'
 }
 
 export interface IWhoAmIAction {
@@ -221,6 +227,29 @@ export interface IModifyUserEmailSuccessAction {
 
 export type IModifyUserEmailFailedAction = FailedAction<UserActionType.MODIFY_USER_EMAIL_FAILED>
 
+export interface IFetchUserOrgsAction {
+    type: UserActionType.FETCH_USER_ORGS
+    payload: {}
+}
+
+export interface IFetchUserOrgsSuccessAction {
+    type: UserActionType.FETCH_USER_ORGS_SUCCESS
+    payload: {
+        userID: string
+        orgs: string[]
+    }
+}
+
+export type IFetchUserOrgsFailedAction = FailedAction<UserActionType.FETCH_USER_ORGS_FAILED>
+
+export interface IAddedOrgAction {
+    type: UserActionType.ADDED_ORG
+    payload: {
+        userID: string
+        orgID: string,
+    }
+}
+
 export type IUserAction =
     IWhoAmIAction |
     IWhoAmISuccessAction |
@@ -260,7 +289,13 @@ export type IUserAction =
 
     IModifyUserEmailAction |
     IModifyUserEmailSuccessAction |
-    IModifyUserEmailFailedAction
+    IModifyUserEmailFailedAction |
+
+    IFetchUserOrgsAction |
+    IFetchUserOrgsSuccessAction |
+    IFetchUserOrgsFailedAction |
+
+    IAddedOrgAction
 
 
 export const whoami = (payload: IWhoAmIAction['payload']): IWhoAmIAction => ({ type: UserActionType.WHO_AM_I, payload })
@@ -276,3 +311,6 @@ export const updateUserSettings = (payload: IUpdateUserSettingsAction['payload']
 
 export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
 export const modifyUserEmail = (payload: IModifyUserEmailAction['payload']): IModifyUserEmailAction => ({ type: UserActionType.MODIFY_USER_EMAIL, payload })
+
+export const fetchUserOrgs = (payload: IFetchUserOrgsAction['payload']): IFetchUserOrgsAction => ({ type: UserActionType.FETCH_USER_ORGS, payload })
+export const addedOrg = (payload: IAddedOrgAction['payload']): IAddedOrgAction => ({ type: UserActionType.ADDED_ORG, payload })

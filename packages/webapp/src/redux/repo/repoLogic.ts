@@ -26,6 +26,9 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
     async process({ action }, dispatch) {
         const { repoID } = action.payload
         const repo = await ServerRelay.getRepo(repoID)
+        if(repo instanceof Error){
+            return repo
+        }
         dispatch(getDiscussions({ repoID }))
         dispatch(fetchUserData({ userIDs: repo.sharedUsers || [] }))
         return { repo }

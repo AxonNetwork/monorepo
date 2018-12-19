@@ -172,6 +172,21 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.FETCH_USER_ORGS_SUCCESS: {
+            const { userID, orgs } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        orgs: orgs
+                    }
+                }
+            }
+
+        }
+
 		default:
 			return state
 	}

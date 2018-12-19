@@ -46,6 +46,8 @@ class Header extends React.Component<Props, State> {
 							open={Boolean(this.state.anchorEl)}
 							onClose={this.handleClose}
 						>
+							<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
+							<MenuItem onClick={()=>this.selectItem('orgs')}>Your Organizations</MenuItem>
 							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
 							<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
 						</Menu>
@@ -62,8 +64,11 @@ class Header extends React.Component<Props, State> {
 	selectItem(selection?: string){
 		this.handleClose()
 		switch(selection){
-			case 'settings':
-				this.props.history.push('/settings')
+			case 'orgs':
+				this.props.history.push('/org')
+				return
+			case 'repos':
+				this.props.history.push('/repo')
 				return
 			case 'logout':
 				this.props.logout()

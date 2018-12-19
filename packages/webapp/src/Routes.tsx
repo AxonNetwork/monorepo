@@ -7,6 +7,7 @@ import LoginPage from 'pages/LoginPage'
 import HomePage from 'pages/HomePage'
 import RepoPage from 'pages/RepoPage'
 import SettingsPage from 'pages/SettingsPage'
+import OrgPage from 'pages/OrgPage'
 import { IGlobalState } from 'redux/store'
 
 function Routes(
@@ -22,6 +23,7 @@ function Routes(
 				<Route exact path='/login' component={LoginPage} />
 				<PrivateRoute path='/repo' component={RepoPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/settings' component={SettingsPage} loggedIn={loggedIn} />
+				<PrivateRoute path='/org' component={OrgPage} loggedIn={loggedIn} />
 				<Route render={() => (
 					<React.Fragment>
 						{loggedIn && <Redirect to='/repo' />}a
