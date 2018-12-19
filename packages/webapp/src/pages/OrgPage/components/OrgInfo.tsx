@@ -3,18 +3,20 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Tabs from 'conscience-components/Tabs'
 import { IOrganization, OrgPage } from 'conscience-lib/common'
+import { nonCacheImg } from 'conscience-lib/utils'
 
 
 class OrgInfo extends React.Component<Props>
 {
 	render() {
 		const { org, classes } = this.props
+
 		return (
             <div className={classes.root}>
                 <div className={classes.orgInfoContainer}>
                     {org.picture.length > 0 &&
                         <div>
-                            <img src={org.picture} className={classes.orgPicture} />
+                            <img src={nonCacheImg(org.picture)} className={classes.orgPicture} />
                         </div>
                     }
                     <div className={classes.orgInfo}>

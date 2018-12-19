@@ -7,7 +7,7 @@ import LargeAddButton from 'conscience-components/LargeAddButton'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import Members from './connected/Members'
 import { getRepoList } from 'redux/repo/repoActions'
-import { fetchOrgInfo, addRepoToOrg } from 'redux/org/orgActions'
+import { fetchOrgInfo, addRepoToOrg, addMemberToOrg, removeMemberFromOrg } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -58,7 +58,8 @@ class OrgHomePage extends React.Component<Props>
 	}
 
 	onClickEditWelcome() {
-		console.log('edit welcome')
+		const orgID = this.props.match.params.orgID
+		this.props.history.push(`/org/${orgID}/editor`)
 	}
 
     selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }){
@@ -77,11 +78,15 @@ class OrgHomePage extends React.Component<Props>
 	}
 
 	addMember(payload: { email: string }) {
-		console.log('addMember')
+		const email = payload.email
+		const orgID = this.props.match.params.orgID
+		this.props.addMemberToOrg({ email, orgID })
 	}
 
 	removeMember(payload: { userID: string }) {
-		console.log('removeMember')
+		const userID = payload.userID
+		const orgID = this.props.match.params.orgID
+		this.props.removeMemberFromOrg({ userID, orgID })
 	}
 }
 
@@ -97,6 +102,8 @@ interface Props extends RouteComponentProps<MatchParams>{
     getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
     addRepoToOrg: typeof addRepoToOrg
+    addMemberToOrg: typeof addMemberToOrg
+    removeMemberFromOrg: typeof removeMemberFromOrg
     classes: any
 }
 
@@ -136,6 +143,8 @@ const mapDispatchToProps = {
 	fetchOrgInfo,
 	getRepoList,
 	addRepoToOrg,
+	addMemberToOrg,
+	removeMemberFromOrg,
 }
 
 export default connect(

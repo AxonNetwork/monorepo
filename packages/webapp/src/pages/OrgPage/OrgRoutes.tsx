@@ -5,6 +5,8 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import OrgInfo from './components/OrgInfo'
 import OrgHomePage from './components/OrgHomePage'
+import OrgEditorPage from './components/OrgEditorPage'
+import OrgSettingsPage from './components/OrgSettingsPage'
 import { fetchOrgInfo } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization, OrgPage } from 'conscience-lib/common'
@@ -36,6 +38,8 @@ class OrgRoutes extends React.Component<Props>
 				<div>
 					<Switch>
 						<Route exact path='/org/:orgID' component={OrgHomePage} />
+						<Route exact path='/org/:orgID/editor' component={OrgEditorPage} />
+						<Route exact path='/org/:orgID/settings' component={OrgSettingsPage} />
 					</Switch>
 				</div>
 			</div>

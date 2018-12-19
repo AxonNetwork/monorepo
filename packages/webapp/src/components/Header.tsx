@@ -70,6 +70,9 @@ class Header extends React.Component<Props, State> {
 			case 'repos':
 				this.props.history.push('/repo')
 				return
+			case 'settings':
+				this.props.history.push('/settings')
+				return
 			case 'logout':
 				this.props.logout()
 				return
