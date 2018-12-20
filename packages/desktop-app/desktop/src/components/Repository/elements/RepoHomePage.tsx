@@ -250,7 +250,6 @@ const styles = (theme: Theme) => createStyles({
         // maxWidth: 640,
         flexBasis: 640,
         flexShrink: 1,
-        flexGrow: 1,
         position: 'relative',
     },
     editReadmeButton: {

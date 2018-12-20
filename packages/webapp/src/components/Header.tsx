@@ -4,7 +4,11 @@ import { withRouter, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
-import Menu from '@material-ui/core/Menu'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import Grow from '@material-ui/core/Grow'
+import Paper from '@material-ui/core/Paper'
+import Popper from '@material-ui/core/Popper'
+import MenuList from '@material-ui/core/MenuList'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
 import UserAvatar from 'conscience-components/UserAvatar'
@@ -41,16 +45,30 @@ class Header extends React.Component<Props, State> {
 								userPicture={user.picture}
 							/>
 						</IconButton>
-						<Menu
-							anchorEl={this.state.anchorEl}
+						<Popper
 							open={Boolean(this.state.anchorEl)}
-							onClose={this.handleClose}
+							anchorEl={this.state.anchorEl}
+							placement='bottom-end'
+							transition
 						>
-							<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
-							<MenuItem onClick={()=>this.selectItem('orgs')}>Your Organizations</MenuItem>
-							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
-							<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
-						</Menu>
+							{({ TransitionProps, placement }) => (
+								<Grow
+									{...TransitionProps}
+									style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+								>
+									<Paper className={classes.menuPaper}>
+										<div className={classes.pointerTriangle} />
+										<ClickAwayListener onClickAway={this.handleClose}>
+											<MenuList>
+												<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
+												<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
+												<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
+											</MenuList>
+										</ClickAwayListener>
+									</Paper>
+								</Grow>
+							)}
+						</Popper>
 					</div>
 				}
 			</AppBar>
@@ -64,9 +82,6 @@ class Header extends React.Component<Props, State> {
 	selectItem(selection?: string){
 		this.handleClose()
 		switch(selection){
-			case 'orgs':
-				this.props.history.push('/org')
-				return
 			case 'repos':
 				this.props.history.push('/repo')
 				return
@@ -110,6 +125,19 @@ const styles = (theme: Theme) => createStyles({
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginRight: 64,
+	},
+	menuPaper: {
+		marginTop: 2
+	},
+	pointerTriangle: {
+		position: 'absolute',
+		top: -5,
+		right: 28,
+		width: 0,
+		height: 0,
+		borderLeft: '5px solid transparent',
+		borderRight: '5px solid transparent',
+		borderBottom: '5px solid white',
 	}
 })
 

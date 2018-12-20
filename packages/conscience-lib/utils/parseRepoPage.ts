@@ -20,6 +20,7 @@ export function stringToRepoPage(pathname: string){
     const base = pathname.split('/')[3]
     switch(base){
         case 'files':
+        case 'edit':
             return RepoPage.Files
         case 'history':
             return RepoPage.History

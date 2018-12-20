@@ -132,7 +132,7 @@ const styles = (theme: Theme) => createStyles({
 	},
 	readmeContainer: {
 		position: 'relative',
-		flexGrow: 3,
+		flexGrow: 1,
 		marginRight: 16,
 		maxHeight: 500,
 	},
@@ -166,6 +166,7 @@ const styles = (theme: Theme) => createStyles({
     },
 	sidebarComponents: {
 		flexGrow: 1,
+		minWidth: 350,
 		marginLeft: 16,
 	},
 	card: {

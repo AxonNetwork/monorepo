@@ -21,7 +21,9 @@ class RepoRoutes extends React.Component<Props>
 {
 	componentWillMount(){
 		const repoID = this.props.match.params.repoID
-		this.props.getRepo({ repoID })
+		if(this.props.repo === undefined) {
+			this.props.getRepo({ repoID })
+		}
 	}
 
     navigateRepoPage(repoPage: RepoPage){

@@ -6,6 +6,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import UserAvatar from 'conscience-components/UserAvatar'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { getRepoList } from 'redux/repo/repoActions'
@@ -18,7 +19,10 @@ import { autobind } from 'conscience-lib/utils'
 class RepoList extends React.Component<Props>
 {
 	render() {
-		const { user, orgs, classes } = this.props
+		const { repoList, repos, user, orgs, classes } = this.props
+
+		const loading = repoList.some(id=> (repos[id] || {}).files === undefined)
+
 		return (
 			<div className={classes.page}>
 				<div className={classes.profileSidebar}>
@@ -55,13 +59,20 @@ class RepoList extends React.Component<Props>
 					</div>
 				</div>
 				<div className={classes.repoCards}>
-					<RepositoryCards
-						repoList={this.props.repoList}
-						repos={this.props.repos}
-						discussions={this.props.discussions}
-						discussionsByRepo={this.props.discussionsByRepo}
-						selectRepoAndPage={this.selectRepoAndPage}
-					/>
+					{loading &&
+						<div className={classes.progressContainer}>
+							<CircularProgress color="secondary" />
+						</div>
+					}
+					{!loading &&
+						<RepositoryCards
+							repoList={this.props.repoList}
+							repos={this.props.repos}
+							discussions={this.props.discussions}
+							discussionsByRepo={this.props.discussionsByRepo}
+							selectRepoAndPage={this.selectRepoAndPage}
+						/>
+					}
 				</div>
 			</div>
 		)
@@ -105,13 +116,20 @@ interface Props extends RouteComponentProps<MatchParams>{
 }
 
 const styles = (theme: Theme) => createStyles({
+	progressContainer: {
+		width: '100%',
+		display: 'flex',
+		justifyContent: 'center',
+		marginTop: 256,
+	},
 	page: {
 		display: 'flex',
 		flexDirection: 'row',
 	},
 	profileSidebar: {
 		marginRight: 32,
-		width: 350,
+		maxWidth: 350,
+		minWidth: 350,
 		flexGrow: 1,
 	},
 	repoCards: {

@@ -8,6 +8,7 @@ import { IUserState } from './user/userReducer'
 import { IRepoState } from './repo/repoReducer'
 import { IDiscussionState } from './discussion/discussionReducer'
 import { IOrgState } from './org/orgReducer'
+import { IUIState } from './ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
@@ -43,5 +44,6 @@ export interface IGlobalState {
     repo: IRepoState
     discussion: IDiscussionState
     org: IOrgState
+    ui: IUIState
     router?: RouterState
 }
