@@ -35,7 +35,6 @@ export interface IRepoFile {
     diff: string
     mergeConflict: boolean
     mergeUnresolved: boolean
-    contents?: string
 }
 
 export interface ITimelineEvent {

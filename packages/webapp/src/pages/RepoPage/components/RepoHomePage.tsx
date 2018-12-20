@@ -135,6 +135,7 @@ const styles = (theme: Theme) => createStyles({
 		flexGrow: 1,
 		marginRight: 16,
 		maxHeight: 500,
+		minWidth: 0,
 	},
     editReadmeButton: {
         position: 'absolute',

@@ -5,7 +5,7 @@ import FileViewer from 'conscience-components/FileViewer'
 import { getFileContents } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
-import { autobind, isTextFile } from 'conscience-lib/utils'
+import { autobind, isTextFile, getConscienceURI } from 'conscience-lib/utils'
 
 
 @autobind
@@ -72,6 +72,7 @@ interface OwnProps {
 
 interface StateProps {
     repo: IRepo
+    fileContents: string | undefined
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     comments: {[commentID: string]: IComment}
@@ -84,7 +85,9 @@ interface DispatchProps {
 }
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const fileURI = getConscienceURI(ownProps.repoID, ownProps.filename)
 	return {
+        fileContents: state.repo.fileContents[fileURI],
         repo: state.repo.repos[ownProps.repoID],
         users: state.user.users,
         discussions: state.discussion.discussions,

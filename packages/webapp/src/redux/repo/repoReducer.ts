@@ -1,14 +1,17 @@
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepo } from 'conscience-lib/common'
+import { getConscienceURI } from 'conscience-lib/utils'
 import { uniq } from 'lodash'
 
 const initialState = {
 	repos: {},
+    fileContents: {},
 	repoList: [],
 }
 
 export interface IRepoState {
 	repos: {[repoID: string]: IRepo}
+    fileContents: {[fileURI: string]: string | undefined}
 	repoList: string[]
 }
 
@@ -34,19 +37,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
 		case RepoActionType.GET_FILE_CONTENTS_SUCCESS:
 		case RepoActionType.SAVE_FILE_CONTENTS_SUCCESS: {
-			const { repoID, filename, file } = action.payload
+			const { repoID, filename, contents } = action.payload
+            const fileURI = getConscienceURI(repoID, filename)
 			return {
 				...state,
-				repos: {
-					...state.repos,
-					[repoID]: {
-						...state.repos[repoID],
-						files: {
-							...state.repos[repoID].files,
-							[filename]: file
-						}
-					}
-				}
+                fileContents: {
+                    ...state.fileContents,
+                    [fileURI]: contents
+                }
 			}
 		}
 

@@ -214,10 +214,10 @@ const ServerRelay = {
         return response.data
     },
 
-    async getFile(repoID: string, filename: string) {
+    async getFileContents(repoID: string, filename: string) {
         interface IResponse {
             exists: boolean
-            file: IRepoFile
+            contents: string
         }
         const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename)
         return response.data
@@ -225,7 +225,7 @@ const ServerRelay = {
 
     async saveFileContents(repoID: string, filename: string, contents: string) {
         interface IResponse {
-            file: IRepoFile
+            contents: string
         }
         const response = await axios.post<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename, {
             contents,

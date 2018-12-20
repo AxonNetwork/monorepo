@@ -41,8 +41,8 @@ const getFileContentsLogic = makeLogic<IGetFileContentsAction, IGetFileContentsS
     type: RepoActionType.GET_FILE_CONTENTS,
     async process({ action }, dispatch) {
         const { repoID, filename, callback } = action.payload
-        const resp = await ServerRelay.getFile(repoID, filename)
-        const { exists, file } = resp
+        const resp = await ServerRelay.getFileContents(repoID, filename)
+        const { exists, contents } = resp
         if(!exists) {
             const err = new Error('file does not exist')
             if(callback){
@@ -53,7 +53,7 @@ const getFileContentsLogic = makeLogic<IGetFileContentsAction, IGetFileContentsS
         if(callback){
             callback()
         }
-        return { repoID, filename, file }
+        return { repoID, filename, contents }
     }
 })
 
@@ -61,15 +61,14 @@ const saveFileContentsLogic = makeLogic<ISaveFileContentsAction, ISaveFileConten
     type: RepoActionType.SAVE_FILE_CONTENTS,
     async process({ action }, dispatch) {
         const { repoID, filename, contents, callback } = action.payload
-        let file
         try{
-            file = await ServerRelay.saveFileContents(repoID, filename, contents)
+            await ServerRelay.saveFileContents(repoID, filename, contents)
         }catch(err){
             callback(err)
             return err
         }
         callback()
-        return { repoID, filename, file }
+        return { repoID, filename, contents }
     }
 })
 

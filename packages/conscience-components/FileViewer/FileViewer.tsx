@@ -21,7 +21,7 @@ class FileViewer extends React.Component<Props, State>
 
         const extension = path.extname(filename).toLowerCase().substring(1)
 
-        const fileContents = ((repo.files || {})[filename] || {}).contents || ''
+        const fileContents = this.props.fileContents || ''
 
         // @@TODO: filetype standardization
         switch (extension) {
@@ -95,6 +95,7 @@ class FileViewer extends React.Component<Props, State>
 
 interface Props {
     filename: string
+    fileContents: string | undefined
     repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
