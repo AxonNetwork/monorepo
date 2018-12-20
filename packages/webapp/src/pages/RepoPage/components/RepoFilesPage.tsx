@@ -80,7 +80,7 @@ class RepoFilesPage extends React.Component<Props>
 					files={files}
 					selectFile={this.selectFile}
 					selectedFolder={selected}
-					fileExtensionsHidden={false}
+					fileExtensionsHidden={this.props.fileExtensionsHidden}
 				/>
 			</div>
 		)
@@ -94,6 +94,7 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams>{
 	repo: IRepo
+	fileExtensionsHidden: boolean
 	classes: any
 }
 
@@ -134,7 +135,8 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const repoID = props.match.params.repoID
 	const repo = state.repo.repos[repoID]
     return {
-    	repo
+    	repo,
+    	fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
 }
 

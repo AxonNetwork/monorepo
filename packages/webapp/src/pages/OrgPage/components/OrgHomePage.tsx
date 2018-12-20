@@ -5,6 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
 import LargeAddButton from 'conscience-components/LargeAddButton'
@@ -51,6 +52,9 @@ class OrgHomePage extends React.Component<Props>
 							</CardContent>
 						</Card>
 					}
+					<Typography variant="h6" className={classes.repoHeader}>
+						Repositories
+					</Typography>
 					<RepositoryCards
 						repoList={this.props.org.repos}
 						repos={this.props.repos}
@@ -158,6 +162,9 @@ const styles = (theme: Theme) => createStyles({
 		position: 'absolute',
 		top: 0,
 		right: 0,
+	},
+	repoHeader: {
+		marginBottom: 16
 	},
 	sidebar: {
 		minWidth: 350,

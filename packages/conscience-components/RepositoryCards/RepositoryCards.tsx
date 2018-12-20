@@ -36,17 +36,14 @@ class Repositories extends React.Component<Props, State>
         return(
             <React.Fragment>
                 <div className={classes.root}>
-                    <div className={classes.header}>
-                        <Typography variant="h6">Repositories</Typography>
-                    </div>
-                    <div className={classes.repoCards}>
-                        {repoList.map(id =>
-                            <RepositoryCard
-                                repo={repos[id]}
-                                numDiscussions={(discussionsByRepo[id] || []).length}
-                                selectRepoAndPage={this.props.selectRepoAndPage}
-                            />,
-                        )}
+                    {repoList.map(id =>
+                        <RepositoryCard
+                            repo={repos[id]}
+                            numDiscussions={(discussionsByRepo[id] || []).length}
+                            selectRepoAndPage={this.props.selectRepoAndPage}
+                        />,
+                    )}
+                    {this.props.addRepo !== undefined &&
                         <Card className={classes.newRepoCard}>
                             <Button
                                 color="secondary"
@@ -56,37 +53,39 @@ class Repositories extends React.Component<Props, State>
                                 <ControlPointIcon />
                             </Button>
                         </Card>
-                    </div>
+                    }
                 </div>
-                <Dialog
-                    open={this.state.dialogOpen}
-                    onClose={this.onDialogClose}
-                >
-                    <DialogTitle>Add Repo To Organization</DialogTitle>
-                    <DialogContent>
-                        <List>
-                            {reposToAdd.map((repoID: string) => {
-                                return(
-                                    <ListItem
-                                        button
-                                        onClick={() => this.onClickAddRepo(repoID)}
-                                    >
-                                        <ListItemText primary={repoID} />
-                                    </ListItem>
-                                )
-                            })}
-                            <ListItem
-                                button
-                                onClick={this.onClickNewRepo}
-                            >
-                                <ListItemText primary="New Repository" />
-                                <ListItemIcon className={classes.listIcon}>
-                                    <ControlPointIcon fontSize="small"/>
-                                </ListItemIcon>
-                            </ListItem>
-                        </List>
-                    </DialogContent>
-                </Dialog>
+                {this.props.addRepo !== undefined &&
+                    <Dialog
+                        open={this.state.dialogOpen}
+                        onClose={this.onDialogClose}
+                    >
+                        <DialogTitle>Add Repo To Organization</DialogTitle>
+                        <DialogContent>
+                            <List>
+                                {reposToAdd.map((repoID: string) => {
+                                    return(
+                                        <ListItem
+                                            button
+                                            onClick={() => this.onClickAddRepo(repoID)}
+                                        >
+                                            <ListItemText primary={repoID} />
+                                        </ListItem>
+                                    )
+                                })}
+                                <ListItem
+                                    button
+                                    onClick={this.onClickNewRepo}
+                                >
+                                    <ListItemText primary="New Repository" />
+                                    <ListItemIcon className={classes.listIcon}>
+                                        <ControlPointIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                </ListItem>
+                            </List>
+                        </DialogContent>
+                    </Dialog>
+                }
             </React.Fragment>
         )
     }
@@ -126,12 +125,7 @@ interface State {
 }
 
 const styles = (theme: Theme) => createStyles({
-    root: {}, // pass through styles
-    header: {
-        display: 'flex',
-        marginBottom: theme.spacing.unit * 2,
-    },
-    repoCards: {
+    root: {
         display: 'flex',
         flexWrap: 'wrap',
     },

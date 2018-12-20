@@ -41,9 +41,9 @@ class RepoDiscussionPage extends React.Component<Props>
 
 	render() {
 		const discussionID = this.props.match.params.discussionID
-		
+		const { classes } = this.props
 		return (
-			<div>
+			<div className={classes.page}>
 				<DiscussionsPane
 					repo={this.props.repo}
 					user={this.props.user}
@@ -91,7 +91,11 @@ interface Props extends RouteComponentProps<MatchParams>{
 	classes: any
 }
 
-const styles = (theme: Theme) => createStyles({})
+const styles = (theme: Theme) => createStyles({
+	page: {
+		marginTop: 16
+	}
+})
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const repoID = props.match.params.repoID

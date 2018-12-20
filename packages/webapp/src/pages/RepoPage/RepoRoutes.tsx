@@ -52,7 +52,7 @@ class RepoRoutes extends React.Component<Props>
 				<RepoInfo
 					repo={repo}
 					repoPage={repoPage}
-					menuLabelsHidden={false}
+					menuLabelsHidden={this.props.menuLabelsHidden}
 					navigateRepoPage={this.navigateRepoPage}
 				/>
 				<div>
@@ -79,6 +79,7 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams>{
 	repo: IRepo
+	menuLabelsHidden: boolean
 	getRepo: typeof getRepo
 	classes: any
 }
@@ -99,7 +100,8 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const repoID = props.match.params.repoID
 	const repo = state.repo.repos[repoID]
     return {
-    	repo
+    	repo,
+    	menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
     }
 }
 

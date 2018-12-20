@@ -85,7 +85,8 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const orgID = props.match.params.orgID
     return {
-    	org: state.org.orgs[orgID]
+    	org: state.org.orgs[orgID],
+    	menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
     }
 }
 

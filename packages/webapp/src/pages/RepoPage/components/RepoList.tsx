@@ -65,13 +65,19 @@ class RepoList extends React.Component<Props>
 						</div>
 					}
 					{!loading &&
-						<RepositoryCards
-							repoList={this.props.repoList}
-							repos={this.props.repos}
-							discussions={this.props.discussions}
-							discussionsByRepo={this.props.discussionsByRepo}
-							selectRepoAndPage={this.selectRepoAndPage}
-						/>
+						<React.Fragment>
+							<Typography variant="h6">
+								Repositories
+							</Typography>
+							<Divider className={classes.repoDivider} />
+							<RepositoryCards
+								repoList={this.props.repoList}
+								repos={this.props.repos}
+								discussions={this.props.discussions}
+								discussionsByRepo={this.props.discussionsByRepo}
+								selectRepoAndPage={this.selectRepoAndPage}
+							/>
+						</React.Fragment>
 					}
 				</div>
 			</div>
@@ -149,10 +155,10 @@ const styles = (theme: Theme) => createStyles({
 	orgIcon: {
 		padding: 4,
 	},
-	list: {
-		flexGrow: 1,
-		border: '1px solid ' + theme.palette.grey[600],
-	},
+	repoDivider: {
+		marginTop: 8,
+		marginBottom: 16,
+	}
 })
 
 const mapStateToProps = (state: IGlobalState) => {
