@@ -1,4 +1,13 @@
 {
+	"name": "conscience-desktop-app",
+	"version": "0.0.5",
+	"author": "Conscience <hi@conscience.network>",
+	"homepage": ".",
+	"main": "desktop/electron/electron.js",
+	"license": "Copyright Conscience, Inc., 2018",
 	"private": true,
-	"workspaces": ["packages/*"]
+	"workspaces": ["packages/*"],
+	"scripts": {
+	    "rebuild": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --build-from-source"
+	}
 }
