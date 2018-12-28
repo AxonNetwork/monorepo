@@ -22,13 +22,13 @@ export interface IUIState {
         [path: string]: {
             fetched:number
             toFetch: number
-        }
+        } | undefined
     }
     cloneRepoProgress: {
         [repoID: string]: {
             fetched:number
             toFetch: number
-        }
+        } | undefined
     }
 }
 

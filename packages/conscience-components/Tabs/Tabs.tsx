@@ -23,6 +23,7 @@ function Tabs<T extends number> (props: {
                     <Tab
                         isActive={props.activePage === option[0]}
                         onTabSelect={() => props.onTabSelect(option[0])}
+                        key={option.toString()}
                     >
                         {icon}
                         {props.menuLabelsHidden ? '' : option[1]}

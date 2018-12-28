@@ -48,7 +48,11 @@ class RepoList extends React.Component<Props>
 								return null
 							}
 							return(
-								<IconButton onClick={()=>this.navigateOrgPage(orgID)} classes={{root: classes.orgIcon}}>
+								<IconButton
+									onClick={()=>this.navigateOrgPage(orgID)}
+									classes={{root: classes.orgIcon}}
+									key={orgID}
+								>
 									<UserAvatar
 										username={orgs[orgID].name}
 										userPicture={orgs[orgID].picture}
@@ -65,7 +69,7 @@ class RepoList extends React.Component<Props>
 						</div>
 					}
 					{!loading &&
-						<React.Fragment>
+						<div>
 							<Typography variant="h6">
 								Repositories
 							</Typography>
@@ -77,7 +81,7 @@ class RepoList extends React.Component<Props>
 								discussionsByRepo={this.props.discussionsByRepo}
 								selectRepoAndPage={this.selectRepoAndPage}
 							/>
-						</React.Fragment>
+						</div>
 					}
 				</div>
 			</div>

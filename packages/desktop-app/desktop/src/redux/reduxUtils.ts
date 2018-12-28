@@ -43,7 +43,7 @@ export function makeLogic
 }
 
 interface ContinuousProcessFunc<HandledActionType extends ActionType> {
-    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): void
+    (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<void>
 }
 
 export function makeContinuousLogic

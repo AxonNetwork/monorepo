@@ -21,8 +21,9 @@
     "parse-diff": "^0.5.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-markdown": "^3.6.0",
     "react-redux": "^5.1.1",
-    "react-syntax-highlighter": "^10.1.2",
+    "react-syntax-highlighter": "^8.0.1",
     "tinycolor2": "^1.4.1",
     "tslint": "^5.11.0",
     "typescript": "^3.2.1"

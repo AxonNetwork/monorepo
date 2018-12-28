@@ -32,7 +32,7 @@ class RepoHomePage extends React.Component<Props>
 			<main className={classes.main}>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readmeExists })}>
 					{readmeExists &&
-                        <React.Fragment>
+                        <div>
 							<FileViewer repoID={repo.repoID} filename={'README.md'}/>
                             <IconButton
                                 onClick={this.onClickEditReadme}
@@ -40,7 +40,7 @@ class RepoHomePage extends React.Component<Props>
                             >
                                 <EditIcon />
                             </IconButton>
-                        </React.Fragment>
+                        </div>
 					}
 					{!readmeExists &&
 	                    <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>

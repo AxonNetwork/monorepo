@@ -15,8 +15,8 @@
     "lodash": "^4.17.11",
     "querystring": "^0.2.0",
     "react": "^16.6.3",
-    "react-hot-loader": "^4.3.12",
-    "react-syntax-highlighter": "^10.1.2",
+    "react-hot-loader": "^4.3.8",
+    "react-syntax-highlighter": "^8.0.1",
     "typescript": "^3.2.1"
   }
 }

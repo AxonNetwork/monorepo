@@ -60,12 +60,12 @@ class OrganizationPage extends React.Component<Props>
                         </Typography>
                     }
                     {org.picture.length > 0 &&
-                        <React.Fragment>
+                        <div>
                             <Typography>
                                 Current Image:
                             </Typography>
                             <img src={nonCacheImg(org.picture)} className={classes.orgPicture}/>
-                        </React.Fragment>
+                        </div>
                     }
                     <input type="file" ref={x => this._inputOrgPicture = x} /><br/>
                     <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>

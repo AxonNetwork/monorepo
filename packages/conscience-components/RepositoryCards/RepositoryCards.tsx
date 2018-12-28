@@ -1,6 +1,5 @@
 import React from 'react'
 import { Theme, createStyles, withStyles } from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -41,6 +40,7 @@ class Repositories extends React.Component<Props, State>
                             repo={repos[id]}
                             numDiscussions={(discussionsByRepo[id] || []).length}
                             selectRepoAndPage={this.props.selectRepoAndPage}
+                            key={id}
                         />,
                     )}
                     {this.props.addRepo !== undefined &&

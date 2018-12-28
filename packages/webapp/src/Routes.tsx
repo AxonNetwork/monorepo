@@ -4,7 +4,6 @@ import { Route, Switch, Redirect, withRouter } from 'react-router'
 import { History } from 'history'
 import Header from 'components/Header'
 import LoginPage from 'pages/LoginPage'
-import HomePage from 'pages/HomePage'
 import RepoPage from 'pages/RepoPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
@@ -24,12 +23,13 @@ function Routes(
 				<PrivateRoute path='/repo' component={RepoPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/settings' component={SettingsPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/org' component={OrgPage} loggedIn={loggedIn} />
-				<Route render={() => (
-					<React.Fragment>
-						{loggedIn && <Redirect to='/repo' />}a
-						{!loggedIn && <HomePage />}
-					</React.Fragment>
-					)}
+				<Route render={() => {
+					if(loggedIn){
+						return <Redirect to='/repo' />
+					}else {
+						return <Redirect to='/login' />
+					}
+				}}
 				/>
 		    </Switch>
 		</div>

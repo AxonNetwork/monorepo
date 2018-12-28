@@ -30,11 +30,11 @@ class SharedRepos extends React.Component<Props>
                 <List>
                     {
                         values(sharedRepos).map(repo => {
-                            const repoProgress = cloneRepoProgress[repo.repoID]
+                            const repoProgress = cloneRepoProgress[repo.repoID] || { fetched: 0, toFetch: 1}
                             const isDownloading = repoProgress !== undefined
                             let percentDownloaded
                             if(isDownloading){
-                                percentDownloaded = Math.floor(100*(repoProgress.fetched||0)/(repoProgress.toFetch||1))
+                                percentDownloaded = Math.floor(100*(repoProgress.fetched)/(repoProgress.toFetch))
                             }
                             return(
                                 <React.Fragment>
@@ -67,10 +67,12 @@ class SharedRepos extends React.Component<Props>
 
 interface Props {
     sharedRepos: {[repoID: string]: ISharedRepoInfo}
-    cloneRepoProgress: {[repoID: string]:{
-        fetched: number,
-        toFetch: number
-    }}
+    cloneRepoProgress: {
+        [repoID: string]:{
+            fetched: number,
+            toFetch: number
+        } | undefined
+    }
     cloneRepo: typeof cloneRepo
     unshareRepoFromSelf: typeof unshareRepoFromSelf
 
