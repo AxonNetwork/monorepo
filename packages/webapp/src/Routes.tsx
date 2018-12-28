@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Route, Switch, Redirect, withRouter } from 'react-router'
 import { History } from 'history'
 import Header from 'components/Header'
+import Footer from 'components/Footer'
 import LoginPage from 'pages/LoginPage'
 import RepoPage from 'pages/RepoPage'
 import SettingsPage from 'pages/SettingsPage'
@@ -32,6 +33,7 @@ function Routes(
 				}}
 				/>
 		    </Switch>
+		    <Footer />
 		</div>
 	)
 }

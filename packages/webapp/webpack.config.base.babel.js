@@ -148,7 +148,7 @@ export default {
     new ProgressBarWebpackPlugin(),
     // Generate html file to dist folder
     new HtmlWebpackPlugin({
-      title: 'Boilerplate',
+      title: 'Conscience',
       template: path.resolve(__dirname, 'public/index.ejs'),
     }),
     // Add dll reference files to html
