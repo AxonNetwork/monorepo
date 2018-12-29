@@ -46,9 +46,11 @@ class FileList extends React.Component<Props, State>
                         classes={{ root: classes.breadcrumb }}
                     />
 
-                    <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
-                        <ControlPointIcon /> New file
-                    </Button>
+                    {this.props.canEditFiles &&
+                        <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
+                            <ControlPointIcon /> New file
+                        </Button>
+                    }
                 </div>
 
                 {names.length === 0 &&
@@ -73,6 +75,7 @@ class FileList extends React.Component<Props, State>
                                                 selectFile={this.props.selectFile}
                                                 fileExtensionsHidden={this.props.fileExtensionsHidden}
                                                 openFileIcon={this.props.openFileIcon}
+                                                canEditFiles={this.props.canEditFiles}
                                                 classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
                                             />
                                         )
@@ -137,6 +140,7 @@ interface Props {
     selectedFolder: string | undefined
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
+    canEditFiles?: boolean
 
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
 

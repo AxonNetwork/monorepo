@@ -6,8 +6,6 @@ import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
@@ -32,20 +30,12 @@ class RepoHomePage extends React.Component<Props>
 			<main className={classes.main}>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readmeExists })}>
 					{readmeExists &&
-                        <div>
 							<FileViewer repoID={repo.repoID} filename={'README.md'}/>
-                            <IconButton
-                                onClick={this.onClickEditReadme}
-                                className={classes.editReadmeButton}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        </div>
 					}
 					{!readmeExists &&
-	                    <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
+	                    <div className={classes.readmeContainerNoReadmeContents}>
 	                        <Typography className={classes.noReadmeText}>
-	                            Click to add a welcome message and instructions to this repository.
+	                            Add a welcome message and instructions to this repository using the Conscience Desktop App.
 	                        </Typography>
 
 	                        <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
@@ -137,18 +127,12 @@ const styles = (theme: Theme) => createStyles({
 		maxHeight: 500,
 		minWidth: 0,
 	},
-    editReadmeButton: {
-        position: 'absolute',
-        right: 0,
-        top: 0,
-    },
     readmeContainerNoReadme: {
         backgroundColor: '#f1f1f1',
         borderRadius: 10,
         border: '3px solid #c5c5c5',
         padding: 30,
         textAlign: 'center',
-        cursor: 'pointer',
         flexBasis: 320,
     },
     readmeContainerNoReadmeContents: {

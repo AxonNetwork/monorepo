@@ -44,6 +44,9 @@ class File extends React.Component<Props>
 
     canQuickEdit() {
         // @@TODO: filetype standardization
+        if(!this.props.canEditFiles){
+            return false
+        }
         const extensions = [ '.md', '.markdown', '.mdown', '.txt' ]
         return this.props.file.type !== 'folder' && extensions.includes(path.extname(this.props.file.name).toLowerCase())
     }
@@ -76,18 +79,20 @@ class File extends React.Component<Props>
                     </TableCell>
                     <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
                     <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
-                    <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
-                        {this.canQuickEdit() &&
-                            <Tooltip title="Quick edit">
-                                <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
-                            </Tooltip>
-                        }
-                        {this.props.openFileIcon &&
-                            <Tooltip title="Open this file with another app">
-                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
-                            </Tooltip>
-                        }
-                    </TableCell>
+                    {(this.canQuickEdit() || this.props.openFileIcon) &&
+                        <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
+                            {this.canQuickEdit() &&
+                                <Tooltip title="Quick edit">
+                                    <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
+                                </Tooltip>
+                            }
+                            {this.props.openFileIcon &&
+                                <Tooltip title="Open this file with another app">
+                                    <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
+                                </Tooltip>
+                            }
+                        </TableCell>
+                    }
                 </TableRow>
         )
         if(file.mergeConflict){
@@ -109,6 +114,7 @@ interface Props {
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
+    canEditFiles?: boolean
     classes: any
 }
 
