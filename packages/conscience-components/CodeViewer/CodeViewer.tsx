@@ -1,7 +1,6 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-// import SyntaxHighlighter from 'react-syntax-highlighter/prism'
-import SyntaxHighlighter from 'react-syntax-highlighter'
+import SyntaxHighlighter from 'react-syntax-highlighter/prism'
 import { autobind, getLanguage, schemes } from 'conscience-lib/utils'
 
 const syntaxStyle = {

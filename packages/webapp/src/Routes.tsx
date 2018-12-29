@@ -8,6 +8,7 @@ import LoginPage from 'pages/LoginPage'
 import RepoPage from 'pages/RepoPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
+import ShowcasePage from 'pages/ShowcasePage'
 import { IGlobalState } from 'redux/store'
 
 function Routes(
@@ -24,6 +25,7 @@ function Routes(
 				<PrivateRoute path='/repo' component={RepoPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/settings' component={SettingsPage} loggedIn={loggedIn} />
 				<PrivateRoute path='/org' component={OrgPage} loggedIn={loggedIn} />
+				<PrivateRoute path='/showcase/:orgID' component={ShowcasePage} loggedIn={loggedIn} />
 				<Route render={() => {
 					if(loggedIn){
 						return <Redirect to='/repo' />

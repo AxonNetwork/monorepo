@@ -32,23 +32,26 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
             merged[file.name] = file
         } else {
             const folderName = parts[0]
-            merged[folderName] = {
-                name: selectedFolder === undefined ? folderName : path.join(selectedFolder, folderName),
-                type: 'folder',
-                status: '',
-                size: 0,
-                modified: new Date(0),
-                diff: '',
-                mergeConflict: false,
-                ...(merged[folderName] || {}),
+            if(!merged[folderName]) {
+                merged[folderName] = {
+                    name: selectedFolder === undefined ? folderName : path.join(selectedFolder, folderName),
+                    type: 'folder',
+                    status: '',
+                    size: 0,
+                    modified: new Date(0),
+                    diff: '',
+                    mergeConflict: false,
+                    mergeUnresolved: false,
+                }
             }
 
             if (file.status === 'M' || file.status === '?') {
                 merged[folderName].status = 'M'
             }
             merged[folderName].size += file.size
-            if (merged[folderName].modified < file.modified) {
-                merged[folderName].modified = file.modified
+            const fileMTime = new Date(file.modified)
+            if (fileMTime > merged[folderName].modified) {
+                merged[folderName].modified = fileMTime
             }
             if (file.mergeConflict){
                 merged[folderName].mergeConflict = true
