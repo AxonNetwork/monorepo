@@ -2,8 +2,6 @@ import {
 	RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
     IGetRepoAction, IGetRepoSuccessAction,
-    IGetFileContentsAction, IGetFileContentsSuccessAction,
-    ISaveFileContentsAction, ISaveFileContentsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
@@ -34,41 +32,6 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
         dispatch(getDiscussions({ repoID }))
         dispatch(fetchUserData({ userIDs: repo.sharedUsers || [] }))
         return { repo }
-    }
-})
-
-const getFileContentsLogic = makeLogic<IGetFileContentsAction, IGetFileContentsSuccessAction>({
-    type: RepoActionType.GET_FILE_CONTENTS,
-    async process({ action }, dispatch) {
-        const { repoID, filename, callback } = action.payload
-        const resp = await ServerRelay.getFileContents(repoID, filename)
-        const { exists, contents } = resp
-        if(!exists) {
-            const err = new Error('file does not exist')
-            if(callback){
-                callback(err)
-            }
-            return err
-        }
-        if(callback){
-            callback()
-        }
-        return { repoID, filename, contents }
-    }
-})
-
-const saveFileContentsLogic = makeLogic<ISaveFileContentsAction, ISaveFileContentsSuccessAction>({
-    type: RepoActionType.SAVE_FILE_CONTENTS,
-    async process({ action }, dispatch) {
-        const { repoID, filename, contents, callback } = action.payload
-        try{
-            await ServerRelay.saveFileContents(repoID, filename, contents)
-        }catch(err){
-            callback(err)
-            return err
-        }
-        callback()
-        return { repoID, filename, contents }
     }
 })
 
@@ -104,8 +67,6 @@ const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveColl
 export default [
 	getRepoListLogic,
 	getRepoLogic,
-    getFileContentsLogic,
-    saveFileContentsLogic,
     getDiffLogic,
     addCollaboratorLogic,
     removeCollaboratorLogic,

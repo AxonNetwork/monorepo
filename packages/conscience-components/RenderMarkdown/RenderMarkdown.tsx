@@ -9,7 +9,6 @@ import CodeViewer from '../CodeViewer'
 import shortcodes from './remark-references'
 import { IRepo, IComment, IUser, IDiscussion, FileMode }  from 'conscience-lib/common'
 import { autobind }  from 'conscience-lib/utils'
-import path from 'path'
 
 
 @autobind
@@ -46,7 +45,7 @@ class RenderMarkdown extends React.Component<Props>
 
         switch (identifier) {
         case 'image':
-            return <img src={'file://' + path.join(repo.path||'', contents)} className={this.props.classes.embeddedImage} />
+            return <img src={this.props.imgPrefix + '/' + contents} className={this.props.classes.embeddedImage} />
         case 'file':
             return (
                 <FileLink
@@ -94,6 +93,7 @@ interface Props {
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
+    imgPrefix: string
     codeColorScheme?: string | undefined
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void

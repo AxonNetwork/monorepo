@@ -204,23 +204,28 @@ const ServerRelay = {
         let response
         try{
             response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
-        }catch(err){
+        }catch(err) {
             // repo does not exist
             if (err.response.status === 404) {
                 return new Error(err.response.data.error)
             }
-            throw err.respponse.data.error
+            throw err.response.data.error
         }
         return response.data
     },
 
     async getFileContents(repoID: string, filename: string) {
-        interface IResponse {
-            exists: boolean
-            contents: string
+        let file
+        try{
+            file = await axios.get<any>(API_URL + '/repo/' + repoID + '/file/' + filename)
+        }catch(err) {
+            // file does not exist
+            if(err.response.status === 404) {
+                return new Error(err.response.data.error)
+            }
+            throw err.response.data.error
         }
-        const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/file/' + filename)
-        return response.data
+        return file
     },
 
     async saveFileContents(repoID: string, filename: string, contents: string) {

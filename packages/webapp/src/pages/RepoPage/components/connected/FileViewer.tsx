@@ -2,10 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
 import FileViewer from 'conscience-components/FileViewer'
-import { getFileContents } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
-import { autobind, isTextFile, getConscienceURI } from 'conscience-lib/utils'
+import { autobind, fileType } from 'conscience-lib/utils'
+import axios from 'axios'
 
 
 @autobind
@@ -13,33 +13,34 @@ class ConnectedFileViewer extends React.Component<Props>
 {
 	render() {
 		const { repoID, ...other} = this.props
+
+        const imgPrefix = this.imgPrefix()
 		return(
 			<FileViewer
                 {...other}
+                imgPrefix={imgPrefix}
+                getFileContents={this.getFileContents}
 			    selectFile={this.selectFile}
 			    selectDiscussion={this.selectDiscussion}
 			/>
 		)
 	}
 
-    componentDidMount() {
-        if (isTextFile(this.props.filename)) {
-            this.getFileContents()
-        }
+    imgPrefix() {
+        const API_URL = process.env.API_URL
+        const repoID = this.props.repoID
+        const prefix = `${API_URL}/repo/${repoID}/file`
+        return prefix
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (
-			isTextFile(this.props.filename) &&
-            (prevProps.filename !== this.props.filename || prevProps.repoID !== this.props.repoID)
-        ) {
-            this.getFileContents()
+    async getFileContents(filename: string) {
+        const imgPrefix = this.imgPrefix()
+        const fileUrl = `${imgPrefix}/${filename}`
+        if(fileType(filename) === 'image'){
+            return fileUrl
         }
-    }
-
-    getFileContents() {
-    	const { repoID, filename } = this.props
-    	this.props.getFileContents({ repoID, filename })
+        const resp = await axios.get<string>(fileUrl)
+        return resp.data
     }
 
 	selectFile(payload: {filename: string | undefined, mode: FileMode}) {
@@ -63,7 +64,7 @@ class ConnectedFileViewer extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & RouteComponentProps<any>
+type Props = OwnProps & StateProps & RouteComponentProps<any>
 
 interface OwnProps {
     filename: string
@@ -72,7 +73,6 @@ interface OwnProps {
 
 interface StateProps {
     repo: IRepo
-    fileContents: string | undefined
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
     comments: {[commentID: string]: IComment}
@@ -80,14 +80,8 @@ interface StateProps {
     backgroundColor?: string
 }
 
-interface DispatchProps {
-	getFileContents: typeof getFileContents
-}
-
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const fileURI = getConscienceURI(ownProps.repoID, ownProps.filename)
 	return {
-        fileContents: state.repo.fileContents[fileURI],
         repo: state.repo.repos[ownProps.repoID],
         users: state.user.users,
         discussions: state.discussion.discussions,
@@ -96,9 +90,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-const mapDispatchToProps = {
-	getFileContents
-}
+const mapDispatchToProps = {}
 
 export default connect(
     mapStateToProps,

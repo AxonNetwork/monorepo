@@ -14,14 +14,13 @@ import path from 'path'
 class FileViewer extends React.Component<Props, State>
 {
     render() {
+        const { fileContents } = this.state
         const { filename, repo, classes } = this.props
         if (!filename || !repo) {
             return null
         }
 
         const extension = path.extname(filename).toLowerCase().substring(1)
-
-        const fileContents = this.props.fileContents || ''
 
         // @@TODO: filetype standardization
         switch (extension) {
@@ -37,6 +36,7 @@ class FileViewer extends React.Component<Props, State>
                             comments={this.props.comments}
                             users={this.props.users}
                             discussions={this.props.discussions}
+                            imgPrefix={this.props.imgPrefix}
                             codeColorScheme={this.props.codeColorScheme}
                             selectFile={this.props.selectFile}
                             selectDiscussion={this.props.selectDiscussion}
@@ -50,7 +50,7 @@ class FileViewer extends React.Component<Props, State>
         case 'png':
         case 'tif':
         case 'tiff':
-            return <img src={'file://' + path.join(repo.path, filename)} className={classes.imageEmbed} />
+            return <img src={fileContents} className={classes.imageEmbed} />
         case 'go':
         case 'js':
         case 'jsx':
@@ -91,17 +91,39 @@ class FileViewer extends React.Component<Props, State>
             return <div>We don't have a viewer for this kind of file yet.</div>
         }
     }
+
+    componentDidMount() {
+        this.updateFileContents()
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (
+            (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo)
+        ) {
+            this.updateFileContents()
+        }
+    }
+
+    async updateFileContents() {
+        try{
+            const fileContents = await this.props.getFileContents(this.props.filename)
+            this.setState({ fileContents })
+        }catch(error){
+            this.setState({ fileContents: '', error })
+        }
+    }
 }
 
 interface Props {
     filename: string
-    fileContents: string | undefined
     repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
+    imgPrefix: string
     codeColorScheme?: string | undefined
     backgroundColor?: string
+    getFileContents: (filename: string) => Promise<string>
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
     classes: any
