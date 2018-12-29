@@ -40,8 +40,11 @@ class RepoDiscussionPage extends React.Component<Props>
     }
 
 	render() {
-		const discussionID = this.props.match.params.discussionID
+		const { repoID, discussionID } = this.props.match.params
 		const { classes } = this.props
+		const API_URL = process.env.API_URL
+        const imgPrefix = `${API_URL}/repo/${repoID}/file`
+
 		return (
 			<div className={classes.page}>
 				<DiscussionsPane
@@ -51,6 +54,7 @@ class RepoDiscussionPage extends React.Component<Props>
 					users={this.props.users}
 					comments={this.props.comments}
 					selectedID={discussionID}
+					imgPrefix={imgPrefix}
 					newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp}
 					newestCommentTimestampPerDiscussion={this.props.newestCommentTimestampPerDiscussion}
 					discussionIDsSortedByNewestComment={this.props.discussionIDsSortedByNewestComment}

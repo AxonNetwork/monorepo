@@ -101,6 +101,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             discussions={discussions}
                             users={users}
                             comments={comments}
+                            imgPrefix={this.props.imgPrefix}
                             newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp[selectedID] || 0}
                             unselect={() => this.props.selectDiscussion({ discussionID: undefined })}
                             selectFile={this.props.selectFile}
@@ -122,6 +123,7 @@ interface Props {
     users: {[email: string]: IUser}
     comments: {[commentID: string]: IComment}
     selectedID: string | undefined
+    imgPrefix: string
     newestViewedCommentTimestamp: {[discussionID: string]: number}
     newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
     discussionIDsSortedByNewestComment: string[]

@@ -118,6 +118,7 @@ class Thread extends React.Component<Props, State>
                                         comments={comments}
                                         users={users}
                                         discussions={discussions}
+                                        imgPrefix={this.props.imgPrefix}
                                         selectFile={this.props.selectFile}
                                         selectDiscussion={this.props.selectDiscussion}
                                     />
@@ -177,6 +178,7 @@ interface Props {
     discussions: {[discussionID: string]: IDiscussion}
     users: {[userID: string]: IUser}
     comments: {[commentID: string]: IComment}
+    imgPrefix: string
     newestViewedCommentTimestamp: number
 
     unselect: () => void
