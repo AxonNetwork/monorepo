@@ -13980,6 +13980,11 @@ react-markdown@^3.6.0:
     unist-util-visit "^1.3.0"
     xtend "^4.0.1"
 
+react-parallax@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-parallax/-/react-parallax-2.0.1.tgz#22448e166eeb3206ee1a2bd90027d65b56a2a085"
+  integrity sha512-apzMLQzr2HhOn4TmekFoQjlDyK/MzBv6Vk2CpykUMC0u0lFKIzkuB8jMaDX5Pr088cWoD1SU7OIVDsMG1GhSDw==
+
 react-quill@^1.3.1:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/react-quill/-/react-quill-1.3.3.tgz#95b8e088ad4e4acc6c79c2f85bdc0460eebe08eb"

@@ -21,7 +21,11 @@
     "noUnusedParameters": false,
     "sourceMap": true,
     "strict": true,
-    "removeComments": true
+    "removeComments": true,
+    "typeRoots": [
+      "../../node_modules/@types",
+      "./src/@types"
+    ]
   },
   "exclude": [
     "node_modules",

@@ -11,6 +11,7 @@ import PeopleIcon from '@material-ui/icons/People'
 import DescriptionIcon from '@material-ui/icons/Description'
 import AssessmentIcon from '@material-ui/icons/Assessment'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import { Parallax } from 'react-parallax'
 import Container from './components/Container'
 import ResearchCard from './components/ResearchCard'
 import SeeMoreCard from './components/SeeMoreCard'
@@ -36,17 +37,31 @@ class ShowcasePage extends React.Component<Props>
 				</div>
 			)
 		}
-		console.log(researchdata)
 		return (
 			<div>
-				<div className={classes.headerImg}>
-					<img src={image} />
-					<div className={classes.titleContainer}>
-						<Typography variant='h2'>
-							{org.name}
-						</Typography>
-					</div>
-				</div>
+				<Parallax
+					bgImage={image}
+					strength={500}
+					renderLayer={(percentage: any) => (
+						<div className={classes.titleContainer}>
+							<div
+								className={classes.title}
+								style={{
+									bottom: (1-percentage) * 700,
+								}}
+							>
+								<Typography variant='h2'
+									style={{
+										backgroundColor: `rgba(255, 255, 255, ${1.5 - percentage})`,
+										boxShadow: `0 0 5px 5px rgba(255, 255, 255, ${1.5 - percentage})`,
+									}}
+								>
+									{org.name}
+								</Typography>
+							</div>
+						</div>
+					)}
+				/>
 				<Container>
 					<div className={classes.statsContainer}>
 						<Typography className={classes.stats}>
@@ -163,17 +178,18 @@ const styles = (theme: Theme) => createStyles({
 		},
 	},
 	titleContainer: {
+		position: 'relative',
+		height: 500,
+	},
+	title: {
 		position: 'absolute',
 		left: 0,
 		right: 0,
-		top: 100,
 		display: 'flex',
 		justifyContent: 'center',
 		'& h2': {
 			padding: 8,
 			borderRadius: 5,
-			background: theme.palette.background.default,
-			boxShadow: '0 0 5px 5px ' + theme.palette.background.default,
 		}
 	},
 	statsContainer: {
