@@ -206,7 +206,7 @@ const ServerRelay = {
             response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
         }catch(err) {
             // repo does not exist
-            if (err.response.status === 404) {
+            if ((err.response || {}).status === 404) {
                 return new Error(err.response.data.error)
             }
             throw err.response.data.error

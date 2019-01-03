@@ -7,4 +7,3 @@ export function getConscienceURI(repoID: string, filename: string){
 		return 'conscience://' + repoID
 	}
 }
-

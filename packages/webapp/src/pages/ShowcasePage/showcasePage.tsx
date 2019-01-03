@@ -84,6 +84,8 @@ class ShowcasePage extends React.Component<Props>
 						<Grid item xs={12} sm={8}>
 							<FeaturedRepos
 								featuredRepos={researchdata}
+								repos={repos}
+								orgRepoList={org.repos}
 								canEdit
 							/>
 						</Grid>

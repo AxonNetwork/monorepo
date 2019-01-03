@@ -111,7 +111,6 @@ export interface IFeaturedRepo {
     repoID: string
     title: string
     description: string
-    authors?: string
     image: string
 }
 

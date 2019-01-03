@@ -7,7 +7,8 @@ import FeaturedRepoCard from './FeaturedRepoCard'
 import EditRepoCard from './EditRepoCard'
 import SeeMoreCard from './SeeMoreCard'
 import AddNewCard from './AddNewCard'
-import { IFeaturedRepo } from 'conscience-lib/common'
+import SelectRepoDialog from './SelectRepoDialog'
+import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { omitBy } from 'lodash'
 
@@ -17,17 +18,17 @@ class FeaturedRepos extends React.Component<Props, State>
 {
 	state = {
 		editMode: false,
+		featuredRepos: {} as {[repoID: string]: IFeaturedRepo},
 		editing: [] as string[],
-		deleted: [] as string[],
-		added: [] as IFeaturedRepo[],
+		dialogOpen: false,
 	}
 
 	render() {
-		const { featuredRepos, canEdit, classes } = this.props
-		const { editMode, editing, deleted } = this.state
+		const { canEdit, classes } = this.props
+		const { editMode, featuredRepos, editing } = this.state
 
-		const repos = omitBy(featuredRepos, (_, repoID: string) => {
-			return (deleted.indexOf(repoID) > -1)
+		const reposToAdd = this.props.orgRepoList.filter(repoID => {
+			return Object.keys(featuredRepos).indexOf(repoID) < 0
 		})
 
 		return (
@@ -39,7 +40,7 @@ class FeaturedRepos extends React.Component<Props, State>
 						{canEdit && !editMode &&
 							<Button
 								className={classes.editButton}
-								onClick={this.toggleEditMode}
+								onClick={this.enterEditMode}
 								color='secondary'
 								variant='outlined'
 							>
@@ -67,11 +68,11 @@ class FeaturedRepos extends React.Component<Props, State>
 							</div>
 						}
 				</Grid>
-				{Object.keys(repos).map((repoID: string) => (
+				{Object.keys(featuredRepos).map((repoID: string) => (
 					<Grid item xs={12} sm={6}>
 						{editing.indexOf(repoID) < 0 &&
 							<FeaturedRepoCard
-								repoInfo={repos[repoID]}
+								repoInfo={featuredRepos[repoID]}
 								canDelete={editMode}
 								onEdit={() => this.editRepoCard(repoID)}
 								onDelete={() => this.deleteRepoCard(repoID)}
@@ -79,35 +80,44 @@ class FeaturedRepos extends React.Component<Props, State>
 						}
 						{editing.indexOf(repoID) > -1 &&
 							<EditRepoCard
-								repoInfo={repos[repoID]}
-								canDelete={editMode}
-								onEdit={()=> console.log('edit')}
-								onDelete={()=> console.log('delete')}
+								repoInfo={featuredRepos[repoID]}
+								repo={this.props.repos[repoID]}
+								onSave={this.saveRepoCard}
+								onCancel={() => this.cancelEditRepoCard(repoID)}
 							/>
 						}
 					</Grid>
 				))}
 				<Grid item xs={12} sm={6}>
-					{editMode &&
-						<AddNewCard onClick={()=>console.log('clicked add')} />
+					{editMode && Object.keys(featuredRepos).length < 3 &&
+						<AddNewCard onClick={this.openAddRepoDialog} />
 					}
 					{!editMode &&
 						<SeeMoreCard count={10} onClick={()=>console.log('clicked see')} />
 					}
 				</Grid>
+				<SelectRepoDialog
+					open={this.state.dialogOpen}
+					repoList={reposToAdd}
+					onSelect={this.addRepoCard}
+				/>
 			</Grid>
 		)
 	}
 
-	toggleEditMode() {
-		this.setState({ editMode: !this.state.editMode })
+	componentDidMount() {
+		const featuredRepos = this.props.featuredRepos
+		this.setState({ featuredRepos })
+	}
+
+	enterEditMode() {
+		this.setState({ editMode: true })
 	}
 
 	cancelEdit() {
 		this.setState({
 			editMode: false,
-			deleted: [] as string[],
-			added: [] as IFeaturedRepo[],
+			featuredRepos: this.props.featuredRepos,
 		})
 	}
 
@@ -120,29 +130,70 @@ class FeaturedRepos extends React.Component<Props, State>
 		})
 	}
 
-	deleteRepoCard(repoID: string) {
+	cancelEditRepoCard(repoID: string) {
+		const updated = this.state.editing.filter(id => id !== repoID)
+		this.setState({ editing: updated })
+	}
+
+	openAddRepoDialog() {
+		this.setState({ dialogOpen: true })
+	}
+
+	addRepoCard(repoID: string) {
+		this.setState({ dialogOpen: false })
+		if(!repoID || repoID.length === 0){
+			return
+		}
 		this.setState({
-			deleted: [
-				...this.state.deleted,
-				repoID
+			featuredRepos: {
+				...this.state.featuredRepos,
+				[repoID]: {
+					repoID: repoID,
+					title: repoID,
+					description: 'Add a description',
+					image: '',
+				}
+			},
+			editing: [
+				...this.state.editing,
+				repoID,
 			]
 		})
 	}
 
+	saveRepoCard(info: IFeaturedRepo) {
+		const featuredRepos = {
+			...this.state.featuredRepos,
+			[info.repoID]: info
+		}
+		this.setState({ featuredRepos })
+		this.cancelEditRepoCard(info.repoID)
+	}
+
+	deleteRepoCard(repoID: string) {
+		const featuredRepos = omitBy(this.state.featuredRepos, (_, key) => {
+			return key === repoID
+		})
+		this.setState({ featuredRepos })
+	}
+
 	saveSetup() {
+		this.setState({ editMode: false })
 		console.log("SAVING")
 	}
 }
 
 interface State {
 	editMode: boolean
+	featuredRepos: {[repoID: string]: IFeaturedRepo}
 	editing: string[]
-	deleted: string[]
-	added: IFeaturedRepo[]
+	dialogOpen: boolean
 }
 
 interface Props {
 	featuredRepos: {[repoID: string]: IFeaturedRepo}
+	repos: {[repoID: string]: IRepo}
+	orgRepoList: string[]
 	canEdit?: boolean
 	classes: any
 }

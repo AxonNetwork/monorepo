@@ -4,19 +4,20 @@ import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
-import CardActionArea from '@material-ui/core/CardActionArea'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
-import CancelIcon from '@material-ui/icons/Cancel'
+import DeleteIcon from '@material-ui/icons/Delete'
 import { IFeaturedRepo } from 'conscience-lib/common'
+const logo = require('../../../assets/logo-placeholder.png')
 
 
 class FeaturedRepoCard extends React.Component<Props>
 {
 	render() {
 		const { repoInfo, canDelete, classes } = this.props
+		const image = repoInfo.image.length > 0 ? repoInfo.image : logo
 		return (
 			<Card className={classes.card}>
 				{canDelete &&
@@ -25,26 +26,21 @@ class FeaturedRepoCard extends React.Component<Props>
 							<EditIcon fontSize='small' />
 						</IconButton>
 						<IconButton onClick={this.props.onDelete} >
-							<CancelIcon fontSize='small' />
+							<DeleteIcon fontSize='small' />
 						</IconButton>
 					</div>
 				}
-				<CardActionArea>
-					<CardMedia className={classes.media}>
-						<img src={repoInfo.image} />
-					</CardMedia>
-					<CardContent>
-						<Typography variant="h5">
-							{repoInfo.title}
-						</Typography>
-						<Typography>
-							<em>{repoInfo.authors}</em>
-						</Typography>
-						<Typography>
-							{repoInfo.description}
-						</Typography>
-					</CardContent>
-				</CardActionArea>
+				<CardMedia className={classes.media}>
+					<img src={image} />
+				</CardMedia>
+				<CardContent className={classes.content}>
+					<Typography variant="h5">
+						{repoInfo.title}
+					</Typography>
+					<Typography>
+						{repoInfo.description}
+					</Typography>
+				</CardContent>
 				<CardActions className={classes.actions}>
 					<Button color="secondary" variant="outlined" className={classes.button}>Learn More</Button>
 				</CardActions>
@@ -64,6 +60,8 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
 	card: {
 		marginBottom: 32,
+		height: 'calc(100% - 32px)',
+		position: 'relative',
 	},
 	buttonRow: {
 		display: 'flex',
@@ -77,9 +75,16 @@ const styles = (theme: Theme) => createStyles({
 			width: '100%'
 		}
 	},
+	content: {
+		marginBottom: 40
+	},
 	actions: {
 		display: 'flex',
-		justifyContent: 'flex-end'
+		justifyContent: 'flex-end',
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
 	},
 })
 
