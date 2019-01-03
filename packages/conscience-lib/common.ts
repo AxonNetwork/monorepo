@@ -8,6 +8,7 @@ export interface IRepo {
     admins?: string[]
     pullers?: string[]
     pushers?: string[]
+    isPublic?: boolean
     files?: {[name: string]: IRepoFile}
     localRefs?: {[name: string]: string}
     remoteRefs?: {[name: string]: string}
@@ -100,9 +101,18 @@ export interface IOrganization {
     description: string
     creator: string //userID
     picture: string
+    banner: string
     readme: string
     members: string[] //userID[]
     repos: string[] //repoID[]
+}
+
+export interface IFeaturedRepo {
+    repoID: string
+    title: string
+    description: string
+    authors?: string
+    image: string
 }
 
 export enum RepoPage {

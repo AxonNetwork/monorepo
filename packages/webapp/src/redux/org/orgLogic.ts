@@ -4,6 +4,7 @@ import { OrgActionType,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
     IUpdateOrgAction, IUpdateOrgSuccessAction,
     IUploadOrgPictureAction, IUploadOrgPictureSuccessAction,
+    IUploadOrgBannerAction, IUploadOrgBannerSuccessAction,
     IAddMemberToOrgAction, IAddMemberToOrgSuccessAction,
     IRemoveMemberFromOrgAction, IRemoveMemberFromOrgSuccessAction,
     IAddRepoToOrgAction, IAddRepoToOrgSuccessAction,
@@ -52,11 +53,18 @@ const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSu
     async process({ action}){
         const { orgID, fileInput } = action.payload
         const { picture } = await ServerRelay.uploadOrgPicture(orgID, fileInput)
-
         return { orgID, picture }
     }
 })
 
+const uploadOrgBanner  = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSuccessAction>({
+    type: OrgActionType.UPLOAD_ORG_BANNER,
+    async process({ action}){
+        const { orgID, fileInput } = action.payload
+        const { banner } = await ServerRelay.uploadOrgBanner(orgID, fileInput)
+        return { orgID, banner }
+    }
+})
 
 const addMemberToOrgLogic = makeLogic<IAddMemberToOrgAction, IAddMemberToOrgSuccessAction>({
     type: OrgActionType.ADD_MEMBER_TO_ORG,
@@ -115,6 +123,7 @@ export default [
     fetchOrgInfoLogic,
     updateOrgLogic,
     uploadOrgPicture,
+    uploadOrgBanner,
     addMemberToOrgLogic,
     removeMemberFromOrgLogic,
     addRepoToOrgLogic,

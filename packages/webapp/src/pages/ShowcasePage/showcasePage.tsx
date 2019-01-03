@@ -13,8 +13,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import { Parallax } from 'react-parallax'
 import Container from './components/Container'
-import ResearchCard from './components/ResearchCard'
-import SeeMoreCard from './components/SeeMoreCard'
+import FeaturedRepos from './components/FeaturedRepos'
 import DummyEvent from './components/DummyEvent'
 import { getRepoList } from 'redux/repo/repoActions'
 import { fetchOrgInfo } from 'redux/org/orgActions'
@@ -22,14 +21,13 @@ import { IGlobalState } from 'redux/store'
 import { IOrganization, IRepo, IUser, IDiscussion } from 'conscience-lib/common'
 import researchdata from './researchdata'
 import timelinedata from './timelinedata'
-
-const image = require('../../assets/galaxy.jpg')
+import pluralize from 'pluralize'
 
 
 class ShowcasePage extends React.Component<Props>
 {
 	render() {
-		const { org, users, classes } = this.props
+		const { org, users, repos, classes } = this.props
 		if(org === undefined) {
 			return (
 				<div className={classes.progressContainer}>
@@ -37,10 +35,14 @@ class ShowcasePage extends React.Component<Props>
 				</div>
 			)
 		}
+		const memberCount =org.members.length
+		const activeRepoCount = org.repos.length
+		const publicRepoCount = org.repos.filter(id => (repos[id] || {}).isPublic).length
+
 		return (
 			<div>
 				<Parallax
-					bgImage={image}
+					bgImage={org.banner}
 					strength={500}
 					renderLayer={(percentage: any) => (
 						<div className={classes.titleContainer}>
@@ -52,6 +54,7 @@ class ShowcasePage extends React.Component<Props>
 							>
 								<Typography variant='h2'
 									style={{
+										color: `rgba(0, 0, 0, ${1.5 - percentage})`,
 										backgroundColor: `rgba(255, 255, 255, ${1.5 - percentage})`,
 										boxShadow: `0 0 5px 5px rgba(255, 255, 255, ${1.5 - percentage})`,
 									}}
@@ -66,35 +69,23 @@ class ShowcasePage extends React.Component<Props>
 					<div className={classes.statsContainer}>
 						<Typography className={classes.stats}>
 							<PeopleIcon />
-							135 Researchers
+							{memberCount} {pluralize('Researcher', memberCount)}
 						</Typography>
 						<Typography className={classes.stats}>
 							<DescriptionIcon />
-							625 Published Studies
+							{publicRepoCount} Published {pluralize('Study', publicRepoCount)}
 						</Typography>
 						<Typography className={classes.stats}>
 							<AssessmentIcon />
-							118 Active Repositories
+							{activeRepoCount} Active {pluralize('Repository', activeRepoCount)}
 						</Typography>
 					</div>
 					<Grid container spacing={40} >
 						<Grid item xs={12} sm={8}>
-							<Typography variant='h5'>
-								See What We've Been Up To
-							</Typography>
-							<Grid container spacing={24} className={classes.researchCards}>
-								{researchdata.map(info=>(
-									<Grid item xs={12} sm={6}>
-										<ResearchCard
-											img={info.img}
-											title={info.title}
-											description={info.description}
-											author={info.author}
-										/>
-									</Grid>
-								))}
-								<SeeMoreCard />
-							</Grid>
+							<FeaturedRepos
+								featuredRepos={researchdata}
+								canEdit
+							/>
 						</Grid>
 						<Grid item xs={false} sm={4}>
 							<Typography variant='h5'>
@@ -207,9 +198,6 @@ const styles = (theme: Theme) => createStyles({
 		'& svg': {
 			marginRight: 8
 		}
-	},
-	researchCards: {
-		marginTop: 16
 	},
 	teamHeader: {
 		textAlign: 'center',

@@ -5,7 +5,7 @@ import { Theme, withStyles, createStyles } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import { updateOrg, uploadOrgPicture } from 'redux/org/orgActions'
+import { updateOrg, uploadOrgPicture, uploadOrgBanner } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
@@ -17,6 +17,7 @@ class OrganizationPage extends React.Component<Props>
     _inputOrgName: HTMLInputElement | null = null
     _inputDescription: HTMLInputElement | null = null
     _inputOrgPicture: HTMLInputElement | null = null
+    _inputBanner: HTMLInputElement | null = null
 
     render() {
         const { org, classes } = this.props
@@ -56,7 +57,7 @@ class OrganizationPage extends React.Component<Props>
                 <div className={classes.imageContainer}>
                     {org.picture.length === 0 &&
                         <Typography>
-                            No image Uploaded
+                            No Image Uploaded
                         </Typography>
                     }
                     {org.picture.length > 0 &&
@@ -69,6 +70,23 @@ class OrganizationPage extends React.Component<Props>
                     }
                     <input type="file" ref={x => this._inputOrgPicture = x} /><br/>
                     <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
+                </div>
+                <div className={classes.imageContainer}>
+                    {org.banner.length === 0 &&
+                        <Typography>
+                            No Banner Uploaded
+                        </Typography>
+                    }
+                    {org.banner.length > 0 &&
+                        <div>
+                            <Typography>
+                                Current Banner:
+                            </Typography>
+                            <img src={nonCacheImg(org.banner)} className={classes.orgPicture}/>
+                        </div>
+                    }
+                    <input type="file" ref={x => this._inputBanner = x} /><br/>
+                    <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
                 </div>
             </div>
         )
@@ -89,6 +107,15 @@ class OrganizationPage extends React.Component<Props>
         const orgID = this.props.org.orgID
         this.props.uploadOrgPicture({ fileInput, orgID })
     }
+
+    onClickUploadBanner() {
+        if (this._inputBanner === null) {
+            return
+        }
+        const fileInput = this._inputBanner
+        const orgID = this.props.org.orgID
+        this.props.uploadOrgBanner({ fileInput, orgID })
+    }
 }
 
 interface MatchParams {
@@ -99,6 +126,7 @@ interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
     updateOrg: typeof updateOrg
     uploadOrgPicture: typeof uploadOrgPicture
+    uploadOrgBanner: typeof uploadOrgBanner
     classes: any
 }
 
@@ -146,6 +174,7 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
 const mapDispatchToProps = {
     updateOrg,
     uploadOrgPicture,
+    uploadOrgBanner,
 }
 
 export default connect(

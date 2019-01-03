@@ -62,11 +62,13 @@ class PushPullButtons extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
-                <Tooltip title="Download the latest work from the group" open={pullEnabled ? undefined : false}>
+                <Tooltip title="Download the latest work from the group" open={pullEnabled ? undefined : false}
+                    classes={{tooltip: classes.tooltip}}
+                >
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
-                        disabled={pullEnabled}
+                        disabled={!pullEnabled}
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
@@ -224,6 +226,9 @@ const styles = (theme: Theme) => createStyles({
         marginTop: -12,
         marginLeft: -12,
     },
+    tooltip: {
+        fontSize: '10pt'
+    }
 })
 
 // const mapStateToProps = (state: IGlobalState) => {

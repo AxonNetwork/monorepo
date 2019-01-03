@@ -49,6 +49,20 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
             }
         }
 
+        case OrgActionType.UPLOAD_ORG_BANNER_SUCCESS: {
+            const { orgID, banner } = action.payload
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [orgID]: {
+                        ...state.orgs[orgID],
+                        banner: banner
+                    }
+                }
+            }
+        }
+
         case OrgActionType.ADD_MEMBER_TO_ORG_SUCCESS: {
             const { orgID, userID } = action.payload
             return {

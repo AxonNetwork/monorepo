@@ -361,7 +361,6 @@ const ServerRelay = {
         return response.data
     },
 
-
     async uploadOrgPicture(orgID: string, fileInput: HTMLInputElement) {
         interface IResponse {
             picture: string
@@ -374,6 +373,23 @@ const ServerRelay = {
         formData.set('orgID', orgID)
         formData.append('org-photo', fileInput.files[0])
         const resp = await axios.post<IResponse>(API_URL + '/org-photo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        return resp.data
+    },
+
+    async uploadOrgBanner(orgID: string, fileInput: HTMLInputElement) {
+        interface IResponse {
+            banner: string
+            orgID: string
+        }
+
+        if (!fileInput.files) { throw new Error('no files') }
+
+        const formData = new FormData()
+        formData.set('orgID', orgID)
+        formData.append('org-banner', fileInput.files[0])
+        const resp = await axios.post<IResponse>(API_URL + '/org-banner', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         })
         return resp.data

@@ -7,27 +7,41 @@ import CardMedia from '@material-ui/core/CardMedia'
 import CardActionArea from '@material-ui/core/CardActionArea'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
+import CancelIcon from '@material-ui/icons/Cancel'
+import { IFeaturedRepo } from 'conscience-lib/common'
 
 
-class ResearchCard extends React.Component<Props>
+class FeaturedRepoCard extends React.Component<Props>
 {
 	render() {
-		const { img, title, description, author, classes } = this.props
+		const { repoInfo, canDelete, classes } = this.props
 		return (
 			<Card className={classes.card}>
+				{canDelete &&
+					<div className={classes.buttonRow}>
+						<IconButton onClick={this.props.onEdit} >
+							<EditIcon fontSize='small' />
+						</IconButton>
+						<IconButton onClick={this.props.onDelete} >
+							<CancelIcon fontSize='small' />
+						</IconButton>
+					</div>
+				}
 				<CardActionArea>
 					<CardMedia className={classes.media}>
-						<img src={img} />
+						<img src={repoInfo.image} />
 					</CardMedia>
 					<CardContent>
 						<Typography variant="h5">
-							{title}
+							{repoInfo.title}
 						</Typography>
 						<Typography>
-							<em>{author}</em>
+							<em>{repoInfo.authors}</em>
 						</Typography>
 						<Typography>
-							{description}
+							{repoInfo.description}
 						</Typography>
 					</CardContent>
 				</CardActionArea>
@@ -40,18 +54,21 @@ class ResearchCard extends React.Component<Props>
 }
 
 interface Props {
-	img: string
-	title: string
-	description: string
-	author: string
+	repoInfo: IFeaturedRepo
+	canDelete?: boolean
+	onEdit: () => void
+	onDelete: () => void
 	classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
 	card: {
-		width: 350,
-		marginRight: 32,
 		marginBottom: 32,
+	},
+	buttonRow: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
 	},
 	media: {
 		maxHeight: 150,
@@ -63,7 +80,7 @@ const styles = (theme: Theme) => createStyles({
 	actions: {
 		display: 'flex',
 		justifyContent: 'flex-end'
-	}
+	},
 })
 
-export default withStyles(styles)(ResearchCard)
+export default withStyles(styles)(FeaturedRepoCard)
