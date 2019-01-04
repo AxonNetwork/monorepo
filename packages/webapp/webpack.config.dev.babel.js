@@ -34,8 +34,18 @@ export default merge(BaseWebpackConfig, {
     },
     // Automatically open page
     open: true,
-    // Served index.html (contains 404 page in react-router) in place of any 404 responses
-    historyApiFallback: true,
+    // Served / (contains 404 page in react-router) in place of any 404 responses
+    historyApiFallback: {
+      // rewrite all requests to "/" to prevent errors when trying to load URLs with file extensions
+      rewrites: [
+        {
+            from: /.*/,
+            to: function() {
+                return '/';
+            }
+        }
+      ]
+    }
   },
 
   // Source map mode
