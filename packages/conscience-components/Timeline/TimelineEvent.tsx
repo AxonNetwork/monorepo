@@ -15,26 +15,30 @@ class TimelineEvent extends React.Component<Props>
     render() {
         const { event, classes } = this.props
         return (
-            <React.Fragment>
-                <div className={classes.event}>
-                    <div className={classes.topline}></div>
-                    {event.verified !== undefined &&
-                        <div className={classes.linkIconContainer}>
-                            <Tooltip title={'Secured on blockchain: ' + moment(event.verified).format('MMM Do YYYY, h:mm a')}>
-                                <LinkIcon classes={{root: classes.linkIcon}}/>
-                            </Tooltip>
-                        </div>
-                    }
-                    <div className={classes.eventIconContainer}>
-                        <UserAvatar username={this.props.username} userPicture={this.props.userPicture} className={classes.avatar} />
+            <div 
+                className={classes.event}
+                onClick={() => this.props.selectCommit(event.commit, event.repoID)}
+            >
+                <div className={classes.topline}></div>
+                {event.verified !== undefined &&
+                    <div className={classes.linkIconContainer}>
+                        <Tooltip title={'Secured on blockchain: ' + moment(event.verified).format('MMM Do YYYY, h:mm a')}>
+                            <LinkIcon classes={{root: classes.linkIcon}}/>
+                        </Tooltip>
                     </div>
-                    <div className={classes.eventDescription}>
-                        <Typography className={classes.commitMessage}>{event.message}</Typography>
-                        <Typography className={classes.date}>{moment(event.time).calendar()}</Typography>
-                        <Typography className={classes.username}>{event.user}</Typography>
-                    </div>
+                }
+                <div className={classes.eventIconContainer}>
+                    <UserAvatar username={this.props.username} userPicture={this.props.userPicture} className={classes.avatar} />
                 </div>
-            </React.Fragment>
+                <div className={classes.eventDescription}>
+                    <Typography className={classes.commitMessage}>{event.message}</Typography>
+                    {event.repoID !== undefined &&
+                        <Typography><em>{event.repoID}</em></Typography>
+                    }
+                    <Typography className={classes.date}>{moment(event.time).calendar()}</Typography>
+                    <Typography className={classes.username}>{event.user}</Typography>
+                </div>
+            </div>
         )
     }
 }
@@ -43,6 +47,7 @@ interface Props {
     event: ITimelineEvent
     username: string | undefined
     userPicture: string | undefined
+    selectCommit: (commit: string, repoID: string | undefined) => void
     classes: any
 }
 
@@ -51,6 +56,10 @@ const styles = (theme: Theme) => createStyles({
         position: 'relative',
         padding: '18px 0 12px',
         marginLeft: '24px',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        },
     },
     topline: {
         position: 'absolute',

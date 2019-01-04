@@ -61,13 +61,13 @@ class Timeline extends React.Component<Props, State>
                     const username = user.name || removeEmail(event.user)
                     const userPicture = user.picture
                     return (
-                        <div key={event.commit} onClick={() => this.selectCommit(event.commit)} className={classes.timelineEvent}>
-                            <TimelineEvent
-                                event={event}
-                                username={username}
-                                userPicture={userPicture}
-                            />
-                        </div>
+                        <TimelineEvent
+                            key={event.commit}
+                            event={event}
+                            username={username}
+                            userPicture={userPicture}
+                            selectCommit={this.selectCommit}
+                        />
                     )
                 })}
                 </div>
@@ -95,13 +95,6 @@ interface State {
 }
 
 const styles = () => createStyles({
-    timelineEvent: {
-        cursor: 'pointer',
-
-        '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        },
-    },
     paginationToolbar: {
         height: 36,
         minHeight: 36,

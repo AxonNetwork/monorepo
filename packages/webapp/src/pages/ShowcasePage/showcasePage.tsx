@@ -14,14 +14,13 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import { Parallax } from 'react-parallax'
 import Container from './components/Container'
 import FeaturedRepos from './components/FeaturedRepos'
-import DummyEvent from './components/DummyEvent'
 import UploadBannerDialog from './components/UploadBannerDialog'
+import ShowcaseTimeline from './components/ShowcaseTimeline'
 import { getRepoList } from 'redux/repo/repoActions'
 import { fetchOrgInfo, uploadOrgBanner, changeOrgFeaturedRepos } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
-import timelinedata from './timelinedata'
 import pluralize from 'pluralize'
 
 
@@ -29,7 +28,8 @@ import pluralize from 'pluralize'
 class ShowcasePage extends React.Component<Props, State>
 {
 	state = {
-		dialogOpen: false
+		dialogOpen: false,
+		showAllMembers: false,
 	}
 
 	render() {
@@ -41,9 +41,14 @@ class ShowcasePage extends React.Component<Props, State>
 				</div>
 			)
 		}
-		const memberCount =org.members.length
+		const memberCount = org.members.length
 		const activeRepoCount = org.repos.length
 		const publicRepoCount = org.repos.filter(id => (repos[id] || {}).isPublic).length
+
+		let membersToShow = org.members
+		if(!this.state.showAllMembers) {
+			membersToShow = org.members.slice(0, 6)
+		}
 
 		return (
 			<div>
@@ -116,17 +121,20 @@ class ShowcasePage extends React.Component<Props, State>
 								<em>From researchers who are doing their work in the open</em>
 							</Typography>
 							<Divider />
-							{timelinedata.map(event => (
-								<DummyEvent event={event} />
-							))}
-
+							<ShowcaseTimeline
+								org={this.props.org}
+								repos={this.props.repos}
+								users={this.props.users}
+								usersByEmail={this.props.usersByEmail}
+								selectCommit={this.selectCommit}
+							/>
 						</Grid>
 					</Grid>
 					<Typography variant='h5' className={classes.teamHeader}>
 						Meet Our Researchers
 					</Typography>
 					<div className={classes.team}>
-						{org.members.map(id=>{
+						{membersToShow.map(id=>{
 							const user = users[id] || {}
 							return (
 								<div className={classes.teamProfile}>
@@ -138,14 +146,17 @@ class ShowcasePage extends React.Component<Props, State>
 							)
 						})}
 					</div>
-					<div className={classes.teamSeeMore}>
-						<Button
-							color="secondary"
-						>
-							See More Researchers
-							<ArrowForwardIcon />
-						</Button>
-					</div>
+					{memberCount > 6 && !!this.state.showAllMembers &&
+						<div className={classes.teamSeeMore}>
+							<Button
+								color="secondary"
+								onClick={this.showAllMembers}
+							>
+								See All Researchers
+								<ArrowForwardIcon />
+							</Button>
+						</div>
+					}
 				</Container>
 			</div>
 		)
@@ -169,6 +180,13 @@ class ShowcasePage extends React.Component<Props, State>
 		}
 	}
 
+    selectCommit(commit: string, repoID: string | undefined) {
+    	if(repoID === undefined) {
+    		return
+    	}
+		this.props.history.push(`/repo/${repoID}/history/${commit}`)
+    }
+
 	openBannerDialog() {
 		this.setState({ dialogOpen: true })
 	}
@@ -180,6 +198,10 @@ class ShowcasePage extends React.Component<Props, State>
 		}
 		this.setState({ dialogOpen: false })
 	}
+
+	showAllMembers() {
+		this.setState({ showAllMembers: true })
+	}
 }
 
 interface MatchParams {
@@ -190,6 +212,7 @@ interface Props extends RouteComponentProps<MatchParams>{
     org: IOrganization
     repos: { [repoID: string]: IRepo }
     users: { [userID: string]: IUser }
+    usersByEmail: { [email: string]: string }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
     getRepoList: typeof getRepoList
@@ -201,6 +224,7 @@ interface Props extends RouteComponentProps<MatchParams>{
 
 interface State {
 	dialogOpen: boolean
+	showAllMembers: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -301,6 +325,7 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
     	org: state.org.orgs[orgID],
     	repos: state.repo.repos,
     	users: state.user.users,
+    	usersByEmail: state.user.usersByEmail,
     	discussions: state.discussion.discussions,
     	discussionsByRepo: state.discussion.discussionsByRepo,
     }
