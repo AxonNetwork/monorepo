@@ -53,6 +53,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         localStorage.setItem('jwt', jwt)
 
         await dispatch(getUserSettings({}))
+        await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
         return { userID, emails, name, username, picture, orgs }
     }
