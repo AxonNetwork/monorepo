@@ -15,17 +15,23 @@ import { Parallax } from 'react-parallax'
 import Container from './components/Container'
 import FeaturedRepos from './components/FeaturedRepos'
 import DummyEvent from './components/DummyEvent'
+import UploadBannerDialog from './components/UploadBannerDialog'
 import { getRepoList } from 'redux/repo/repoActions'
-import { fetchOrgInfo } from 'redux/org/orgActions'
+import { fetchOrgInfo, uploadOrgBanner, changeOrgFeaturedRepos } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
-import { IOrganization, IRepo, IUser, IDiscussion } from 'conscience-lib/common'
-import researchdata from './researchdata'
+import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
+import { autobind, nonCacheImg } from 'conscience-lib/utils'
 import timelinedata from './timelinedata'
 import pluralize from 'pluralize'
 
 
-class ShowcasePage extends React.Component<Props>
+@autobind
+class ShowcasePage extends React.Component<Props, State>
 {
+	state = {
+		dialogOpen: false
+	}
+
 	render() {
 		const { org, users, repos, classes } = this.props
 		if(org === undefined) {
@@ -42,10 +48,17 @@ class ShowcasePage extends React.Component<Props>
 		return (
 			<div>
 				<Parallax
-					bgImage={org.banner}
+					bgImage={nonCacheImg(org.banner)}
 					strength={500}
 					renderLayer={(percentage: any) => (
 						<div className={classes.titleContainer}>
+							<Button
+								variant="contained"
+								className={classes.changeBannerButton}
+								onClick={this.openBannerDialog}
+							>
+								Change Banner
+							</Button>
 							<div
 								className={classes.title}
 								style={{
@@ -65,6 +78,10 @@ class ShowcasePage extends React.Component<Props>
 						</div>
 					)}
 				/>
+				<UploadBannerDialog
+					open={this.state.dialogOpen}
+					onSelectBanner={this.onSelectBanner}
+				/>
 				<Container>
 					<div className={classes.statsContainer}>
 						<Typography className={classes.stats}>
@@ -83,10 +100,12 @@ class ShowcasePage extends React.Component<Props>
 					<Grid container spacing={40} >
 						<Grid item xs={12} sm={8}>
 							<FeaturedRepos
-								featuredRepos={researchdata}
+								featuredRepos={org.featuredRepos}
 								repos={repos}
 								orgRepoList={org.repos}
 								canEdit
+								onSave={this.saveFeaturedRepos}
+								selectRepo={this.selectRepo}
 							/>
 						</Grid>
 						<Grid item xs={false} sm={4}>
@@ -137,6 +156,30 @@ class ShowcasePage extends React.Component<Props>
 		this.props.fetchOrgInfo({ orgID })
 		this.props.getRepoList({})
 	}
+
+	saveFeaturedRepos(featuredRepos: {[repoID: string]: IFeaturedRepo}){
+		const orgID = this.props.match.params.orgID
+		this.props.changeOrgFeaturedRepos({ orgID, featuredRepos })
+	}
+
+	selectRepo(payload: {repoID: string}){
+		const repoID = payload.repoID
+		if(repoID !== undefined){
+			this.props.history.push(`/repo/${repoID}`)
+		}
+	}
+
+	openBannerDialog() {
+		this.setState({ dialogOpen: true })
+	}
+
+	onSelectBanner(fileInput: any) {
+		if(fileInput !== null){
+			const orgID = this.props.match.params.orgID
+			this.props.uploadOrgBanner({ orgID, fileInput })
+		}
+		this.setState({ dialogOpen: false })
+	}
 }
 
 interface MatchParams {
@@ -151,7 +194,13 @@ interface Props extends RouteComponentProps<MatchParams>{
     discussionsByRepo: { [repoID: string]: string[] }
     getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
+    uploadOrgBanner: typeof uploadOrgBanner
+    changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
 	classes: any
+}
+
+interface State {
+	dialogOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -184,6 +233,12 @@ const styles = (theme: Theme) => createStyles({
 			padding: 8,
 			borderRadius: 5,
 		}
+	},
+	changeBannerButton: {
+		position: 'absolute',
+		top: 16,
+		right: 16,
+		textTransform: 'none',
 	},
 	statsContainer: {
 		width: '100%',
@@ -254,6 +309,8 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
 const mapDispatchToProps = {
 	fetchOrgInfo,
 	getRepoList,
+	uploadOrgBanner,
+	changeOrgFeaturedRepos,
 }
 
 export default connect(

@@ -37,8 +37,7 @@ class EditRepoCard extends React.Component<Props, State>
 		const { repoInfo, classes } = this.props
 		const { missing } = this.state
 		const images = Object.keys((this.props.repo.files) || {} ).filter(name => fileType(name) === 'image')
-		let image = this.state.image || repoInfo.image
-		image = image.length > 0 ? image : logo
+		const image = this.state.image || repoInfo.image || logo
 
 		return (
 			<Card className={classes.card}>

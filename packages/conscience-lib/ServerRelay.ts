@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IRepoFile, IUser, IComment, IDiscussion, IOrganization, IUserSettings } from './common'
+import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -414,6 +414,16 @@ const ServerRelay = {
     async changeOrgDescription(orgID: string, description: string) {
         return
     },
+
+    async changeOrgFeaturedRepos(orgID: string, featuredRepos: {[repoID: string]: IFeaturedRepo}) {
+        interface IResponse {
+            org: IOrganization
+        }
+        await axios.post<IResponse>(API_URL + '/update-organization', {
+            orgID,
+            featuredRepos,
+        })
+    }
 }
 
 axios.defaults.timeout = 10000

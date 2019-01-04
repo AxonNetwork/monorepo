@@ -17,7 +17,9 @@ class FeaturedRepoCard extends React.Component<Props>
 {
 	render() {
 		const { repoInfo, canDelete, classes } = this.props
-		const image = repoInfo.image.length > 0 ? repoInfo.image : logo
+		const image = repoInfo.image || logo
+		const repoID = repoInfo.repoID
+
 		return (
 			<Card className={classes.card}>
 				{canDelete &&
@@ -42,7 +44,14 @@ class FeaturedRepoCard extends React.Component<Props>
 					</Typography>
 				</CardContent>
 				<CardActions className={classes.actions}>
-					<Button color="secondary" variant="outlined" className={classes.button}>Learn More</Button>
+					<Button
+						color="secondary"
+						variant="outlined"
+						className={classes.button}
+						onClick={() => this.props.selectRepo({ repoID })}
+					>
+						Learn More
+					</Button>
 				</CardActions>
 			</Card>
 		)
@@ -54,6 +63,7 @@ interface Props {
 	canDelete?: boolean
 	onEdit: () => void
 	onDelete: () => void
+	selectRepo: (payload: {repoID: string}) => void
 	classes: any
 }
 
@@ -85,6 +95,9 @@ const styles = (theme: Theme) => createStyles({
 		bottom: 0,
 		left: 0,
 		right: 0,
+		'& button': {
+			textTransform: 'none'
+		}
 	},
 })
 

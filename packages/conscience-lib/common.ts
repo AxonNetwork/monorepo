@@ -105,13 +105,14 @@ export interface IOrganization {
     readme: string
     members: string[] //userID[]
     repos: string[] //repoID[]
+    featuredRepos: {[repoID: string]: IFeaturedRepo}
 }
 
 export interface IFeaturedRepo {
     repoID: string
     title: string
     description: string
-    image: string
+    image?: string
 }
 
 export enum RepoPage {

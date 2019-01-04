@@ -1,4 +1,4 @@
-import { ITimelineEvent } from 'common'
+import { ITimelineEvent } from '../common'
 
 export function getLastVerifiedEvent(commitList: string[], commits: {[commitHash: string]: ITimelineEvent}) {
     for(let i=0; i < commitList.length; i++){

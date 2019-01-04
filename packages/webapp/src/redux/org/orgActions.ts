@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IOrganization } from 'conscience-lib/common'
+import { IOrganization, IFeaturedRepo } from 'conscience-lib/common'
 
 export enum OrgActionType {
     CREATE_ORG = 'CREATE_ORG',
@@ -41,6 +41,10 @@ export enum OrgActionType {
     CHANGE_ORG_DESCRIPTION = 'CHANGE_ORG_DESCRIPTION',
     CHANGE_ORG_DESCRIPTION_SUCCESS = 'CHANGE_ORG_DESCRIPTION_SUCCESS',
     CHANGE_ORG_DESCRIPTION_FAILED = 'CHANGE_ORG_DESCRIPTION_FAILED',
+
+    CHANGE_ORG_FEATURED_REPOS = 'CHANGE_ORG_FEATURED_REPOS',
+    CHANGE_ORG_FEATURED_REPOS_SUCCESS = 'CHANGE_ORG_FEATURED_REPOS_SUCCESS',
+    CHANGE_ORG_FEATURED_REPOS_FAILED = 'CHANGE_ORG_FEATURED_REPOS_FAILED',
 }
 
 export interface ICreateOrgAction {
@@ -202,7 +206,6 @@ export interface IRemoveRepoFromOrgSuccessAction {
 
 export type IRemoveRepoFromOrgFailedAction = FailedAction<OrgActionType.REMOVE_REPO_FROM_ORG_FAILED>
 
-
 export interface IChangeOrgDescriptionAction {
     type: OrgActionType.CHANGE_ORG_DESCRIPTION
     payload: {
@@ -220,6 +223,24 @@ export interface IChangeOrgDescriptionSuccessAction {
 }
 
 export type IChangeOrgDescriptionFailedAction = FailedAction<OrgActionType.CHANGE_ORG_DESCRIPTION_FAILED>
+
+export interface IChangeOrgFeaturedReposAction {
+    type: OrgActionType.CHANGE_ORG_FEATURED_REPOS
+    payload: {
+        orgID: string
+        featuredRepos: {[repoID: string]: IFeaturedRepo}
+    }
+}
+
+export interface IChangeOrgFeaturedReposSuccessAction {
+    type: OrgActionType.CHANGE_ORG_FEATURED_REPOS_SUCCESS
+    payload: {
+        orgID: string
+        featuredRepos: {[repoID: string]: IFeaturedRepo}
+    }
+}
+
+export type IChangeOrgFeaturedReposFailedAction = FailedAction<OrgActionType.CHANGE_ORG_FEATURED_REPOS_FAILED>
 
 export type IOrgAction =
     ICreateOrgAction |
@@ -260,7 +281,11 @@ export type IOrgAction =
 
     IChangeOrgDescriptionAction |
     IChangeOrgDescriptionSuccessAction |
-    IChangeOrgDescriptionFailedAction
+    IChangeOrgDescriptionFailedAction |
+
+    IChangeOrgFeaturedReposAction |
+    IChangeOrgFeaturedReposSuccessAction |
+    IChangeOrgFeaturedReposFailedAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
@@ -275,3 +300,4 @@ export const addRepoToOrg = (payload: IAddRepoToOrgAction['payload']): IAddRepoT
 export const removeRepoFromOrg = (payload: IRemoveRepoFromOrgAction['payload']): IRemoveRepoFromOrgAction => ({ type: OrgActionType.REMOVE_REPO_FROM_ORG, payload })
 
 export const changeOrgDescription = (payload: IChangeOrgDescriptionAction['payload']): IChangeOrgDescriptionAction => ({ type: OrgActionType.CHANGE_ORG_DESCRIPTION, payload })
+export const changeOrgFeaturedRepos = (payload: IChangeOrgFeaturedReposAction['payload']): IChangeOrgFeaturedReposAction => ({ type: OrgActionType.CHANGE_ORG_FEATURED_REPOS, payload })

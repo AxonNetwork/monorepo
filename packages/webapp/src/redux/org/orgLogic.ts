@@ -10,10 +10,12 @@ import { OrgActionType,
     IAddRepoToOrgAction, IAddRepoToOrgSuccessAction,
     IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction,
     IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction,
+    IChangeOrgFeaturedReposAction, IChangeOrgFeaturedReposSuccessAction,
 } from './orgActions'
 import { fetchUserData, addedOrg } from '../user/userActions'
 import { getRepo } from '../repo/repoActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
+import { nonCacheImg } from 'conscience-lib/utils'
 
 const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
     type: OrgActionType.CREATE_ORG,
@@ -52,7 +54,8 @@ const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSu
     type: OrgActionType.UPLOAD_ORG_PICTURE,
     async process({ action}){
         const { orgID, fileInput } = action.payload
-        const { picture } = await ServerRelay.uploadOrgPicture(orgID, fileInput)
+        const resp = await ServerRelay.uploadOrgPicture(orgID, fileInput)
+        const picture = nonCacheImg(resp.picture)
         return { orgID, picture }
     }
 })
@@ -61,7 +64,8 @@ const uploadOrgBanner  = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSucce
     type: OrgActionType.UPLOAD_ORG_BANNER,
     async process({ action}){
         const { orgID, fileInput } = action.payload
-        const { banner } = await ServerRelay.uploadOrgBanner(orgID, fileInput)
+        const resp = await ServerRelay.uploadOrgBanner(orgID, fileInput)
+        const banner = nonCacheImg(resp.banner)
         return { orgID, banner }
     }
 })
@@ -107,7 +111,6 @@ const removeRepoFromOrgLogic = makeLogic<IRemoveRepoFromOrgAction, IRemoveRepoFr
     }
 })
 
-
 const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction>({
     type: OrgActionType.CHANGE_ORG_DESCRIPTION,
     async process({ action}){
@@ -117,6 +120,14 @@ const changeOrgDescriptionLogic = makeLogic<IChangeOrgDescriptionAction, IChange
     }
 })
 
+const changeOrgFeaturedReposLogic = makeLogic<IChangeOrgFeaturedReposAction, IChangeOrgFeaturedReposSuccessAction>({
+    type: OrgActionType.CHANGE_ORG_FEATURED_REPOS,
+    async process({ action}){
+        const { orgID, featuredRepos } = action.payload
+        await ServerRelay.changeOrgFeaturedRepos(orgID, featuredRepos)
+        return { orgID, featuredRepos }
+    }
+})
 
 export default [
     createOrgLogic,
@@ -129,4 +140,5 @@ export default [
     addRepoToOrgLogic,
     removeRepoFromOrgLogic,
     changeOrgDescriptionLogic,
+    changeOrgFeaturedReposLogic,
 ]

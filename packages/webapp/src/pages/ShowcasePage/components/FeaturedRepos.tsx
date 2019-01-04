@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import FeaturedRepoCard from './FeaturedRepoCard'
 import EditRepoCard from './EditRepoCard'
-import SeeMoreCard from './SeeMoreCard'
 import AddNewCard from './AddNewCard'
 import SelectRepoDialog from './SelectRepoDialog'
 import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
@@ -68,6 +67,11 @@ class FeaturedRepos extends React.Component<Props, State>
 							</div>
 						}
 				</Grid>
+				{Object.keys(featuredRepos).length < 1 &&
+					<Typography>
+						No featured studies at the moment
+					</Typography>
+				}
 				{Object.keys(featuredRepos).map((repoID: string) => (
 					<Grid item xs={12} sm={6}>
 						{editing.indexOf(repoID) < 0 &&
@@ -76,6 +80,7 @@ class FeaturedRepos extends React.Component<Props, State>
 								canDelete={editMode}
 								onEdit={() => this.editRepoCard(repoID)}
 								onDelete={() => this.deleteRepoCard(repoID)}
+								selectRepo={this.props.selectRepo}
 							/>
 						}
 						{editing.indexOf(repoID) > -1 &&
@@ -88,14 +93,11 @@ class FeaturedRepos extends React.Component<Props, State>
 						}
 					</Grid>
 				))}
-				<Grid item xs={12} sm={6}>
-					{editMode && Object.keys(featuredRepos).length < 3 &&
+				{editMode && Object.keys(featuredRepos).length < 4 &&
+					<Grid item xs={12} sm={6}>
 						<AddNewCard onClick={this.openAddRepoDialog} />
-					}
-					{!editMode &&
-						<SeeMoreCard count={10} onClick={()=>console.log('clicked see')} />
-					}
-				</Grid>
+					</Grid>
+				}
 				<SelectRepoDialog
 					open={this.state.dialogOpen}
 					repoList={reposToAdd}
@@ -151,7 +153,6 @@ class FeaturedRepos extends React.Component<Props, State>
 					repoID: repoID,
 					title: repoID,
 					description: 'Add a description',
-					image: '',
 				}
 			},
 			editing: [
@@ -179,7 +180,7 @@ class FeaturedRepos extends React.Component<Props, State>
 
 	saveSetup() {
 		this.setState({ editMode: false })
-		console.log("SAVING")
+		this.props.onSave(this.state.featuredRepos)
 	}
 }
 
@@ -195,6 +196,8 @@ interface Props {
 	repos: {[repoID: string]: IRepo}
 	orgRepoList: string[]
 	canEdit?: boolean
+	onSave: (featuredRepos: {[repoID: string]: IFeaturedRepo}) => void
+	selectRepo: (payload: {repoID: string}) => void
 	classes: any
 }
 

@@ -129,6 +129,21 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
             }
         }
 
+        case OrgActionType.CHANGE_ORG_FEATURED_REPOS_SUCCESS: {
+            const { orgID, featuredRepos } = action.payload
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [orgID]: {
+                        ...state.orgs[orgID],
+                        featuredRepos: featuredRepos
+                    }
+                }
+            }
+
+        }
+
     }
     return state
 }
