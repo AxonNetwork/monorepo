@@ -22,8 +22,8 @@ const logo = require('../assets/logo-invert.png')
 
 @autobind
 class Header extends React.Component<Props, State> {
-	state={
-		anchorEl: null
+	state = {
+		anchorEl: null,
 	}
 
 	render() {
@@ -31,11 +31,7 @@ class Header extends React.Component<Props, State> {
 		return (
 			<AppBar position="static" className={classes.appbar}>
 				<Link to='/repo'>
-					<img
-						src={logo}
-						className={classes.img}
-						alt="Conscience Logo"
-						/>
+					<img src={logo} className={classes.img} alt="Conscience Logo"/>
 				</Link>
 				{user !== undefined &&
 					<div className={classes.avatar}>
@@ -116,8 +112,8 @@ const styles = (theme: Theme) => createStyles({
 		justifyContent: 'space-between',
 	},
 	img: {
-		width: 64,
-		height: 64,
+		width: 48,
+		height: 48,
 	},
 	avatar: {
 		display: 'flex',
