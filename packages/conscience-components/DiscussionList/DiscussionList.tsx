@@ -30,7 +30,7 @@ class DiscussionList extends React.Component<Props>
                     const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
                     const username = (this.props.users[ d.userID ] || {}).name || d.userID
                     const userPicture = (this.props.users[ d.userID ] || {}).picture
-                    return(
+                    return (
                     	<ListItem
 	                    	button
                             className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
@@ -55,7 +55,7 @@ class DiscussionList extends React.Component<Props>
                     	</ListItem>
                 	)
 				})}
-                <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ discussionID: 'new' })}>
+                <ListItem button className={classnames(classes.listItem, classes.listItemLast)} key={0} onClick={() => this.props.selectDiscussion({ discussionID: 'new' })}>
                     <ListItemText primary={'New Discussion'} />
                     <ListItemIcon>
                         <ControlPointIcon />
@@ -87,12 +87,14 @@ const styles = (theme: Theme) => createStyles({
         padding: 0,
         overflow: 'auto',
         flexGrow: 1,
-        borderTop: '1px solid #e0e0e0',
     },
     listItem: {
         background: 'white',
         borderTop: 0,
-        border: '1px solid #e0e0e0',
+        borderBottom: '1px solid #e0e0e0',
+    },
+    listItemLast: {
+        borderBottom: 'none',
     },
     listItemHover: {
         '&:hover': {
