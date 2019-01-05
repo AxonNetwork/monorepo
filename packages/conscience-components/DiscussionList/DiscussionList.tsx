@@ -19,7 +19,7 @@ class DiscussionList extends React.Component<Props>
 
         const order = this.props.order || Object.keys(discussions)
         let discussionsSorted = order.map(id => discussions[id])
-        if(this.props.maxLength !== undefined){
+        if (this.props.maxLength !== undefined) {
         	discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
         }
 
@@ -33,20 +33,20 @@ class DiscussionList extends React.Component<Props>
                     return (
                     	<ListItem
 	                    	button
-                            className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
+                            className={classnames(classes.listItem, {[classes.listItemSelected]: isSelected})}
 	                        classes={{ button: classes.listItemHover }}
                             onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                     	>
-                    		<ListItemText primary={d.subject} secondary={
+                    		<ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
                     			<React.Fragment>
                                         {showBadge &&
-                                            <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary">{null}</Badge>
+                                            <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
                                         }
-                                        <div className={classes.sidebarListItemSubtext}>
-                                            <div className={classes.sidebarListItemModifiedDate}>
+                                        <div className={classes.subheading}>
+                                            <div className={classes.modifiedDate}>
                                                 {moment(newestComment[d.discussionID]).fromNow()}
                                             </div>
-                                            <div className={classes.sidebarListItemAvatar}>
+                                            <div className={classes.avatar}>
                                                 <UserAvatar username={username} userPicture={userPicture} />
                                             </div>
                                         </div>
@@ -101,27 +101,32 @@ const styles = (theme: Theme) => createStyles({
             backgroundColor: 'rgba(0, 0, 0, 0.05)',
         },
     },
-    selectedDiscussion: {
+    listItemSelected: {
         backgroundColor: '#cee2f1',
     },
-    discussionBadge: {
+    badge: {
         width: 9,
         height: 9,
         right: 'auto',
         top: -17,
         left: -15,
     },
-    discussionBadgeWrapper: {
+    badgeWrapper: {
         display: 'block',
         height: 0,
     },
-    sidebarListItemSubtext: {
+    heading: {
+        // fontSize: '11pt',
+        fontWeight: 'bold',
+        color: 'rgba(0, 0, 0, 0.75)',
+    },
+    subheading: {
         display: 'flex',
     },
-    sidebarListItemModifiedDate: {
+    modifiedDate: {
         flexGrow: 1,
     },
-    sidebarListItemAvatar: {
+    avatar: {
         padding: 3,
 
         '& > div': {
