@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router'
+import { Redirect, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -92,8 +92,7 @@ class LoginPage extends React.Component<Props> {
 	}
 }
 
-interface Props {
-	location: any
+interface Props extends RouteComponentProps {
 	checkedLoggedIn: boolean
 	loggedIn: boolean
 	error: Error | undefined
