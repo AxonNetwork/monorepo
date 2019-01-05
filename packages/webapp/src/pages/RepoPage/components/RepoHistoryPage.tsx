@@ -20,7 +20,7 @@ class RepoHistoryPage extends React.Component<Props>
 	render() {
 		const { repo, classes } = this.props
 		const commits = repo.commits
-		if(commits === undefined) {
+		if (commits === undefined) {
 			return (
 				<div className={classes.progressContainer}>
 					<CircularProgress color="secondary" />
@@ -28,21 +28,21 @@ class RepoHistoryPage extends React.Component<Props>
 			)
 		}
 		const selectedCommit = this.props.match.params.commit
-		if(selectedCommit === undefined) {
+		if (selectedCommit === undefined) {
 			return (
 	            <Timeline
 	                repoID={repo.repoID}
 	                history={this.props.history}
 	            />
 			)
-		}else {
+		} else {
 			return (
 				<div className={classes.main}>
 					<CommitView
 						repo={repo}
 						user={this.props.user}
 						commit={commits[selectedCommit]}
-						codeColorScheme={undefined}
+						codeColorScheme={this.props.codeColorScheme}
 						getDiff={this.getDiff}
 						selectCommit={this.selectCommit}
 					/>
@@ -62,17 +62,17 @@ class RepoHistoryPage extends React.Component<Props>
 		}
 	}
 
-	selectCommit(payload: {selectedCommit: string | undefined}){
+	selectCommit(payload: {selectedCommit: string | undefined}) {
 		const repoID = this.props.match.params.repoID
 		const commit = payload.selectedCommit
-		if(commit === undefined) {
+		if (commit === undefined) {
 			this.props.history.push(`/repo/${repoID}/history`)
-		}else {
+		} else {
 			this.props.history.push(`/repo/${repoID}/history/${commit}`)
 		}
 	}
 
-	getDiff(payload: {repoID: string, repoRoot: string | undefined, commit: string}){
+	getDiff(payload: {repoID: string, repoRoot: string | undefined, commit: string}) {
 		const { repoID, commit } = payload
 		this.props.getDiff({ repoID, commit })
 	}
@@ -83,9 +83,10 @@ interface MatchParams {
 	repoID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
 	repo: IRepo
 	user: IUser
+    codeColorScheme: string | undefined
 	getDiff: (payload: {repoID: string, commit: string}) => void
 	history: History
 	classes: any
@@ -113,9 +114,11 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
 	const repoID = props.match.params.repoID
 	const repo = state.repo.repos[repoID]
 	const user = state.user.users[state.user.currentUser || ''] || {}
+    const codeColorScheme = (state.user.userSettings || {}).codeColorScheme
     return {
     	repo,
     	user,
+        codeColorScheme,
     }
 }
 
