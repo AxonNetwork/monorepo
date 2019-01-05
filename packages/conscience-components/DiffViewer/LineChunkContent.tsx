@@ -55,10 +55,10 @@ class LineChunkContent extends React.Component<Props>
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change: parse.Change, i: number) => {
+                        {chunk.changes.map((change, i) => {
                             switch (change.type) {
                                 case 'add':
-                                    return(
+                                    return (
                                         <TableRow key={i} className={classnames(classes.row, classes.added)}>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumAdd, classes.constrainWidth)}></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumAdd, classes.constrainWidth)}><code>{change.ln}</code></TableCell>
@@ -73,7 +73,7 @@ class LineChunkContent extends React.Component<Props>
                                         </TableRow>
                                     )
                                 case 'del':
-                                    return(
+                                    return (
                                         <TableRow key={i} className={classnames(classes.row, classes.deleted)}>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumDel, classes.constrainWidth)}><code>{change.ln}</code></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumDel, classes.constrainWidth)}><code></code></TableCell>
@@ -88,7 +88,7 @@ class LineChunkContent extends React.Component<Props>
                                         </TableRow>
                                     )
                                 default:
-                                    return(
+                                    return (
                                         <TableRow key={i} className={classes.row}>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.constrainWidth)}><code>{change.ln1}</code></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.constrainWidth)}><code>{change.ln2}</code></TableCell>

@@ -21,7 +21,8 @@ const logo = require('../assets/logo-invert.png')
 
 
 @autobind
-class Header extends React.Component<Props, State> {
+class Header extends React.Component<Props, State>
+{
 	state = {
 		anchorEl: null,
 	}
@@ -70,13 +71,13 @@ class Header extends React.Component<Props, State> {
 		)
 	}
 
-	openUserMenu(event: React.MouseEvent<HTMLElement>){
+	openUserMenu(event: React.MouseEvent<HTMLElement>) {
 		this.setState({ anchorEl: event.currentTarget })
 	}
 
-	selectItem(selection?: string){
+	selectItem(selection?: string) {
 		this.handleClose()
-		switch(selection){
+		switch(selection) {
 			case 'repos':
 				this.props.history.push('/repo')
 				return
@@ -89,7 +90,7 @@ class Header extends React.Component<Props, State> {
 		}
 	}
 
-	handleClose(){
+	handleClose() {
 		this.setState({ anchorEl: null })
 	}
 }
@@ -122,7 +123,7 @@ const styles = (theme: Theme) => createStyles({
 		marginRight: 64,
 	},
 	avatarButton: {
-		padding: 0
+		padding: 0,
 	},
 	menuPaper: {
 		marginTop: 14,
@@ -148,7 +149,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-	logout
+	logout,
 }
 
 export default connect(
