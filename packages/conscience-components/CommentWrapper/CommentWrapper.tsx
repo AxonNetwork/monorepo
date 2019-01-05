@@ -86,6 +86,7 @@ const styles = (theme: Theme) => createStyles({
     },
     commentHeaderLeft: {
         flexGrow: 1,
+        textAlign: 'left',
     },
     commentText: {
         padding: theme.spacing.unit * 2,

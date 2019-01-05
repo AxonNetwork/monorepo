@@ -124,6 +124,13 @@ const styles = () => createStyles({
             display: 'block',
             margin: '30px auto',
         },
+        '& blockquote': {
+            borderLeft: '2px solid #dedede',
+            marginLeft: 4,
+            paddingLeft: '1em',
+            color: '#848484',
+            fontStyle: 'italic',
+        },
     },
 })
 

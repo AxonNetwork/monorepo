@@ -45,7 +45,7 @@ class RepoHomePage extends React.Component<Props>
 				<div className={classes.sidebarComponents}>
 					{(repo.commitList || []).length > 0 &&
 						<Card className={classes.card}>
-							<CardContent classes={{ root: classes.securedTextCard}} >
+							<CardContent classes={{ root: classes.securedTextCard}}>
 								<SecuredText
 									repoID={repo.repoID}
 									history={this.props.history}
@@ -53,11 +53,11 @@ class RepoHomePage extends React.Component<Props>
 							</CardContent>
 						</Card>
 					}
+
 					<Card className={classes.card}>
 						<CardContent>
-							<Typography variant="h6">
-								Team
-							</Typography>
+							<Typography variant="h6">Team</Typography>
+
 							<div className={classes.sharedUsersRow}>
 							{sharedUsers.map((user: IUser | undefined) => {
 								if(user !== undefined){
@@ -69,11 +69,11 @@ class RepoHomePage extends React.Component<Props>
 							</div>
 						</CardContent>
 					</Card>
+
 					<Card className={classes.card}>
 						<CardContent>
-							<Typography variant="h6">
-								Recent Discussions
-							</Typography>
+							<Typography variant="h6">Recent Discussions</Typography>
+
 							<DiscussionList
 								repoID={repo.repoID}
 								history={this.props.history}
@@ -83,9 +83,8 @@ class RepoHomePage extends React.Component<Props>
 					</Card>
 					<Card className={classes.card}>
 						<CardContent>
-							<Typography variant="h6">
-								Recent Commits
-							</Typography>
+							<Typography variant="h6">Recent Commits</Typography>
+
 							<Timeline
 								repoID={repo.repoID}
 								history={this.props.history}

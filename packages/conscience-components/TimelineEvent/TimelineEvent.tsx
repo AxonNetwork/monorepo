@@ -95,6 +95,7 @@ const styles = (theme: Theme) => createStyles({
     },
     commitMessage: {
         fontSize: '11pt',
+        color: 'rgba(0, 0, 0, 0.75)',
         fontWeight: 'bold',
     },
     filename: {

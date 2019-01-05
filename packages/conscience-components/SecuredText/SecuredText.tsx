@@ -65,10 +65,10 @@ class SecuredText extends React.Component<Props, State>
                     {lastVerified !== undefined &&
                         <Typography>
                             {commit !== undefined &&
-                                <span>This commit secured on </span>
+                                <span>This commit secured </span>
                             }
                             {commit === undefined &&
-                                <span>Current version secured on </span>
+                                <span>Last secured </span>
                             }
                             <a href="#" className={classes.link} onClick={() => selectCommit({ selectedCommit: lastVerified.commit })}>
                                 {moment(lastVerified.verified).format(DATE_FORMAT)}
@@ -77,7 +77,7 @@ class SecuredText extends React.Component<Props, State>
                     }
                     {firstVerified !== undefined &&
                         <Typography>
-                            <span>First version secured on </span>
+                            <span>First secured </span>
                             <a href="#" className={classes.link} onClick={() => selectCommit({ selectedCommit: firstVerified.commit })}>
                                 {moment(firstVerified.verified).format(DATE_FORMAT)}
                             </a>

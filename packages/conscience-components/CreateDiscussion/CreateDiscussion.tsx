@@ -45,7 +45,7 @@ class CreateDiscussion extends React.Component<Props, State>
                 classes={this.props.commentWrapperClasses}
                 username={user.name}
                 userPicture={user.picture}
-                created={new Date().getTime()}
+                created={"right now"}
             >
                 <form className={classes.form} onSubmit={this.onSubmit}>
                     <TextField
