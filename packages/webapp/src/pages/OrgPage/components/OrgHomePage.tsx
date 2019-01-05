@@ -49,8 +49,10 @@ class OrgHomePage extends React.Component<Props>
                             >
                                 <EditIcon fontSize="small" />
                             </IconButton>
-							<CardContent>
-								<ReactMarkdown source={org.readme} />
+							<CardContent className={classes.readmeWrapper}>
+								<Typography className={classes.readmeWrapper}>
+									<ReactMarkdown source={org.readme} />
+								</Typography>
 							</CardContent>
 						</Card>
 					}
@@ -159,6 +161,26 @@ interface Props extends RouteComponentProps<MatchParams>{
 }
 
 const styles = (theme: Theme) => createStyles({
+	readmeWrapper:{
+        '& code': {
+            backgroundColor: '#f5f5f5',
+            color: '#d00707',
+            padding: '2px 3px',
+            borderRadius: 2,
+            fontFamily: 'Consolas, Menlo, Monaco, "Courier New", Courier, monospace',
+            fontSize: '0.8rem',
+        },
+        '& pre code': {
+            color: 'inherit',
+            backgroundColor: 'inherit',
+            padding: 'inherit',
+            borderRadius: 'unset',
+        },
+        '& img': {
+            display: 'block',
+            margin: '30px auto',
+        },
+    },
 	progressContainer: {
 		width: '100%',
 		display: 'flex',
