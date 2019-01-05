@@ -4,11 +4,7 @@ import { withRouter, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-import Grow from '@material-ui/core/Grow'
-import Paper from '@material-ui/core/Paper'
-import Popper from '@material-ui/core/Popper'
-import MenuList from '@material-ui/core/MenuList'
+import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
 import UserAvatar from 'conscience-components/UserAvatar'
@@ -42,29 +38,16 @@ class Header extends React.Component<Props, State>
 								userPicture={user.picture}
 							/>
 						</IconButton>
-						<Popper
-							open={Boolean(this.state.anchorEl)}
+						<Menu
+							classes={{ paper: classes.menuPaper }}
+							open={!!this.state.anchorEl}
 							anchorEl={this.state.anchorEl}
-							transition
+							onClose={this.handleClose}
 						>
-							{({ TransitionProps, placement }) => (
-								<Grow
-									{...TransitionProps}
-									style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-								>
-									<Paper className={classes.menuPaper}>
-										<div className={classes.pointerTriangle} />
-										<ClickAwayListener onClickAway={this.handleClose}>
-											<MenuList>
-												<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
-												<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
-												<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
-											</MenuList>
-										</ClickAwayListener>
-									</Paper>
-								</Grow>
-							)}
-						</Popper>
+							<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
+							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
+							<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
+						</Menu>
 					</div>
 				}
 			</AppBar>
@@ -126,19 +109,9 @@ const styles = (theme: Theme) => createStyles({
 		padding: 0,
 	},
 	menuPaper: {
-		marginTop: 14,
+		marginTop: 36,
 		marginRight: 32,
 	},
-	pointerTriangle: {
-		position: 'absolute',
-		top: -5,
-		right: 28,
-		width: 0,
-		height: 0,
-		borderLeft: '5px solid transparent',
-		borderRight: '5px solid transparent',
-		borderBottom: '5px solid white',
-	}
 })
 
 const mapStateToProps = (state: IGlobalState) => {
