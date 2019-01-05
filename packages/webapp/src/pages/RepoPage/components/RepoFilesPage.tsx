@@ -42,8 +42,8 @@ class RepoFilesPage extends React.Component<Props>
 		const selected = this.props.match.params.filename || ""
 		const repoID = this.props.match.params.repoID || ""
 		const file = files[selected]
-		if(file !== undefined) {
-			return(
+		if (file !== undefined) {
+			return (
 				<div>
 					<div className={classes.fileInfo}>
 						<Breadcrumbs
@@ -64,9 +64,7 @@ class RepoFilesPage extends React.Component<Props>
 							<FileViewer filename={selected} repoID={repoID} />
 						</div>
 						<div className={classes.createDiscussion}>
-							<Typography variant="h5">
-								Start a discussion on {selected}:
-							</Typography>
+							<Typography variant="h5">Start a discussion on {selected}</Typography>
 							<CreateDiscussion repoID={repo.repoID} attachedTo={selected} />
 						</div>
 					</div>
