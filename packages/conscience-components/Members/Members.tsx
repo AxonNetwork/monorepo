@@ -69,7 +69,7 @@ class Members extends React.Component<Props, State>
                         Add Member
                     </Button>
 
-                    <Dialog open={this.state.dialogOpen}>
+                    <Dialog open={this.state.dialogOpen} onClose={this.onClickCancelDialog}>
                         <DialogTitle>Add Member</DialogTitle>
                         <DialogContent className={classes.dialog}>
                             <TextField
