@@ -1,6 +1,6 @@
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import TimelineEvent from 'conscience-components/Timeline/TimelineEvent'
+import TimelineEvent from 'conscience-components/TimelineEvent'
 import { IOrganization, IRepo, IUser,  } from 'conscience-lib/common'
 import { collateTimelines, removeEmail, extractEmail } from 'conscience-lib/utils'
 

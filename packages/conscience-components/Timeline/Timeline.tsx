@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import TablePagination from '@material-ui/core/TablePagination'
-import TimelineEvent from './TimelineEvent'
+import TimelineEvent from '../TimelineEvent'
 import { IUser, ITimelineEvent } from 'conscience-lib/common'
 import { autobind, removeEmail, extractEmail } from 'conscience-lib/utils'
 

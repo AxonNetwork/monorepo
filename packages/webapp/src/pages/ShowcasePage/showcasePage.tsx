@@ -12,6 +12,7 @@ import DescriptionIcon from '@material-ui/icons/Description'
 import AssessmentIcon from '@material-ui/icons/Assessment'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import { Parallax } from 'react-parallax'
+import UserAvatar from 'conscience-components/UserAvatar'
 import Container from './components/Container'
 import FeaturedRepos from './components/FeaturedRepos'
 import UploadBannerDialog from './components/UploadBannerDialog'
@@ -138,7 +139,11 @@ class ShowcasePage extends React.Component<Props, State>
 							const user = users[id] || {}
 							return (
 								<div className={classes.teamProfile}>
-									<img src={user.picture} />
+									<UserAvatar
+										classes={{ root: classes.teamAvatar }}
+										username={user.name}
+										userPicture={user.picture}
+									/>
 									<Typography>
 										{user.name}
 									</Typography>
@@ -296,15 +301,15 @@ const styles = (theme: Theme) => createStyles({
 		flexDirection: 'column',
 		alignItems: 'center',
 		margin: 16,
-		'& img': {
-			width: 150,
-			height: 150,
-			borderRadius: '50%',
-		},
 		'& p': {
 			fontSize: '1.1rem',
 			marginTop: 8,
 		}
+	},
+	teamAvatar: {
+		width: 150,
+		height: 150,
+		fontSize: '2rem',
 	},
 	teamSeeMore: {
 		width: '100%',

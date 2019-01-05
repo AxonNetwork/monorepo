@@ -22,7 +22,6 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
     type: UserActionType.WHO_AM_I,
     async process({ action }, dispatch) {
         const jwt = localStorage.getItem('jwt')
-        console.log(jwt)
         if( !jwt || jwt.length === 0 ) {
             return new Error("No jwt")
         }

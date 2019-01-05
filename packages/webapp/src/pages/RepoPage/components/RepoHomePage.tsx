@@ -27,7 +27,7 @@ class RepoHomePage extends React.Component<Props>
 		const readmeExists = (repo.files || {})['README.md']
 
 		return (
-			<main className={classes.main}>
+			<div className={classes.main}>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readmeExists })}>
 					{readmeExists &&
 							<FileViewer repoID={repo.repoID} filename={'README.md'}/>
@@ -95,7 +95,7 @@ class RepoHomePage extends React.Component<Props>
 						</CardContent>
 					</Card>
 				</div>
-			</main>
+			</div>
 		)
 	}
 
@@ -124,7 +124,6 @@ const styles = (theme: Theme) => createStyles({
 		position: 'relative',
 		flexGrow: 1,
 		marginRight: 16,
-		maxHeight: 500,
 		minWidth: 0,
 	},
     readmeContainerNoReadme: {

@@ -15,7 +15,7 @@ class TimelineEvent extends React.Component<Props>
     render() {
         const { event, classes } = this.props
         return (
-            <div 
+            <div
                 className={classes.event}
                 onClick={() => this.props.selectCommit(event.commit, event.repoID)}
             >
