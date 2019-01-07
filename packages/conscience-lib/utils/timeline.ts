@@ -65,9 +65,23 @@ export function getFirstVerifiedEvent(commitList: string[], commits: {[commitHas
     return undefined
 }
 
+export function getLastUpdated(commitList: string[], commits: {[commitHash: string]: ITimelineEvent}, filename: string|undefined) {
+    if(!filename) {
+        return undefined
+    }
+    for (let i = commitList.length -1; i >= 0; i--) {
+        const commit = commits[commitList[i]]
+        if (commit.files.indexOf(filename) > -1) {
+            return commit
+        }
+    }
+    return undefined
+}
+
 export default {
     getLastVerifiedEvent,
     getLastVerifiedEventCommit,
     getLastVerifiedEventFile,
     getFirstVerifiedEvent,
+    getLastUpdated,
 }

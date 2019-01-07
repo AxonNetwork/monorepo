@@ -14,6 +14,7 @@ class SecuredText extends React.Component<Props, State>
     state={
         lastVerified: undefined,
         firstVerified: undefined,
+        lastUpdated: undefined,
     }
 
     componentDidMount(){
@@ -36,21 +37,23 @@ class SecuredText extends React.Component<Props, State>
             return
         }
         let lastVerified = undefined
+        let lastUpdated = undefined
         if(filename){
             lastVerified = timelineUtils.getLastVerifiedEventFile(commitList || [], commits || {}, filename)
+            lastUpdated = timelineUtils.getLastUpdated(commitList || [], commits || {}, filename)
         }else{
             lastVerified = timelineUtils.getLastVerifiedEvent(commitList || [], commits || {})
         }
         const firstVerified = timelineUtils.getFirstVerifiedEvent(commitList || [], commits || {}, filename)
-        this.setState({ lastVerified, firstVerified })
+        this.setState({ lastVerified, firstVerified, lastUpdated })
     }
 
     render() {
-        const { lastVerified, firstVerified } = this.state
-        if (firstVerified === undefined && lastVerified === undefined) {
+        const { lastVerified, firstVerified, lastUpdated } = this.state
+        if (firstVerified === undefined && lastVerified === undefined && lastUpdated === undefined) {
             return null
         }
-        const { commit, lastUpdated, selectCommit, classes } = this.props
+        const { commit, selectCommit, classes } = this.props
         return (
             <div className={classnames(classes.securedContainer, classes.root)}>
                 <div className={classes.iconContainer}>
@@ -59,7 +62,10 @@ class SecuredText extends React.Component<Props, State>
                 <div>
                     {lastUpdated &&
                         <Typography>
-                            Last updated {moment(lastUpdated).format(DATE_FORMAT)}
+                            <span>Last updated </span>
+                            <a href="#" className={classes.link} onClick={() => selectCommit({ selectedCommit: lastUpdated.commit })}>
+                                {moment(lastUpdated.time).format(DATE_FORMAT)}
+                            </a>
                         </Typography>
                     }
                     {lastVerified !== undefined &&
@@ -94,7 +100,6 @@ interface Props {
     commitList: string[]
     commit?: string
     filename?: string
-    lastUpdated?: Date
     selectCommit: (payload: { selectedCommit: string }) => void
     classes: any
 }
@@ -102,6 +107,7 @@ interface Props {
 interface State {
     lastVerified: ITimelineEvent | undefined
     firstVerified: ITimelineEvent | undefined
+    lastUpdated: ITimelineEvent | undefined
 }
 
 const styles = (theme: Theme) => createStyles({

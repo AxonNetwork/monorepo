@@ -114,7 +114,7 @@ class ShowcasePage extends React.Component<Props, State>
 								selectRepo={this.selectRepo}
 							/>
 						</Grid>
-						<Grid item xs={false} sm={4}>
+						<Grid item xs={false} sm={4} className={classes.timelineContainer}>
 							<Typography variant='h5'>
 								Live Updates
 							</Typography>
@@ -284,6 +284,10 @@ const styles = (theme: Theme) => createStyles({
 		'& svg': {
 			marginRight: 8
 		}
+	},
+	timelineContainer: {
+		height: '100%',
+		overflow: 'hidden',
 	},
 	teamHeader: {
 		textAlign: 'center',

@@ -18,7 +18,6 @@ class ConnectedSecuredText extends React.Component<Props>
 				commitList={this.props.commitList}
 				commit={this.props.commit}
 				filename={this.props.filename}
-				lastUpdated={this.props.lastUpdated}
 				selectCommit={this.selectCommit}
 			/>
 		)
