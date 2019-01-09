@@ -1,4 +1,5 @@
 import path from 'path'
+import urljoin from 'url-join'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
@@ -23,15 +24,6 @@ class FileViewer extends React.Component<Props, State>
         }
 
         const extension = path.extname(filename).toLowerCase().substring(1)
-        const filetype = filetypes[extension]
-        if (filetype === undefined || (filetype.viewers || []).length === 0) {
-            return <Typography>We don't have a viewer for this kind of file yet.</Typography>
-        }
-
-        const Viewer = fileViewers[ filetype.viewers[0] ]
-        if (Viewer === undefined) {
-            return <Typography>We don't have a viewer for this kind of file yet.</Typography>
-        }
 
         // @@TODO: filetype standardization
         switch (extension) {
@@ -39,10 +31,7 @@ class FileViewer extends React.Component<Props, State>
             return (
                 <Card>
                     <CardContent classes={{ root: classes.dataRoot }}>
-                        <DataViewer
-                            fileType={extension}
-                            contents={fileContents}
-                        />
+                        <DataViewer fileType={extension} contents={fileContents} />
                     </CardContent>
                 </Card>
             )
@@ -51,12 +40,22 @@ class FileViewer extends React.Component<Props, State>
             return (
                 <Card>
                     <CardContent classes={{ root: classes.embedRoot }}>
-                        <embed src={path.join(this.props.directEmbedPrefix, this.props.filename)} />
+                        <embed src={urljoin(this.props.directEmbedPrefix, this.props.filename)} />
                     </CardContent>
                 </Card>
             )
 
         default:
+            const filetype = filetypes[extension]
+            if (filetype === undefined || (filetype.viewers || []).length === 0) {
+                return <Typography>We don't have a viewer for this kind of file yet.</Typography>
+            }
+
+            const Viewer = fileViewers[ filetype.viewers[0] ]
+            if (Viewer === undefined) {
+                return <Typography>We don't have a viewer for this kind of file yet.</Typography>
+            }
+
             return <Viewer
                         repoID={this.props.repo.repoID}
                         directEmbedPrefix={this.props.directEmbedPrefix}
@@ -77,6 +76,7 @@ class FileViewer extends React.Component<Props, State>
     }
 
     async updateFileContents() {
+        // Don't handle binary files, only text
         const extension = path.extname(this.props.filename).toLowerCase().substring(1)
         if (!(filetypes[extension] || {}).isTextFile) {
             this.setState({ fileContents: '' })
