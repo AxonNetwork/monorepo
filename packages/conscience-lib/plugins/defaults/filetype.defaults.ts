@@ -2,7 +2,7 @@
 export default {
     pluginType: 'file type',
     fileTypes: [
-        { extensions: ['csv'],         type: 'data', isTextFile: true, viewers: ['table'], editors: [] },
+        { extensions: ['csv'],         type: 'data', isTextFile: true, viewers: ['data-viewer'], editors: [] },
         { extensions: ['xls', 'xlsx'], type: 'data', isTextFile: true, viewers: [], editors: [] },
 
         { extensions: ['go'],                type: 'code', isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'go' },
@@ -19,10 +19,10 @@ export default {
         { extensions: ['txt'],                     type: 'text', isTextFile: true, viewers: ['code-viewer'], editors: ['text'] },
         { extensions: ['md', 'mdown', 'markdown'], type: 'text', isTextFile: true, viewers: ['markdown-viewer'], editors: ['markdown'] },
 
-        { extensions: ['png'],                type: 'image', isTextFile: false, viewers: ['img'], editors: [] },
-        { extensions: ['jpg', 'jpeg', 'jpe'], type: 'image', isTextFile: false, viewers: ['img'], editors: [] },
-        { extensions: ['gif'],                type: 'image', isTextFile: false, viewers: ['img'], editors: [] },
-        { extensions: ['tif', 'tiff'],        type: 'image', isTextFile: false, viewers: ['img'], editors: [] },
+        { extensions: ['png'],                type: 'image', isTextFile: false, viewers: ['img-viewer'], editors: [] },
+        { extensions: ['jpg', 'jpeg', 'jpe'], type: 'image', isTextFile: false, viewers: ['img-viewer'], editors: [] },
+        { extensions: ['gif'],                type: 'image', isTextFile: false, viewers: ['img-viewer'], editors: [] },
+        { extensions: ['tif', 'tiff'],        type: 'image', isTextFile: false, viewers: ['img-viewer'], editors: [] },
 
         { extensions: ['pdf'], type: 'pdf', isTextFile: false, viewers: ['embed'], editors: [] },
     ]

@@ -35,6 +35,7 @@ const pluginRegistry = function() {
         require('./defaults/filetype.defaults.ts').default,
         require('./defaults/viewer.img.tsx').default,
         require('./defaults/viewer.code.tsx').default,
+        require('./defaults/viewer.data.tsx').default,
         require('./defaults/viewer.markdown.tsx').default,
     ] as IPlugin[]
 

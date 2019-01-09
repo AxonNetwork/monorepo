@@ -24,9 +24,14 @@ export const fileViewers = function() {
     return viewers
 }()
 
+// Get the normalized extension for the given filename
+export function ext(filename: string) {
+    return path.extname(filename).toLowerCase().substring(1)
+}
+
 // @@TODO: filetype standardization
 export function fileType(filename: string) {
-    const extension = path.extname(filename).substr(1)
+    const extension = ext(filename)
     if (filetypes[extension] !== undefined) {
         return filetypes[extension].type
     } else {
@@ -35,12 +40,17 @@ export function fileType(filename: string) {
 }
 
 export function isTextFile(filename: string) {
-    const extension = path.extname(filename).substr(1)
+    const extension = ext(filename)
     return (filetypes[extension] || {}).isTextFile || false
 }
 
+export function getViewers(filename: string) {
+    console.log('xyzzy', filetypes[ext(filename)])
+    return ((filetypes[ext(filename)] || {}).viewers || []).map(viewerName => fileViewers[viewerName]).filter(x => x !== undefined)
+}
+
 export function getLanguage(filename: string) {
-    const extension = path.extname(filename).substr(1)
+    const extension = ext(filename)
     const filetype = filetypes[extension] || {}
     if (filetype.type === 'code') {
         return filetype.language || extension

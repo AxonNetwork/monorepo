@@ -4,7 +4,7 @@ export function parseCSV(contents: string|null|undefined) {
         return []
     }
 
-    const lines = contents.split('\n')
+    const lines = contents.trim().split('\n')
     const data = lines.map(line => line.split(','))
     return data
 }

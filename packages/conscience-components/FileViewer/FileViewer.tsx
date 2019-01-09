@@ -7,10 +7,9 @@ import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import RenderMarkdown from '../RenderMarkdown'
 import CodeViewer from '../CodeViewer'
-import DataViewer from '../DataViewer'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { filetypes, fileViewers } from 'conscience-lib/utils/fileTypes'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 
 @autobind
@@ -27,15 +26,6 @@ class FileViewer extends React.Component<Props, State>
 
         // @@TODO: filetype standardization
         switch (extension) {
-        case 'csv':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.dataRoot }}>
-                        <DataViewer fileType={extension} contents={fileContents} />
-                    </CardContent>
-                </Card>
-            )
-
         case 'pdf':
             return (
                 <Card>
@@ -46,15 +36,13 @@ class FileViewer extends React.Component<Props, State>
             )
 
         default:
-            const filetype = filetypes[extension]
-            if (filetype === undefined || (filetype.viewers || []).length === 0) {
+            console.log('file contents', filename)
+            const viewers = filetypes.getViewers(filename)
+            if (viewers.length === 0) {
                 return <Typography>We don't have a viewer for this kind of file yet.</Typography>
             }
 
-            const Viewer = fileViewers[ filetype.viewers[0] ]
-            if (Viewer === undefined) {
-                return <Typography>We don't have a viewer for this kind of file yet.</Typography>
-            }
+            const Viewer = viewers[0]
 
             return <Viewer
                         repoID={this.props.repo.repoID}
@@ -77,8 +65,7 @@ class FileViewer extends React.Component<Props, State>
 
     async updateFileContents() {
         // Don't handle binary files, only text
-        const extension = path.extname(this.props.filename).toLowerCase().substring(1)
-        if (!(filetypes[extension] || {}).isTextFile) {
+        if (!filetypes.isTextFile(this.props.filename)) {
             this.setState({ fileContents: '' })
             return
         }
@@ -125,11 +112,6 @@ const styles = () => createStyles({
         padding: 48,
         minWidth: 680,
     },
-    codeRoot: {
-        padding: 0,
-        paddingBottom: '0 !important',
-        minWidth: 680,
-    },
     embedRoot: {
         padding: 0,
         paddingBottom: '0 !important',
@@ -138,15 +120,6 @@ const styles = () => createStyles({
         '& embed': {
             width: '100%',
             height: 800,
-        },
-    },
-    dataRoot: {
-    },
-    textViewerMode: {
-        textAlign: 'right',
-
-        '& a': {
-            textDecoration: 'none',
         },
     },
 })
