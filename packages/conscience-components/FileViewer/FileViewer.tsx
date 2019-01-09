@@ -1,13 +1,15 @@
+import path from 'path'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import Typography from '@material-ui/core/Typography'
 import RenderMarkdown from '../RenderMarkdown'
 import CodeViewer from '../CodeViewer'
 import DataViewer from '../DataViewer'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import path from 'path'
+import { filetypes, fileViewers } from 'conscience-lib/utils/fileTypes'
 
 
 @autobind
@@ -27,30 +29,56 @@ class FileViewer extends React.Component<Props, State>
         case 'md':
         case 'mdown':
         case 'markdown':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.mdRoot }}>
-                        <RenderMarkdown
-                            text={fileContents}
-                            repo={this.props.repo}
-                            comments={this.props.comments}
-                            users={this.props.users}
-                            discussions={this.props.discussions}
-                            imgPrefix={this.props.imgPrefix}
-                            codeColorScheme={this.props.codeColorScheme}
-                            selectFile={this.props.selectFile}
-                            selectDiscussion={this.props.selectDiscussion}
-                        />
-                    </CardContent>
-                </Card>
-            )
+            if (this.state.textViewerMode === 'raw') {
+                return (
+                    <Card>
+                        <CardContent classes={{ root: classes.mdRoot }}>
+                            <RawOrViewer
+                                mode={this.state.textViewerMode}
+                                onChangeMode={this.onChangeTextViewerMode}
+                                classes={classes}
+                             />
+                            <CodeViewer
+                                language={extension}
+                                contents={fileContents}
+                                codeColorScheme={this.props.codeColorScheme}
+                                backgroundColor={this.props.backgroundColor}
+                            />
+                        </CardContent>
+                    </Card>
+                )
+            } else {
+                return (
+                    <Card>
+                        <CardContent classes={{ root: classes.mdRoot }}>
+                            <RawOrViewer
+                                mode={this.state.textViewerMode}
+                                onChangeMode={this.onChangeTextViewerMode}
+                                classes={classes}
+                             />
+                            <RenderMarkdown
+                                text={fileContents}
+                                repo={this.props.repo}
+                                comments={this.props.comments}
+                                users={this.props.users}
+                                discussions={this.props.discussions}
+                                directEmbedPrefix={this.props.directEmbedPrefix}
+                                dirname={path.dirname(this.props.filename)}
+                                codeColorScheme={this.props.codeColorScheme}
+                                selectFile={this.props.selectFile}
+                                selectDiscussion={this.props.selectDiscussion}
+                            />
+                        </CardContent>
+                    </Card>
+                )
+            }
+
         case 'jpg':
         case 'jpeg':
         case 'gif':
         case 'png':
         case 'tif':
         case 'tiff':
-            return <img src={fileContents} className={classes.imageEmbed} />
         case 'go':
         case 'js':
         case 'jsx':
@@ -64,18 +92,9 @@ class FileViewer extends React.Component<Props, State>
         case 'rs':
         case 'r':
         case 'txt':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.codeRoot }}>
-                        <CodeViewer
-                            language={extension}
-                            contents={fileContents}
-                            codeColorScheme={this.props.codeColorScheme}
-                            backgroundColor={this.props.backgroundColor}
-                        />
-                    </CardContent>
-                </Card>
-            )
+            const Viewer = fileViewers[ filetypes[extension].viewers[0] ]
+            return <Viewer directEmbedPrefix={this.props.directEmbedPrefix} filename={filename} fileContents={fileContents} />
+
         case 'csv':
             return(
                 <Card>
@@ -87,40 +106,64 @@ class FileViewer extends React.Component<Props, State>
                     </CardContent>
                 </Card>
             )
+
+        case 'pdf':
+            return (
+                <Card>
+                    <CardContent classes={{ root: classes.embedRoot }}>
+                        <embed src={path.join(this.props.directEmbedPrefix, this.props.filename)} />
+                    </CardContent>
+                </Card>
+            )
+
         default:
             return <div>We don't have a viewer for this kind of file yet.</div>
         }
     }
+
+    onChangeTextViewerMode(mode: 'raw' | 'viewer') {
+        this.setState({ textViewerMode: mode })
+    }
+
 
     componentDidMount() {
         this.updateFileContents()
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (
-            (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo)
-        ) {
+        if (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo) {
             this.updateFileContents()
         }
     }
 
     async updateFileContents() {
-        try{
+        try {
             const fileContents = await this.props.getFileContents(this.props.filename)
             this.setState({ fileContents })
-        }catch(error){
+        } catch(error) {
             this.setState({ fileContents: '', error })
         }
     }
 }
 
+function RawOrViewer(props: { mode: 'raw'|'viewer', onChangeMode: (mode: 'raw'|'viewer') => void, classes: any }) {
+    const { mode, onChangeMode, classes } = props
+    return (
+        <Typography className={classes.textViewerMode}>
+            <a href="#" onClick={() => onChangeMode('raw')}    style={{ fontWeight: mode === 'raw'    ? 500 : 400 }}>Raw</a> |
+            <a href="#" onClick={() => onChangeMode('viewer')} style={{ fontWeight: mode === 'viewer' ? 500 : 400 }}>Viewer</a>
+        </Typography>
+    )
+}
+
 interface Props {
     filename: string
+    directEmbedPrefix: string
+
     repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
-    imgPrefix: string
     codeColorScheme?: string | undefined
     backgroundColor?: string
     getFileContents: (filename: string) => Promise<string>
@@ -130,6 +173,7 @@ interface Props {
 }
 
 interface State {
+    textViewerMode: 'raw' | 'viewer'
     fileContents: string
     error: Error | undefined
 }
@@ -150,8 +194,25 @@ const styles = () => createStyles({
         paddingBottom: '0 !important',
         minWidth: 680,
     },
+    embedRoot: {
+        padding: 0,
+        paddingBottom: '0 !important',
+        minWidth: 680,
+
+        '& embed': {
+            width: '100%',
+            height: 800,
+        },
+    },
     dataRoot: {
-    }
+    },
+    textViewerMode: {
+        textAlign: 'right',
+
+        '& a': {
+            textDecoration: 'none',
+        },
+    },
 })
 
 export default withStyles(styles)(FileViewer)

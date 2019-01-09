@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { withStyles, createStyles } from '@material-ui/core/styles'
@@ -23,6 +24,7 @@ class RenderMarkdown extends React.Component<Props>
                     renderers={{
                         shortcode: this.parseShortcodes,
                         code: this.renderCode,
+                        image: this.renderImg,
                     }}
                 />
             </Typography>
@@ -39,13 +41,22 @@ class RenderMarkdown extends React.Component<Props>
         )
     }
 
+    renderImg(node: any) {
+        console.log('node', node)
+        return (
+            <img
+                src={this.props.directEmbedPrefix + '/' + this.props.dirname + '/' + node.src}
+            />
+        )
+    }
+
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
         const { repo, comments, users, discussions } = this.props
 
         switch (identifier) {
         case 'image':
-            return <img src={this.props.imgPrefix + '/' + contents} className={this.props.classes.embeddedImage} />
+            return <img src={path.join(this.props.directEmbedPrefix, contents)} className={this.props.classes.embeddedImage} />
         case 'file':
             return (
                 <FileLink
@@ -93,7 +104,8 @@ interface Props {
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
-    imgPrefix: string
+    directEmbedPrefix: string
+    dirname: string
     codeColorScheme?: string | undefined
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
