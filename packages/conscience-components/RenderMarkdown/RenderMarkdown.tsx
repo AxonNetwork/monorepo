@@ -1,4 +1,4 @@
-import path from 'path'
+import urljoin from 'url-join'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { withStyles, createStyles } from '@material-ui/core/styles'
@@ -42,12 +42,11 @@ class RenderMarkdown extends React.Component<Props>
     }
 
     renderImg(node: any) {
-        console.log('node', node)
-        return (
-            <img
-                src={this.props.directEmbedPrefix + '/' + this.props.dirname + '/' + node.src}
-            />
-        )
+        if (node.src.startsWith('http://') || node.src.startsWith('https://')) {
+            return <img src={node.src} />
+        } else {
+            return <img src={urljoin(this.props.directEmbedPrefix, this.props.dirname, node.src)} />
+        }
     }
 
     parseShortcodes(node: { identifier: string, contents: string }) {
@@ -56,7 +55,7 @@ class RenderMarkdown extends React.Component<Props>
 
         switch (identifier) {
         case 'image':
-            return <img src={path.join(this.props.directEmbedPrefix, contents)} className={this.props.classes.embeddedImage} />
+            return <img src={urljoin(this.props.directEmbedPrefix, contents)} className={this.props.classes.embeddedImage} />
         case 'file':
             return (
                 <FileLink

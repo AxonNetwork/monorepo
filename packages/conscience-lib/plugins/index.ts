@@ -20,6 +20,7 @@ export interface IFileViewerPlugin {
 }
 
 export type IViewerComponent = React.Component<{
+    repoID: string
     directEmbedPrefix: string
     filename: string
     fileContents?: string
@@ -34,6 +35,7 @@ const pluginRegistry = function() {
         require('./defaults/filetype.defaults.ts').default,
         require('./defaults/viewer.img.tsx').default,
         require('./defaults/viewer.code.tsx').default,
+        require('./defaults/viewer.markdown.tsx').default,
     ] as IPlugin[]
 
     // Load user plugins (@@TODO)

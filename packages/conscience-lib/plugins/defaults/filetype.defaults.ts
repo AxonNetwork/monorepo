@@ -17,7 +17,7 @@ export default {
 
         { extensions: ['doc', 'docx'],             type: 'text', isTextFile: true, viewers: [], editors: [] },
         { extensions: ['txt'],                     type: 'text', isTextFile: true, viewers: ['code-viewer'], editors: ['text'] },
-        { extensions: ['md', 'mdown', 'markdown'], type: 'text', isTextFile: true, viewers: ['markdown-renderer'], editors: ['markdown'] },
+        { extensions: ['md', 'mdown', 'markdown'], type: 'text', isTextFile: true, viewers: ['markdown-viewer'], editors: ['markdown'] },
 
         { extensions: ['png'],                type: 'image', isTextFile: false, viewers: ['img'], editors: [] },
         { extensions: ['jpg', 'jpeg', 'jpe'], type: 'image', isTextFile: false, viewers: ['img'], editors: [] },

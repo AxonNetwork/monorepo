@@ -27,6 +27,7 @@ class CodeViewerWrapper extends React.Component<Props>
 type Props = OwnProps & StateProps
 
 interface OwnProps {
+    repoID: string
     directEmbedPrefix: string
     filename: string
     fileContents?: string

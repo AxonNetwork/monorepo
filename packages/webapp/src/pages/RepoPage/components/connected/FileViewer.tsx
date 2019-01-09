@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
+import axios from 'axios'
 import FileViewer from 'conscience-components/FileViewer'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
-import { autobind, fileType } from 'conscience-lib/utils'
-import axios from 'axios'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
@@ -33,10 +33,6 @@ class ConnectedFileViewer extends React.Component<Props>
     }
 
     async getFileContents(filename: string) {
-        if (['image', 'pdf'].includes(fileType(filename))) {
-            return ''
-        }
-
         const directEmbedPrefix = this.directEmbedPrefix()
         const fileUrl = `${directEmbedPrefix}/${filename}`
         const resp = await axios.get<string>(fileUrl)
