@@ -12,7 +12,7 @@ import autobind from 'conscience-lib/utils/autobind'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 
 @autobind
-class MarkdownViewer extends React.Component<Props, State>
+class MarkdownViewerPlugin extends React.Component<Props, State>
 {
     state = {
         textViewerMode: 'viewer',
@@ -21,65 +21,30 @@ class MarkdownViewer extends React.Component<Props, State>
     render() {
         const { fileContents, classes } = this.props
 
-        // if (this.state.textViewerMode === 'raw') {
-        //     const extension = path.extname(this.props.filename).toLowerCase().substring(1)
-        //     return (
-        //         <Card>
-        //             <CardContent classes={{ root: classes.mdRoot }}>
-        //                 {<RawOrViewer
-        //                     mode={this.state.textViewerMode}
-        //                     onChangeMode={this.onChangeTextViewerMode}
-        //                     classes={classes}
-        //                  />}
-        //                 <CodeViewer
-        //                     language={extension}
-        //                     fileContents={fileContents}
-        //                     codeColorScheme={this.props.codeColorScheme}
-        //                 />
-        //             </CardContent>
-        //         </Card>
-        //     )
-        // } else {
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.mdRoot }}>
-                        {/*<RawOrViewer
-                            mode={this.state.textViewerMode}
-                            onChangeMode={this.onChangeTextViewerMode}
-                            classes={classes}
-                         />*/}
-                        <RenderMarkdown
-                            text={fileContents}
-                            repo={this.props.repo}
-                            comments={this.props.comments}
-                            users={this.props.users}
-                            discussions={this.props.discussions}
-                            directEmbedPrefix={this.props.directEmbedPrefix}
-                            dirname={path.dirname(this.props.filename)}
-                            codeColorScheme={this.props.codeColorScheme}
-                            selectFile={null /*this.props.selectFile*/}
-                            selectDiscussion={null /*this.props.selectDiscussion*/}
-                        />
-                    </CardContent>
-                </Card>
-            )
-        // }
+        return (
+            <Card>
+                <CardContent classes={{ root: classes.mdRoot }}>
+                    <RenderMarkdown
+                        text={fileContents}
+                        repo={this.props.repo}
+                        comments={this.props.comments}
+                        users={this.props.users}
+                        discussions={this.props.discussions}
+                        directEmbedPrefix={this.props.directEmbedPrefix}
+                        dirname={path.dirname(this.props.filename)}
+                        codeColorScheme={this.props.codeColorScheme}
+                        selectFile={null /*this.props.selectFile*/}
+                        selectDiscussion={null /*this.props.selectDiscussion*/}
+                    />
+                </CardContent>
+            </Card>
+        )
     }
 
     onChangeTextViewerMode(mode: 'raw'|'viewer') {
         this.setState({ textViewerMode: mode })
     }
 }
-
-// function RawOrViewer(props: { mode: 'raw'|'viewer', onChangeMode: (mode: 'raw'|'viewer') => void, classes: any }) {
-//     const { mode, onChangeMode, classes } = props
-//     return (
-//         <Typography className={classes.textViewerMode}>
-//             <a href="#" onClick={() => onChangeMode('raw')}    style={{ fontWeight: mode === 'raw'    ? 500 : 400 }}>Raw</a> |
-//             <a href="#" onClick={() => onChangeMode('viewer')} style={{ fontWeight: mode === 'viewer' ? 500 : 400 }}>Viewer</a>
-//         </Typography>
-//     )
-// }
 
 const styles = () => createStyles({
     mdRoot: {
@@ -133,5 +98,5 @@ export default {
     pluginType: 'file viewer',
     name: 'markdown-viewer',
     humanName: 'Default Markdown viewer',
-    viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(MarkdownViewer)),
+    viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(MarkdownViewerPlugin)),
 }
