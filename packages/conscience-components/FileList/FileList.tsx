@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
@@ -18,7 +19,6 @@ import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
 import { IRepoFile, FileMode } from 'conscience-lib/common'
-import path from 'path'
 import autobind from 'conscience-lib/utils/autobind'
 
 
@@ -65,21 +65,18 @@ class FileList extends React.Component<Props, State>
                         <CardContent className={classes.fileListCardContent}>
                             <Table>
                                 <TableBody>
-                                    {names.map((name) => {
-                                        const file = files[name]
-                                        return (
-                                            <File
-                                                file={file}
-                                                repoRoot={this.props.repoRoot}
-                                                key={name}
-                                                selectFile={this.props.selectFile}
-                                                fileExtensionsHidden={this.props.fileExtensionsHidden}
-                                                openFileIcon={this.props.openFileIcon}
-                                                canEditFiles={this.props.canEditFiles}
-                                                classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
-                                            />
-                                        )
-                                    })}
+                                    {names.map(name => (
+                                        <File
+                                            file={files[name]}
+                                            repoRoot={this.props.repoRoot}
+                                            key={name}
+                                            selectFile={this.props.selectFile}
+                                            fileExtensionsHidden={this.props.fileExtensionsHidden}
+                                            openFileIcon={this.props.openFileIcon}
+                                            canEditFiles={this.props.canEditFiles}
+                                            classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
+                                        />
+                                    ))}
                                 </TableBody>
                             </Table>
                         </CardContent>

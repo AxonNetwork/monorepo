@@ -15,10 +15,10 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import DeleteIcon from '@material-ui/icons/Delete'
-import CodeViewer from 'conscience-components/CodeViewer'
+import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
 import { updateUserSettings, uploadUserPicture, modifyUserEmail } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
-import { IUser, IUserSettings} from 'conscience-lib/common'
+import { IUser, IUserSettings } from 'conscience-lib/common'
 import { autobind, schemes } from 'conscience-lib/utils'
 
 
@@ -31,7 +31,7 @@ class SettingsPage extends React.Component<Props>
 
 	render() {
 		const { user, userSettings, classes } = this.props
-        if (user === undefined){
+        if (user === undefined) {
             return <div>Not logged in</div>
         }
 		return (
@@ -74,7 +74,7 @@ class SettingsPage extends React.Component<Props>
                                 <TextField
                                     inputRef={x => this._inputNewEmail = x}
                                     classes={{ root: classes.newEmailInput }}
-                                    />
+                                />
                                 <Button variant="contained" color="secondary" className={classes.button} onClick={this.addEmail}>Add</Button>
                             </div>
                         </div>
@@ -90,7 +90,7 @@ class SettingsPage extends React.Component<Props>
                         </Select>
                         <CodeViewer
                             language="go"
-                            contents={codeSample}
+                            fileContents={codeSample}
                             codeColorScheme={userSettings.codeColorScheme}
                         />
                     </section>

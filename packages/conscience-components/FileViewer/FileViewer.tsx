@@ -1,13 +1,18 @@
+import path from 'path'
+import urljoin from 'url-join'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import Typography from '@material-ui/core/Typography'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
 import RenderMarkdown from '../RenderMarkdown'
 import CodeViewer from '../CodeViewer'
-import DataViewer from '../DataViewer'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import path from 'path'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
+import { FileViewerComponent } from 'conscience-lib/plugins'
 
 
 @autobind
@@ -20,76 +25,41 @@ class FileViewer extends React.Component<Props, State>
             return null
         }
 
-        const extension = path.extname(filename).toLowerCase().substring(1)
-
-        // @@TODO: filetype standardization
-        switch (extension) {
-        case 'md':
-        case 'mdown':
-        case 'markdown':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.mdRoot }}>
-                        <RenderMarkdown
-                            text={fileContents}
-                            repo={this.props.repo}
-                            comments={this.props.comments}
-                            users={this.props.users}
-                            discussions={this.props.discussions}
-                            imgPrefix={this.props.imgPrefix}
-                            codeColorScheme={this.props.codeColorScheme}
-                            selectFile={this.props.selectFile}
-                            selectDiscussion={this.props.selectDiscussion}
-                        />
-                    </CardContent>
-                </Card>
-            )
-        case 'jpg':
-        case 'jpeg':
-        case 'gif':
-        case 'png':
-        case 'tif':
-        case 'tiff':
-            return <img src={fileContents} className={classes.imageEmbed} />
-        case 'go':
-        case 'js':
-        case 'jsx':
-        case 'json':
-        case 'ts':
-        case 'tsx':
-        case 'py':
-        case 'proto':
-        case 'tex':
-        case 'rb':
-        case 'rs':
-        case 'r':
-        case 'txt':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.codeRoot }}>
-                        <CodeViewer
-                            language={extension}
-                            contents={fileContents}
-                            codeColorScheme={this.props.codeColorScheme}
-                            backgroundColor={this.props.backgroundColor}
-                        />
-                    </CardContent>
-                </Card>
-            )
-        case 'csv':
-            return(
-                <Card>
-                    <CardContent classes={{ root: classes.dataRoot }}>
-                        <DataViewer
-                            fileType={extension}
-                            contents={fileContents}
-                        />
-                    </CardContent>
-                </Card>
-            )
-        default:
-            return <div>We don't have a viewer for this kind of file yet.</div>
+        const viewers = filetypes.getViewers(filename)
+        if (viewers.length === 0) {
+            return <Typography>We don't have a viewer for this kind of file yet.</Typography>
         }
+
+        const viewerName = this.state.viewerName || viewers[0].name
+        let Viewer: FileViewerComponent
+        for (let v of viewers) {
+            if (v.name === viewerName) {
+                Viewer = v.viewer
+                break
+            }
+        }
+        if (Viewer === undefined) {
+            Viewer = viewers[0].viewer
+        }
+
+        return (
+            <div>
+                <Select value={viewerName} onChange={this.onChangeViewer}>
+                    {viewers.map(viewer => <MenuItem value={viewer.name}>{viewer.humanName}</MenuItem>)}
+                </Select>
+
+                <Viewer
+                    repoID={this.props.repo.repoID}
+                    directEmbedPrefix={this.props.directEmbedPrefix}
+                    filename={filename}
+                    fileContents={fileContents}
+                />
+            </div>
+        )
+    }
+
+    onChangeViewer(evt: React.ChangeEvent<HTMLSelectElement>) {
+        this.setState({ viewerName: evt.target.value })
     }
 
     componentDidMount() {
@@ -97,30 +67,36 @@ class FileViewer extends React.Component<Props, State>
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (
-            (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo)
-        ) {
+        if (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo) {
             this.updateFileContents()
         }
     }
 
     async updateFileContents() {
-        try{
+        // Don't handle binary files, only text
+        if (!filetypes.isTextFile(this.props.filename)) {
+            this.setState({ fileContents: '' })
+            return
+        }
+
+        try {
             const fileContents = await this.props.getFileContents(this.props.filename)
             this.setState({ fileContents })
-        }catch(error){
+        } catch (error) {
             this.setState({ fileContents: '', error })
         }
     }
 }
 
+
 interface Props {
     filename: string
+    directEmbedPrefix: string
+
     repo: IRepo
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
-    imgPrefix: string
     codeColorScheme?: string | undefined
     backgroundColor?: string
     getFileContents: (filename: string) => Promise<string>
@@ -130,6 +106,7 @@ interface Props {
 }
 
 interface State {
+    viewerName: string | undefined
     fileContents: string
     error: Error | undefined
 }
@@ -145,13 +122,16 @@ const styles = () => createStyles({
         padding: 48,
         minWidth: 680,
     },
-    codeRoot: {
+    embedRoot: {
         padding: 0,
         paddingBottom: '0 !important',
         minWidth: 680,
+
+        '& embed': {
+            width: '100%',
+            height: 800,
+        },
     },
-    dataRoot: {
-    }
 })
 
 export default withStyles(styles)(FileViewer)

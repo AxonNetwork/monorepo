@@ -17,7 +17,8 @@ import IconButton from '@material-ui/core/IconButton'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Cancel'
 import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
-import { autobind, fileType } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 const logo = require('../../../assets/logo-placeholder.png')
 
 
@@ -36,7 +37,7 @@ class EditRepoCard extends React.Component<Props, State>
 	render() {
 		const { repoInfo, classes } = this.props
 		const { missing } = this.state
-		const images = Object.keys(((this.props.repo || {}).files) || {} ).filter(name => fileType(name) === 'image')
+		const images = Object.keys(((this.props.repo || {}).files) || {} ).filter(name => filetypes.getType(name) === 'image')
 		const image = this.state.image || repoInfo.image || logo
 
 		return (
