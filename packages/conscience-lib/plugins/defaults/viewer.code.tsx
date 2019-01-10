@@ -60,5 +60,6 @@ const mapDispatchToProps = {}
 export default {
     pluginType: 'file viewer',
     name: 'code-viewer',
+    humanName: 'Default code viewer',
     viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(CodeViewerPlugin)),
 }

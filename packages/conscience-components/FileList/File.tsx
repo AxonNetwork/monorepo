@@ -17,6 +17,7 @@ import path from 'path'
 
 import { IRepoFile, FileMode } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 
 @autobind
@@ -24,9 +25,9 @@ class File extends React.Component<Props>
 {
     selectFile() {
         const { file } = this.props
-        if(file.mergeConflict) {
+        if (file.mergeConflict) {
             this.props.selectFile({ filename: file.name, mode: FileMode.ResolveConflict })
-        }else {
+        } else {
             this.props.selectFile({ filename: file.name, mode: FileMode.View })
         }
     }
@@ -43,12 +44,12 @@ class File extends React.Component<Props>
     }
 
     canQuickEdit() {
-        // @@TODO: filetype standardization
-        if(!this.props.canEditFiles){
+        if (!this.props.canEditFiles || this.props.file.type === 'folder') {
             return false
         }
-        const extensions = [ '.md', '.markdown', '.mdown', '.txt' ]
-        return this.props.file.type !== 'folder' && extensions.includes(path.extname(this.props.file.name).toLowerCase())
+
+        const editors = filetypes.getEditors(this.props.file.name)
+        return editors.length > 0
     }
 
     render() {
@@ -65,45 +66,44 @@ class File extends React.Component<Props>
         }
 
         const fileRow = (
-                <TableRow
-                    hover={canClickFile}
-                    onClick={this.selectFile}
-                    className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : "")}
-                    classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
-                >
-                    <TableCell scope="row" className={classes.tableCell}>
-                        <div className={classes.listItem}>
-                            <FileIcon fileType={file.type} status={file.status}/>
-                            <Typography variant="subheading" className={classes.filename}>{displayname}</Typography>
-                        </div>
+            <TableRow
+                hover={canClickFile}
+                onClick={this.selectFile}
+                className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : '')}
+                classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
+            >
+                <TableCell scope="row" className={classes.tableCell}>
+                    <div className={classes.listItem}>
+                        <FileIcon filename={file.name} isFolder={file.type === 'folder'} status={file.status} />
+                        <Typography variant="subheading" className={classes.filename}>{displayname}</Typography>
+                    </div>
+                </TableCell>
+                <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
+                <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
+                {(this.canQuickEdit() || this.props.openFileIcon) &&
+                    <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
+                        {this.canQuickEdit() &&
+                            <Tooltip title="Quick edit">
+                                <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
+                            </Tooltip>
+                        }
+                        {this.props.openFileIcon &&
+                            <Tooltip title="Open this file with another app">
+                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
+                            </Tooltip>
+                        }
                     </TableCell>
-                    <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
-                    <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
-                    {(this.canQuickEdit() || this.props.openFileIcon) &&
-                        <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
-                            {this.canQuickEdit() &&
-                                <Tooltip title="Quick edit">
-                                    <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
-                                </Tooltip>
-                            }
-                            {this.props.openFileIcon &&
-                                <Tooltip title="Open this file with another app">
-                                    <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
-                                </Tooltip>
-                            }
-                        </TableCell>
-                    }
-                </TableRow>
+                }
+            </TableRow>
         )
-        if(file.mergeConflict){
+        if (file.mergeConflict) {
             return (
                 <Tooltip title="This file has a merge conflict. Click to resolve.">
                     {fileRow}
                 </Tooltip>
             )
-        } else{
+        } else {
             return fileRow
-
         }
     }
 }

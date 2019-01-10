@@ -5,11 +5,14 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
 import RenderMarkdown from '../RenderMarkdown'
 import CodeViewer from '../CodeViewer'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
+import { FileViewerComponent } from 'conscience-lib/plugins'
 
 
 @autobind
@@ -22,35 +25,41 @@ class FileViewer extends React.Component<Props, State>
             return null
         }
 
-        const extension = path.extname(filename).toLowerCase().substring(1)
-
-        // @@TODO: filetype standardization
-        switch (extension) {
-        case 'pdf':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.embedRoot }}>
-                        <embed src={urljoin(this.props.directEmbedPrefix, this.props.filename)} />
-                    </CardContent>
-                </Card>
-            )
-
-        default:
-            console.log('file contents', filename)
-            const viewers = filetypes.getViewers(filename)
-            if (viewers.length === 0) {
-                return <Typography>We don't have a viewer for this kind of file yet.</Typography>
-            }
-
-            const Viewer = viewers[0]
-
-            return <Viewer
-                        repoID={this.props.repo.repoID}
-                        directEmbedPrefix={this.props.directEmbedPrefix}
-                        filename={filename}
-                        fileContents={fileContents}
-                    />
+        const viewers = filetypes.getViewers(filename)
+        if (viewers.length === 0) {
+            return <Typography>We don't have a viewer for this kind of file yet.</Typography>
         }
+
+        const viewerName = this.state.viewerName || viewers[0].name
+        let Viewer: FileViewerComponent
+        for (let v of viewers) {
+            if (v.name === viewerName) {
+                Viewer = v.viewer
+                break
+            }
+        }
+        if (Viewer === undefined) {
+            Viewer = viewers[0].viewer
+        }
+
+        return (
+            <div>
+                <Select value={viewerName} onChange={this.onChangeViewer}>
+                    {viewers.map(viewer => <MenuItem value={viewer.name}>{viewer.humanName}</MenuItem>)}
+                </Select>
+
+                <Viewer
+                    repoID={this.props.repo.repoID}
+                    directEmbedPrefix={this.props.directEmbedPrefix}
+                    filename={filename}
+                    fileContents={fileContents}
+                />
+            </div>
+        )
+    }
+
+    onChangeViewer(evt: React.ChangeEvent<HTMLSelectElement>) {
+        this.setState({ viewerName: evt.target.value })
     }
 
     componentDidMount() {
@@ -97,6 +106,7 @@ interface Props {
 }
 
 interface State {
+    viewerName: string | undefined
     fileContents: string
     error: Error | undefined
 }

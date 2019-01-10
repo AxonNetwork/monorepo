@@ -36,5 +36,6 @@ interface State {
 export default {
     pluginType: 'file viewer',
     name: 'data-viewer',
+    humanName: 'Default data table viewer',
     viewer: DataViewerPlugin,
 }

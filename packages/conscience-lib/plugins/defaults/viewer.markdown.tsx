@@ -21,33 +21,33 @@ class MarkdownViewer extends React.Component<Props, State>
     render() {
         const { fileContents, classes } = this.props
 
-        if (this.state.textViewerMode === 'raw') {
-            const extension = path.extname(this.props.filename).toLowerCase().substring(1)
+        // if (this.state.textViewerMode === 'raw') {
+        //     const extension = path.extname(this.props.filename).toLowerCase().substring(1)
+        //     return (
+        //         <Card>
+        //             <CardContent classes={{ root: classes.mdRoot }}>
+        //                 {<RawOrViewer
+        //                     mode={this.state.textViewerMode}
+        //                     onChangeMode={this.onChangeTextViewerMode}
+        //                     classes={classes}
+        //                  />}
+        //                 <CodeViewer
+        //                     language={extension}
+        //                     fileContents={fileContents}
+        //                     codeColorScheme={this.props.codeColorScheme}
+        //                 />
+        //             </CardContent>
+        //         </Card>
+        //     )
+        // } else {
             return (
                 <Card>
                     <CardContent classes={{ root: classes.mdRoot }}>
-                        <RawOrViewer
+                        {/*<RawOrViewer
                             mode={this.state.textViewerMode}
                             onChangeMode={this.onChangeTextViewerMode}
                             classes={classes}
-                         />
-                        <CodeViewer
-                            language={extension}
-                            contents={fileContents}
-                            codeColorScheme={this.props.codeColorScheme}
-                        />
-                    </CardContent>
-                </Card>
-            )
-        } else {
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.mdRoot }}>
-                        <RawOrViewer
-                            mode={this.state.textViewerMode}
-                            onChangeMode={this.onChangeTextViewerMode}
-                            classes={classes}
-                         />
+                         />*/}
                         <RenderMarkdown
                             text={fileContents}
                             repo={this.props.repo}
@@ -63,7 +63,7 @@ class MarkdownViewer extends React.Component<Props, State>
                     </CardContent>
                 </Card>
             )
-        }
+        // }
     }
 
     onChangeTextViewerMode(mode: 'raw'|'viewer') {
@@ -71,15 +71,15 @@ class MarkdownViewer extends React.Component<Props, State>
     }
 }
 
-function RawOrViewer(props: { mode: 'raw'|'viewer', onChangeMode: (mode: 'raw'|'viewer') => void, classes: any }) {
-    const { mode, onChangeMode, classes } = props
-    return (
-        <Typography className={classes.textViewerMode}>
-            <a href="#" onClick={() => onChangeMode('raw')}    style={{ fontWeight: mode === 'raw'    ? 500 : 400 }}>Raw</a> |
-            <a href="#" onClick={() => onChangeMode('viewer')} style={{ fontWeight: mode === 'viewer' ? 500 : 400 }}>Viewer</a>
-        </Typography>
-    )
-}
+// function RawOrViewer(props: { mode: 'raw'|'viewer', onChangeMode: (mode: 'raw'|'viewer') => void, classes: any }) {
+//     const { mode, onChangeMode, classes } = props
+//     return (
+//         <Typography className={classes.textViewerMode}>
+//             <a href="#" onClick={() => onChangeMode('raw')}    style={{ fontWeight: mode === 'raw'    ? 500 : 400 }}>Raw</a> |
+//             <a href="#" onClick={() => onChangeMode('viewer')} style={{ fontWeight: mode === 'viewer' ? 500 : 400 }}>Viewer</a>
+//         </Typography>
+//     )
+// }
 
 const styles = () => createStyles({
     mdRoot: {
@@ -132,5 +132,6 @@ const mapDispatchToProps = {}
 export default {
     pluginType: 'file viewer',
     name: 'markdown-viewer',
+    humanName: 'Default Markdown viewer',
     viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(MarkdownViewer)),
 }
