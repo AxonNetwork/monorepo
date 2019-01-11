@@ -22,6 +22,10 @@ export enum UserActionType {
     FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS',
     FETCH_USER_DATA_FAILED = 'FETCH_USER_DATA_FAILED',
 
+    FETCH_USER_DATA_BY_USERNAME = 'FETCH_USER_DATA_BY_USERNAME',
+    FETCH_USER_DATA_BY_USERNAME_SUCCESS = 'FETCH_USER_DATA_BY_USERNAME_SUCCESS',
+    FETCH_USER_DATA_BY_USERNAME_FAILED = 'FETCH_USER_DATA_BY_USERNAME_FAILED',
+
     SAW_COMMENT = 'SAW_COMMENT',
     SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
     SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
@@ -140,6 +144,22 @@ export interface IFetchUserDataSuccessAction {
 }
 
 export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
+
+export interface IFetchUserDataByUsernameAction {
+    type: UserActionType.FETCH_USER_DATA_BY_USERNAME
+    payload: {
+        usernames: string[],
+    }
+}
+
+export interface IFetchUserDataByUsernameSuccessAction {
+    type: UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS
+    payload: {
+        users: { [userID: string]: IUser },
+    }
+}
+
+export type IFetchUserDataByUsernameFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_BY_USERNAME_FAILED>
 
 export interface ISawCommentAction {
     type: UserActionType.SAW_COMMENT
@@ -273,6 +293,10 @@ export type IUserAction =
     IFetchUserDataSuccessAction |
     IFetchUserDataFailedAction |
 
+    IFetchUserDataByUsernameAction |
+    IFetchUserDataByUsernameSuccessAction |
+    IFetchUserDataByUsernameFailedAction |
+
     ISawCommentAction |
     ISawCommentSuccessAction |
     ISawCommentFailedAction |
@@ -306,6 +330,7 @@ export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, paylo
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
+export const fetchUserDataByUsername = (payload: IFetchUserDataByUsernameAction['payload']): IFetchUserDataByUsernameAction => ({ type: UserActionType.FETCH_USER_DATA_BY_USERNAME, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 export const getUserSettings = (payload: IGetUserSettingsAction['payload']): IGetUserSettingsAction => ({ type: UserActionType.GET_USER_SETTINGS, payload })

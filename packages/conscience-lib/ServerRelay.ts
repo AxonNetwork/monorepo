@@ -292,6 +292,11 @@ const ServerRelay = {
         return response.data as IUser[]
     },
 
+    async fetchUsersByUsername(usernames: string[]) {
+        const response = await axios.get(API_URL + '/users-by-username?' + querystring.stringify({ usernames }))
+        return response.data as IUser[]
+    },
+
     async uploadUserPicture(fileInput: HTMLInputElement) {
         interface IResponse {
             picture: string

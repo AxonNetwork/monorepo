@@ -9,12 +9,24 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import Checkbox from '@material-ui/core/Checkbox'
 import TextField from '@material-ui/core/TextField'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import DeleteIcon from '@material-ui/icons/Delete'
+import SettingsIcon from '@material-ui/icons/Settings'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { union } from 'lodash'
 
 
 @autobind
@@ -22,116 +34,234 @@ class SharedUsers extends React.Component<Props, State>
 {
     state = {
         dialogOpen: false,
+        selectedUser: undefined,
+        readChecked: false,
+        writeChecked: false,
+        adminChecked: false,
     }
 
     _inputUser: HTMLInputElement | null = null
 
     render() {
-        const { repo, users, classes } = this.props
+        const { repo, currentUser, users, usersByUsername, classes } = this.props
+        const { selectedUser } = this.state
 
         if (!repo) {
             return null
         }
 
+        const { admins = [], pushers = [], pullers = [] } = repo || {}
+        const sharedUsers = union(admins, pushers, pullers)
+            .map(username => usersByUsername[username])
+            .map(id => users[id])
+
+        const adminIDs = admins.map(username => usersByUsername[username])
+        const isAdmin = adminIDs.indexOf(currentUser) > -1
+
         return (
             <Card className={classes.root}>
                 <CardContent>
-                    <Typography variant="h6">Collaborators</Typography>
-                    <div>
-                        {(repo.sharedUsers || []).map(userID => {
-                            const user = users[userID] || {}
-                            return (
-                                <div className={classes.user}>
-                                    <div className={classes.userAvatar}>
-                                        <UserAvatar username={user.name} userPicture={user.picture} />
+                    <Typography variant="h6">Access Controls</Typography>
+                    <Table className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>User</TableCell>
+                                <TableCell className={classes.centered}>Read</TableCell>
+                                <TableCell className={classes.centered}>Write</TableCell>
+                                <TableCell className={classes.centered}>Admin</TableCell>
+                                {isAdmin &&
+                                    <TableCell className={classes.centered}>Change Permission</TableCell>
+                                }
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {sharedUsers.map(user => (
+                            <TableRow>
+                                <TableCell>
+                                    <div className={classes.user}>
+                                        <div className={classes.userAvatar}>
+                                            <UserAvatar username={user.name} userPicture={user.picture} />
+                                        </div>
+                                        <div className={classes.userInfo}>
+                                            <Typography><strong>{user.name}</strong></Typography>
+                                            <Typography>{user.username}</Typography>
+                                        </div>
                                     </div>
-                                    <div className={classes.userInfo}>
-                                        <Typography><strong>{user.name}</strong></Typography>
-                                        <Typography>{user.username}</Typography>
-                                    </div>
-                                    <IconButton
-                                        onClick={() => this.onClickRemoveMember(userID)}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            )
-                        })}
-                    </div>
+                                </TableCell>
+                                <TableCell className={classes.centered}>
+                                    {pullers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                </TableCell>
+                                <TableCell className={classes.centered}>
+                                    {pushers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                </TableCell>
+                                <TableCell className={classes.centered}>
+                                    {admins.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                </TableCell>
+                                {isAdmin &&
+                                    <TableCell className={classes.centered}>
+                                        <IconButton onClick={() => this.openDialog(user.userID)}>
+                                            <SettingsIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                }
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+
                     <Button
                         color="secondary"
                         className={classes.button}
-                        onClick={this.onClickOpenDialog}
+                        onClick={() => this.openDialog()}
                     >
                         <ControlPointIcon className={classes.controlPointIcon}/>
                         Add User
                     </Button>
 
-                    <Dialog open={this.state.dialogOpen}>
-                        <DialogTitle>Add User</DialogTitle>
+                    <Dialog open={this.state.dialogOpen} onClose={this.closeDialog}>
+                        {selectedUser === undefined &&
+                            <DialogTitle>Add User</DialogTitle>
+                        }
+                        {selectedUser !== undefined &&
+                            <DialogTitle>Change Permissions</DialogTitle>
+                        }
                         <DialogContent className={classes.dialog}>
-                            <TextField
-                                label="email"
-                                fullWidth
-                                inputRef={x => this._inputUser = x}
-                            />
+                            {selectedUser === undefined &&
+                                <TextField
+                                    label="email or username"
+                                    fullWidth
+                                    inputRef={x => this._inputUser = x}
+                                />
+                            }
+                            {selectedUser !== undefined &&
+                                <Typography>
+                                    <strong>User:</strong>
+                                    {users[selectedUser || ''].username}
+                                </Typography>
+                            }
+                            <List>
+                                <ListItem className={classes.listItem}>
+                                    <ListItemText primary='Read' />
+                                    <Checkbox color='secondary'checked={this.state.readChecked} onClick={this.toggleRead} />
+                                </ListItem>
+                                <ListItem className={classes.listItem}>
+                                    <ListItemText primary='Write' />
+                                    <Checkbox color='secondary'checked={this.state.writeChecked} onClick={this.toggleWrite} />
+                                </ListItem>
+                                <ListItem className={classes.listItem}>
+                                    <ListItemText primary='Admin' />
+                                    <Checkbox color='secondary'checked={this.state.adminChecked} onClick={this.toggleAdmin} />
+                                </ListItem>
+                            </List>
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={this.onClickAddUser} color="secondary">Add</Button>
-                            <Button onClick={this.onClickCancelDialog} color="secondary" autoFocus>Cancel</Button>
+                            <Button
+                                onClick={this.changePermissions}
+                                color="secondary"
+                                variant='outlined'
+                            >
+                                Set Permissions
+                            </Button>
+                            <Button
+                                onClick={this.closeDialog}
+                                color="secondary"
+                                variant='outlined'
+                                autoFocus
+                            >
+                                Cancel
+                            </Button>
                         </DialogActions>
                     </Dialog>
+
                 </CardContent>
             </Card>
         )
     }
 
-    onClickAddUser() {
-        if (this._inputUser === null || !this.props.repo) {
-            return
+    openDialog(userID?: string) {
+        const username = (this.props.users[userID || ''] || {}).username || ''
+        const { admins = [], pushers = [], pullers = [] } = this.props.repo || {}
+        this.setState({
+            dialogOpen: true,
+            selectedUser: userID,
+            adminChecked: admins.indexOf(username) > -1,
+            writeChecked: pushers.indexOf(username) > -1,
+            readChecked: pullers.indexOf(username) > -1,
+        })
+    }
+
+    closeDialog() {
+        this.setState({
+            dialogOpen: false,
+            selectedUser: undefined,
+            adminChecked: false,
+            writeChecked: false,
+            readChecked: false,
+        })
+    }
+
+    changePermissions() {
+        const { selectedUser, readChecked, writeChecked, adminChecked } = this.state
+        let userID = selectedUser as string | undefined
+        if(userID === undefined){
+            if(this._inputUser === null){
+                return
+            }
+            userID = this._inputUser.value
+            if(userID.length < 1){
+                return
+            }
         }
-
-        const repoID = this.props.repo.repoID
-        const repoRoot = this.props.repo.path
-        const email = this._inputUser.value
-        this.props.addCollaborator({ repoID, repoRoot, email })
-        this.setState({ dialogOpen: false })
+        const repoID = (this.props.repo || {repoID: ''}).repoID
+        this.props.changeUserPermissions({
+            repoID,
+            userID,
+            admin: adminChecked,
+            pusher: writeChecked,
+            puller: readChecked
+        })
     }
 
-    onClickRemoveMember(userID: string) {
-        if (!this.props.repo) {
-            return
-        }
-
-        const repoID = this.props.repo.repoID
-        const repoRoot = this.props.repo.path
-        this.props.removeCollaborator({ repoID, repoRoot, userID })
+    toggleRead(){
+        this.setState({ readChecked: !this.state.readChecked })
     }
 
-    onClickOpenDialog() {
-        this.setState({ dialogOpen: true })
+    toggleWrite(){
+        this.setState({ writeChecked: !this.state.writeChecked })
     }
 
-    onClickCancelDialog() {
-        this.setState({ dialogOpen: false })
+    toggleAdmin(){
+        this.setState({ adminChecked: !this.state.adminChecked })
     }
 }
 
 interface Props {
     repo: IRepo | undefined
     users: {[userID: string]: IUser}
-    addCollaborator: (payload: { repoID: string, repoRoot?: string,  email: string }) => void
-    removeCollaborator: (payload: { repoID: string, repoRoot?: string,  userID: string }) => void
+    usersByUsername: {[username: string]: string}
+    currentUser: string
+    changeUserPermissions: (payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) => void
     classes: any
 }
 
 interface State {
     dialogOpen: boolean
+    selectedUser: string | undefined
+    readChecked: boolean
+    writeChecked: boolean
+    adminChecked: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
     root: {
         minWidth: 350,
+    },
+    centered: {
+        textAlign: 'center'
+    },
+    listItem: {
+        paddingTop: 0,
+        paddingBottom: 0,
     },
     user: {
         display: 'flex',

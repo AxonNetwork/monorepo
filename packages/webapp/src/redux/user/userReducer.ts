@@ -5,6 +5,7 @@ import { fromPairs } from 'lodash'
 const initialState = {
 	users: {},
 	usersByEmail: {},
+    usersByUsername: {},
 
 	currentUser: undefined,
     checkedLoggedIn: false,
@@ -22,6 +23,7 @@ const initialState = {
 export interface IUserState {
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string} // value is userID
+    usersByUsername: {[username: string]: string} // value is userID
 
     currentUser: string | undefined
     checkedLoggedIn: boolean
@@ -55,6 +57,10 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 usersByEmail: {
                     ...state.usersByEmail,
                     ...usersByEmail,
+                },
+                usersByUsername: {
+                    ...state.usersByUsername,
+                    [user.username]: userID
                 },
                 currentUser: userID,
                 checkedLoggedIn: true,
@@ -90,11 +96,15 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.FETCH_USER_DATA_SUCCESS: {
+        case UserActionType.FETCH_USER_DATA_SUCCESS:
+        case UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS: {
             const { users } = action.payload
             const usersByEmail = {} as {[email: string]: string}
+            const usersByUsername = {} as {[username: string]: string}
             for (let userID of Object.keys(users)) {
-                for (let email of (users[userID].emails || [])) {
+                const user = users[userID]
+                usersByUsername[user.username] = userID
+                for (let email of (user.emails || [])) {
                     usersByEmail[email] = userID
                 }
             }
@@ -109,6 +119,10 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                     ...state.usersByEmail,
                     ...usersByEmail,
                 },
+                usersByUsername: {
+                    ...state.usersByUsername,
+                    ...usersByUsername,
+                }
             }
         }
 

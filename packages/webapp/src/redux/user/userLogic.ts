@@ -4,6 +4,7 @@ import {
     ILoginAction, ILoginSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
+    IFetchUserDataByUsernameAction, IFetchUserDataByUsernameSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IGetUserSettingsAction, IGetUserSettingsSuccessAction,
     IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
@@ -84,6 +85,26 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
     },
 })
 
+const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, IFetchUserDataByUsernameSuccessAction>({
+    type: UserActionType.LOGOUT,
+    async process({ action }, getState) {
+        const knownUsernames = getState().user.users.reduce((acc: string[], curr: IUser) => {
+            acc.push(curr.username)
+            return acc
+        }, [])
+        const toFetch = uniq(action.payload.usernames).filter(username => knownUsernames.indexOf(username) > -1)
+        if (toFetch.length <= 0) {
+            return { users: {} }
+        }
+        const userList = await ServerRelay.fetchUsersByUsername(toFetch)
+
+        // Convert the list into an object
+        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
+
+        return { users }
+    }
+})
+
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
@@ -143,6 +164,7 @@ export default [
 	loginLogic,
     logoutLogic,
     fetchUserDataLogic,
+    fetchUserDataByUsernameLogic,
     sawCommentLogic,
     getUserSettingsLogic,
     updateUserSettingsLogic,
