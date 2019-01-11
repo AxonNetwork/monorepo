@@ -1,24 +1,23 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
+import axios from 'axios'
 import FileViewer from 'conscience-components/FileViewer'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
-import { autobind, fileType } from 'conscience-lib/utils'
-import axios from 'axios'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
 class ConnectedFileViewer extends React.Component<Props>
 {
 	render() {
-		const { repoID, ...other} = this.props
-
-        const imgPrefix = this.imgPrefix()
+		const { repoID, ...other } = this.props
+        const directEmbedPrefix = this.directEmbedPrefix()
 		return(
 			<FileViewer
                 {...other}
-                imgPrefix={imgPrefix}
+                directEmbedPrefix={directEmbedPrefix}
                 getFileContents={this.getFileContents}
 			    selectFile={this.selectFile}
 			    selectDiscussion={this.selectDiscussion}
@@ -26,7 +25,7 @@ class ConnectedFileViewer extends React.Component<Props>
 		)
 	}
 
-    imgPrefix() {
+    directEmbedPrefix() {
         const API_URL = process.env.API_URL
         const repoID = this.props.repoID
         const prefix = `${API_URL}/repo/${repoID}/file`
@@ -34,21 +33,37 @@ class ConnectedFileViewer extends React.Component<Props>
     }
 
     async getFileContents(filename: string) {
-        const imgPrefix = this.imgPrefix()
-        const fileUrl = `${imgPrefix}/${filename}`
-        if(fileType(filename) === 'image'){
-            return fileUrl
-        }
+        const directEmbedPrefix = this.directEmbedPrefix()
+        const fileUrl = `${directEmbedPrefix}/${filename}`
         const resp = await axios.get<string>(fileUrl)
         return resp.data
     }
 
+    // directEmbedPrefix() {
+    //     const API_URL = process.env.API_URL
+    //     const repoID = this.props.repoID
+    //     const prefix = API_URL + '/' + path.join(`repo/${repoID}/file`, path.dirname(this.props.filename))
+    //     console.log('direct embed prefix ~>', prefix)
+    //     return prefix
+    // }
+
+    // async getFileContents(filename: string) {
+    //     filename = path.basename(filename)
+    //     const directEmbedPrefix = this.directEmbedPrefix()
+    //     const fileUrl = `${directEmbedPrefix}/${filename}`
+    //     if (['image', 'pdf'].includes(fileType(filename))) {
+    //         return fileUrl
+    //     }
+    //     const resp = await axios.get<string>(fileUrl)
+    //     return resp.data
+    // }
+
 	selectFile(payload: {filename: string | undefined, mode: FileMode}) {
     	const repoID = this.props.repoID
     	const filename = payload.filename
-    	if(filename === undefined) {
+    	if (filename === undefined) {
     		this.props.history.push(`/repo/${repoID}/file`)
-    	}else{
+    	} else {
     		this.props.history.push(`/repo/${repoID}/file/${filename}`)
     	}
     }
@@ -56,9 +71,9 @@ class ConnectedFileViewer extends React.Component<Props>
 	selectDiscussion(payload: {discussionID: string | undefined}) {
     	const repoID = this.props.repoID
     	const discussionID = payload.discussionID
-    	if(discussionID === undefined) {
+    	if (discussionID === undefined) {
     		this.props.history.push(`/repo/${repoID}/discussion`)
-    	}else{
+    	} else {
     		this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
     	}
     }

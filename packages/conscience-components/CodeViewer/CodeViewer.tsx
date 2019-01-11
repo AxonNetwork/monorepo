@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import SyntaxHighlighter from 'react-syntax-highlighter/prism'
-import { autobind, getLanguage, schemes } from 'conscience-lib/utils'
+import { autobind, schemes } from 'conscience-lib/utils'
 
 const syntaxStyle = {
     padding: 0,
@@ -32,12 +32,10 @@ class CodeViewer extends React.Component<Props>
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = this.props.backgroundColor || (schemeDefaults || {}).background
         return (
-            <div>
-                <div className={classes.codeContainer} style={{ backgroundColor }}>
-                    <SyntaxHighlighter style={scheme} language={getLanguage(this.props.language)} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
-                        {this.props.contents || ''}
-                    </SyntaxHighlighter>
-                </div>
+            <div className={classes.codeContainer} style={{ backgroundColor }}>
+                <SyntaxHighlighter style={scheme} language={this.props.language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
+                    {this.props.fileContents || ''}
+                </SyntaxHighlighter>
             </div>
         )
     }
@@ -45,7 +43,7 @@ class CodeViewer extends React.Component<Props>
 
 interface Props {
     language: string
-    contents: string
+    fileContents: string
     codeColorScheme: string | undefined
     backgroundColor?: string
     classes: any

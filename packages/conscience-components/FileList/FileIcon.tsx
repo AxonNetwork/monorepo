@@ -2,55 +2,31 @@ import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Badge from '@material-ui/core/Badge'
-import CodeIcon from '@material-ui/icons/Code'
-import AssessmentIcon from '@material-ui/icons/Assessment'
-import SubjectIcon from '@material-ui/icons/Subject'
-import PermMediaIcon from '@material-ui/icons/PermMedia'
 import FolderIcon from '@material-ui/icons/Folder'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 interface FileIconProps {
-    fileType: string
+    filename: string
+    isFolder: boolean
     status: string
     classes: any
 }
 
-// @@TODO: filetype standardization
 function FileIcon(props: FileIconProps) {
-    const { fileType, status, classes } = props
-    let icon
-    switch (fileType) {
-        case 'data':
-            icon = <AssessmentIcon />
-            break
-        case 'code':
-            icon = <CodeIcon />
-            break
-        case 'text':
-            icon = <SubjectIcon />
-            break
-        case 'image':
-            icon = <PermMediaIcon />
-            break
-        case 'folder':
-            icon = <FolderIcon />
-            break
-        case 'unknown':
-        default:
-            icon = <HelpOutlineIcon />
+    const { filename, isFolder, status, classes } = props
+
+    if (isFolder) {
+        return <ListItemIcon><FolderIcon /></ListItemIcon>
     }
+
+    const IconCmpt = filetypes.getIcon(filename) || HelpOutlineIcon
+    let icon = <IconCmpt />
+
     if (status === 'M' || status === '?' || status === 'U') {
-        icon = (
-            <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
-                {icon}
-            </Badge>
-        )
+        icon = <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">{icon}</Badge>
     }
-    return(
-        <ListItemIcon>
-            {icon}
-        </ListItemIcon>
-    )
+    return <ListItemIcon>{icon}</ListItemIcon>
 }
 
 const styles = createStyles({

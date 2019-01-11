@@ -1,3 +1,4 @@
+import urljoin from 'url-join'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { withStyles, createStyles } from '@material-ui/core/styles'
@@ -5,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import FileLink from './FileLink'
 import DiscussionLink from './DiscussionLink'
 import CommentLink from './CommentLink'
-import CodeViewer from '../CodeViewer'
+import CodeViewer from '../CodeViewer/CodeViewer'
 import shortcodes from './remark-references'
 import { IRepo, IComment, IUser, IDiscussion, FileMode }  from 'conscience-lib/common'
 import { autobind }  from 'conscience-lib/utils'
@@ -23,6 +24,7 @@ class RenderMarkdown extends React.Component<Props>
                     renderers={{
                         shortcode: this.parseShortcodes,
                         code: this.renderCode,
+                        image: this.renderImg,
                     }}
                 />
             </Typography>
@@ -39,13 +41,21 @@ class RenderMarkdown extends React.Component<Props>
         )
     }
 
+    renderImg(node: any) {
+        if (node.src.startsWith('http://') || node.src.startsWith('https://')) {
+            return <img src={node.src} />
+        } else {
+            return <img src={urljoin(this.props.directEmbedPrefix, this.props.dirname, node.src)} />
+        }
+    }
+
     parseShortcodes(node: { identifier: string, contents: string }) {
         const { identifier, contents } = node
         const { repo, comments, users, discussions } = this.props
 
         switch (identifier) {
         case 'image':
-            return <img src={this.props.imgPrefix + '/' + contents} className={this.props.classes.embeddedImage} />
+            return <img src={urljoin(this.props.directEmbedPrefix, contents)} className={this.props.classes.embeddedImage} />
         case 'file':
             return (
                 <FileLink
@@ -93,7 +103,8 @@ interface Props {
     comments: {[commentID: string]: IComment}
     users: {[userID: string]: IUser}
     discussions: {[userID: string]: IDiscussion}
-    imgPrefix: string
+    directEmbedPrefix: string
+    dirname: string
     codeColorScheme?: string | undefined
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void

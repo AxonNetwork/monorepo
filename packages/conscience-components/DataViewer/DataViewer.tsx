@@ -1,6 +1,7 @@
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
+import TableHead from '@material-ui/core/TableHead'
 import TableBody from '@material-ui/core/TableBody'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
@@ -16,7 +17,7 @@ class DataViewer extends React.Component<Props, State>
         rowsPerPage: 10,
     }
 
-    onChangePage(_: any, page: number){
+    onChangePage(_: any, page: number) {
        this.setState({ page })
     }
 
@@ -26,36 +27,23 @@ class DataViewer extends React.Component<Props, State>
     }
 
     render() {
-        const { fileType, contents, classes } = this.props
+        const { fileFormat, fileContents, classes } = this.props
         const { page, rowsPerPage } = this.state
+
         let data = []
-        switch(fileType){
-            case "csv":
-                data = parseCSV(contents)
-                break
-            default:
-                return <div></div>
+        switch (fileFormat) {
+        case 'csv':
+            data = parseCSV(fileContents)
+            break
+        default:
+            return <div></div>
         }
-        const dataPage = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+
+        const headerRow = data.length > 0 ? data[0] : null
+        const dataPage = data.length > 1 ? data.slice((page * rowsPerPage) + 1, (page + 1) * rowsPerPage) : null
+
         return (
             <div>
-                <Table>
-                    <TableBody>
-                    {
-                    dataPage.map(row => {
-                        return(
-                            <TableRow>
-                            {
-                            row.map(cell => (
-                                <TableCell>{cell}</TableCell>
-                            ))
-                            }
-                            </TableRow>
-                        )
-                    })
-                    }
-                    </TableBody>
-                </Table>
                 <TablePagination
                     component="div"
                     count={data.length}
@@ -67,14 +55,36 @@ class DataViewer extends React.Component<Props, State>
                     onChangeRowsPerPage={this.onChangeRowsPerPage}
                     classes={{ toolbar: classes.paginationToolbar, caption: classes.paginationText }}
                 />
+                <Table>
+                    {headerRow &&
+                        <TableHead>
+                            <TableRow>
+                                {headerRow.map(cell => (
+                                    <TableCell>{cell}</TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                    }
+                    {dataPage &&
+                        <TableBody>
+                            {dataPage.map(row => (
+                                <TableRow>
+                                    {row.map(cell => (
+                                        <TableCell>{cell}</TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    }
+                </Table>
             </div>
         )
     }
 }
 
 interface Props {
-    fileType: string
-    contents: string
+    fileFormat: string
+    fileContents: string
     classes: any
 }
 
@@ -83,7 +93,18 @@ interface State {
     rowsPerPage: number
 }
 
-const styles = () => createStyles({})
+const styles = () => createStyles({
+    paginationToolbar: {
+        height: 36,
+        minHeight: 36,
+    },
+    paginationButton: {
+        padding: 6,
+    },
+    paginationText: {
+        fontSize: '0.85rem',
+    },
+})
 
 export default withStyles(styles)(DataViewer)
 

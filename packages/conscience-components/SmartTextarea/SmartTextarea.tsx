@@ -3,9 +3,10 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import FormattingHelp from './FormattingHelp'
+import FormattingHelp from '../FormattingHelp'
 import { IDiscussion, IRepoFile } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 import path from 'path'
 
 
@@ -135,10 +136,9 @@ class SmartTextarea extends React.Component<Props, State>
                             {file}
                         </MenuItem>
                     ))}
-                    {/* @@TODO: filetype standardization */}
-                    {this.state.embedType === '@image' && fileNames.filter((f: string) => ['.png', '.jpg', '.jpe', '.jpeg', '.gif'].includes(path.extname(f))).map((file: string) => (
+                    {this.state.embedType === '@image' && fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
                         <MenuItem
-                            onClick={() => this.handleClose('@image', file)}
+                            onClick={() => this.handleClose('@image', filename)}
                             classes={{root: classes.menuItem}}
                         >
                             {file}

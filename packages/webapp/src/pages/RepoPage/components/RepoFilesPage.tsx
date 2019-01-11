@@ -17,7 +17,7 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
-	selectFile(payload: {filename: string | undefined, mode: FileMode}){
+	selectFile(payload: {filename: string | undefined, mode: FileMode}) {
 		const repoID = this.props.match.params.repoID
 		const { filename, mode } = payload
 		if(filename === undefined){
@@ -32,13 +32,14 @@ class RepoFilesPage extends React.Component<Props>
 	render() {
 		const { repo, classes } = this.props
 		const files = repo.files
-		if(files === undefined) {
+		if (files === undefined) {
 			return (
 				<div className={classes.progressContainer}>
 					<CircularProgress color="secondary" />
 				</div>
 			)
 		}
+
 		const selected = this.props.match.params.filename || ""
 		const repoID = this.props.match.params.repoID || ""
 		const file = files[selected]
