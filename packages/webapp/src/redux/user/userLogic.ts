@@ -10,6 +10,7 @@ import {
     IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
+    IUpdateUserProfileAction, IUpdateUserProfileSuccessAction,
     IFetchUserOrgsAction, IFetchUserOrgsSuccessAction,
     getUserSettings,
 } from './userActions'
@@ -23,40 +24,42 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
     type: UserActionType.WHO_AM_I,
     async process({ action }, dispatch) {
         const jwt = localStorage.getItem('jwt')
-        if( !jwt || jwt.length === 0 ) {
-            return new Error("No jwt")
+        if ( !jwt || jwt.length === 0 ) {
+            return new Error('No jwt')
         }
 
         ServerRelay.setJWT(jwt)
-        const resp = await ServerRelay.whoami()
-        const { userID, emails, name, username, picture, orgs } = resp
-        if (resp instanceof Error) {
-            return resp
+        const user = await ServerRelay.whoami()
+        if (user instanceof Error) {
+            return user
         }
+        const { orgs } = user
 
         await dispatch(getUserSettings({})),
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
-        return { userID, emails, name, username, picture, orgs }
-    }
+        return { user }
+    },
 })
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
     async process({ action }, dispatch) {
-    	const { email, password } = action.payload
-    	const resp = await ServerRelay.login(email, password)
-    	if (resp instanceof Error) {
-    		return resp
-		}
-        const { userID, emails, name, username, picture, jwt, orgs } = resp
-        localStorage.setItem('jwt', jwt)
+        const { email, password } = action.payload
+        const user = await ServerRelay.login(email, password)
+        if (user instanceof Error) {
+            return user
+        }
+        const { jwt, orgs } = user
+        if (jwt) {
+            localStorage.setItem('jwt', jwt)
+        }
 
         await dispatch(getUserSettings({}))
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
-        return { userID, emails, name, username, picture, orgs }
-    }
+        return { user }
+    },
 })
 
 const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
@@ -65,7 +68,7 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
         localStorage.setItem('jwt', '')
         ServerRelay.setJWT('')
         return {}
-    }
+    },
 })
 
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
@@ -102,7 +105,7 @@ const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, I
         const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
 
         return { users }
-    }
+    },
 })
 
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
@@ -149,6 +152,15 @@ const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailS
     },
 })
 
+const updateUserProfileLogic = makeLogic<IUpdateUserProfileAction, IUpdateUserProfileSuccessAction>({
+    type: UserActionType.UPDATE_USER_PROFILE,
+    async process({ action }) {
+        const { userID, profile } = action.payload
+        const user = await ServerRelay.updateUserProfile(profile)
+        return { userID, profile: user.profile }
+    },
+})
+
 const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccessAction>({
     type: UserActionType.FETCH_USER_ORGS,
     async process({ getState, action }, dispatch) {
@@ -161,7 +173,7 @@ const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccess
 
 export default [
     whoAmILogic,
-	loginLogic,
+    loginLogic,
     logoutLogic,
     fetchUserDataLogic,
     fetchUserDataByUsernameLogic,
@@ -170,5 +182,6 @@ export default [
     updateUserSettingsLogic,
     uploadUserPictureLogic,
     modifyUserEmailLogic,
+    updateUserProfileLogic,
     fetchUserOrgsLogic,
 ]
