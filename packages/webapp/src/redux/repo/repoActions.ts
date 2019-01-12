@@ -21,6 +21,10 @@ export enum RepoActionType {
     REMOVE_COLLABORATOR = 'REMOVE_COLLABORATOR',
     REMOVE_COLLABORATOR_SUCCESS = 'REMOVE_COLLABORATOR_SUCCESS',
     REMOVE_COLLABORATOR_FAILED = 'REMOVE_COLLABORATOR_FAILED',
+
+    CHANGE_USER_PERMISSIONS = 'CHANGE_USER_PERMISSIONS',
+    CHANGE_USER_PERMISSIONS_SUCCESS = 'CHANGE_USER_PERMISSIONS_SUCCESS',
+    CHANGE_USER_PERMISSIONS_FAILED = 'CHANGE_USER_PERMISSIONS_FAILED',
 }
 
 export interface IGetRepoListAction {
@@ -108,6 +112,30 @@ export interface IRemoveCollaboratorSuccessAction {
 
 export type IRemoveCollaboratorFailedAction = FailedAction<RepoActionType.REMOVE_COLLABORATOR_FAILED>
 
+export interface IChangeUserPermissionsAction {
+    type: RepoActionType.CHANGE_USER_PERMISSIONS
+    payload: {
+        repoID: string
+        userID: string
+        admin: boolean
+        pusher: boolean
+        puller: boolean
+    }
+}
+
+export interface IChangeUserPermissionsSuccessAction {
+    type: RepoActionType.CHANGE_USER_PERMISSIONS_SUCCESS
+    payload: {
+        repoID: string
+        userID: string
+        admin: boolean
+        pusher: boolean
+        puller: boolean
+    }
+}
+
+export type IChangeUserPermissionsFailedAction = FailedAction<RepoActionType.CHANGE_USER_PERMISSIONS_FAILED>
+
 export type IRepoAction =
     IGetRepoListAction |
     IGetRepoListSuccessAction |
@@ -125,6 +153,10 @@ export type IRepoAction =
     IAddCollaboratorSuccessAction |
     IAddCollaboratorFailedAction |
 
+    IChangeUserPermissionsAction |
+    IChangeUserPermissionsSuccessAction |
+    IChangeUserPermissionsFailedAction |
+
     IRemoveCollaboratorAction |
     IRemoveCollaboratorSuccessAction |
     IRemoveCollaboratorFailedAction
@@ -136,3 +168,4 @@ export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => (
 
 export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
 export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
+export const changeUserPermissions = (payload: IChangeUserPermissionsAction['payload']): IChangeUserPermissionsAction => ({ type: RepoActionType.CHANGE_USER_PERMISSIONS, payload })

@@ -3,10 +3,11 @@ import { UserActionType, IUserAction } from './userActions'
 import { fromPairs } from 'lodash'
 
 const initialState = {
-	users: {},
-	usersByEmail: {},
+    users: {},
+    usersByEmail: {},
+    usersByUsername: {},
 
-	currentUser: undefined,
+    currentUser: undefined,
     checkedLoggedIn: false,
 
     userSettings: {
@@ -22,6 +23,7 @@ const initialState = {
 export interface IUserState {
     users: {[userID: string]: IUser}
     usersByEmail: {[email: string]: string} // value is userID
+    usersByUsername: {[username: string]: string} // value is userID
 
     currentUser: string | undefined
     checkedLoggedIn: boolean
@@ -32,19 +34,11 @@ export interface IUserState {
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
-	switch(action.type) {
+    switch (action.type) {
         case UserActionType.WHO_AM_I_SUCCESS:
         case UserActionType.LOGIN_SUCCESS: {
-            const { userID, emails, name, username, picture, orgs } = action.payload
-            const user = state.users[userID] || {
-                userID,
-                emails,
-                name,
-                username,
-                picture,
-                orgs,
-                repos: [],
-            }
+            const { user } = action.payload
+            const { userID, emails } = user
             const usersByEmail = fromPairs(emails.map(email => [ email, userID ]))
             return {
                 ...state,
@@ -55,6 +49,10 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 usersByEmail: {
                     ...state.usersByEmail,
                     ...usersByEmail,
+                },
+                usersByUsername: {
+                    ...state.usersByUsername,
+                    [user.username]: userID,
                 },
                 currentUser: userID,
                 checkedLoggedIn: true,
@@ -86,15 +84,19 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.LOGOUT_SUCCESS: {
             return {
                 ...state,
-                currentUser: undefined
+                currentUser: undefined,
             }
         }
 
-        case UserActionType.FETCH_USER_DATA_SUCCESS: {
+        case UserActionType.FETCH_USER_DATA_SUCCESS:
+        case UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS: {
             const { users } = action.payload
             const usersByEmail = {} as {[email: string]: string}
+            const usersByUsername = {} as {[username: string]: string}
             for (let userID of Object.keys(users)) {
-                for (let email of (users[userID].emails || [])) {
+                const user = users[userID]
+                usersByUsername[user.username] = userID
+                for (let email of (user.emails || [])) {
                     usersByEmail[email] = userID
                 }
             }
@@ -108,6 +110,10 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 usersByEmail: {
                     ...state.usersByEmail,
                     ...usersByEmail,
+                },
+                usersByUsername: {
+                    ...state.usersByUsername,
+                    ...usersByUsername,
                 },
             }
         }
@@ -131,7 +137,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
 
         case UserActionType.GET_USER_SETTINGS_SUCCESS:
         case UserActionType.UPDATE_USER_SETTINGS:
-        case UserActionType.UPDATE_USER_SETTINGS_SUCCESS:{
+        case UserActionType.UPDATE_USER_SETTINGS_SUCCESS: {
             const { settings } = action.payload
             const updated = {
                 codeColorScheme: settings.codeColorScheme !== undefined ? settings.codeColorScheme : state.userSettings.codeColorScheme,
@@ -141,7 +147,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
             return {
                 ...state,
-                userSettings: updated
+                userSettings: updated,
             }
         }
 
@@ -173,6 +179,21 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
+        case UserActionType.UPDATE_USER_PROFILE:
+        case UserActionType.UPDATE_USER_PROFILE_SUCCESS: {
+            const { userID, profile } = action.payload
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: {
+                        ...(state.users[userID] || {}),
+                        profile: profile,
+                    },
+                },
+            }
+        }
+
         case UserActionType.FETCH_USER_ORGS_SUCCESS: {
             const { userID, orgs } = action.payload
             return {
@@ -181,16 +202,16 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                     ...state.users,
                     [userID]: {
                         ...(state.users[userID] || {}),
-                        orgs: orgs
-                    }
-                }
+                        orgs: orgs,
+                    },
+                },
             }
 
         }
 
-		default:
-			return state
-	}
+        default:
+            return state
+    }
 }
 
 export default userReducer

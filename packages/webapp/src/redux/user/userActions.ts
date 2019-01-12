@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IUser, IUserSettings } from 'conscience-lib/common'
+import { IUser, IUserSettings, IUserProfile } from 'conscience-lib/common'
 
 export enum UserActionType {
     WHO_AM_I = 'WHO_AM_I',
@@ -22,6 +22,10 @@ export enum UserActionType {
     FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS',
     FETCH_USER_DATA_FAILED = 'FETCH_USER_DATA_FAILED',
 
+    FETCH_USER_DATA_BY_USERNAME = 'FETCH_USER_DATA_BY_USERNAME',
+    FETCH_USER_DATA_BY_USERNAME_SUCCESS = 'FETCH_USER_DATA_BY_USERNAME_SUCCESS',
+    FETCH_USER_DATA_BY_USERNAME_FAILED = 'FETCH_USER_DATA_BY_USERNAME_FAILED',
+
     SAW_COMMENT = 'SAW_COMMENT',
     SAW_COMMENT_SUCCESS = 'SAW_COMMENT_SUCCESS',
     SAW_COMMENT_FAILED = 'SAW_COMMENT_FAILED',
@@ -42,11 +46,15 @@ export enum UserActionType {
     MODIFY_USER_EMAIL_SUCCESS = 'MODIFY_USER_EMAIL_SUCCESS',
     MODIFY_USER_EMAIL_FAILED = 'MODIFY_USER_EMAIL_FAILED',
 
+    UPDATE_USER_PROFILE = 'UPDATE_USER_PROFILE',
+    UPDATE_USER_PROFILE_SUCCESS = 'UPDATE_USER_PROFILE_SUCCESS',
+    UPDATE_USER_PROFILE_FAILED = 'UPDATE_USER_PROFILE_FAILED',
+
     FETCH_USER_ORGS = 'FETCH_USER_ORGS',
     FETCH_USER_ORGS_SUCCESS = 'FETCH_USER_ORGS_SUCCESS',
     FETCH_USER_ORGS_FAILED = 'FETCH_USER_ORGS_FAILED',
 
-    ADDED_ORG = 'ADDED_ORG'
+    ADDED_ORG = 'ADDED_ORG',
 }
 
 export interface IWhoAmIAction {
@@ -57,12 +65,7 @@ export interface IWhoAmIAction {
 export interface IWhoAmISuccessAction {
     type: UserActionType.WHO_AM_I_SUCCESS
     payload: {
-        userID: string
-        emails: string[]
-        name: string
-        username: string
-        picture: string
-        orgs: string[]
+        user: IUser,
     }
 }
 
@@ -72,19 +75,14 @@ export interface ILoginAction {
     type: UserActionType.LOGIN
     payload: {
         email: string
-        password: string
+        password: string,
     }
 }
 
 export interface ILoginSuccessAction {
     type: UserActionType.LOGIN_SUCCESS
     payload: {
-        userID: string
-        emails: string[]
-        name: string
-        username: string
-        picture: string
-        orgs: string[]
+        user: IUser,
     }
 }
 
@@ -141,6 +139,22 @@ export interface IFetchUserDataSuccessAction {
 
 export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
 
+export interface IFetchUserDataByUsernameAction {
+    type: UserActionType.FETCH_USER_DATA_BY_USERNAME
+    payload: {
+        usernames: string[],
+    }
+}
+
+export interface IFetchUserDataByUsernameSuccessAction {
+    type: UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS
+    payload: {
+        users: { [userID: string]: IUser },
+    }
+}
+
+export type IFetchUserDataByUsernameFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_BY_USERNAME_FAILED>
+
 export interface ISawCommentAction {
     type: UserActionType.SAW_COMMENT
     payload: {
@@ -169,7 +183,7 @@ export interface IGetUserSettingsAction {
 export interface IGetUserSettingsSuccessAction {
     type: UserActionType.GET_USER_SETTINGS_SUCCESS
     payload: {
-        settings: IUserSettings
+        settings: IUserSettings,
     }
 }
 
@@ -178,14 +192,14 @@ export type IGetUserSettingsFailedAction = FailedAction<UserActionType.GET_USER_
 export interface IUpdateUserSettingsAction {
     type: UserActionType.UPDATE_USER_SETTINGS
     payload: {
-        settings: IUserSettings
+        settings: IUserSettings,
     }
 }
 
 export interface IUpdateUserSettingsSuccessAction {
     type: UserActionType.UPDATE_USER_SETTINGS_SUCCESS
     payload: {
-        settings: IUserSettings
+        settings: IUserSettings,
     }
 }
 
@@ -229,6 +243,24 @@ export interface IModifyUserEmailSuccessAction {
 
 export type IModifyUserEmailFailedAction = FailedAction<UserActionType.MODIFY_USER_EMAIL_FAILED>
 
+export interface IUpdateUserProfileAction {
+    type: UserActionType.UPDATE_USER_PROFILE
+    payload: {
+        userID: string
+        profile: IUserProfile,
+    }
+}
+
+export interface IUpdateUserProfileSuccessAction {
+    type: UserActionType.UPDATE_USER_PROFILE_SUCCESS
+    payload: {
+        userID: string
+        profile: IUserProfile,
+    }
+}
+
+export type IUpdateUserProfileFailedAction = FailedAction<UserActionType.UPDATE_USER_PROFILE_FAILED>
+
 export interface IFetchUserOrgsAction {
     type: UserActionType.FETCH_USER_ORGS
     payload: {}
@@ -238,7 +270,7 @@ export interface IFetchUserOrgsSuccessAction {
     type: UserActionType.FETCH_USER_ORGS_SUCCESS
     payload: {
         userID: string
-        orgs: string[]
+        orgs: string[],
     }
 }
 
@@ -273,6 +305,10 @@ export type IUserAction =
     IFetchUserDataSuccessAction |
     IFetchUserDataFailedAction |
 
+    IFetchUserDataByUsernameAction |
+    IFetchUserDataByUsernameSuccessAction |
+    IFetchUserDataByUsernameFailedAction |
+
     ISawCommentAction |
     ISawCommentSuccessAction |
     ISawCommentFailedAction |
@@ -293,6 +329,10 @@ export type IUserAction =
     IModifyUserEmailSuccessAction |
     IModifyUserEmailFailedAction |
 
+    IUpdateUserProfileAction |
+    IUpdateUserProfileSuccessAction |
+    IUpdateUserProfileFailedAction |
+
     IFetchUserOrgsAction |
     IFetchUserOrgsSuccessAction |
     IFetchUserOrgsFailedAction |
@@ -306,6 +346,7 @@ export const logout = (): ILogoutAction => ({ type: UserActionType.LOGOUT, paylo
 export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ type: UserActionType.SIGNUP, payload })
 
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
+export const fetchUserDataByUsername = (payload: IFetchUserDataByUsernameAction['payload']): IFetchUserDataByUsernameAction => ({ type: UserActionType.FETCH_USER_DATA_BY_USERNAME, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 export const getUserSettings = (payload: IGetUserSettingsAction['payload']): IGetUserSettingsAction => ({ type: UserActionType.GET_USER_SETTINGS, payload })
@@ -313,6 +354,7 @@ export const updateUserSettings = (payload: IUpdateUserSettingsAction['payload']
 
 export const uploadUserPicture = (payload: IUploadUserPictureAction['payload']): IUploadUserPictureAction => ({ type: UserActionType.UPLOAD_USER_PICTURE, payload })
 export const modifyUserEmail = (payload: IModifyUserEmailAction['payload']): IModifyUserEmailAction => ({ type: UserActionType.MODIFY_USER_EMAIL, payload })
+export const updateUserProfile = (payload: IUpdateUserProfileAction['payload']): IUpdateUserProfileAction => ({ type: UserActionType.UPDATE_USER_PROFILE, payload })
 
 export const fetchUserOrgs = (payload: IFetchUserOrgsAction['payload']): IFetchUserOrgsAction => ({ type: UserActionType.FETCH_USER_ORGS, payload })
 export const addedOrg = (payload: IAddedOrgAction['payload']): IAddedOrgAction => ({ type: UserActionType.ADDED_ORG, payload })

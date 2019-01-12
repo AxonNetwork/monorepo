@@ -4,11 +4,13 @@ import {
     ILoginAction, ILoginSuccessAction,
     ILogoutAction, ILogoutSuccessAction,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
+    IFetchUserDataByUsernameAction, IFetchUserDataByUsernameSuccessAction,
     ISawCommentAction, ISawCommentSuccessAction,
     IGetUserSettingsAction, IGetUserSettingsSuccessAction,
     IUpdateUserSettingsAction, IUpdateUserSettingsSuccessAction,
     IUploadUserPictureAction, IUploadUserPictureSuccessAction,
     IModifyUserEmailAction, IModifyUserEmailSuccessAction,
+    IUpdateUserProfileAction, IUpdateUserProfileSuccessAction,
     IFetchUserOrgsAction, IFetchUserOrgsSuccessAction,
     getUserSettings,
 } from './userActions'
@@ -22,40 +24,46 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
     type: UserActionType.WHO_AM_I,
     async process({ action }, dispatch) {
         const jwt = localStorage.getItem('jwt')
-        if( !jwt || jwt.length === 0 ) {
-            return new Error("No jwt")
+        if ( !jwt || jwt.length === 0 ) {
+            return new Error('No jwt')
         }
 
         ServerRelay.setJWT(jwt)
         const resp = await ServerRelay.whoami()
-        const { userID, emails, name, username, picture, orgs } = resp
         if (resp instanceof Error) {
             return resp
         }
+        const { userID, emails, name, username, picture, orgs, profile } = resp
 
         await dispatch(getUserSettings({})),
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
-        return { userID, emails, name, username, picture, orgs }
-    }
+        const user = { userID, emails, name, username, picture, orgs, profile } as IUser
+
+        return { user }
+    },
 })
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
     async process({ action }, dispatch) {
-    	const { email, password } = action.payload
-    	const resp = await ServerRelay.login(email, password)
-    	if (resp instanceof Error) {
-    		return resp
-		}
-        const { userID, emails, name, username, picture, jwt, orgs } = resp
-        localStorage.setItem('jwt', jwt)
+        const { email, password } = action.payload
+        const resp = await ServerRelay.login(email, password)
+        if (resp instanceof Error) {
+            return resp
+        }
+        const { userID, emails, name, username, picture, orgs, profile, jwt } = resp
+        if (jwt) {
+            localStorage.setItem('jwt', jwt)
+        }
 
         await dispatch(getUserSettings({}))
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
-        return { userID, emails, name, username, picture, orgs }
-    }
+        const user = { userID, emails, name, username, picture, orgs, profile } as IUser
+
+        return { user }
+    },
 })
 
 const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
@@ -64,7 +72,7 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
         localStorage.setItem('jwt', '')
         ServerRelay.setJWT('')
         return {}
-    }
+    },
 })
 
 const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
@@ -76,6 +84,26 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
             return { users: {} }
         }
         const userList = await ServerRelay.fetchUsers(toFetch)
+
+        // Convert the list into an object
+        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
+
+        return { users }
+    },
+})
+
+const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, IFetchUserDataByUsernameSuccessAction>({
+    type: UserActionType.LOGOUT,
+    async process({ action }, getState) {
+        const knownUsernames = getState().user.users.reduce((acc: string[], curr: IUser) => {
+            acc.push(curr.username)
+            return acc
+        }, [])
+        const toFetch = uniq(action.payload.usernames).filter(username => knownUsernames.indexOf(username) > -1)
+        if (toFetch.length <= 0) {
+            return { users: {} }
+        }
+        const userList = await ServerRelay.fetchUsersByUsername(toFetch)
 
         // Convert the list into an object
         const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
@@ -128,6 +156,15 @@ const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailS
     },
 })
 
+const updateUserProfileLogic = makeLogic<IUpdateUserProfileAction, IUpdateUserProfileSuccessAction>({
+    type: UserActionType.UPDATE_USER_PROFILE,
+    async process({ action }) {
+        const { userID, profile } = action.payload
+        const user = await ServerRelay.updateUserProfile(profile)
+        return { userID, profile: user.profile }
+    },
+})
+
 const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccessAction>({
     type: UserActionType.FETCH_USER_ORGS,
     async process({ getState, action }, dispatch) {
@@ -140,13 +177,15 @@ const fetchUserOrgsLogic = makeLogic<IFetchUserOrgsAction, IFetchUserOrgsSuccess
 
 export default [
     whoAmILogic,
-	loginLogic,
+    loginLogic,
     logoutLogic,
     fetchUserDataLogic,
+    fetchUserDataByUsernameLogic,
     sawCommentLogic,
     getUserSettingsLogic,
     updateUserSettingsLogic,
     uploadUserPictureLogic,
     modifyUserEmailLogic,
+    updateUserProfileLogic,
     fetchUserOrgsLogic,
 ]

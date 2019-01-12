@@ -75,6 +75,15 @@ export interface IUser {
     picture: string
     repos: string[]
     orgs: string[]
+    profile: IUserProfile
+}
+
+export interface IUserProfile {
+    geolocation: string
+    bio: string
+    orcid: string
+    university: string
+    interests: string[]
 }
 
 interface ICommentTimestamp {

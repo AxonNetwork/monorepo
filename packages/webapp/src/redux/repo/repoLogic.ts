@@ -9,8 +9,9 @@ import {
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
 import { getDiscussions } from '../discussion/discussionActions'
-import { fetchUserData } from '../user/userActions'
+import { fetchUserData, fetchUserDataByUsername } from '../user/userActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
+import { union } from 'lodash'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
@@ -29,8 +30,10 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
         if(repo instanceof Error){
             return repo
         }
+        const { admins, pushers, pullers } = repo
+        const usernames = union(admins, pushers, pullers)
         dispatch(getDiscussions({ repoID }))
-        dispatch(fetchUserData({ userIDs: repo.sharedUsers || [] }))
+        dispatch(fetchUserDataByUsername({ usernames }))
         return { repo }
     }
 })

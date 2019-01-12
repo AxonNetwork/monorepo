@@ -15,10 +15,10 @@ import UserAvatar from 'conscience-components/UserAvatar'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { union } from 'lodash'
 
 
-@autobind
-class RepoHomePage extends React.Component<Props>
+@autobind class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { repo, sharedUsers, classes } = this.props
@@ -169,7 +169,10 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoID = ownProps.match.params.repoID
     const repo = state.repo.repos[repoID]
-    const sharedUsers = (repo.sharedUsers || []).map(id => state.user.users[id])
+    const { admins, pushers, pullers} = repo
+    const sharedUsers = union(admins, pushers, pullers)
+        .map(username => state.user.usersByUsername[username])
+        .map(id => state.user.users[id])
     return {
         repo,
         sharedUsers,

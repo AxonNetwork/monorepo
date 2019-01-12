@@ -14,17 +14,9 @@ const ServerRelay = {
     },
 
     async login(email: string, password: string) {
-        interface IResponse {
-            userID: string
-            emails: string[]
-            name: string
-            username: string
-            picture: string
-            token: string
-            mnemonic: string
-            orgs: string[]
+        interface IResponse extends IUser {
+            jwt: string
         }
-
         let resp
         try {
             resp = await axios.post<IResponse>(API_URL + '/login', { email, password })
@@ -37,28 +29,13 @@ const ServerRelay = {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(resp.data.token)
-        return {
-            userID: resp.data.userID,
-            emails: resp.data.emails,
-            name: resp.data.name,
-            username: resp.data.username,
-            picture: resp.data.picture,
-            jwt: resp.data.token,
-            mnemonic: resp.data.mnemonic,
-            orgs: resp.data.orgs,
-        }
+        ServerRelay.setJWT(resp.data.jwt)
+        return resp.data
     },
 
     async loginWithKey(username: string, hexSignature: string) {
-        interface IResponse {
-            userID: string
-            emails: string[]
-            name: string
-            username: string
-            picture: string
-            token: string
-            orgs: string[]
+        interface IResponse extends IUser {
+            jwt: string
         }
 
         let resp
@@ -73,16 +50,8 @@ const ServerRelay = {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(resp.data.token)
-        return {
-            userID: resp.data.userID,
-            emails: resp.data.emails,
-            name: resp.data.name,
-            username: resp.data.username,
-            picture: resp.data.picture,
-            jwt: resp.data.token,
-            orgs: resp.data.orgs,
-        }
+        ServerRelay.setJWT(resp.data.jwt)
+        return resp.data
     },
 
     async signup(name: string, username: string, email: string, password: string, hexSignature: string, mnemonic: string) {
@@ -117,24 +86,8 @@ const ServerRelay = {
     },
 
     async whoami() {
-        interface IResponse {
-            userID: string
-            name: string
-            username: string
-            emails: string[]
-            picture: string
-            orgs: string[]
-        }
-
-        const response = await axios.get<IResponse>(API_URL + '/whoami')
-        return {
-            userID: response.data.userID,
-            emails: response.data.emails,
-            name: response.data.name,
-            username: response.data.username,
-            picture: response.data.picture,
-            orgs: response.data.orgs,
-        }
+        const response = await axios.get<IUser>(API_URL + '/whoami')
+        return response.data
     },
 
     async getEthBalance(address: string) {
@@ -292,6 +245,11 @@ const ServerRelay = {
         return response.data as IUser[]
     },
 
+    async fetchUsersByUsername(usernames: string[]) {
+        const response = await axios.get(API_URL + '/users-by-username?' + querystring.stringify({ usernames }))
+        return response.data as IUser[]
+    },
+
     async uploadUserPicture(fileInput: HTMLInputElement) {
         interface IResponse {
             picture: string
@@ -305,6 +263,11 @@ const ServerRelay = {
         const resp = await axios.post<IResponse>(API_URL + '/user-photo', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         })
+        return resp.data
+    },
+
+    async updateUserProfile(profile: any) {
+        const resp = await axios.post<IUser>(API_URL + '/user/profile', { profile })
         return resp.data
     },
 
