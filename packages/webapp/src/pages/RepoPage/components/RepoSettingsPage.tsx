@@ -10,66 +10,65 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class RepoFilesPage extends React.Component<Props>
+class RepoSettingsPage extends React.Component<Props>
 {
-
-    changePermissions(payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }){
-    	console.log(payload)
+    changePermissions(payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) {
+        console.log(payload)
     }
 
-	render() {
-		const { classes } = this.props
+    render() {
+        const { classes } = this.props
 
-		return (
-			<div className={classes.page}>
-				<SharedUsers
-					repo={this.props.repo}
-					users={this.props.users}
-					usersByUsername={this.props.usersByUsername}
-					currentUser={this.props.currentUser}
-					changeUserPermissions={this.props.changeUserPermissions}
-				/>
-			</div>
-		)
-	}
+        return (
+            <div className={classes.page}>
+                <SharedUsers
+                    repo={this.props.repo}
+                    users={this.props.users}
+                    usersByUsername={this.props.usersByUsername}
+                    currentUser={this.props.currentUser}
+                    changeUserPermissions={this.props.changeUserPermissions}
+                />
+            </div>
+        )
+    }
 }
 
 interface MatchParams {
-	repoID: string
+    repoID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     repo: IRepo | undefined
-    users: {[userID: string]: IUser}
-    usersByUsername: {[username: string]: string}
+    users: { [userID: string]: IUser }
+    usersByUsername: { [username: string]: string }
     currentUser: string
     changeUserPermissions: typeof changeUserPermissions
-	classes: any
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-	page: {
-		marginTop: 32
-	},
+    page: {
+        marginTop: 32
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
-	const repoID = props.match.params.repoID
+    const repoID = props.match.params.repoID
     return {
-    	repo: state.repo.repos[repoID],
-    	users: state.user.users,
-	    usersByUsername: state.user.usersByUsername,
-	    currentUser: state.user.currentUser || '',
+        repo: state.repo.repos[repoID],
+        users: state.user.users,
+        usersByUsername: state.user.usersByUsername,
+        currentUser: state.user.currentUser || '',
     }
 }
 
 const mapDispatchToProps = {
-	changeUserPermissions
+    changeUserPermissions,
 }
 
-const RepoFilesPageContainer = connect(
+const RepoSettingsPageContainer = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoFilesPage))
+)(withStyles(styles)(RepoSettingsPage))
 
-export default RepoFilesPageContainer
+export default RepoSettingsPageContainer

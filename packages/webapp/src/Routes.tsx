@@ -11,9 +11,7 @@ import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
 import { IGlobalState } from 'redux/store'
 
-function Routes(
-    { loginState, history }: Props,
-    ) {
+function Routes({ loginState, history }: Props) {
     const location = history.location.pathname
     return (
         <div>
@@ -29,7 +27,7 @@ function Routes(
                 <Route render={() => {
                     if (loginState === LoginState.LoggedIn) {
                         return <Redirect to="/repo" />
-                    }else {
+                    } else {
                         return <Redirect to="/login" />
                     }
                 }}
@@ -51,21 +49,21 @@ interface Props {
     history: History
 }
 
-export function PrivateRoute({ component: Component, loginState, ...rest}: any) {
+export function PrivateRoute({ component: Component, loginState, ...rest }: any) {
     return (
         <Route {...rest} render={(props) => {
             if (loginState === LoginState.LoggedIn) {
                 return <Component {...props} />
-            }else if (loginState === LoginState.NotLoggedIn) {
-                return(
+            } else if (loginState === LoginState.NotLoggedIn) {
+                return (
                     <Redirect
                         to={{
-                          pathname: '/login',
-                          state: { from: props.location },
+                            pathname: '/login',
+                            state: { from: props.location },
                         }}
-                     />
+                    />
                 )
-            }else {
+            } else {
                 return null
             }
         }} />

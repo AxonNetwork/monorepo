@@ -18,7 +18,7 @@ class DataViewer extends React.Component<Props, State>
     }
 
     onChangePage(_: any, page: number) {
-       this.setState({ page })
+        this.setState({ page })
     }
 
     onChangeRowsPerPage(evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
@@ -32,11 +32,11 @@ class DataViewer extends React.Component<Props, State>
 
         let data = []
         switch (fileFormat) {
-        case 'csv':
-            data = parseCSV(fileContents)
-            break
-        default:
-            return <div></div>
+            case 'csv':
+                data = parseCSV(fileContents)
+                break
+            default:
+                return <div></div>
         }
 
         const headerRow = data.length > 0 ? data[0] : null

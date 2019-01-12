@@ -54,7 +54,7 @@ class CommitView extends React.Component<Props>
                         <div className={classes.commitInfo}>
                             {commit.verified !== undefined &&
                                 <div className={classes.linkIconContainer}>
-                                    <LinkIcon classes={{root: classes.linkIcon}}/>
+                                    <LinkIcon classes={{ root: classes.linkIcon }} />
                                 </div>
                             }
                             <UserAvatar className={classes.userAvatar} username={this.props.user.name} userPicture={this.props.user.picture} />
@@ -93,12 +93,12 @@ interface Props {
     user: IUser
     commit: ITimelineEvent | undefined
     codeColorScheme?: string | undefined
-    getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string}) => void
-    selectCommit: (payload: {selectedCommit: string | undefined}) => void
+    getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string }) => void
+    selectCommit: (payload: { selectedCommit: string | undefined }) => void
     classes: any
 }
 
-const styles = (theme: Theme)=> createStyles({
+const styles = (theme: Theme) => createStyles({
     root: {
         marginTop: 16,
     },
@@ -118,7 +118,7 @@ const styles = (theme: Theme)=> createStyles({
     linkIcon: {
         fontSize: 16,
     },
-    linkIconContainer:{
+    linkIconContainer: {
         position: 'absolute',
         top: 0,
         left: 26,

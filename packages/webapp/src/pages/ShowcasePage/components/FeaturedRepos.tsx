@@ -17,7 +17,7 @@ class FeaturedRepos extends React.Component<Props, State>
 {
     state = {
         editMode: false,
-        featuredRepos: {} as {[repoID: string]: IFeaturedRepo},
+        featuredRepos: {} as { [repoID: string]: IFeaturedRepo },
         editing: [] as string[],
         dialogOpen: false,
     }
@@ -182,18 +182,18 @@ class FeaturedRepos extends React.Component<Props, State>
 
 interface State {
     editMode: boolean
-    featuredRepos: {[repoID: string]: IFeaturedRepo}
+    featuredRepos: { [repoID: string]: IFeaturedRepo }
     editing: string[]
     dialogOpen: boolean
 }
 
 interface Props {
-    featuredRepos: {[repoID: string]: IFeaturedRepo}
-    repos: {[repoID: string]: IRepo}
+    featuredRepos: { [repoID: string]: IFeaturedRepo }
+    repos: { [repoID: string]: IRepo }
     orgRepoList: string[]
     canEdit?: boolean
-    onSave: (featuredRepos: {[repoID: string]: IFeaturedRepo}) => void
-    selectRepo: (payload: {repoID: string}) => void
+    onSave: (featuredRepos: { [repoID: string]: IFeaturedRepo }) => void
+    selectRepo: (payload: { repoID: string }) => void
     classes: any
 }
 

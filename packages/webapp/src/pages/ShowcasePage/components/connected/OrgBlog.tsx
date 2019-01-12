@@ -29,7 +29,7 @@ interface OwnProps {
 
 interface StateProps {
     blogs: {
-        map: {[created: string]: IOrgBlog}
+        map: { [created: string]: IOrgBlog }
         sortedIDs: number[],
     }
 }
@@ -40,7 +40,7 @@ interface DispatchProps {
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
-        blogs: state.org.blogs[ ownProps.orgID ] || {},
+        blogs: state.org.blogs[ownProps.orgID] || {},
     }
 }
 

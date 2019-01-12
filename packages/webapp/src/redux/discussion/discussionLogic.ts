@@ -1,11 +1,13 @@
 import { keyBy } from 'lodash'
 import { makeLogic } from '../reduxUtils'
-import { DiscussionActionType,
+import {
+    DiscussionActionType,
     IGetDiscussionsAction, IGetDiscussionsSuccessAction,
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
     IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction,
     ICreateCommentAction, ICreateCommentSuccessAction,
-    getCommentsForDiscussion } from './discussionActions'
+    getCommentsForDiscussion
+} from './discussionActions'
 import { push as pushToHistory } from 'connected-react-router'
 import { fetchUserData, sawComment } from 'redux/user/userActions'
 import { IDiscussion, IComment } from 'conscience-lib/common'
@@ -17,7 +19,7 @@ const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSucc
     async process({ action }, dispatch) {
         const { repoID } = action.payload
         const discussionsList = await ServerRelay.getDiscussionsForRepo(action.payload.repoID)
-        const discussions = keyBy(discussionsList, 'discussionID') as {[discussionID: string]: IDiscussion}
+        const discussions = keyBy(discussionsList, 'discussionID') as { [discussionID: string]: IDiscussion }
 
         // @@TODO: do this in the component or something
         for (let discussionID of Object.keys(discussions)) {
@@ -45,7 +47,7 @@ const getCommentsForDiscussionLogic = makeLogic<IGetCommentsForDiscussionAction,
     async process({ action }, dispatch) {
         const { discussionID } = action.payload
         const commentsList = await ServerRelay.getCommentsForDiscussion(discussionID)
-        const comments = keyBy(commentsList, 'commentID') as {[commentID: string]: IComment}
+        const comments = keyBy(commentsList, 'commentID') as { [commentID: string]: IComment }
 
         let userIDs = commentsList.map(c => c.userID)
         dispatch(fetchUserData({ userIDs }))

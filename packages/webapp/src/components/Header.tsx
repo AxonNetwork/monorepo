@@ -19,110 +19,110 @@ const logo = require('../assets/logo-invert.png')
 @autobind
 class Header extends React.Component<Props, State>
 {
-	state = {
-		anchorEl: null,
-	}
+    state = {
+        anchorEl: null,
+    }
 
-	render() {
-		const { user, classes } = this.props
-		return (
-			<AppBar position="static" className={classes.appbar}>
-				<Link to='/repo'>
-					<img src={logo} className={classes.img} alt="Conscience Logo"/>
-				</Link>
-				{user !== undefined &&
-					<div className={classes.avatar}>
-						<IconButton onClick={this.openUserMenu} classes={{ root: classes.avatarButton}}>
-							<UserAvatar
-								username={user.name}
-								userPicture={user.picture}
-							/>
-						</IconButton>
-						<Menu
-							classes={{ paper: classes.menuPaper }}
-							open={!!this.state.anchorEl}
-							anchorEl={this.state.anchorEl}
-							onClose={this.handleClose}
-						>
-							<MenuItem onClick={()=>this.selectItem('repos')}>Your Repositories</MenuItem>
-							<MenuItem onClick={()=>this.selectItem('settings')}>Settings</MenuItem>
-							<MenuItem onClick={()=>this.selectItem('logout')}>Logout</MenuItem>
-						</Menu>
-					</div>
-				}
-			</AppBar>
-		)
-	}
+    render() {
+        const { user, classes } = this.props
+        return (
+            <AppBar position="static" className={classes.appbar}>
+                <Link to='/repo'>
+                    <img src={logo} className={classes.img} alt="Conscience Logo" />
+                </Link>
+                {user !== undefined &&
+                    <div className={classes.avatar}>
+                        <IconButton onClick={this.openUserMenu} classes={{ root: classes.avatarButton }}>
+                            <UserAvatar
+                                username={user.name}
+                                userPicture={user.picture}
+                            />
+                        </IconButton>
+                        <Menu
+                            classes={{ paper: classes.menuPaper }}
+                            open={!!this.state.anchorEl}
+                            anchorEl={this.state.anchorEl}
+                            onClose={this.handleClose}
+                        >
+                            <MenuItem onClick={() => this.selectItem('repos')}>Your Repositories</MenuItem>
+                            <MenuItem onClick={() => this.selectItem('settings')}>Settings</MenuItem>
+                            <MenuItem onClick={() => this.selectItem('logout')}>Logout</MenuItem>
+                        </Menu>
+                    </div>
+                }
+            </AppBar>
+        )
+    }
 
-	openUserMenu(event: React.MouseEvent<HTMLElement>) {
-		this.setState({ anchorEl: event.currentTarget })
-	}
+    openUserMenu(event: React.MouseEvent<HTMLElement>) {
+        this.setState({ anchorEl: event.currentTarget })
+    }
 
-	selectItem(selection?: string) {
-		this.handleClose()
-		switch(selection) {
-			case 'repos':
-				this.props.history.push('/repo')
-				return
-			case 'settings':
-				this.props.history.push('/settings')
-				return
-			case 'logout':
-				this.props.logout()
-				return
-		}
-	}
+    selectItem(selection?: string) {
+        this.handleClose()
+        switch (selection) {
+            case 'repos':
+                this.props.history.push('/repo')
+                return
+            case 'settings':
+                this.props.history.push('/settings')
+                return
+            case 'logout':
+                this.props.logout()
+                return
+        }
+    }
 
-	handleClose() {
-		this.setState({ anchorEl: null })
-	}
+    handleClose() {
+        this.setState({ anchorEl: null })
+    }
 }
 
 interface Props extends RouteComponentProps {
-	user: IUser | undefined
-	logout: typeof logout
-	classes: any
+    user: IUser | undefined
+    logout: typeof logout
+    classes: any
 }
 
 interface State {
-	anchorEl: HTMLElement | null
+    anchorEl: HTMLElement | null
 }
 
 const styles = (theme: Theme) => createStyles({
-	appbar: {
-		paddingLeft: 8,
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-	},
-	img: {
-		width: 48,
-		height: 48,
-	},
-	avatar: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		marginRight: 64,
-	},
-	avatarButton: {
-		padding: 0,
-	},
-	menuPaper: {
-		marginTop: 36,
-		marginRight: 32,
-	},
+    appbar: {
+        paddingLeft: 8,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    img: {
+        width: 48,
+        height: 48,
+    },
+    avatar: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 64,
+    },
+    avatarButton: {
+        padding: 0,
+    },
+    menuPaper: {
+        marginTop: 36,
+        marginRight: 32,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-	const user = state.user.users[state.user.currentUser || '']
+    const user = state.user.users[state.user.currentUser || '']
     return {
-    	user,
+        user,
     }
 }
 
 const mapDispatchToProps = {
-	logout,
+    logout,
 }
 
 export default connect(

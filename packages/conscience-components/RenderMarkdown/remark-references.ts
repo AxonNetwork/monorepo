@@ -52,10 +52,10 @@ export default function shortcodes(this: any) {
 function isRemarkParser(parser: any) {
     return Boolean(
         parser &&
-            parser.prototype &&
-            parser.prototype.inlineTokenizers &&
-            parser.prototype.inlineTokenizers.break &&
-            parser.prototype.inlineTokenizers.break.locator,
+        parser.prototype &&
+        parser.prototype.inlineTokenizers &&
+        parser.prototype.inlineTokenizers.break &&
+        parser.prototype.inlineTokenizers.break.locator,
     )
 }
 

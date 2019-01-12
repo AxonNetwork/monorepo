@@ -52,7 +52,7 @@ class OrgBlog extends React.Component<Props>
 interface Props {
     orgID: string
     blogs: {
-        map: {[created: string]: IOrgBlog}
+        map: { [created: string]: IOrgBlog }
         sortedIDs: number[],
     }
     limit?: number

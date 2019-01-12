@@ -55,8 +55,8 @@ class FileList extends React.Component<Props, State>
 
                 {names.length === 0 &&
                     <Typography className={classes.emptyRepoMessage}>
-                        This is the file list view.  Right now, it's empty because nobody has committed any files to the repository.<br/><br/>
-                        Add some files and then commit them using the <BackupIcon /> button above.<br/>
+                        This is the file list view.  Right now, it's empty because nobody has committed any files to the repository.<br /><br />
+                        Add some files and then commit them using the <BackupIcon /> button above.<br />
                         Open this folder on your computer by using the <FolderIcon /> button.
                     </Typography>
                 }
@@ -133,13 +133,13 @@ class FileList extends React.Component<Props, State>
 
 interface Props {
     repoRoot: string
-    files: {[name: string]: IRepoFile}
+    files: { [name: string]: IRepoFile }
     selectedFolder: string | undefined
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
 
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
 
     classes: any
 }

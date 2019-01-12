@@ -3,9 +3,9 @@ import { flatMap } from 'lodash'
 import { getPlugins, IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins'
 
 export const filetypes = function() {
-    const filetypes = flatMap( (getPlugins('file type') as IFileTypePlugin[]).map(plugin => plugin.fileTypes) )
+    const filetypes = flatMap((getPlugins('file type') as IFileTypePlugin[]).map(plugin => plugin.fileTypes))
 
-    const types = {} as {[extension: string]: IFileType}
+    const types = {} as { [extension: string]: IFileType }
     for (let filetype of filetypes) {
         for (let ext of filetype.extensions) {
             types[ext] = filetype
@@ -17,11 +17,11 @@ export const filetypes = function() {
 export const fileViewers = function() {
     const plugins = getPlugins('file viewer') as IFileViewerPlugin[]
 
-    const viewers: {[name: string]: {humanName: string, name: string, viewer: FileViewerComponent}} = {}
+    const viewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent } } = {}
     for (let plugin of plugins) {
         viewers[plugin.name] = {
-            viewer:    plugin.viewer,
-            name:      plugin.name,
+            viewer: plugin.viewer,
+            name: plugin.name,
             humanName: plugin.humanName,
         }
     }
@@ -31,11 +31,11 @@ export const fileViewers = function() {
 export const fileEditors = function() {
     const plugins = getPlugins('file editor') as IFileEditorPlugin[]
 
-    const editors: {[name: string]: {humanName: string, name: string, editor: FileEditorComponent}} = {}
+    const editors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } } = {}
     for (let plugin of plugins) {
         editors[plugin.name] = {
-            editor:    plugin.editor,
-            name:      plugin.name,
+            editor: plugin.editor,
+            name: plugin.name,
             humanName: plugin.humanName,
         }
     }

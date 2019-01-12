@@ -36,11 +36,11 @@ class PushPullButtons extends React.Component<Props, State>
 
         let pullLoading = pullProgress !== undefined
         let percentPulled
-        if(pullLoading){
-            percentPulled = Math.floor(100*((pullProgress || {} as any).fetched||0)/((pullProgress || {} as any).toFetch||1))
+        if (pullLoading) {
+            percentPulled = Math.floor(100 * ((pullProgress || {} as any).fetched || 0) / ((pullProgress || {} as any).toFetch || 1))
             // min 10 so the progress spinner shows something pulled
             percentPulled = Math.max(percentPulled, 10)
-            if(percentPulled === 100){
+            if (percentPulled === 100) {
                 // pull complete
                 pullLoading = false
             }
@@ -67,7 +67,7 @@ class PushPullButtons extends React.Component<Props, State>
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
-                        {pullLoading  &&
+                        {pullLoading &&
                             <CircularProgress
                                 size={24}
                                 className={classes.buttonLoading}
@@ -86,7 +86,7 @@ class PushPullButtons extends React.Component<Props, State>
                         onClick={this.onClickOpenPushDialog}
                     >
                         {!checkpointLoading && <BackupIcon className={classes.icon} />}
-                        {checkpointLoading  && <CircularProgress size={24} className={classes.buttonLoading} />}
+                        {checkpointLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                     </IconButton>
                 </Tooltip>
 
@@ -108,13 +108,13 @@ class PushPullButtons extends React.Component<Props, State>
                             Looks like you have some merge conflicts in the following files. Click on the file to resolve the conflicts before committing your changes.
                         </DialogContentText>
                         <List>
-                        {
-                            mergeConflicts.map(file => (
-                                <ListItem button onClick={()=>this.onClickOpenMergeConflict(file)}>
-                                    <ListItemText primary={file} />
-                                </ListItem>
-                            ))
-                        }
+                            {
+                                mergeConflicts.map(file => (
+                                    <ListItem button onClick={() => this.onClickOpenMergeConflict(file)}>
+                                        <ListItemText primary={file} />
+                                    </ListItem>
+                                ))
+                            }
                         </List>
                     </DialogContent>
                     <DialogActions>
@@ -145,13 +145,13 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickPull() {
-        this.props.pullRepo({ folderPath: this.props.repo.path, repoID: this.props.repo.repoID})
+        this.props.pullRepo({ folderPath: this.props.repo.path, repoID: this.props.repo.repoID })
     }
 
     onClickOpenPushDialog() {
         const files = this.props.repo.files || {}
         const mergeConflict = Object.keys(files).some((name => files[name].mergeConflict))
-        if(mergeConflict) {
+        if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
 
         } else {
@@ -167,7 +167,7 @@ class PushPullButtons extends React.Component<Props, State>
         this.setState({ mergeConflictDialogOpen: false })
     }
 
-    onClickOpenMergeConflict(file: string){
+    onClickOpenMergeConflict(file: string) {
         this.setState({ mergeConflictDialogOpen: false })
         this.props.selectFile({ selectedFile: { file, isFolder: false, mode: FileMode.ResolveConflict } })
     }

@@ -21,7 +21,7 @@ class OrganizationPage extends React.Component<Props>
 
     render() {
         const { org, classes } = this.props
-        return(
+        return (
             <div className={classes.settingsPage}>
                 <div className={classes.settings}>
                     <Typography variant="h6" className={classes.header}>
@@ -30,7 +30,7 @@ class OrganizationPage extends React.Component<Props>
                     <TextField
                         key={org.orgID + ':1'}
                         label="Organization Name"
-                        inputRef={ x => this._inputOrgName = x }
+                        inputRef={x => this._inputOrgName = x}
                         defaultValue={org.name}
                         className={classes.input}
                         fullWidth
@@ -38,7 +38,7 @@ class OrganizationPage extends React.Component<Props>
                     <TextField
                         key={org.orgID + ':2'}
                         label="Description"
-                        inputRef={ x => this._inputDescription = x }
+                        inputRef={x => this._inputDescription = x}
                         defaultValue={org.description}
                         className={classes.input}
                         fullWidth
@@ -65,10 +65,10 @@ class OrganizationPage extends React.Component<Props>
                             <Typography>
                                 Current Image:
                             </Typography>
-                            <img src={nonCacheImg(org.picture)} className={classes.orgPicture}/>
+                            <img src={nonCacheImg(org.picture)} className={classes.orgPicture} />
                         </div>
                     }
-                    <input type="file" ref={x => this._inputOrgPicture = x} /><br/>
+                    <input type="file" ref={x => this._inputOrgPicture = x} /><br />
                     <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
                 </div>
                 <div className={classes.imageContainer}>
@@ -82,10 +82,10 @@ class OrganizationPage extends React.Component<Props>
                             <Typography>
                                 Current Banner:
                             </Typography>
-                            <img src={nonCacheImg(org.banner)} className={classes.orgPicture}/>
+                            <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
                         </div>
                     }
-                    <input type="file" ref={x => this._inputBanner = x} /><br/>
+                    <input type="file" ref={x => this._inputBanner = x} /><br />
                     <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
                 </div>
             </div>

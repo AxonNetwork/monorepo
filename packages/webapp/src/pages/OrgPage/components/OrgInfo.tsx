@@ -8,10 +8,10 @@ import { nonCacheImg } from 'conscience-lib/utils'
 
 class OrgInfo extends React.Component<Props>
 {
-	render() {
-		const { org, classes } = this.props
+    render() {
+        const { org, classes } = this.props
 
-		return (
+        return (
             <div className={classes.root}>
                 <div className={classes.orgInfoContainer}>
                     {org.picture.length > 0 &&
@@ -34,21 +34,21 @@ class OrgInfo extends React.Component<Props>
                         [OrgPage.Settings, 'Settings'],
                     ]}
                     activePage={this.props.orgPage}
-                    onTabSelect={(orgPage: OrgPage) => this.props.navigateOrgPage( orgPage )}
+                    onTabSelect={(orgPage: OrgPage) => this.props.navigateOrgPage(orgPage)}
                     menuLabelsHidden={this.props.menuLabelsHidden}
                 />
             </div>
-		)
-	}
+        )
+    }
 }
 
 interface Props {
-	org: IOrganization
-	orgPage: OrgPage
-	menuLabelsHidden: boolean
-	navigateOrgPage: (orgPage: OrgPage) => void
+    org: IOrganization
+    orgPage: OrgPage
+    menuLabelsHidden: boolean
+    navigateOrgPage: (orgPage: OrgPage) => void
 
-	classes: any
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({

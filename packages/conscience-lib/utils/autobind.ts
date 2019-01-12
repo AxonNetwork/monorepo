@@ -10,18 +10,18 @@ import { makeClassDecorator, construct } from './decorators'
 const autobind = makeClassDecorator(function(
     original_ctor: any,
     args: any[]
-    ) {
-        const instance: any = construct(original_ctor, args)
+) {
+    const instance: any = construct(original_ctor, args)
 
-        // bind all of its methods to it so that `this.whatever` works
-        for (const funcName of functionsIn(instance)) {
-            instance[funcName] = instance[funcName].bind(instance)
-        }
+    // bind all of its methods to it so that `this.whatever` works
+    for (const funcName of functionsIn(instance)) {
+        instance[funcName] = instance[funcName].bind(instance)
+    }
 
-        // give it a default non-null state, because it's annoying to have to write a constructor just to do this
-        instance.state = instance.state || {}
+    // give it a default non-null state, because it's annoying to have to write a constructor just to do this
+    instance.state = instance.state || {}
 
-        return instance
+    return instance
 })
 
 export default autobind

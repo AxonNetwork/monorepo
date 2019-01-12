@@ -1,6 +1,7 @@
 import keyBy from 'lodash/keyBy'
 import { makeLogic } from '../reduxUtils'
-import { OrgActionType,
+import {
+    OrgActionType,
     ICreateOrgAction, ICreateOrgSuccessAction,
     IFetchOrgInfoAction, IFetchOrgInfoSuccessAction,
     IUpdateOrgAction, IUpdateOrgSuccessAction,
@@ -35,7 +36,7 @@ const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
 
 const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAction>({
     type: OrgActionType.FETCH_ORG_INFO,
-    async process({ action}, dispatch) {
+    async process({ action }, dispatch) {
         const { orgID } = action.payload
         const org = await ServerRelay.fetchOrgInfo(orgID)
         let promises = org.repos.map(repoID => dispatch(getRepo({ repoID })))
@@ -54,7 +55,7 @@ const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
     },
 })
 
-const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSuccessAction>({
+const uploadOrgPicture = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSuccessAction>({
     type: OrgActionType.UPLOAD_ORG_PICTURE,
     async process({ action }) {
         const { orgID, fileInput } = action.payload
@@ -64,7 +65,7 @@ const uploadOrgPicture  = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSu
     },
 })
 
-const uploadOrgBanner  = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSuccessAction>({
+const uploadOrgBanner = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSuccessAction>({
     type: OrgActionType.UPLOAD_ORG_BANNER,
     async process({ action }) {
         const { orgID, fileInput } = action.payload
@@ -78,7 +79,7 @@ const addMemberToOrgLogic = makeLogic<IAddMemberToOrgAction, IAddMemberToOrgSucc
     type: OrgActionType.ADD_MEMBER_TO_ORG,
     async process({ action }) {
         const { orgID, email } = action.payload
-        const user = (await ServerRelay.fetchUsersByEmail([ email ]))[0]
+        const user = (await ServerRelay.fetchUsersByEmail([email]))[0]
         if (user === undefined) {
             throw new Error('user does not exist')
         }
@@ -138,7 +139,7 @@ const fetchOrgBlogsLogic = makeLogic<IFetchOrgBlogsAction, IFetchOrgBlogsSuccess
     async process({ action }) {
         const { orgID } = action.payload
         const blogList = await ServerRelay.fetchOrgBlogs(orgID)
-        const blogs = keyBy(blogList, b => `${b.created}`) as {[created: string]: IOrgBlog}
+        const blogs = keyBy(blogList, b => `${b.created}`) as { [created: string]: IOrgBlog }
         return { orgID, blogs }
     },
 })

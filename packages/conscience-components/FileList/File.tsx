@@ -111,7 +111,7 @@ class File extends React.Component<Props>
 interface Props {
     file: IRepoFile
     repoRoot: string
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean

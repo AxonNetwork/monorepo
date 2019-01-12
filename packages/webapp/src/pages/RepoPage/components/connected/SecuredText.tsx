@@ -11,27 +11,27 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class ConnectedSecuredText extends React.Component<Props>
 {
-	render() {
-		return(
-			<SecuredText
-				commits={this.props.commits}
-				commitList={this.props.commitList}
-				commit={this.props.commit}
-				filename={this.props.filename}
-				selectCommit={this.selectCommit}
-			/>
-		)
-	}
+    render() {
+        return (
+            <SecuredText
+                commits={this.props.commits}
+                commitList={this.props.commitList}
+                commit={this.props.commit}
+                filename={this.props.filename}
+                selectCommit={this.selectCommit}
+            />
+        )
+    }
 
-	selectCommit(payload: { selectedCommit: string | undefined }) {
-		const repoID = this.props.repoID
-		const commit = payload.selectedCommit
-		if(commit === undefined){
-			this.props.history.push(`/repo/${repoID}`)
-		}else {
-			this.props.history.push(`/repo/${repoID}/history/${commit}`)
-		}
-	}
+    selectCommit(payload: { selectedCommit: string | undefined }) {
+        const repoID = this.props.repoID
+        const commit = payload.selectedCommit
+        if (commit === undefined) {
+            this.props.history.push(`/repo/${repoID}`)
+        } else {
+            this.props.history.push(`/repo/${repoID}/history/${commit}`)
+        }
+    }
 }
 
 
@@ -46,25 +46,25 @@ interface OwnProps {
 }
 
 interface StateProps {
-    commits: {[commitHash: string]: ITimelineEvent}
+    commits: { [commitHash: string]: ITimelineEvent }
     commitList: string[]
 }
 
 const styles = (theme: Theme) => createStyles({
-	progressContainer: {
-		width: '100%',
-		display: 'flex',
-		justifyContent: 'center',
-		marginTop: 256,
-	}
+    progressContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: 256,
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-	const repo = state.repo.repos[ownProps.repoID]
-	return {
-		commits: repo.commits || {},
-		commitList: repo.commitList || [],
-	}
+    const repo = state.repo.repos[ownProps.repoID]
+    return {
+        commits: repo.commits || {},
+        commitList: repo.commitList || [],
+    }
 }
 
 const mapDispatchToProps = {}

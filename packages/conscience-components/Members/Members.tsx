@@ -30,7 +30,7 @@ class Members extends React.Component<Props, State>
         const { userList, users, currentUser, classes } = this.props
         const adminList = this.props.adminList || []
         const isAdmin = adminList.indexOf(currentUser) > -1
-        return(
+        return (
             <Card>
                 <CardContent className={classes.root}>
                     <Typography variant="h6">Members</Typography>
@@ -65,7 +65,7 @@ class Members extends React.Component<Props, State>
                         className={classes.button}
                         onClick={this.onClickOpenDialog}
                     >
-                        <ControlPointIcon className={classes.controlPointIcon}/>
+                        <ControlPointIcon className={classes.controlPointIcon} />
                         Add Member
                     </Button>
 
@@ -114,7 +114,7 @@ class Members extends React.Component<Props, State>
 interface Props {
     userList: string[]
     adminList?: string[]
-    users: {[userID: string]: IUser}
+    users: { [userID: string]: IUser }
     currentUser: string
     addMember: (payload: { email: string }) => void
     removeMember: (payload: { userID: string }) => void
@@ -133,7 +133,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         marginTop: theme.spacing.unit * 2,
     },
-    userAvatar : {
+    userAvatar: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

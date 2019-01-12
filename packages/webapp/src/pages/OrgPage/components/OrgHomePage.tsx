@@ -71,7 +71,7 @@ class OrgHomePage extends React.Component<Props>
                 <div className={classes.sidebar}>
                     <Members
                         userList={org.members}
-                        adminList={ [org.creator] }
+                        adminList={[org.creator]}
                         addMember={this.addMember}
                         removeMember={this.removeMember}
                     />
@@ -108,7 +108,7 @@ class OrgHomePage extends React.Component<Props>
 
     selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) {
         const repoID = payload.repoID
-        switch (payload.repoPage){
+        switch (payload.repoPage) {
             case RepoPage.Home:
                 this.props.history.push(`/repo/${repoID}`)
                 return
@@ -145,8 +145,8 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
-    repos: {[repoID: string]: IRepo}
-    discussions: {[discussionID: string]: IDiscussion}
+    repos: { [repoID: string]: IRepo }
+    discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
     getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo

@@ -3,34 +3,34 @@ import { IRepo } from 'conscience-lib/common'
 import { uniq } from 'lodash'
 
 const initialState = {
-	repos: {},
-	repoList: [],
+    repos: {},
+    repoList: [],
 }
 
 export interface IRepoState {
-	repos: {[repoID: string]: IRepo}
-	repoList: string[]
+    repos: { [repoID: string]: IRepo }
+    repoList: string[]
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
-	switch(action.type) {
-		case RepoActionType.GET_REPO_LIST_SUCCESS: {
-			return {
-				...state,
-				repoList: action.payload.repoList
-			}
-		}
+    switch (action.type) {
+        case RepoActionType.GET_REPO_LIST_SUCCESS: {
+            return {
+                ...state,
+                repoList: action.payload.repoList
+            }
+        }
 
-		case RepoActionType.GET_REPO_SUCCESS: {
-			const { repo } = action.payload
-			return {
-				...state,
-				repos: {
-					...state.repos,
-					[repo.repoID]: repo
-				}
-			}
-		}
+        case RepoActionType.GET_REPO_SUCCESS: {
+            const { repo } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [repo.repoID]: repo
+                }
+            }
+        }
 
         case RepoActionType.GET_DIFF_SUCCESS: {
             const { repoID, commit, diffs } = action.payload
@@ -54,20 +54,20 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
-        	const { repoID, userID } = action.payload
-        	return {
-        		...state,
-        		repos: {
-        			...state.repos,
-        			[repoID]: {
-        				...(state.repos[repoID] || {}),
-        				sharedUsers: [
-        					...((state.repos[repoID] || {}).sharedUsers || []),
-    						userID
-        				]
-        			}
-        		}
-        	}
+            const { repoID, userID } = action.payload
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [repoID]: {
+                        ...(state.repos[repoID] || {}),
+                        sharedUsers: [
+                            ...((state.repos[repoID] || {}).sharedUsers || []),
+                            userID
+                        ]
+                    }
+                }
+            }
         }
 
         case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
@@ -86,9 +86,9 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-		default:
-			return state
-	}
+        default:
+            return state
+    }
 }
 
 export default repoReducer

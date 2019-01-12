@@ -24,7 +24,7 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
     type: UserActionType.WHO_AM_I,
     async process({ action }, dispatch) {
         const jwt = localStorage.getItem('jwt')
-        if ( !jwt || jwt.length === 0 ) {
+        if (!jwt || jwt.length === 0) {
             return new Error('No jwt')
         }
 
@@ -36,7 +36,7 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
         const { userID, emails, name, username, picture, orgs, profile } = resp
 
         await dispatch(getUserSettings({})),
-        await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
+            await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
         const user = { userID, emails, name, username, picture, orgs, profile } as IUser
 
@@ -86,7 +86,7 @@ const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccess
         const userList = await ServerRelay.fetchUsers(toFetch)
 
         // Convert the list into an object
-        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
+        const users = keyBy(userList, 'userID') as { [userID: string]: IUser }
 
         return { users }
     },
@@ -106,7 +106,7 @@ const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, I
         const userList = await ServerRelay.fetchUsersByUsername(toFetch)
 
         // Convert the list into an object
-        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
+        const users = keyBy(userList, 'userID') as { [userID: string]: IUser }
 
         return { users }
     },

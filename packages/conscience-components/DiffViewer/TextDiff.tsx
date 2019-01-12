@@ -35,10 +35,10 @@ class TextDiff extends React.Component<Props, State>
         // }, {add: 0, del: 0})
         return (
             <ExpansionPanel className={classnames(classes.panel, { [classes.panelOpen]: this.state.expanded })} onChange={this.handleChange}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>} classes={{ root: classes.summaryRoot }}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} classes={{ root: classes.summaryRoot }}>
                     <Typography className={classes.filename}>{filename /*+ ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart*/}</Typography>
                 </ExpansionPanelSummary>
-                <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
+                <ExpansionPanelDetails classes={{ root: classes.detailsRoot }}>
                     {this.state.expanded &&
                         chunks.map((chunk, i) => (
                             <React.Fragment>

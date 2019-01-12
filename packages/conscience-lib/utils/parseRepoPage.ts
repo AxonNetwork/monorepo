@@ -1,24 +1,24 @@
 import { RepoPage } from '../common'
 
-export function repoPageToString(repoPage: RepoPage){
-    switch(repoPage){
+export function repoPageToString(repoPage: RepoPage) {
+    switch (repoPage) {
         case RepoPage.Files:
-	        return 'files'
+            return 'files'
         case RepoPage.History:
-        	return 'history'
+            return 'history'
         case RepoPage.Discussion:
-	        return 'discussion'
+            return 'discussion'
         case RepoPage.Settings:
-	        return 'settings'
+            return 'settings'
         case RepoPage.Home:
         default:
-	        return 'home'
+            return 'home'
     }
 }
 
-export function stringToRepoPage(pathname: string){
+export function stringToRepoPage(pathname: string) {
     const base = pathname.split('/')[3]
-    switch(base){
+    switch (base) {
         case 'files':
         case 'edit':
             return RepoPage.Files

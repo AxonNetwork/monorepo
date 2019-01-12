@@ -19,7 +19,7 @@ export interface SheetChunkContentProps {
 class SheetChunkContent extends React.Component<SheetChunkContentProps>
 {
     render() {
-        let {classes, chunk} = this.props
+        let { classes, chunk } = this.props
         const sheetIndex = chunk.changes[0].content.indexOf(']')
         // change row string to array of cells
         const content = chunk.changes.map((change: parse.Change) => {
@@ -31,8 +31,8 @@ class SheetChunkContent extends React.Component<SheetChunkContentProps>
                     <TableBody>
                         {chunk.changes.map((change: parse.Change, i: number) => {
                             switch (change.type) {
-                                case  'add':
-                                    return(
+                                case 'add':
+                                    return (
                                         <TableRow key={i} className={classes.row + ' ' + classes.added}>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}></TableCell>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumAdd}><code>{change.ln}</code></TableCell>
@@ -43,8 +43,8 @@ class SheetChunkContent extends React.Component<SheetChunkContentProps>
                                             )}
                                         </TableRow>
                                     )
-                                case  'del':
-                                    return(
+                                case 'del':
+                                    return (
                                         <TableRow key={i} className={classes.row + ' ' + classes.deleted}>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code>{change.ln}</code></TableCell>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum + ' ' + classes.lineNumDel}><code></code></TableCell>
@@ -56,7 +56,7 @@ class SheetChunkContent extends React.Component<SheetChunkContentProps>
                                         </TableRow>
                                     )
                                 default:
-                                    return(
+                                    return (
                                         <TableRow key={i} className={classes.row}>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln1}</code></TableCell>
                                             <TableCell className={classes.cell + ' ' + classes.lineNum}><code>{change.ln2}</code></TableCell>

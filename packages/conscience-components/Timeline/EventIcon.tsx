@@ -11,19 +11,19 @@ export interface EventIconProps {
 
 function EventIcon(props: EventIconProps) {
     const { eventType, className } = props
-    switch (eventType){
+    switch (eventType) {
         case 'creation':
-            return <ControlPointIcon className={className} color="secondary"/>
+            return <ControlPointIcon className={className} color="secondary" />
         case 'hypothesis':
-            return <HelpOutlineIcon className={className} color="secondary"/>
+            return <HelpOutlineIcon className={className} color="secondary" />
         case 'preregistration':
-            return <AssignmentIcon className={className} color="secondary"/>
+            return <AssignmentIcon className={className} color="secondary" />
         case 'checkpoint':
-            return <EditIcon className={className} color="secondary"/>
+            return <EditIcon className={className} color="secondary" />
         case 'publication':
-            return <AssignmentIcon className={className} color="secondary"/>
+            return <AssignmentIcon className={className} color="secondary" />
         default:
-            return <EditIcon className={className}/>
+            return <EditIcon className={className} />
     }
 }
 

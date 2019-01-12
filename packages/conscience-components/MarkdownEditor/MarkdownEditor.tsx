@@ -35,7 +35,7 @@ class MarkdownEditor extends React.Component<Props, State>
                 </div>
             )
         }
-        
+
         const contentsOnDisk = ((repo.files || {})[filename] || {}).contents
         const modified = contentsOnDisk !== this.state.contents
 
@@ -101,7 +101,7 @@ class MarkdownEditor extends React.Component<Props, State>
             repoID: this.props.repo.repoID,
             filename: this.props.filename,
             callback: (error?: Error) => {
-                if(error){
+                if (error) {
                     console.error(error)
                 }
             }
@@ -159,9 +159,9 @@ interface Props {
     repo: IRepo
     filename: string
     loading: boolean
-    comments: {[commentID: string]: IComment}
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
+    comments: { [commentID: string]: IComment }
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
     codeColorScheme?: string | undefined
     fileExistsOnDisk?: boolean
 

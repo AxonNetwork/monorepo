@@ -9,7 +9,7 @@ import { autobind, removeEmail, extractEmail } from 'conscience-lib/utils'
 @autobind
 class Timeline extends React.Component<Props, State>
 {
-    constructor(props: Props){
+    constructor(props: Props) {
         super(props)
         const page = props.page || 0
         const rowsPerPage = props.defaultRowsPerPage || 10
@@ -55,21 +55,21 @@ class Timeline extends React.Component<Props, State>
                 }
 
                 <div>
-                {timelinePage.map((event) => {
-                    const email = extractEmail(event.user) || ''
-                    const user = this.props.users[ this.props.usersByEmail[email] || '' ] || {}
-                    const username = user.name || removeEmail(event.user)
-                    const userPicture = user.picture
-                    return (
-                        <TimelineEvent
-                            key={event.commit}
-                            event={event}
-                            username={username}
-                            userPicture={userPicture}
-                            selectCommit={this.selectCommit}
-                        />
-                    )
-                })}
+                    {timelinePage.map((event) => {
+                        const email = extractEmail(event.user) || ''
+                        const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
+                        const username = user.name || removeEmail(event.user)
+                        const userPicture = user.picture
+                        return (
+                            <TimelineEvent
+                                key={event.commit}
+                                event={event}
+                                username={username}
+                                userPicture={userPicture}
+                                selectCommit={this.selectCommit}
+                            />
+                        )
+                    })}
                 </div>
             </div>
         )
@@ -81,11 +81,11 @@ interface Props {
     page?: number
     defaultRowsPerPage?: number
     hidePagination?: boolean
-    commits: {[commit: string]: ITimelineEvent} | undefined
+    commits: { [commit: string]: ITimelineEvent } | undefined
     commitList: string[] | undefined
-    users: {[userID: string]: IUser}
-    usersByEmail: {[email: string]: string}
-    selectCommit?: (payload: {selectedCommit: string}) => void
+    users: { [userID: string]: IUser }
+    usersByEmail: { [email: string]: string }
+    selectCommit?: (payload: { selectedCommit: string }) => void
     classes: any
 }
 

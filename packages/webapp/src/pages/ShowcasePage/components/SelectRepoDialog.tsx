@@ -14,41 +14,41 @@ import { autobind } from 'conscience-lib/utils'
 class SelectRepoDialog extends React.Component<Props>
 {
 
-	render() {
-		const { open, repoList } = this.props
+    render() {
+        const { open, repoList } = this.props
 
-		return (
-			<Dialog onClose={() => this.props.onSelect('')} open={open}>
-				<DialogTitle>
-					Select a repository
+        return (
+            <Dialog onClose={() => this.props.onSelect('')} open={open}>
+                <DialogTitle>
+                    Select a repository
 				</DialogTitle>
-				{repoList.length === 0 &&
-					<DialogContent>
-						<DialogContentText>
-							There are no other repositories to choose from
+                {repoList.length === 0 &&
+                    <DialogContent>
+                        <DialogContentText>
+                            There are no other repositories to choose from
 						</DialogContentText>
-					</DialogContent>
-				}
-				<List>
-				{repoList.map(repoID=>(
-					<ListItem
-						button
-						onClick={() => this.props.onSelect(repoID)}
-					>
-						<ListItemText primary={repoID} />
-					</ListItem>
-				))}
-				</List>
-			</Dialog>
-		)
-	}
+                    </DialogContent>
+                }
+                <List>
+                    {repoList.map(repoID => (
+                        <ListItem
+                            button
+                            onClick={() => this.props.onSelect(repoID)}
+                        >
+                            <ListItemText primary={repoID} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Dialog>
+        )
+    }
 }
 
 interface Props {
-	open: boolean
-	repoList: string[]
-	onSelect: (selected: string) => void
-	classes: any
+    open: boolean
+    repoList: string[]
+    onSelect: (selected: string) => void
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({})

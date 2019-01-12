@@ -12,41 +12,41 @@ class SelectRepoDialog extends React.Component<Props>
 {
     _inputBanner: HTMLInputElement | null = null
 
-	render() {
-		const { open, classes } = this.props
+    render() {
+        const { open, classes } = this.props
 
-		return (
-			<Dialog onClose={() => this.props.onSelectBanner(null)} open={open}>
-				<DialogTitle>
-					Change Org Banner
+        return (
+            <Dialog onClose={() => this.props.onSelectBanner(null)} open={open}>
+                <DialogTitle>
+                    Change Org Banner
 				</DialogTitle>
-				<DialogContent>
-                    <input type="file" ref={x => this._inputBanner = x} /><br/>
+                <DialogContent>
+                    <input type="file" ref={x => this._inputBanner = x} /><br />
                     <Button
-	                    variant="contained"
-	                    color="secondary"
-	                    className={classes.button}
-	                    onClick={() => this.props.onSelectBanner(this._inputBanner)}
+                        variant="contained"
+                        color="secondary"
+                        className={classes.button}
+                        onClick={() => this.props.onSelectBanner(this._inputBanner)}
                     >
-	                    Upload
+                        Upload
                     </Button>
-				</DialogContent>
-			</Dialog>
-		)
-	}
+                </DialogContent>
+            </Dialog>
+        )
+    }
 }
 
 interface Props {
-	open: boolean
-	onSelectBanner: (fileInput: any) => void
-	classes: any
+    open: boolean
+    onSelectBanner: (fileInput: any) => void
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-	button: {
-		marginTop: 16,
-		textTransform: 'none',
-	}
+    button: {
+        marginTop: 16,
+        textTransform: 'none',
+    }
 })
 
 export default withStyles(styles)(SelectRepoDialog)

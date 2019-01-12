@@ -9,10 +9,10 @@ const initialState = {
 }
 
 export interface IOrgState {
-    orgs: {[orgID: string]: IOrganization}
+    orgs: { [orgID: string]: IOrganization }
     blogs: {
         [orgID: string]: {
-            map: {[created: string]: IOrgBlog}
+            map: { [created: string]: IOrgBlog }
             sortedIDs: number[],
         },
 
@@ -157,7 +157,7 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
             const { orgID, blogs } = action.payload
             const existingIDs = (state.blogs[orgID] || {}).sortedIDs || []
             const newIDs = values(blogs).map(b => b.created)
-            const sortedIDs = sortedUniq( existingIDs.concat(newIDs).sort() ).reverse()
+            const sortedIDs = sortedUniq(existingIDs.concat(newIDs).sort()).reverse()
             return {
                 ...state,
                 blogs: {

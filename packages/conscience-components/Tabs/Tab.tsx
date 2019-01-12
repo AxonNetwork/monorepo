@@ -11,7 +11,7 @@ function Tab(props: {
 }) {
     return (
         <div className={classnames(props.classes.tab, { [props.classes.activeTab]: props.isActive })}>
-            <Button onClick={ props.onTabSelect } >
+            <Button onClick={props.onTabSelect} >
                 {props.children}
             </Button>
         </div>

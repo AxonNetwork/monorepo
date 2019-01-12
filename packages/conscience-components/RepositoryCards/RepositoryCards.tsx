@@ -25,14 +25,14 @@ class Repositories extends React.Component<Props, State>
     render() {
         const { repos, repoList, discussionsByRepo, classes } = this.props
         let reposToAdd = [] as string[]
-        if(this.state.dialogOpen){
+        if (this.state.dialogOpen) {
             reposToAdd = Object.keys(repos)
-            // repo is not already part of org
-            .filter((key: string) => repoList.indexOf(repos[key].repoID) < 0)
-            .map((key: string) => repos[key].repoID)
+                // repo is not already part of org
+                .filter((key: string) => repoList.indexOf(repos[key].repoID) < 0)
+                .map((key: string) => repos[key].repoID)
         }
 
-        return(
+        return (
             <React.Fragment>
                 <div className={classes.root}>
                     {repoList.map(id =>
@@ -64,7 +64,7 @@ class Repositories extends React.Component<Props, State>
                         <DialogContent>
                             <List>
                                 {reposToAdd.map((repoID: string) => {
-                                    return(
+                                    return (
                                         <ListItem
                                             button
                                             onClick={() => this.onClickAddRepo(repoID)}
@@ -79,7 +79,7 @@ class Repositories extends React.Component<Props, State>
                                 >
                                     <ListItemText primary="New Repository" />
                                     <ListItemIcon className={classes.listIcon}>
-                                        <ControlPointIcon fontSize="small"/>
+                                        <ControlPointIcon fontSize="small" />
                                     </ListItemIcon>
                                 </ListItem>
                             </List>
@@ -91,10 +91,10 @@ class Repositories extends React.Component<Props, State>
     }
 
     onClickAddRepo(repoID: string) {
-        if(this.props.addRepo) {
+        if (this.props.addRepo) {
             this.props.addRepo({ repoID })
         }
-        this.setState({ dialogOpen: false})
+        this.setState({ dialogOpen: false })
     }
 
     onClickNewRepo() {
@@ -112,8 +112,8 @@ class Repositories extends React.Component<Props, State>
 
 interface Props {
     repoList: string[]
-    repos: {[repoID: string]: IRepo}
-    discussions: {[discussionID: string]: IDiscussion}
+    repos: { [repoID: string]: IRepo }
+    discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
     selectRepoAndPage: (payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) => void
     addRepo?: (payload: { repoID: string }) => void

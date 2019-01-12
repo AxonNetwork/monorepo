@@ -42,7 +42,7 @@ class SmartTextarea extends React.Component<Props, State>
         }
     }
 
-    handleChange(event:  React.ChangeEvent<HTMLTextAreaElement>) {
+    handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
         const text = event.target.value
         const cursor = event.target.selectionStart
 
@@ -99,7 +99,7 @@ class SmartTextarea extends React.Component<Props, State>
         const position = this.state.position
         let comment = this.state.comment
         comment = comment.substring(0, position) + ref + comment.substring(position + 5)
-        this.setState({comment: comment})
+        this.setState({ comment: comment })
     }
 
     render() {
@@ -130,7 +130,7 @@ class SmartTextarea extends React.Component<Props, State>
                     {this.state.embedType === '@file' && fileNames.map((file: string) => (
                         <MenuItem
                             onClick={() => this.handleClose('@file', file)}
-                            classes={{root: classes.menuItem}}
+                            classes={{ root: classes.menuItem }}
                         >
                             {file}
                         </MenuItem>
@@ -138,7 +138,7 @@ class SmartTextarea extends React.Component<Props, State>
                     {this.state.embedType === '@image' && fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
                         <MenuItem
                             onClick={() => this.handleClose('@image', filename)}
-                            classes={{root: classes.menuItem}}
+                            classes={{ root: classes.menuItem }}
                         >
                             {filename}
                         </MenuItem>
@@ -146,7 +146,7 @@ class SmartTextarea extends React.Component<Props, State>
                     {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((discussionID: string) => (
                         <MenuItem
                             onClick={() => this.handleClose('@discussion', discussionID)}
-                            classes={{root: classes.menuItem}}
+                            classes={{ root: classes.menuItem }}
                         >
                             {this.props.discussions[discussionID].subject}
                         </MenuItem>
@@ -158,8 +158,8 @@ class SmartTextarea extends React.Component<Props, State>
 }
 
 interface Props {
-    files: {[name: string]: IRepoFile} | undefined
-    discussions: {[discussionID: string]: IDiscussion}
+    files: { [name: string]: IRepoFile } | undefined
+    discussions: { [discussionID: string]: IDiscussion }
     onSubmit: () => void
     classes: any
     rows?: number

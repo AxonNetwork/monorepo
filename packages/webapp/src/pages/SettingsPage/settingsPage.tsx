@@ -16,6 +16,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
+import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { updateUserSettings, uploadUserPicture, modifyUserEmail } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
 import { IUser, IUserSettings } from 'conscience-lib/common'
@@ -29,19 +30,18 @@ class SettingsPage extends React.Component<Props>
     _inputUserPicture!: HTMLInputElement | null
     _inputNewEmail!: HTMLInputElement | null
 
-	render() {
-		const { user, userSettings, classes } = this.props
+    render() {
+        const { user, userSettings, classes } = this.props
         if (user === undefined) {
             return <div>Not logged in</div>
         }
-		return (
-			<div className={classes.container}>
-				<main className={classes.main}>
-					<Typography variant="h5" className={classes.pageTitle}>
-						Settings
-					</Typography>
+        return (
+            <div className={classes.container}>
+                <main className={classes.main}>
+                    <H5 className={classes.pageTitle}>Settings</H5>
+
                     <section className={classnames(classes.section, classes.sectionAccount)}>
-                        <Typography variant="h6"><strong>Your account</strong></Typography>
+                        <H6><strong>Your account</strong></H6>
                         <div className={classes.sectionAccountContent}>
                             {/* Profile picture */}
                             <div>
@@ -50,7 +50,7 @@ class SettingsPage extends React.Component<Props>
                                 {user.picture &&
                                     <img src={user.picture} className={classes.currentUserPicture} />
                                 }
-                                <input type="file" ref={x => this._inputUserPicture = x} /><br/>
+                                <input type="file" ref={x => this._inputUserPicture = x} /><br />
                                 <Button variant="contained" color="secondary" className={classes.button} onClick={this.uploadUserPicture}>Upload</Button>
                             </div>
 
@@ -81,7 +81,7 @@ class SettingsPage extends React.Component<Props>
                     </section>
 
                     <section className={classes.section}>
-                        <Typography variant="h6"><strong>Code color scheme</strong></Typography>
+                        <H6><strong>Code color scheme</strong></H6>
 
                         <Select onChange={this.onChangeCodeColorScheme} value={userSettings.codeColorScheme}>
                             {Object.keys(schemes).map(s => (
@@ -104,7 +104,7 @@ class SettingsPage extends React.Component<Props>
                                 value="hideMenuLabels"
                             />
                         }
-                        label="Hide menu labels" />
+                            label="Hide menu labels" />
 
                         <FormControlLabel control={
                             <Checkbox
@@ -113,12 +113,12 @@ class SettingsPage extends React.Component<Props>
                                 value="hideFileExtensions"
                             />
                         }
-                        label="Hide file extensions" />
+                            label="Hide file extensions" />
                     </section>
-				</main>
-			</div>
-		)
-	}
+                </main>
+            </div>
+        )
+    }
 
     onChangeCodeColorScheme(evt: any) {
         const settings = { codeColorScheme: evt.target.value }
@@ -165,22 +165,22 @@ class SettingsPage extends React.Component<Props>
 interface Props {
     user: IUser
     userSettings: IUserSettings
-	updateUserSettings: typeof updateUserSettings
+    updateUserSettings: typeof updateUserSettings
     uploadUserPicture: typeof uploadUserPicture
     modifyUserEmail: typeof modifyUserEmail
-	classes: any
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-	container: {
-		display: 'flex',
-		justifyContent: 'center',
-	},
-	main: {
-		width: '80%',
-		marginTop: 32,
-	},
-    pageTitle:{
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    main: {
+        width: '80%',
+        marginTop: 32,
+    },
+    pageTitle: {
         width: '100%',
         padding: 20,
         borderBottom: '1px solid #e4e4e4',
@@ -225,7 +225,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-	updateUserSettings,
+    updateUserSettings,
     uploadUserPicture,
     modifyUserEmail,
 }
@@ -238,7 +238,7 @@ const SettingsPageContainer = connect(
 export default SettingsPageContainer
 
 var codeSample =
-`var inflightLimiter = make(chan struct{}, 5)
+    `var inflightLimiter = make(chan struct{}, 5)
 
 func init() {
     for i := 0; i < 5; i++ {

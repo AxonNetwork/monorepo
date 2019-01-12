@@ -96,12 +96,12 @@ class UserProfile extends React.Component<Props, State>
                 </div>
             )
         } else {
-            return(
+            return (
                 <div className={classes.root}>
                     <TextField
                         label="Bio"
                         className={classes.textField}
-                        inputRef={ x => this._inputBio = x }
+                        inputRef={x => this._inputBio = x}
                         defaultValue={bio}
                         multiline
                         rows={2}
@@ -110,19 +110,19 @@ class UserProfile extends React.Component<Props, State>
                     <TextField
                         label="Location"
                         className={classes.textField}
-                        inputRef={ x => this._inputLocation = x }
+                        inputRef={x => this._inputLocation = x}
                         defaultValue={geolocation}
                     />
                     <TextField
                         label="University"
                         className={classes.textField}
-                        inputRef={ x => this._inputUniversity = x }
+                        inputRef={x => this._inputUniversity = x}
                         defaultValue={university}
                     />
                     <TextField
                         label="Orcid"
                         className={classes.textField}
-                        inputRef={ x => this._inputOrcid = x }
+                        inputRef={x => this._inputOrcid = x}
                         defaultValue={orcid}
                     />
                     <div className={classes.interests}>
@@ -147,7 +147,7 @@ class UserProfile extends React.Component<Props, State>
                         }
                         {this.state.showInterestForm &&
                             <form onSubmit={this.addInterest}>
-                                <Input autoFocus inputRef={ x => this._inputAddInterest = x } />
+                                <Input autoFocus inputRef={x => this._inputAddInterest = x} />
                             </form>
                         }
                     </div>

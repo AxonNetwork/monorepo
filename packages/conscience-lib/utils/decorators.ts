@@ -1,8 +1,8 @@
 /**
     Utility function that generates instances of a class.
  */
-export function construct (constructor: Function, args: any[]) {
-    const c: any = function (this: any) {
+export function construct(constructor: Function, args: any[]) {
+    const c: any = function(this: any) {
         return constructor.apply(this, args)
     }
     c.prototype = constructor.prototype
@@ -35,13 +35,13 @@ export function construct (constructor: Function, args: any[]) {
         x.debugPrint()         // works
 
  */
-export function makeClassDecorator <C> (closure: (original: any, args: any[]) => C) {
-    return function (target: C) {
+export function makeClassDecorator<C>(closure: (original: any, args: any[]) => C) {
+    return function(target: C) {
         // save a reference to the original constructor
         const original = target
 
         // the new constructor behaviour
-        const wrapper: any = function (this: any, ...args: any[]) {
+        const wrapper: any = function(this: any, ...args: any[]) {
             return closure.bind(this, original, args)()
         }
 

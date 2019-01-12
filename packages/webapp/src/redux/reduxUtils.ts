@@ -18,8 +18,7 @@ interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType ex
 //     (opts: { type: string, warnTimeout?: number, process: ProcessFuncNoReturn<HandledActionType> })
 export function makeLogic
     <HandledActionType extends ActionType, SuccessActionType extends ActionType>
-    (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType> })
-{
+    (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType> }) {
     return createLogic({
         type: opts.type,
         warnTimeout: opts.warnTimeout || 60000,
@@ -48,8 +47,7 @@ interface ContinuousProcessFunc<HandledActionType extends ActionType> {
 
 export function makeContinuousLogic
     <HandledActionType extends ActionType>
-    (opts: { type: string, warnTimeout?: number, process: ContinuousProcessFunc<HandledActionType> })
-{
+    (opts: { type: string, warnTimeout?: number, process: ContinuousProcessFunc<HandledActionType> }) {
     return createLogic({
         type: opts.type,
         warnTimeout: 0,

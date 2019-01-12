@@ -4,8 +4,8 @@ import discussionLogic from './discussion/discussionLogic'
 import orgLogic from './org/orgLogic'
 
 export default [
-	...userLogic,
-	...repoLogic,
-	...discussionLogic,
-	...orgLogic,
+    ...userLogic,
+    ...repoLogic,
+    ...discussionLogic,
+    ...orgLogic,
 ]

@@ -24,7 +24,7 @@ class RepositoryCard extends React.Component<Props>
         const lastCommit = (repo.commits || {})[lastCommitHash || ''] || {}
         const lastUpdated = lastCommit.time
 
-        return(
+        return (
             <Card
                 className={classes.root}
                 onClick={this.onClickNavigateRepoHome}
@@ -51,7 +51,7 @@ class RepositoryCard extends React.Component<Props>
                         <Button
                             onClick={this.onClickNavigateRepoDiscussions}
                         >
-                            <CommentIcon fontSize="small"/>
+                            <CommentIcon fontSize="small" />
                             {numDiscussions}
                         </Button>
                     </div>

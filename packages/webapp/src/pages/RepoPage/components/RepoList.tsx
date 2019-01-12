@@ -1,15 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import UserProfile from 'conscience-components/UserProfile'
 import UserAvatar from 'conscience-components/UserAvatar'
 import RepositoryCards from 'conscience-components/RepositoryCards'
+import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'redux/repo/repoActions'
 import { updateUserProfile } from 'redux/user/userActions'
 import { IGlobalState } from 'redux/store'
@@ -28,36 +27,31 @@ class RepoList extends React.Component<Props>
         return (
             <div className={classes.page}>
                 <div className={classes.profileSidebar}>
-                    <Link to="/settings">
-                        <img src={user.picture} className={classes.userPic} />
-                    </Link>
+                    <img src={user.picture} className={classes.userPic} />
                     <div className={classes.userDetails}>
-                        <Typography variant="h5">
-                            <strong>{user.name}</strong>
-                        </Typography>
-                        <Typography>
-                            <em>{user.username}</em>
-                        </Typography>
+                        <H5 className={classes.userRealName}>{user.name}</H5>
+                        <div className={classes.userUserName}>{user.username}</div>
                     </div>
                     <UserProfile
                         user={user}
                         currentUser={this.props.currentUser}
                         updateUserProfile={this.props.updateUserProfile}
                     />
+
                     <Divider />
+
                     <div className={classes.orgs}>
-                        <Typography variant="h6">
-                            Organizations
-                        </Typography>
+                        <H6>Organizations</H6>
+
                         {user.orgs.map(orgID => {
                             const org = orgs[orgID]
                             if (org === undefined) {
                                 return null
                             }
-                            return(
+                            return (
                                 <IconButton
                                     onClick={() => this.navigateOrgPage(orgID)}
-                                    classes={{root: classes.orgIcon}}
+                                    classes={{ root: classes.orgIcon }}
                                     key={orgID}
                                 >
                                     <UserAvatar
@@ -77,10 +71,10 @@ class RepoList extends React.Component<Props>
                     }
                     {!loading &&
                         <div>
-                            <Typography variant="h6">
-                                Repositories
-                            </Typography>
+                            <H6>Repositories</H6>
+
                             <Divider className={classes.repoDivider} />
+
                             <RepositoryCards
                                 repoList={this.props.repoList}
                                 repos={this.props.repos}
@@ -105,7 +99,7 @@ class RepoList extends React.Component<Props>
 
     selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) {
         const repoID = payload.repoID
-        switch (payload.repoPage){
+        switch (payload.repoPage) {
             case RepoPage.Home:
                 this.props.history.push(`/repo/${repoID}`)
                 return
@@ -119,15 +113,15 @@ class RepoList extends React.Component<Props>
     }
 }
 
-interface MatchParams {}
+interface MatchParams { }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     repoList: string[]
-    repos: {[repoID: string]: IRepo}
+    repos: { [repoID: string]: IRepo }
     user: IUser
     currentUser: string
-    orgs: {[orgID: string]: IOrganization}
-    discussions: {[discussionID: string]: IDiscussion}
+    orgs: { [orgID: string]: IOrganization }
+    discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
     getRepoList: typeof getRepoList
     updateUserProfile: typeof updateUserProfile
@@ -161,6 +155,12 @@ const styles = (theme: Theme) => createStyles({
     userDetails: {
         marginTop: 8,
         marginBottom: 8,
+    },
+    userRealName: {
+        fontWeight: 'bold',
+    },
+    userUserName: {
+        fontStyle: 'italic',
     },
     orgs: {
         marginTop: 8,

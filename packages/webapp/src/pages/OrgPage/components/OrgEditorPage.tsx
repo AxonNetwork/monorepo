@@ -12,12 +12,12 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class OrgEditorPage extends React.Component<Props>
 {
-    render(){
+    render() {
         const { org, classes } = this.props
         const defaultReadme = `# ${org.name}\n\nWrite some instructions or a welcome message here to help others understand the work that you're doing.  Markdown syntax is fully supported.  When you're done, just click the save button.`
         const readme = org.readme.length > 0 ? org.readme : defaultReadme
 
-        return(
+        return (
             <div className={classes.editorPage}>
                 <MarkdownEditor
                     defaultContents={readme}
@@ -35,23 +35,23 @@ class OrgEditorPage extends React.Component<Props>
     }
 
     onClose() {
-    	const orgID = this.props.match.params.orgID
-    	this.props.history.push(`/org/${orgID}`)
+        const orgID = this.props.match.params.orgID
+        this.props.history.push(`/org/${orgID}`)
     }
 
-    componentWillReceiveProps(props: Props){
-        if(this.props.updateOrgLoading && !props.updateOrgLoading){
-	    	const orgID = this.props.match.params.orgID
-	    	this.props.history.push(`/org/${orgID}`)
+    componentWillReceiveProps(props: Props) {
+        if (this.props.updateOrgLoading && !props.updateOrgLoading) {
+            const orgID = this.props.match.params.orgID
+            this.props.history.push(`/org/${orgID}`)
         }
     }
 }
 
 interface MatchParams {
-	orgID: string
+    orgID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
     updateOrgLoading: boolean
     updateOrg: typeof updateOrg
@@ -63,7 +63,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
-	const orgID = props.match.params.orgID
+    const orgID = props.match.params.orgID
     const org = state.org.orgs[orgID]
     return {
         org,

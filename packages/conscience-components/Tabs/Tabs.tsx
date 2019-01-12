@@ -8,7 +8,7 @@ import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
 
 
-function Tabs<T extends number> (props: {
+function Tabs<T extends number>(props: {
     pages: [T, string][] // number is page enum
     activePage: T
     onTabSelect: (page: T) => void
@@ -19,7 +19,7 @@ function Tabs<T extends number> (props: {
         <div className={props.classes.root}>
             {props.pages.map((option: [T, string]) => {
                 const icon = getIcon(option[1])
-                return(
+                return (
                     <Tab
                         isActive={props.activePage === option[0]}
                         onTabSelect={() => props.onTabSelect(option[0])}

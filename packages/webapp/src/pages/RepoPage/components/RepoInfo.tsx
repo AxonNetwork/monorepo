@@ -24,7 +24,7 @@ class RepoInfo extends React.Component<Props>
                 </div>
 
                 <div className={classes.spacer}></div>
-`
+                `
                 <Tabs
                     pages={[
                         [RepoPage.Home, 'Home'],

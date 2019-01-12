@@ -30,7 +30,7 @@ export interface IGetDiscussionsSuccessAction {
     type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS
     payload: {
         repoID: string
-        discussions: {[discussionID: string]: IDiscussion},
+        discussions: { [discussionID: string]: IDiscussion },
     }
 }
 
@@ -66,7 +66,7 @@ export interface IGetCommentsForDiscussionSuccessAction {
     type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS
     payload: {
         discussionID: string
-        comments: {[commentID: string]: IComment},
+        comments: { [commentID: string]: IComment },
     }
 }
 

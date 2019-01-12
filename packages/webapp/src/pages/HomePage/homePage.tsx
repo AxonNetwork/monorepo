@@ -8,41 +8,41 @@ import autobind from 'conscience-lib/utils/autobind'
 @autobind
 class HomePage extends React.Component<Props>
 {
-	render() {
-		return (
-			<div>
-				<h1>HOME</h1>
-			</div>
-		)
-	}
+    render() {
+        return (
+            <div>
+                <h1>HOME</h1>
+            </div>
+        )
+    }
 }
 
 interface Props {
-	repoIDs: string[]
-	classes: any
+    repoIDs: string[]
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-	container: {
-		display: 'flex',
-		justifyContent: 'center',
-	},
-	main: {
-		width: '80%'
-	},
-	list: {
-		marginTop: 32,
-		border: '1px solid ' + theme.palette.grey[600],
-	},
-	link: {
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    main: {
+        width: '80%'
+    },
+    list: {
+        marginTop: 32,
+        border: '1px solid ' + theme.palette.grey[600],
+    },
+    link: {
 
-	}
+    }
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-	const repoIDs = Object.keys(state.repo.repos)
+    const repoIDs = Object.keys(state.repo.repos)
     return {
-    	repoIDs
+        repoIDs
     }
 }
 

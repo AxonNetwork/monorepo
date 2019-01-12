@@ -12,31 +12,31 @@ import { IUIState } from './ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
-  // Redux DevTools
-  const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+    // Redux DevTools
+    const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-  const logicDeps = {}
-  const logicMiddleware = createLogicMiddleware(logic, logicDeps as any)
+    const logicDeps = {}
+    const logicMiddleware = createLogicMiddleware(logic, logicDeps as any)
 
-  const enhancer = composeEnhancers(
-    applyMiddleware(routerMiddleware(history), logicMiddleware)
-  )
+    const enhancer = composeEnhancers(
+        applyMiddleware(routerMiddleware(history), logicMiddleware)
+    )
 
-  const store = createStore(
-    connectRouter(history)(reducer),
-    initialState,
-    enhancer
-  );
+    const store = createStore(
+        connectRouter(history)(reducer),
+        initialState,
+        enhancer
+    );
 
-  // Enable Webpack hot module replacement for reducers
-  if (module.hot) {
-    module.hot.accept('./reducer', () => {
-      const nextReducers = require('./reducer').default;
-      store.replaceReducer(connectRouter(history)(nextReducers));
-    });
-  }
+    // Enable Webpack hot module replacement for reducers
+    if (module.hot) {
+        module.hot.accept('./reducer', () => {
+            const nextReducers = require('./reducer').default;
+            store.replaceReducer(connectRouter(history)(nextReducers));
+        });
+    }
 
-  return store;
+    return store;
 };
 
 export interface IGlobalState {

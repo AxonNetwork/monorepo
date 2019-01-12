@@ -180,12 +180,12 @@ class ShowcasePage extends React.Component<Props, State>
         this.props.getRepoList({})
     }
 
-    saveFeaturedRepos(featuredRepos: {[repoID: string]: IFeaturedRepo}) {
+    saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
         const orgID = this.props.match.params.orgID
         this.props.changeOrgFeaturedRepos({ orgID, featuredRepos })
     }
 
-    selectRepo(payload: {repoID: string}) {
+    selectRepo(payload: { repoID: string }) {
         const repoID = payload.repoID
         if (repoID !== undefined) {
             this.props.history.push(`/repo/${repoID}`)
@@ -220,7 +220,7 @@ interface MatchParams {
     orgID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
     repos: { [repoID: string]: IRepo }
     users: { [userID: string]: IUser }

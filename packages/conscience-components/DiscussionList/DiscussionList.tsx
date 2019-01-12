@@ -24,35 +24,35 @@ class DiscussionList extends React.Component<Props>
             discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
         }
 
-        return(
+        return (
             <List className={classes.list}>
                 {discussionsSorted.map(d => {
                     const isSelected = selectedID && d.discussionID === selectedID
                     const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                    const username = (this.props.users[ d.userID ] || {}).name || d.userID
-                    const userPicture = (this.props.users[ d.userID ] || {}).picture
+                    const username = (this.props.users[d.userID] || {}).name || d.userID
+                    const userPicture = (this.props.users[d.userID] || {}).picture
                     return (
                         <ListItem
                             button
-                            className={classnames(classes.listItem, {[classes.listItemSelected]: isSelected})}
+                            className={classnames(classes.listItem, { [classes.listItemSelected]: isSelected })}
                             classes={{ button: classes.listItemHover }}
                             onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                         >
                             <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
                                 <React.Fragment>
-                                        {showBadge &&
-                                            <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
-                                        }
-                                        <div className={classes.subheading}>
-                                            <div className={classes.modifiedDate}>
-                                                {moment(newestComment[d.discussionID]).fromNow()}
-                                            </div>
-                                            <div className={classes.avatar}>
-                                                <UserAvatar username={username} userPicture={userPicture} />
-                                            </div>
+                                    {showBadge &&
+                                        <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
+                                    }
+                                    <div className={classes.subheading}>
+                                        <div className={classes.modifiedDate}>
+                                            {moment(newestComment[d.discussionID]).fromNow()}
                                         </div>
+                                        <div className={classes.avatar}>
+                                            <UserAvatar username={username} userPicture={userPicture} />
+                                        </div>
+                                    </div>
                                 </React.Fragment>
-                            }/>
+                            } />
                         </ListItem>
                     )
                 })}
@@ -68,15 +68,15 @@ class DiscussionList extends React.Component<Props>
 }
 
 interface Props {
-    discussions: {[discussionID: string]: IDiscussion}
+    discussions: { [discussionID: string]: IDiscussion }
     order?: string[]
     maxLength?: number
     selectedID?: string | undefined
-    users: {[email: string]: IUser}
-    newestViewedCommentTimestamp: {[discussionID: string]: number}
-    newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
+    users: { [email: string]: IUser }
+    newestViewedCommentTimestamp: { [discussionID: string]: number }
+    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
 
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
 
     classes: any
 }

@@ -26,6 +26,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { H6 } from '../Typography/Headers'
 import { union } from 'lodash'
 
 
@@ -61,7 +62,18 @@ class SharedUsers extends React.Component<Props, State>
         return (
             <Card className={classes.root}>
                 <CardContent>
-                    <Typography variant="h6">Access Controls</Typography>
+                    <div className={classes.header}>
+                        <H6>Access Controls</H6>
+                        <Button
+                            color="secondary"
+                            className={classes.button}
+                            onClick={() => this.openDialog()}
+                        >
+                            <ControlPointIcon className={classes.controlPointIcon} />
+                            Add User
+                        </Button>
+                    </div>
+
                     <Table className={classes.table}>
                         <TableHead>
                             <TableRow>
@@ -75,48 +87,39 @@ class SharedUsers extends React.Component<Props, State>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {sharedUsers.map(user => (
-                            <TableRow>
-                                <TableCell>
-                                    <div className={classes.user}>
-                                        <div className={classes.userAvatar}>
-                                            <UserAvatar username={user.name} userPicture={user.picture} />
+                            {sharedUsers.map(user => (
+                                <TableRow>
+                                    <TableCell>
+                                        <div className={classes.user}>
+                                            <div className={classes.userAvatar}>
+                                                <UserAvatar username={user.name} userPicture={user.picture} />
+                                            </div>
+                                            <div className={classes.userInfo}>
+                                                <Typography><strong>{user.name}</strong></Typography>
+                                                <Typography>{user.username}</Typography>
+                                            </div>
                                         </div>
-                                        <div className={classes.userInfo}>
-                                            <Typography><strong>{user.name}</strong></Typography>
-                                            <Typography>{user.username}</Typography>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className={classes.centered}>
-                                    {pullers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-                                </TableCell>
-                                <TableCell className={classes.centered}>
-                                    {pushers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-                                </TableCell>
-                                <TableCell className={classes.centered}>
-                                    {admins.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-                                </TableCell>
-                                {isAdmin &&
-                                    <TableCell className={classes.centered}>
-                                        <IconButton onClick={() => this.openDialog(user.userID)}>
-                                            <SettingsIcon />
-                                        </IconButton>
                                     </TableCell>
-                                }
-                            </TableRow>
-                        ))}
+                                    <TableCell className={classes.centered}>
+                                        {pullers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                    </TableCell>
+                                    <TableCell className={classes.centered}>
+                                        {pushers.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                    </TableCell>
+                                    <TableCell className={classes.centered}>
+                                        {admins.indexOf(user.username) > -1 ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+                                    </TableCell>
+                                    {isAdmin &&
+                                        <TableCell className={classes.centered}>
+                                            <IconButton onClick={() => this.openDialog(user.userID)}>
+                                                <SettingsIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    }
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
-
-                    <Button
-                        color="secondary"
-                        className={classes.button}
-                        onClick={() => this.openDialog()}
-                    >
-                        <ControlPointIcon className={classes.controlPointIcon}/>
-                        Add User
-                    </Button>
 
                     <Dialog open={this.state.dialogOpen} onClose={this.closeDialog}>
                         {selectedUser === undefined &&
@@ -142,15 +145,15 @@ class SharedUsers extends React.Component<Props, State>
                             <List>
                                 <ListItem className={classes.listItem}>
                                     <ListItemText primary='Read' />
-                                    <Checkbox color='secondary'checked={this.state.readChecked} onClick={this.toggleRead} />
+                                    <Checkbox color='secondary' checked={this.state.readChecked} onClick={this.toggleRead} />
                                 </ListItem>
                                 <ListItem className={classes.listItem}>
                                     <ListItemText primary='Write' />
-                                    <Checkbox color='secondary'checked={this.state.writeChecked} onClick={this.toggleWrite} />
+                                    <Checkbox color='secondary' checked={this.state.writeChecked} onClick={this.toggleWrite} />
                                 </ListItem>
                                 <ListItem className={classes.listItem}>
                                     <ListItemText primary='Admin' />
-                                    <Checkbox color='secondary'checked={this.state.adminChecked} onClick={this.toggleAdmin} />
+                                    <Checkbox color='secondary' checked={this.state.adminChecked} onClick={this.toggleAdmin} />
                                 </ListItem>
                             </List>
                         </DialogContent>
@@ -203,16 +206,16 @@ class SharedUsers extends React.Component<Props, State>
     changePermissions() {
         const { selectedUser, readChecked, writeChecked, adminChecked } = this.state
         let userID = selectedUser as string | undefined
-        if(userID === undefined){
-            if(this._inputUser === null){
+        if (userID === undefined) {
+            if (this._inputUser === null) {
                 return
             }
             userID = this._inputUser.value
-            if(userID.length < 1){
+            if (userID.length < 1) {
                 return
             }
         }
-        const repoID = (this.props.repo || {repoID: ''}).repoID
+        const repoID = (this.props.repo || { repoID: '' }).repoID
         this.props.changeUserPermissions({
             repoID,
             userID,
@@ -222,23 +225,23 @@ class SharedUsers extends React.Component<Props, State>
         })
     }
 
-    toggleRead(){
+    toggleRead() {
         this.setState({ readChecked: !this.state.readChecked })
     }
 
-    toggleWrite(){
+    toggleWrite() {
         this.setState({ writeChecked: !this.state.writeChecked })
     }
 
-    toggleAdmin(){
+    toggleAdmin() {
         this.setState({ adminChecked: !this.state.adminChecked })
     }
 }
 
 interface Props {
     repo: IRepo | undefined
-    users: {[userID: string]: IUser}
-    usersByUsername: {[username: string]: string}
+    users: { [userID: string]: IUser }
+    usersByUsername: { [username: string]: string }
     currentUser: string
     changeUserPermissions: (payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) => void
     classes: any
@@ -256,6 +259,12 @@ const styles = (theme: Theme) => createStyles({
     root: {
         minWidth: 350,
     },
+    header: {
+        display: 'flex',
+        '& h6': {
+            flexGrow: 1,
+        },
+    },
     centered: {
         textAlign: 'center'
     },
@@ -265,9 +274,10 @@ const styles = (theme: Theme) => createStyles({
     },
     user: {
         display: 'flex',
-        marginTop: theme.spacing.unit * 2,
+        marginTop: theme.spacing.unit,
+        marginBottom: theme.spacing.unit,
     },
-    userAvatar : {
+    userAvatar: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -277,10 +287,7 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     button: {
-        width: '100%',
-        textAlign: 'center',
         textTransform: 'none',
-        marginTop: theme.spacing.unit * 2,
     },
     controlPointIcon: {
         marginRight: theme.spacing.unit,

@@ -1,8 +1,8 @@
 import path from 'path'
 import { IRepoFile } from 'conscience-lib/common'
 
-export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFolder: string) {
-    const filtered = {} as {[name: string]: IRepoFile}
+export function filterSubfolder(files: { [name: string]: IRepoFile }, selectedFolder: string) {
+    const filtered = {} as { [name: string]: IRepoFile }
 
     for (let filepath of Object.keys(files)) {
         let file = files[filepath]
@@ -16,8 +16,8 @@ export function filterSubfolder(files: {[name: string]: IRepoFile}, selectedFold
     return filtered
 }
 
-export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder: string | undefined) {
-    const merged = {} as {[filepath: string]: IRepoFile}
+export function mergeFolders(files: { [name: string]: IRepoFile }, selectedFolder: string | undefined) {
+    const merged = {} as { [filepath: string]: IRepoFile }
 
     for (let filepath of Object.keys(files)) {
         const file = files[filepath]
@@ -32,7 +32,7 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
             merged[file.name] = file
         } else {
             const folderName = parts[0]
-            if(!merged[folderName]) {
+            if (!merged[folderName]) {
                 merged[folderName] = {
                     name: selectedFolder === undefined ? folderName : path.join(selectedFolder, folderName),
                     type: 'folder',
@@ -53,7 +53,7 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
             if (fileMTime > merged[folderName].modified) {
                 merged[folderName].modified = fileMTime
             }
-            if (file.mergeConflict){
+            if (file.mergeConflict) {
                 merged[folderName].mergeConflict = true
             }
         }
@@ -61,7 +61,7 @@ export function mergeFolders(files: {[name: string]: IRepoFile}, selectedFolder:
     return merged
 }
 
-export function sortFolders(files: {[name: string]: IRepoFile}) {
+export function sortFolders(files: { [name: string]: IRepoFile }) {
     const names = Object.keys(files).sort((a, b) => {
         if (files[a].type === 'folder' && files[b].type !== 'folder') { return -1 }
         if (files[a].type !== 'folder' && files[b].type === 'folder') { return 1 }

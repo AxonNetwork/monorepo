@@ -1,20 +1,20 @@
 import { OrgPage } from '../common'
 
-export function orgPageToString(orgPage: OrgPage){
-    switch(orgPage){
+export function orgPageToString(orgPage: OrgPage) {
+    switch (orgPage) {
         case OrgPage.Settings:
-	        return 'settings'
+            return 'settings'
         case OrgPage.Editor:
-        	return 'editor'
+            return 'editor'
         case OrgPage.Home:
         default:
-	        return 'home'
+            return 'home'
     }
 }
 
-export function stringToOrgPage(pathname: string){
+export function stringToOrgPage(pathname: string) {
     const base = pathname.split('/')[3]
-    switch(base){
+    switch (base) {
         case 'settings':
             return OrgPage.Settings
         case 'editor':

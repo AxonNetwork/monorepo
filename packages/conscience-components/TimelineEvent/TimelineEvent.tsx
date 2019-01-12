@@ -23,7 +23,7 @@ class TimelineEvent extends React.Component<Props>
                 {event.verified !== undefined &&
                     <div className={classes.linkIconContainer}>
                         <Tooltip title={'Secured on blockchain: ' + moment(event.verified).format('MMM Do YYYY, h:mm a')}>
-                            <LinkIcon classes={{root: classes.linkIcon}}/>
+                            <LinkIcon classes={{ root: classes.linkIcon }} />
                         </Tooltip>
                     </div>
                 }

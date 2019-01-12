@@ -17,14 +17,14 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
-    selectFile(payload: {filename: string | undefined, mode: FileMode}) {
+    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
         const repoID = this.props.match.params.repoID
         const { filename, mode } = payload
         if (filename === undefined) {
             this.props.history.push(`/repo/${repoID}/files`)
-        }else if (mode === FileMode.View) {
+        } else if (mode === FileMode.View) {
             this.props.history.push(`/repo/${repoID}/files/${filename}`)
-        }else {
+        } else {
             this.props.history.push(`/repo/${repoID}/edit/${filename}`)
         }
     }
@@ -51,7 +51,7 @@ class RepoFilesPage extends React.Component<Props>
                             repoRoot={repo.repoID}
                             selectedFolder={selected}
                             selectFile={this.selectFile}
-                            classes={{root: classes.breadcrumbs}}
+                            classes={{ root: classes.breadcrumbs }}
                         />
                         <SecuredText
                             repoID={repo.repoID}
@@ -91,7 +91,7 @@ interface MatchParams {
     filename: string | undefined
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     repo: IRepo
     fileExtensionsHidden: boolean
     classes: any

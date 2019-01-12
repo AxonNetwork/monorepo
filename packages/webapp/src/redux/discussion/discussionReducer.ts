@@ -18,8 +18,8 @@ export interface IDiscussionState {
     comments: { [commentID: string]: IComment }
     commentsByDiscussion: { [repoID: string]: string[] } // array of commentIDs
 
-    newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
-    discussionIDsSortedByNewestComment: {[repoID: string]: string[]}
+    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
+    discussionIDsSortedByNewestComment: { [repoID: string]: string[] }
 }
 
 const discussionReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
@@ -120,12 +120,12 @@ const derivedDataReducer = (state: IDiscussionState = initialState, action: IDis
         case DiscussionActionType.CREATE_COMMENT_SUCCESS: {
             const newestCommentTimestampPerDiscussion =
                 values(state.comments)
-                .reduce((into, each) => {
-                    if (into[each.discussionID] === undefined || into[each.discussionID] < each.created) {
-                        into[each.discussionID] = each.created
-                    }
-                    return into
-                }, {} as { [discussionID: string]: number })
+                    .reduce((into, each) => {
+                        if (into[each.discussionID] === undefined || into[each.discussionID] < each.created) {
+                            into[each.discussionID] = each.created
+                        }
+                        return into
+                    }, {} as { [discussionID: string]: number })
 
 
             const discussionIDsSortedByNewestComment = {} as { [repoID: string]: string[] }
@@ -134,8 +134,8 @@ const derivedDataReducer = (state: IDiscussionState = initialState, action: IDis
                 let pairs = discussionIDs.map(discussionID => ({ discussionID, timestamp: newestCommentTimestampPerDiscussion[discussionID] }))
                 discussionIDsSortedByNewestComment[repoID] =
                     sortBy(pairs, 'timestamp')
-                    .reverse()
-                    .map(({ discussionID }) => discussionID)
+                        .reverse()
+                        .map(({ discussionID }) => discussionID)
             }
 
             return {
@@ -150,7 +150,7 @@ const derivedDataReducer = (state: IDiscussionState = initialState, action: IDis
     }
 }
 
-export default function (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState {
+export default function(state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState {
     state = discussionReducer(state, action)
     state = derivedDataReducer(state, action)
     return state

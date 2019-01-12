@@ -78,16 +78,16 @@ interface Props {
     attachedTo?: string
     commentWrapperClasses?: any
     user: IUser
-    files: {[name: string]: IRepoFile}
-    discussions: {[discussionID: string]: IDiscussion}
-    createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
+    files: { [name: string]: IRepoFile }
+    discussions: { [discussionID: string]: IDiscussion }
+    createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
     classes: any
 }
 
 interface State {
     error: string
 }
- const styles = () => createStyles({
+const styles = () => createStyles({
     commentWrapper: {}, // this is just here so it can be overridden
     form: {
         width: '100%',

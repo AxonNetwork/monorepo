@@ -70,7 +70,7 @@ export interface IGetDiffSuccessAction {
     payload: {
         repoID: string
         commit: string
-        diffs: {[filename: string]: string}
+        diffs: { [filename: string]: string }
     }
 }
 

@@ -37,7 +37,7 @@ class Breadcrumbs extends React.Component<Props>
     }
 
     getParts(repoRoot: string, selectedFolder: string | undefined) {
-        let parts = [ path.basename(repoRoot) ]
+        let parts = [path.basename(repoRoot)]
         if (selectedFolder !== undefined) {
             parts = parts.concat(selectedFolder.split('/'))
         }
@@ -88,7 +88,7 @@ class Breadcrumbs extends React.Component<Props>
 interface Props {
     repoRoot: string
     selectedFolder: string | undefined
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
+    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
     classes: any
 }
 

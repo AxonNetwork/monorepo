@@ -14,7 +14,7 @@ class ConnectedFileViewer extends React.Component<Props>
     render() {
         const { repoID, ...other } = this.props
         const directEmbedPrefix = this.directEmbedPrefix()
-        return(
+        return (
             <FileViewer
                 {...other}
                 directEmbedPrefix={directEmbedPrefix}
@@ -58,7 +58,7 @@ class ConnectedFileViewer extends React.Component<Props>
     //     return resp.data
     // }
 
-    selectFile(payload: {filename: string | undefined, mode: FileMode}) {
+    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
         const repoID = this.props.repoID
         const filename = payload.filename
         if (filename === undefined) {
@@ -68,7 +68,7 @@ class ConnectedFileViewer extends React.Component<Props>
         }
     }
 
-    selectDiscussion(payload: {discussionID: string | undefined}) {
+    selectDiscussion(payload: { discussionID: string | undefined }) {
         const repoID = this.props.repoID
         const discussionID = payload.discussionID
         if (discussionID === undefined) {
@@ -89,9 +89,9 @@ interface OwnProps {
 
 interface StateProps {
     repo: IRepo
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
-    comments: {[commentID: string]: IComment}
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
+    comments: { [commentID: string]: IComment }
     codeColorScheme?: string | undefined
     backgroundColor?: string
 }

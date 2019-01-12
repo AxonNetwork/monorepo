@@ -14,23 +14,23 @@ export interface BinaryChunkContentProps {
 class BinaryChunkContent extends React.Component<BinaryChunkContentProps>
 {
     render() {
-        const {classes, file} = this.props
-        const changes = file.chunks.reduce((acc:parse.Change[], curr:parse.Chunk) => {
+        const { classes, file } = this.props
+        const changes = file.chunks.reduce((acc: parse.Change[], curr: parse.Chunk) => {
             return acc.concat(curr.changes)
         }, [])
-        const chunkCounts = changes.filter((ch:any) => ch.content.indexOf('chunks') > -1)
+        const chunkCounts = changes.filter((ch: any) => ch.content.indexOf('chunks') > -1)
         const chunkTotal = parseInt(chunkCounts[chunkCounts.length - 1].content.split(' ')[1])
-        const adds = changes.filter((ch:any) => ch.add)
-        const dels = changes.filter((ch:any) => ch.del)
+        const adds = changes.filter((ch: any) => ch.add)
+        const dels = changes.filter((ch: any) => ch.del)
 
         let chunks = []
         for (let i = 3; i < (chunkTotal + 3); i++) {
             let changed = false
-            if (adds.some(((ch:any) => ch.ln && ch.ln === i))) {
+            if (adds.some(((ch: any) => ch.ln && ch.ln === i))) {
                 chunks.push('add')
                 changed = true
             }
-            if (dels.some(((ch:any) => ch.ln && ch.ln === i))) {
+            if (dels.some(((ch: any) => ch.ln && ch.ln === i))) {
                 chunks.push('del')
                 changed = true
             }

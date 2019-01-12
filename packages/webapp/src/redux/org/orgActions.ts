@@ -236,7 +236,7 @@ export interface IChangeOrgFeaturedReposAction {
     type: OrgActionType.CHANGE_ORG_FEATURED_REPOS
     payload: {
         orgID: string
-        featuredRepos: {[repoID: string]: IFeaturedRepo},
+        featuredRepos: { [repoID: string]: IFeaturedRepo },
     }
 }
 
@@ -244,7 +244,7 @@ export interface IChangeOrgFeaturedReposSuccessAction {
     type: OrgActionType.CHANGE_ORG_FEATURED_REPOS_SUCCESS
     payload: {
         orgID: string
-        featuredRepos: {[repoID: string]: IFeaturedRepo},
+        featuredRepos: { [repoID: string]: IFeaturedRepo },
     }
 }
 
@@ -261,7 +261,7 @@ export interface IFetchOrgBlogsSuccessAction {
     type: OrgActionType.FETCH_ORG_BLOGS_SUCCESS
     payload: {
         orgID: string
-        blogs: {[created: string]: IOrgBlog},
+        blogs: { [created: string]: IOrgBlog },
     }
 }
 

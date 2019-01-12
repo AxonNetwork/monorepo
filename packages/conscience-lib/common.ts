@@ -9,10 +9,10 @@ export interface IRepo {
     pullers?: string[]
     pushers?: string[]
     isPublic?: boolean
-    files?: {[name: string]: IRepoFile}
-    localRefs?: {[name: string]: string}
-    remoteRefs?: {[name: string]: string}
-    commits?: {[commitHash: string]: ITimelineEvent}
+    files?: { [name: string]: IRepoFile }
+    localRefs?: { [name: string]: string }
+    remoteRefs?: { [name: string]: string }
+    commits?: { [commitHash: string]: ITimelineEvent }
     commitList?: string[]
     behindRemote?: boolean
 }
@@ -46,7 +46,7 @@ export interface ITimelineEvent {
     message: string
     files: string[]
     verified?: Date
-    diffs?: {[filename: string]: string}
+    diffs?: { [filename: string]: string }
     repoID?: string
 }
 
@@ -115,7 +115,7 @@ export interface IOrganization {
     readme: string
     members: string[] //userID[]
     repos: string[] //repoID[]
-    featuredRepos: {[repoID: string]: IFeaturedRepo}
+    featuredRepos: { [repoID: string]: IFeaturedRepo }
 }
 
 export interface IOrgBlog {

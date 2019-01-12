@@ -8,7 +8,7 @@ class LargeAddButton extends React.Component<Props>
 {
     render() {
         const { classes } = this.props
-        return(
+        return (
             <div className={classes.root}>
                 <div className={classes.contents} onClick={this.props.onClick}>
                     <Typography className={classes.text}>
@@ -24,13 +24,13 @@ class LargeAddButton extends React.Component<Props>
 
 interface Props {
     text: string
-    onClick: ()=>void
+    onClick: () => void
     classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
     root: {
-backgroundColor: '#f1f1f1',
+        backgroundColor: '#f1f1f1',
         borderRadius: 10,
         border: '3px solid #c5c5c5',
         padding: 30,

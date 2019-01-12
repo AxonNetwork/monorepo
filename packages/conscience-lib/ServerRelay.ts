@@ -155,9 +155,9 @@ const ServerRelay = {
 
     async getRepo(repoID: string) {
         let response
-        try{
+        try {
             response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
-        }catch(err) {
+        } catch (err) {
             // repo does not exist
             if ((err.response || {}).status === 404) {
                 return new Error(err.response.data.error)
@@ -169,11 +169,11 @@ const ServerRelay = {
 
     async getFileContents(repoID: string, filename: string) {
         let file
-        try{
+        try {
             file = await axios.get<any>(API_URL + '/repo/' + repoID + '/file/' + filename)
-        }catch(err) {
+        } catch (err) {
             // file does not exist
-            if(err.response.status === 404) {
+            if (err.response.status === 404) {
                 return new Error(err.response.data.error)
             }
             throw err.response.data.error
@@ -193,7 +193,7 @@ const ServerRelay = {
 
     async getDiff(repoID: string, commit: string) {
         interface IResponse {
-            diffs: {[filename: string]: string}
+            diffs: { [filename: string]: string }
         }
         const response = await axios.get<IResponse>(API_URL + '/repo/' + repoID + '/diff/' + commit)
         return response.data
@@ -286,7 +286,7 @@ const ServerRelay = {
     },
 
     async sawComment(repoID: string, discussionID: string, commentTimestamp: number) {
-        interface IResponse {}
+        interface IResponse { }
         await axios.post<IResponse>(API_URL + "/user/sawComment", {
             repoID,
             discussionID,
@@ -378,7 +378,7 @@ const ServerRelay = {
         return
     },
 
-    async changeOrgFeaturedRepos(orgID: string, featuredRepos: {[repoID: string]: IFeaturedRepo}) {
+    async changeOrgFeaturedRepos(orgID: string, featuredRepos: { [repoID: string]: IFeaturedRepo }) {
         interface IResponse {
             org: IOrganization
         }

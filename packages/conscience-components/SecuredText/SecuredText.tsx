@@ -23,8 +23,8 @@ class SecuredText extends React.Component<Props, State>
 
     componentDidUpdate(prevProps: Props) {
         if (this.props.commit !== prevProps.commit ||
-           this.props.filename !== prevProps.filename ||
-           this.props.commitList.length !== prevProps.commitList.length) {
+            this.props.filename !== prevProps.filename ||
+            this.props.commitList.length !== prevProps.commitList.length) {
             this.parseCommits()
         }
     }
@@ -41,7 +41,7 @@ class SecuredText extends React.Component<Props, State>
         if (filename) {
             lastVerified = timelineUtils.getLastVerifiedEventFile(commitList || [], commits || {}, filename)
             lastUpdated = timelineUtils.getLastUpdated(commitList || [], commits || {}, filename)
-        }else {
+        } else {
             lastVerified = timelineUtils.getLastVerifiedEvent(commitList || [], commits || {})
         }
         const firstVerified = timelineUtils.getFirstVerifiedEvent(commitList || [], commits || {}, filename)
@@ -98,7 +98,7 @@ class SecuredText extends React.Component<Props, State>
 }
 
 interface Props {
-    commits: {[commitHash: string]: ITimelineEvent}
+    commits: { [commitHash: string]: ITimelineEvent }
     commitList: string[]
     commit?: string
     filename?: string

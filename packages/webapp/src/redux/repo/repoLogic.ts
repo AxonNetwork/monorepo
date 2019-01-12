@@ -1,5 +1,5 @@
 import {
-	RepoActionType,
+    RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
     IGetRepoAction, IGetRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
@@ -27,7 +27,7 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
     async process({ action }, dispatch) {
         const { repoID } = action.payload
         const repo = await ServerRelay.getRepo(repoID)
-        if(repo instanceof Error){
+        if (repo instanceof Error) {
             return repo
         }
         const { admins, pushers, pullers } = repo
@@ -68,8 +68,8 @@ const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveColl
 })
 
 export default [
-	getRepoListLogic,
-	getRepoLogic,
+    getRepoListLogic,
+    getRepoLogic,
     getDiffLogic,
     addCollaboratorLogic,
     removeCollaboratorLogic,

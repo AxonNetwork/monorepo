@@ -21,9 +21,9 @@ const initialState = {
 }
 
 export interface IUserState {
-    users: {[userID: string]: IUser}
-    usersByEmail: {[email: string]: string} // value is userID
-    usersByUsername: {[username: string]: string} // value is userID
+    users: { [userID: string]: IUser }
+    usersByEmail: { [email: string]: string } // value is userID
+    usersByUsername: { [username: string]: string } // value is userID
 
     currentUser: string | undefined
     checkedLoggedIn: boolean
@@ -39,7 +39,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.LOGIN_SUCCESS: {
             const { user } = action.payload
             const { userID, emails } = user
-            const usersByEmail = fromPairs(emails.map(email => [ email, userID ]))
+            const usersByEmail = fromPairs(emails.map(email => [email, userID]))
             return {
                 ...state,
                 users: {
@@ -91,8 +91,8 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.FETCH_USER_DATA_SUCCESS:
         case UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS: {
             const { users } = action.payload
-            const usersByEmail = {} as {[email: string]: string}
-            const usersByUsername = {} as {[username: string]: string}
+            const usersByEmail = {} as { [email: string]: string }
+            const usersByUsername = {} as { [username: string]: string }
             for (let userID of Object.keys(users)) {
                 const user = users[userID]
                 usersByUsername[user.username] = userID

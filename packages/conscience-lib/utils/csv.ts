@@ -1,5 +1,5 @@
 
-export function parseCSV(contents: string|null|undefined) {
+export function parseCSV(contents: string | null | undefined) {
     if (!contents) {
         return []
     }

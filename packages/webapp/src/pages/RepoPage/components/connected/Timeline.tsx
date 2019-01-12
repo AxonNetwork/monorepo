@@ -11,20 +11,20 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class RepoHistoryPage extends React.Component<Props>
+class ConnectedTimeline extends React.Component<Props>
 {
-	render() {
-		const { repo, classes } = this.props
-		const commits = repo.commits
-		if(commits === undefined) {
-			return (
-				<div className={classes.progressContainer}>
-					<CircularProgress color="secondary" />
-				</div>
-			)
-		}
-		const commitList = Object.keys(commits)
-		return (
+    render() {
+        const { repo, classes } = this.props
+        const commits = repo.commits
+        if (commits === undefined) {
+            return (
+                <div className={classes.progressContainer}>
+                    <CircularProgress color="secondary" />
+                </div>
+            )
+        }
+        const commitList = Object.keys(commits)
+        return (
             <Timeline
                 repoID={repo.repoID}
                 page={this.props.page}
@@ -36,65 +36,63 @@ class RepoHistoryPage extends React.Component<Props>
                 users={{}}
                 usersByEmail={{}}
             />
-		)
-	}
+        )
+    }
 
-	selectCommit(payload: {selectedCommit: string | undefined}){
-		const repoID = this.props.repo.repoID
-		const commit = payload.selectedCommit
-		if(commit === undefined) {
-			this.props.history.push(`/repo/${repoID}/history`)
-		}else {
-			this.props.history.push(`/repo/${repoID}/history/${commit}`)
-		}
-	}
+    selectCommit(payload: { selectedCommit: string | undefined }) {
+        const repoID = this.props.repo.repoID
+        const commit = payload.selectedCommit
+        if (commit === undefined) {
+            this.props.history.push(`/repo/${repoID}/history`)
+        } else {
+            this.props.history.push(`/repo/${repoID}/history/${commit}`)
+        }
+    }
 }
 
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
-	repoID: string
-	history: History
-	page?: number
-	defaultRowsPerPage?: number
-	hidePagination?: boolean
+    repoID: string
+    history: History
+    page?: number
+    defaultRowsPerPage?: number
+    hidePagination?: boolean
 }
 
 interface StateProps {
-	repo: IRepo
-	user: IUser
-	history: History
+    repo: IRepo
+    user: IUser
+    history: History
 }
 
 interface DispatchProps {
-	getDiff: (payload: {repoID: string, commit: string}) => void
+    getDiff: (payload: { repoID: string, commit: string }) => void
 }
 
 const styles = (theme: Theme) => createStyles({
-	progressContainer: {
-		width: '100%',
-		display: 'flex',
-		justifyContent: 'center',
-		marginTop: 256,
-	}
+    progressContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: 256,
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-	const repo = state.repo.repos[ownProps.repoID]
-	const user = state.user.users[state.user.currentUser || ''] || {}
+    const repo = state.repo.repos[ownProps.repoID]
+    const user = state.user.users[state.user.currentUser || ''] || {}
     return {
-    	repo,
-    	user,
+        repo,
+        user,
     }
 }
 
 const mapDispatchToProps = {
-	getDiff,
+    getDiff,
 }
 
-const RepoHistoryPageContainer = connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoHistoryPage))
-
-export default RepoHistoryPageContainer
+)(withStyles(styles)(ConnectedTimeline))

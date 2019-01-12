@@ -9,15 +9,15 @@ import uiReducer from './ui/uiReducer'
 import { IGlobalState } from './store'
 
 const appReducer = combineReducers({
-	user: userReducer,
-	repo: repoReducer,
-	discussion: discussionReducer,
-	org: orgReducer,
-	ui: uiReducer,
+    user: userReducer,
+    repo: repoReducer,
+    discussion: discussionReducer,
+    org: orgReducer,
+    ui: uiReducer,
 })
 
-const rootReducer = (state: IGlobalState | undefined, action: {type: string}): IGlobalState => {
-	return appReducer(state, action)
+const rootReducer = (state: IGlobalState | undefined, action: { type: string }): IGlobalState => {
+    return appReducer(state, action)
 }
 
 export default rootReducer
