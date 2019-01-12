@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
@@ -30,10 +31,12 @@ class OrgBlog extends React.Component<Props>
                             const blog = blogMap[`${id}`]
                             return (
                                 <ListItem>
-                                    <H6>{blog.title}</H6>
-                                    <div>{blog.author}</div>
-                                    <div>{blog.created}</div>
-                                    <RenderMarkdown text={blog.body} />
+                                    <div>
+                                        <H6>{blog.title}</H6>
+                                        <div>{blog.author}</div>
+                                        <div>{moment(blog.created).fromNow()}</div>
+                                        <RenderMarkdown text={blog.body} />
+                                    </div>
                                 </ListItem>
                             )
                         })}

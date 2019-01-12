@@ -5,13 +5,13 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Button from '@material-ui/core/Button'
 import EditIcon from '@material-ui/icons/Edit'
 import LargeAddButton from 'conscience-components/LargeAddButton'
 import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import RepositoryCards from 'conscience-components/RepositoryCards'
+import { H6 } from 'conscience-components/Typography/Headers'
 import Members from './connected/Members'
 import { getRepoList } from 'redux/repo/repoActions'
 import { fetchOrgInfo, addRepoToOrg, addMemberToOrg, removeMemberFromOrg } from 'redux/org/orgActions'
@@ -49,16 +49,12 @@ class OrgHomePage extends React.Component<Props>
                                 <EditIcon fontSize="small" />
                             </IconButton>
                             <CardContent className={classes.readmeWrapper}>
-                                <Typography>
-                                    <RenderMarkdown text={org.readme} />
-                                </Typography>
+                                <RenderMarkdown text={org.readme} />
                             </CardContent>
                         </Card>
                     }
 
-                    <Typography variant="h6" className={classes.repoHeader}>
-                        Repositories
-                    </Typography>
+                    <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
                         repoList={this.props.org.repos}
                         repos={this.props.repos}

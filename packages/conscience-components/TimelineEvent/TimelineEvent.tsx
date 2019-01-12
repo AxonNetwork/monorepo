@@ -54,8 +54,8 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     event: {
         position: 'relative',
-        padding: '18px 0 12px',
-        marginLeft: '24px',
+        padding: '18px 0 12px 24px',
+        // marginLeft: '24px',
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: 'rgba(0, 0, 0, 0.05)',
@@ -63,7 +63,7 @@ const styles = (theme: Theme) => createStyles({
     },
     topline: {
         position: 'absolute',
-        left: 19,
+        left: 43,
         top: 0,
         bottom: 0,
         width: 2,
@@ -75,7 +75,7 @@ const styles = (theme: Theme) => createStyles({
     linkIconContainer: {
         position: 'absolute',
         top: 18,
-        left: 30,
+        left: 54,
         borderRadius: '50%',
         width: 18,
         height: 18,

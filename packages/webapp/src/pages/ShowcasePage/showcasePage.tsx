@@ -13,6 +13,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import { Parallax } from 'react-parallax'
 import UserAvatar from 'conscience-components/UserAvatar'
+import { H5 } from 'conscience-components/Typography/Headers'
 import Container from './components/Container'
 import FeaturedRepos from './components/FeaturedRepos'
 import UploadBannerDialog from './components/UploadBannerDialog'
@@ -91,18 +92,18 @@ class ShowcasePage extends React.Component<Props, State>
                 />
                 <Container>
                     <div className={classes.statsContainer}>
-                        <Typography className={classes.stats}>
+                        <div className={classes.stats}>
                             <PeopleIcon />
                             {memberCount} {pluralize('Researcher', memberCount)}
-                        </Typography>
-                        <Typography className={classes.stats}>
+                        </div>
+                        <div className={classes.stats}>
                             <DescriptionIcon />
                             {publicRepoCount} Published {pluralize('Study', publicRepoCount)}
-                        </Typography>
-                        <Typography className={classes.stats}>
+                        </div>
+                        <div className={classes.stats}>
                             <AssessmentIcon />
                             {activeRepoCount} Active {pluralize('Repository', activeRepoCount)}
-                        </Typography>
+                        </div>
                     </div>
                     <Grid container spacing={40} >
                         <Grid item xs={12} sm={8}>
@@ -116,19 +117,17 @@ class ShowcasePage extends React.Component<Props, State>
                             />
 
                             <div>
-                                <Typography variant="h5">News and Updates</Typography>
+                                <H5 className={classes.sectionHeader}>News and Updates</H5>
                                 <OrgBlog orgID={this.props.match.params.orgID} />
                             </div>
                         </Grid>
 
                         <Grid item xs={false} sm={4} className={classes.timelineContainer}>
-                            <Typography variant="h5">
-                                Live Updates
-                            </Typography>
-                            <Typography>
-                                <em>From researchers who are doing their work in the open</em>
-                            </Typography>
+                            <H5>Live Updates</H5>
+                            <div><em>From researchers who are doing their work in the open</em></div>
+
                             <Divider />
+
                             <ShowcaseTimeline
                                 org={this.props.org}
                                 repos={this.props.repos}
@@ -138,26 +137,24 @@ class ShowcasePage extends React.Component<Props, State>
                             />
                         </Grid>
                     </Grid>
-                    <Typography variant="h5" className={classes.teamHeader}>
-                        Meet Our Researchers
-                    </Typography>
+
+                    <H5 className={classes.teamHeader}>Meet Our Researchers</H5>
                     <div className={classes.team}>
                         {membersToShow.map(id => {
                             const user = users[id] || {}
                             return (
-                                <div className={classes.teamProfile}>
+                                <div className={classes.teamAvatarWrapper}>
                                     <UserAvatar
                                         classes={{ root: classes.teamAvatar }}
                                         username={user.name}
                                         userPicture={user.picture}
                                     />
-                                    <Typography>
-                                        {user.name}
-                                    </Typography>
+                                    <div>{user.name}</div>
                                 </div>
                             )
                         })}
                     </div>
+
                     {memberCount > 6 && !!this.state.showAllMembers &&
                         <div className={classes.teamSeeMore}>
                             <Button
@@ -276,6 +273,9 @@ const styles = (theme: Theme) => createStyles({
         right: 16,
         textTransform: 'none',
     },
+    sectionHeader: {
+        margin: '20px 0 30px',
+    },
     statsContainer: {
         width: '100%',
         display: 'flex',
@@ -307,7 +307,7 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'space-around',
         flexWrap: 'wrap',
     },
-    teamProfile: {
+    teamAvatarWrapper: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
