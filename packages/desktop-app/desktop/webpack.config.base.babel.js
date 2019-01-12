@@ -16,12 +16,13 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
 
-const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json')
-const ImmutableManifest = path.join(__dirname, 'dist-bundle/dll/immutable_manifest.json')
+const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json');
+const ImmutableManifest = path.join(__dirname, 'dist-bundle/dll/immutable_manifest.json');
 const devMode = process.env.NODE_ENV !== 'production';
 
-const PACKAGE = require('../package.json')
-const appVersion = PACKAGE.version // grabs the version number from package.json
+const PACKAGE = require('../package.json');
+
+const appVersion = PACKAGE.version; // grabs the version number from package.json
 
 export default {
     // The base directory, an absolute path, for resolving entry points and loaders from configuration
@@ -46,6 +47,11 @@ export default {
                             useBabel: true,
                             useCache: true,
                             silent: true,
+                            reportFiles: [
+                                'src/**/*.{ts,tsx}',
+                                '../../conscience-lib/**/*.{ts,tsx}',
+                                '../../conscience-components/**/*.{ts,tsx}',
+                            ],
                         },
                     },
                     // Alternatively, we can use ts-loader
