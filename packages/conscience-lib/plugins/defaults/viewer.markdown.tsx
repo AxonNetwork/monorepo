@@ -4,12 +4,10 @@ import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
-import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
 import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import autobind from 'conscience-lib/utils/autobind'
 
-import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
+import { IRepo, IComment, IUser, IDiscussion } from 'conscience-lib/common'
 
 @autobind
 class MarkdownViewerPlugin extends React.Component<Props, State>

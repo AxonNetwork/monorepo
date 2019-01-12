@@ -11,19 +11,19 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class ConnectedFileViewer extends React.Component<Props>
 {
-	render() {
-		const { repoID, ...other } = this.props
+    render() {
+        const { repoID, ...other } = this.props
         const directEmbedPrefix = this.directEmbedPrefix()
-		return(
-			<FileViewer
+        return(
+            <FileViewer
                 {...other}
                 directEmbedPrefix={directEmbedPrefix}
                 getFileContents={this.getFileContents}
-			    selectFile={this.selectFile}
-			    selectDiscussion={this.selectDiscussion}
-			/>
-		)
-	}
+                selectFile={this.selectFile}
+                selectDiscussion={this.selectDiscussion}
+            />
+        )
+    }
 
     directEmbedPrefix() {
         const API_URL = process.env.API_URL
@@ -58,24 +58,24 @@ class ConnectedFileViewer extends React.Component<Props>
     //     return resp.data
     // }
 
-	selectFile(payload: {filename: string | undefined, mode: FileMode}) {
-    	const repoID = this.props.repoID
-    	const filename = payload.filename
-    	if (filename === undefined) {
-    		this.props.history.push(`/repo/${repoID}/file`)
-    	} else {
-    		this.props.history.push(`/repo/${repoID}/file/${filename}`)
-    	}
+    selectFile(payload: {filename: string | undefined, mode: FileMode}) {
+        const repoID = this.props.repoID
+        const filename = payload.filename
+        if (filename === undefined) {
+            this.props.history.push(`/repo/${repoID}/file`)
+        } else {
+            this.props.history.push(`/repo/${repoID}/file/${filename}`)
+        }
     }
 
-	selectDiscussion(payload: {discussionID: string | undefined}) {
-    	const repoID = this.props.repoID
-    	const discussionID = payload.discussionID
-    	if (discussionID === undefined) {
-    		this.props.history.push(`/repo/${repoID}/discussion`)
-    	} else {
-    		this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
-    	}
+    selectDiscussion(payload: {discussionID: string | undefined}) {
+        const repoID = this.props.repoID
+        const discussionID = payload.discussionID
+        if (discussionID === undefined) {
+            this.props.history.push(`/repo/${repoID}/discussion`)
+        } else {
+            this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
+        }
     }
 }
 
@@ -83,7 +83,8 @@ type Props = OwnProps & StateProps & RouteComponentProps<any>
 
 interface OwnProps {
     filename: string
-	repoID: string
+    repoID: string
+    showViewerPicker: boolean
 }
 
 interface StateProps {
@@ -96,7 +97,7 @@ interface StateProps {
 }
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-	return {
+    return {
         repo: state.repo.repos[ownProps.repoID],
         users: state.user.users,
         discussions: state.discussion.discussions,

@@ -1,14 +1,8 @@
-import path from 'path'
-import urljoin from 'url-join'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
-import RenderMarkdown from '../RenderMarkdown'
-import CodeViewer from '../CodeViewer'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
@@ -43,10 +37,12 @@ class FileViewer extends React.Component<Props, State>
         }
 
         return (
-            <div>
-                <Select value={viewerName} onChange={this.onChangeViewer}>
-                    {viewers.map(viewer => <MenuItem value={viewer.name}>{viewer.humanName}</MenuItem>)}
-                </Select>
+            <div className={classes.root}>
+                {this.props.showViewerPicker &&
+                    <Select value={viewerName} onChange={this.onChangeViewer} className={classes.viewerPicker}>
+                        {viewers.map(viewer => <MenuItem value={viewer.name}>{viewer.humanName}</MenuItem>)}
+                    </Select>
+                }
 
                 <Viewer
                     repoID={this.props.repo.repoID}
@@ -92,6 +88,7 @@ class FileViewer extends React.Component<Props, State>
 interface Props {
     filename: string
     directEmbedPrefix: string
+    showViewerPicker: boolean
 
     repo: IRepo
     comments: {[commentID: string]: IComment}
@@ -112,6 +109,14 @@ interface State {
 }
 
 const styles = () => createStyles({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    viewerPicker: {
+        width: 'fit-content',
+        // marginBottom: 10,
+    },
     imageEmbed: {
         maxWidth: '100%',
     },

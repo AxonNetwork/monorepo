@@ -20,111 +20,110 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoHomePage extends React.Component<Props>
 {
+    render() {
+        const { repo, sharedUsers, classes } = this.props
 
-	render() {
-		const { repo, sharedUsers, classes } = this.props
+        const readmeExists = (repo.files || {})['README.md']
 
-		const readmeExists = (repo.files || {})['README.md']
-
-		return (
-			<div className={classes.main}>
+        return (
+            <div className={classes.main}>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readmeExists })}>
-					{readmeExists &&
-							<FileViewer repoID={repo.repoID} filename={'README.md'}/>
-					}
-					{!readmeExists &&
-	                    <div className={classes.readmeContainerNoReadmeContents}>
-	                        <Typography className={classes.noReadmeText}>
-	                            Add a welcome message and instructions to this repository using the Conscience Desktop App.
-	                        </Typography>
+                    {readmeExists &&
+                        <FileViewer repoID={repo.repoID} filename={'README.md'} showViewerPicker={false} />
+                    }
+                    {!readmeExists &&
+                        <div className={classes.readmeContainerNoReadmeContents}>
+                            <Typography className={classes.noReadmeText}>
+                                Add a welcome message and instructions to this repository using the Conscience Desktop App.
+                            </Typography>
 
-	                        <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
-	                    </div>
-					}
-				</div>
-				<div className={classes.sidebarComponents}>
-					{(repo.commitList || []).length > 0 &&
-						<Card className={classes.card}>
-							<CardContent classes={{ root: classes.securedTextCard}}>
-								<SecuredText
-									repoID={repo.repoID}
-									history={this.props.history}
-								/>
-							</CardContent>
-						</Card>
-					}
+                            <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
+                        </div>
+                    }
+                </div>
+                <div className={classes.sidebarComponents}>
+                    {(repo.commitList || []).length > 0 &&
+                        <Card className={classes.card}>
+                            <CardContent classes={{ root: classes.securedTextCard}}>
+                                <SecuredText
+                                    repoID={repo.repoID}
+                                    history={this.props.history}
+                                />
+                            </CardContent>
+                        </Card>
+                    }
 
-					<Card className={classes.card}>
-						<CardContent>
-							<Typography variant="h6">Team</Typography>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Typography variant="h6">Team</Typography>
 
-							<div className={classes.sharedUsersRow}>
-							{sharedUsers.map((user: IUser | undefined) => {
-								if(user !== undefined){
-									return <UserAvatar username={user.name} userPicture={user.picture} />
-								}else {
-									return null
-								}
-							})}
-							</div>
-						</CardContent>
-					</Card>
+                            <div className={classes.sharedUsersRow}>
+                            {sharedUsers.map((user: IUser | undefined) => {
+                                if (user !== undefined) {
+                                    return <UserAvatar username={user.name} userPicture={user.picture} />
+                                }else {
+                                    return null
+                                }
+                            })}
+                            </div>
+                        </CardContent>
+                    </Card>
 
-					<Card className={classes.card}>
-						<CardContent>
-							<Typography variant="h6">Recent Discussions</Typography>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Typography variant="h6">Recent Discussions</Typography>
 
-							<DiscussionList
-								repoID={repo.repoID}
-								history={this.props.history}
-								maxLength={2}
-							/>
-						</CardContent>
-					</Card>
-					<Card className={classes.card}>
-						<CardContent>
-							<Typography variant="h6">Recent Commits</Typography>
+                            <DiscussionList
+                                repoID={repo.repoID}
+                                history={this.props.history}
+                                maxLength={2}
+                            />
+                        </CardContent>
+                    </Card>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Typography variant="h6">Recent Commits</Typography>
 
-							<Timeline
-								repoID={repo.repoID}
-								history={this.props.history}
-								defaultRowsPerPage={2}
-								hidePagination
-							/>
-						</CardContent>
-					</Card>
-				</div>
-			</div>
-		)
-	}
+                            <Timeline
+                                repoID={repo.repoID}
+                                history={this.props.history}
+                                defaultRowsPerPage={2}
+                                hidePagination
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        )
+    }
 
-	onClickEditReadme() {
-		const repoID = this.props.match.params.repoID
-		this.props.history.push(`/repo/${repoID}/edit/README.md`)
-	}
+    onClickEditReadme() {
+        const repoID = this.props.match.params.repoID
+        this.props.history.push(`/repo/${repoID}/edit/README.md`)
+    }
 }
 
 interface MatchParams {
-	repoID: string
+    repoID: string
 }
 
 interface Props extends RouteComponentProps<MatchParams>{
-	repo: IRepo
-	sharedUsers: IUser[]
-	classes: any
+    repo: IRepo
+    sharedUsers: IUser[]
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
-	main: {
-		display: 'flex',
-		marginTop: 32,
-	},
-	readmeContainer: {
-		position: 'relative',
-		flexGrow: 1,
-		marginRight: 16,
-		minWidth: 0,
-	},
+    main: {
+        display: 'flex',
+        marginTop: 32,
+    },
+    readmeContainer: {
+        position: 'relative',
+        flexGrow: 1,
+        marginRight: 16,
+        minWidth: 0,
+    },
     readmeContainerNoReadme: {
         backgroundColor: '#f1f1f1',
         borderRadius: 10,
@@ -147,33 +146,33 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '5rem',
         color: '#a2a2a2',
     },
-	sidebarComponents: {
-		flexGrow: 1,
-		minWidth: 350,
-		marginLeft: 16,
-	},
-	card: {
-		marginBottom: 16
-	},
-	securedTextCard: {
-		padding: 16
-	},
-	sharedUsersRow: {
-		display: 'flex',
-		flexDirection: 'row',
-		'& div': {
-			marginRight: 4
-		}
-	},
+    sidebarComponents: {
+        flexGrow: 1,
+        minWidth: 350,
+        marginLeft: 16,
+    },
+    card: {
+        marginBottom: 16,
+    },
+    securedTextCard: {
+        padding: 16,
+    },
+    sharedUsersRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        '& div': {
+            marginRight: 4,
+        },
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
-	const repoID = ownProps.match.params.repoID
-	const repo = state.repo.repos[repoID]
-	const sharedUsers = (repo.sharedUsers || []).map(id => state.user.users[id])
+    const repoID = ownProps.match.params.repoID
+    const repo = state.repo.repos[repoID]
+    const sharedUsers = (repo.sharedUsers || []).map(id => state.user.users[id])
     return {
-    	repo,
-    	sharedUsers,
+        repo,
+        sharedUsers,
     }
 }
 

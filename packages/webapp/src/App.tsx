@@ -6,6 +6,7 @@ import { Store } from 'redux'
 import Routes from 'Routes'
 import { IGlobalState } from 'redux/store'
 
+import Typography from '@material-ui/core/Typography'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -27,17 +28,19 @@ const theme = createMuiTheme({
 })
 
 interface IAppProps {
-	store: Store<IGlobalState>
-	history: History
+    store: Store<IGlobalState>
+    history: History
 }
 
 export default (props: IAppProps) => (
-	<Provider store={props.store}>
-		<MuiThemeProvider theme={theme}>
-			<CssBaseline />
-			<ConnectedRouter history={props.history}>
-                <Routes />
-			</ConnectedRouter>
-		</MuiThemeProvider>
-	</Provider>
+    <Provider store={props.store}>
+        <MuiThemeProvider theme={theme}>
+            <CssBaseline />
+            <Typography>
+                <ConnectedRouter history={props.history}>
+                    <Routes />
+                </ConnectedRouter>
+            </Typography>
+        </MuiThemeProvider>
+    </Provider>
 )

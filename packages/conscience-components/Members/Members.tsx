@@ -21,18 +21,18 @@ import { autobind } from 'conscience-lib/utils'
 class Members extends React.Component<Props, State>
 {
     state = {
-        dialogOpen: false
+        dialogOpen: false,
     }
 
     _inputMember: HTMLInputElement | null = null
 
-    render(){
+    render() {
         const { userList, users, currentUser, classes } = this.props
         const adminList = this.props.adminList || []
         const isAdmin = adminList.indexOf(currentUser) > -1
         return(
-            <Card className={classes.root}>
-                <CardContent>
+            <Card>
+                <CardContent className={classes.root}>
                     <Typography variant="h6">Members</Typography>
                     <div>
                         {(userList || []).map(userID => {
@@ -51,7 +51,7 @@ class Members extends React.Component<Props, State>
                                     </div>
                                     {isAdmin &&
                                         <IconButton
-                                            onClick={()=>this.onClickRemoveMember(userID)}
+                                            onClick={() => this.onClickRemoveMember(userID)}
                                         >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
@@ -112,12 +112,12 @@ class Members extends React.Component<Props, State>
 }
 
 interface Props {
-	userList: string[]
-	adminList?: string[]
+    userList: string[]
+    adminList?: string[]
     users: {[userID: string]: IUser}
     currentUser: string
-	addMember: (payload: { email: string }) => void
-	removeMember: (payload: { userID: string }) => void
+    addMember: (payload: { email: string }) => void
+    removeMember: (payload: { userID: string }) => void
     classes: any
 }
 
@@ -126,10 +126,12 @@ interface State {
 }
 
 const styles = (theme: Theme) => createStyles({
-    root: {}, // pass through styles
+    root: {
+        padding: '24px 34px',
+    }, // pass through styles
     user: {
         display: 'flex',
-        marginTop: theme.spacing.unit * 2
+        marginTop: theme.spacing.unit * 2,
     },
     userAvatar : {
         display: 'flex',
@@ -138,7 +140,7 @@ const styles = (theme: Theme) => createStyles({
         marginRight: theme.spacing.unit,
     },
     userInfo: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     button: {
         width: '100%',
@@ -147,11 +149,11 @@ const styles = (theme: Theme) => createStyles({
         marginTop: theme.spacing.unit * 2,
     },
     controlPointIcon: {
-        marginRight: theme.spacing.unit
+        marginRight: theme.spacing.unit,
     },
     dialog: {
-        minWidth: 350
-    }
+        minWidth: 350,
+    },
 })
 
 export default withStyles(styles)(Members)

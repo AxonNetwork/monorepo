@@ -11,7 +11,7 @@ import { autobind, checkVisible } from 'conscience-lib/utils'
 import RenderMarkdown from '../RenderMarkdown'
 import SmartTextarea from '../SmartTextarea'
 import CommentWrapper from '../CommentWrapper'
-import { values } from 'lodash'
+import values from 'lodash/values'
 
 
 @autobind
@@ -184,7 +184,7 @@ interface Props {
     unselect: () => void
     selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
-    createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
+    createComment: (payload: {repoID: string, discussionID: string, text: string, callback: (error?: Error) => void}) => void
     sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
 
     classes: any

@@ -41,6 +41,21 @@
     "quotemark": [true, "single", "avoid-escape", "jsx-double"],
     "semicolon": [true, "never"],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
-    "whitespace": [true, "check-branch", "check-decl", "check-module", "check-separator", "check-operator", "check-type", "check-typecast", "check-type-operator", "check-preblock"]
+    "whitespace": [true, "check-branch", "check-decl", "check-module", "check-separator", "check-operator", "check-type", "check-typecast", "check-type-operator", "check-preblock"],
+    "key-spacing": [true, {
+        "multiLine": {
+            "beforeColon": false,
+            "afterColon": true
+        },
+        "singleLine": {
+            "beforeColon": false,
+            "afterColon": true
+        },
+        "align": {
+            "beforeColon": false,
+            "afterColon": true,
+            "on": "value"
+        }
+    }]
   }
 }

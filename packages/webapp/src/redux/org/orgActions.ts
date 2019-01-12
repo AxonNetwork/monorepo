@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IOrganization, IFeaturedRepo } from 'conscience-lib/common'
+import { IOrganization, IOrgBlog, IFeaturedRepo } from 'conscience-lib/common'
 
 export enum OrgActionType {
     CREATE_ORG = 'CREATE_ORG',
@@ -45,19 +45,27 @@ export enum OrgActionType {
     CHANGE_ORG_FEATURED_REPOS = 'CHANGE_ORG_FEATURED_REPOS',
     CHANGE_ORG_FEATURED_REPOS_SUCCESS = 'CHANGE_ORG_FEATURED_REPOS_SUCCESS',
     CHANGE_ORG_FEATURED_REPOS_FAILED = 'CHANGE_ORG_FEATURED_REPOS_FAILED',
+
+    FETCH_ORG_BLOGS = 'FETCH_ORG_BLOGS',
+    FETCH_ORG_BLOGS_SUCCESS = 'FETCH_ORG_BLOGS_SUCCESS',
+    FETCH_ORG_BLOGS_FAILED = 'FETCH_ORG_BLOGS_FAILED',
+
+    CREATE_ORG_BLOG = 'CREATE_ORG_BLOG',
+    CREATE_ORG_BLOG_SUCCESS = 'CREATE_ORG_BLOG_SUCCESS',
+    CREATE_ORG_BLOG_FAILED = 'CREATE_ORG_BLOG_FAILED',
 }
 
 export interface ICreateOrgAction {
     type: OrgActionType.CREATE_ORG
     payload: {
-        name: string
+        name: string,
     }
 }
 
 export interface ICreateOrgSuccessAction {
     type: OrgActionType.CREATE_ORG_SUCCESS
     payload: {
-        org: IOrganization
+        org: IOrganization,
     }
 }
 
@@ -66,14 +74,14 @@ export type ICreateOrgFailedAction = FailedAction<OrgActionType.CREATE_ORG_FAILE
 export interface IFetchOrgInfoAction {
     type: OrgActionType.FETCH_ORG_INFO
     payload: {
-        orgID: string
+        orgID: string,
     }
 }
 
 export interface IFetchOrgInfoSuccessAction {
     type: OrgActionType.FETCH_ORG_INFO_SUCCESS
     payload: {
-        org: IOrganization
+        org: IOrganization,
     }
 }
 
@@ -85,14 +93,14 @@ export interface IUpdateOrgAction {
         orgID: string
         name?: string
         description?: string
-        readme?: string
+        readme?: string,
     }
 }
 
 export interface IUpdateOrgSuccessAction {
     type: OrgActionType.UPDATE_ORG_SUCCESS
     payload: {
-        org: IOrganization
+        org: IOrganization,
     }
 }
 
@@ -102,7 +110,7 @@ export interface IUploadOrgPictureAction {
     type: OrgActionType.UPLOAD_ORG_PICTURE
     payload: {
         orgID: string
-        fileInput: any
+        fileInput: any,
     }
 }
 
@@ -110,7 +118,7 @@ export interface IUploadOrgPictureSuccessAction {
     type: OrgActionType.UPLOAD_ORG_PICTURE_SUCCESS
     payload: {
         orgID: string
-        picture: string
+        picture: string,
     }
 }
 
@@ -120,7 +128,7 @@ export interface IUploadOrgBannerAction {
     type: OrgActionType.UPLOAD_ORG_BANNER
     payload: {
         orgID: string
-        fileInput: any
+        fileInput: any,
     }
 }
 
@@ -128,7 +136,7 @@ export interface IUploadOrgBannerSuccessAction {
     type: OrgActionType.UPLOAD_ORG_BANNER_SUCCESS
     payload: {
         orgID: string
-        banner: string
+        banner: string,
     }
 }
 
@@ -138,7 +146,7 @@ export interface IAddMemberToOrgAction {
     type: OrgActionType.ADD_MEMBER_TO_ORG
     payload: {
         orgID: string
-        email: string
+        email: string,
     }
 }
 
@@ -146,7 +154,7 @@ export interface IAddMemberToOrgSuccessAction {
     type: OrgActionType.ADD_MEMBER_TO_ORG_SUCCESS
     payload: {
         orgID: string
-        userID: string
+        userID: string,
     }
 }
 
@@ -156,7 +164,7 @@ export interface IRemoveMemberFromOrgAction {
     type: OrgActionType.REMOVE_MEMBER_FROM_ORG
     payload: {
         orgID: string
-        userID: string
+        userID: string,
     }
 }
 
@@ -164,7 +172,7 @@ export interface IRemoveMemberFromOrgSuccessAction {
     type: OrgActionType.REMOVE_MEMBER_FROM_ORG_SUCCESS
     payload: {
         orgID: string
-        userID: string
+        userID: string,
     }
 }
 
@@ -174,7 +182,7 @@ export interface IAddRepoToOrgAction {
     type: OrgActionType.ADD_REPO_TO_ORG
     payload: {
         orgID: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -182,7 +190,7 @@ export interface IAddRepoToOrgSuccessAction {
     type: OrgActionType.ADD_REPO_TO_ORG_SUCCESS
     payload: {
         orgID: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -192,7 +200,7 @@ export interface IRemoveRepoFromOrgAction {
     type: OrgActionType.REMOVE_REPO_FROM_ORG
     payload: {
         orgID: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -200,7 +208,7 @@ export interface IRemoveRepoFromOrgSuccessAction {
     type: OrgActionType.REMOVE_REPO_FROM_ORG_SUCCESS
     payload: {
         orgID: string
-        repoID: string
+        repoID: string,
     }
 }
 
@@ -210,7 +218,7 @@ export interface IChangeOrgDescriptionAction {
     type: OrgActionType.CHANGE_ORG_DESCRIPTION
     payload: {
         orgID: string
-        description: string
+        description: string,
     }
 }
 
@@ -218,7 +226,7 @@ export interface IChangeOrgDescriptionSuccessAction {
     type: OrgActionType.CHANGE_ORG_DESCRIPTION_SUCCESS
     payload: {
         orgID: string
-        description: string
+        description: string,
     }
 }
 
@@ -228,7 +236,7 @@ export interface IChangeOrgFeaturedReposAction {
     type: OrgActionType.CHANGE_ORG_FEATURED_REPOS
     payload: {
         orgID: string
-        featuredRepos: {[repoID: string]: IFeaturedRepo}
+        featuredRepos: {[repoID: string]: IFeaturedRepo},
     }
 }
 
@@ -236,11 +244,49 @@ export interface IChangeOrgFeaturedReposSuccessAction {
     type: OrgActionType.CHANGE_ORG_FEATURED_REPOS_SUCCESS
     payload: {
         orgID: string
-        featuredRepos: {[repoID: string]: IFeaturedRepo}
+        featuredRepos: {[repoID: string]: IFeaturedRepo},
     }
 }
 
 export type IChangeOrgFeaturedReposFailedAction = FailedAction<OrgActionType.CHANGE_ORG_FEATURED_REPOS_FAILED>
+
+export interface IFetchOrgBlogsAction {
+    type: OrgActionType.FETCH_ORG_BLOGS
+    payload: {
+        orgID: string,
+    }
+}
+
+export interface IFetchOrgBlogsSuccessAction {
+    type: OrgActionType.FETCH_ORG_BLOGS_SUCCESS
+    payload: {
+        orgID: string
+        blogs: {[created: string]: IOrgBlog},
+    }
+}
+
+export type IFetchOrgBlogsFailedAction = FailedAction<OrgActionType.FETCH_ORG_BLOGS_FAILED>
+
+export interface ICreateOrgBlogAction {
+    type: OrgActionType.CREATE_ORG_BLOG
+    payload: {
+        blog: {
+            orgID: string
+            title: string
+            body: string
+            author: string,
+        },
+    }
+}
+
+export interface ICreateOrgBlogSuccessAction {
+    type: OrgActionType.CREATE_ORG_BLOG_SUCCESS
+    payload: {
+        blog: IOrgBlog,
+    }
+}
+
+export type ICreateOrgBlogFailedAction = FailedAction<OrgActionType.CREATE_ORG_BLOG_FAILED>
 
 export type IOrgAction =
     ICreateOrgAction |
@@ -285,7 +331,15 @@ export type IOrgAction =
 
     IChangeOrgFeaturedReposAction |
     IChangeOrgFeaturedReposSuccessAction |
-    IChangeOrgFeaturedReposFailedAction
+    IChangeOrgFeaturedReposFailedAction |
+
+    IFetchOrgBlogsAction |
+    IFetchOrgBlogsSuccessAction |
+    IFetchOrgBlogsFailedAction |
+
+    ICreateOrgBlogAction |
+    ICreateOrgBlogSuccessAction |
+    ICreateOrgBlogFailedAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
@@ -301,3 +355,6 @@ export const removeRepoFromOrg = (payload: IRemoveRepoFromOrgAction['payload']):
 
 export const changeOrgDescription = (payload: IChangeOrgDescriptionAction['payload']): IChangeOrgDescriptionAction => ({ type: OrgActionType.CHANGE_ORG_DESCRIPTION, payload })
 export const changeOrgFeaturedRepos = (payload: IChangeOrgFeaturedReposAction['payload']): IChangeOrgFeaturedReposAction => ({ type: OrgActionType.CHANGE_ORG_FEATURED_REPOS, payload })
+
+export const fetchOrgBlogs = (payload: IFetchOrgBlogsAction['payload']): IFetchOrgBlogsAction => ({ type: OrgActionType.FETCH_ORG_BLOGS, payload })
+export const createOrgBlog = (payload: ICreateOrgBlogAction['payload']): ICreateOrgBlogAction => ({ type: OrgActionType.CREATE_ORG_BLOG, payload })

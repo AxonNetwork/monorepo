@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo } from './common'
+import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -423,7 +423,21 @@ const ServerRelay = {
             orgID,
             featuredRepos,
         })
-    }
+    },
+
+    async fetchOrgBlogs(orgID: string) {
+        type IResponse = IOrgBlog[]
+
+        const resp = await axios.get<IResponse>(API_URL + `/org/${orgID}/blog`)
+        return resp.data
+    },
+
+    async createOrgBlog(blog: { orgID: string, title: string, body: string, author: string }) {
+        type IResponse = IOrgBlog
+
+        const resp = await axios.post<IResponse>(API_URL + `/org/${blog.orgID}/blog`, blog)
+        return resp.data
+    },
 }
 
 axios.defaults.timeout = 10000

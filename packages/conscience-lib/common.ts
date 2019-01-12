@@ -109,6 +109,14 @@ export interface IOrganization {
     featuredRepos: {[repoID: string]: IFeaturedRepo}
 }
 
+export interface IOrgBlog {
+    orgID: string
+    created: number
+    title: string
+    body: string
+    author: string
+}
+
 export interface IFeaturedRepo {
     repoID: string
     title: string
