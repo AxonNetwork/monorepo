@@ -15,7 +15,7 @@ const ServerRelay = {
 
     async login(email: string, password: string) {
         interface IResponse extends IUser {
-            token: string
+            jwt: string
         }
         let resp
         try {
@@ -29,13 +29,13 @@ const ServerRelay = {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(resp.data.token)
+        ServerRelay.setJWT(resp.data.jwt)
         return resp.data
     },
 
     async loginWithKey(username: string, hexSignature: string) {
         interface IResponse extends IUser {
-            token: string
+            jwt: string
         }
 
         let resp
@@ -50,7 +50,7 @@ const ServerRelay = {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(resp.data.token)
+        ServerRelay.setJWT(resp.data.jwt)
         return resp.data
     },
 

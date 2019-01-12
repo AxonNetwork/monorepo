@@ -76,7 +76,6 @@ export interface IUser {
     repos: string[]
     orgs: string[]
     profile: IUserProfile
-    jwt?: string
 }
 
 export interface IUserProfile {

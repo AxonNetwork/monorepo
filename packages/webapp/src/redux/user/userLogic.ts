@@ -29,14 +29,16 @@ const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
         }
 
         ServerRelay.setJWT(jwt)
-        const user = await ServerRelay.whoami()
-        if (user instanceof Error) {
-            return user
+        const resp = await ServerRelay.whoami()
+        if (resp instanceof Error) {
+            return resp
         }
-        const { orgs } = user
+        const { userID, emails, name, username, picture, orgs, profile } = resp
 
         await dispatch(getUserSettings({})),
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
+
+        const user = { userID, emails, name, username, picture, orgs, profile } as IUser
 
         return { user }
     },
@@ -46,17 +48,19 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
     async process({ action }, dispatch) {
         const { email, password } = action.payload
-        const user = await ServerRelay.login(email, password)
-        if (user instanceof Error) {
-            return user
+        const resp = await ServerRelay.login(email, password)
+        if (resp instanceof Error) {
+            return resp
         }
-        const { jwt, orgs } = user
+        const { userID, emails, name, username, picture, orgs, profile, jwt } = resp
         if (jwt) {
             localStorage.setItem('jwt', jwt)
         }
 
         await dispatch(getUserSettings({}))
         await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
+
+        const user = { userID, emails, name, username, picture, orgs, profile } as IUser
 
         return { user }
     },
