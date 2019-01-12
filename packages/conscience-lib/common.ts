@@ -83,7 +83,7 @@ export interface IUserProfile {
     bio: string
     orcid: string
     university: string
-    fields: string[]
+    interests: string[]
 }
 
 interface ICommentTimestamp {
