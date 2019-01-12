@@ -7,7 +7,6 @@ import FormattingHelp from '../FormattingHelp'
 import { IDiscussion, IRepoFile } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import path from 'path'
 
 
 @autobind
@@ -141,7 +140,7 @@ class SmartTextarea extends React.Component<Props, State>
                             onClick={() => this.handleClose('@image', filename)}
                             classes={{root: classes.menuItem}}
                         >
-                            {file}
+                            {filename}
                         </MenuItem>
                     ))}
                     {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((discussionID: string) => (

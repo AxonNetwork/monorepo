@@ -28,7 +28,7 @@ class CodeViewer extends React.Component<Props>
 {
     render() {
         const { classes } = this.props
-        const scheme = schemes[this.props.codeColorScheme || 'vs']
+        const scheme = (schemes as any)[this.props.codeColorScheme || 'vs']
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = this.props.backgroundColor || (schemeDefaults || {}).background
         return (

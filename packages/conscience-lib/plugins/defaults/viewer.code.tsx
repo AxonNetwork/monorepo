@@ -1,11 +1,10 @@
-import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
-import { autobind, schemes } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 @autobind
@@ -19,7 +18,7 @@ class CodeViewerPlugin extends React.Component<Props>
                 <CardContent classes={{ root: classes.codeRoot }}>
                     <CodeViewer
                         language={language}
-                        fileContents={this.props.fileContents}
+                        fileContents={this.props.fileContents || ''}
                         codeColorScheme={this.props.codeColorScheme} />
                 </CardContent>
             </Card>
@@ -35,7 +34,7 @@ const styles = () => createStyles({
     },
 })
 
-type Props = OwnProps & StateProps
+type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     repoID: string

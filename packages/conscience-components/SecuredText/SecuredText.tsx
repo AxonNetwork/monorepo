@@ -11,37 +11,37 @@ const DATE_FORMAT = 'MMM Do YYYY, h:mm a'
 
 class SecuredText extends React.Component<Props, State>
 {
-    state={
-        lastVerified: undefined,
-        firstVerified: undefined,
-        lastUpdated: undefined,
+    state = {
+        lastVerified: undefined as ITimelineEvent | undefined,
+        firstVerified: undefined as ITimelineEvent | undefined,
+        lastUpdated: undefined as ITimelineEvent | undefined,
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.parseCommits()
     }
 
     componentDidUpdate(prevProps: Props) {
-        if(this.props.commit !== prevProps.commit ||
+        if (this.props.commit !== prevProps.commit ||
            this.props.filename !== prevProps.filename ||
-           this.props.commitList.length !== prevProps.commitList.length){
+           this.props.commitList.length !== prevProps.commitList.length) {
             this.parseCommits()
         }
     }
 
-    parseCommits(){
+    parseCommits() {
         const { commit, filename, commitList, commits } = this.props
-        if(commit){
-            const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList ||[], commits || {}, commit)
+        if (commit) {
+            const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, commit)
             this.setState({ lastVerified })
             return
         }
         let lastVerified = undefined
         let lastUpdated = undefined
-        if(filename){
+        if (filename) {
             lastVerified = timelineUtils.getLastVerifiedEventFile(commitList || [], commits || {}, filename)
             lastUpdated = timelineUtils.getLastUpdated(commitList || [], commits || {}, filename)
-        }else{
+        }else {
             lastVerified = timelineUtils.getLastVerifiedEvent(commitList || [], commits || {})
         }
         const firstVerified = timelineUtils.getFirstVerifiedEvent(commitList || [], commits || {}, filename)
@@ -50,7 +50,9 @@ class SecuredText extends React.Component<Props, State>
 
     render() {
         const { lastVerified, firstVerified, lastUpdated } = this.state
-        if (firstVerified === undefined && lastVerified === undefined && lastUpdated === undefined) {
+        if (firstVerified === undefined &&
+            lastVerified === undefined &&
+            lastUpdated === undefined) {
             return null
         }
         const { commit, selectCommit, classes } = this.props
@@ -60,7 +62,7 @@ class SecuredText extends React.Component<Props, State>
                     <LinkIcon />
                 </div>
                 <div>
-                    {lastUpdated &&
+                    {lastUpdated !== undefined &&
                         <Typography>
                             <span>Last updated </span>
                             <a href="#" className={classes.link} onClick={() => selectCommit({ selectedCommit: lastUpdated.commit })}>

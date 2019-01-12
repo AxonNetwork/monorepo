@@ -37,7 +37,7 @@ class LineChunkContent extends React.Component<Props>
     render() {
         const { classes, language, chunk } = this.props
 
-        const scheme = schemes[this.props.codeColorScheme || Object.keys(schemes)[0]]
+        const scheme = (schemes as any)[this.props.codeColorScheme || Object.keys(schemes)[0]]
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = (schemeDefaults || {}).background || '#ffffff'
 

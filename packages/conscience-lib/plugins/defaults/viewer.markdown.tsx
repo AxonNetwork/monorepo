@@ -7,13 +7,12 @@ import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import autobind from 'conscience-lib/utils/autobind'
 
-import { IRepo, IComment, IUser, IDiscussion } from 'conscience-lib/common'
+import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 
 @autobind
-class MarkdownViewerPlugin extends React.Component<Props, State>
-{
+class MarkdownViewerPlugin extends React.Component<Props, State> {
     state = {
-        textViewerMode: 'viewer',
+        textViewerMode: 'viewer' as IViewerMode,
     }
 
     render() {
@@ -23,7 +22,7 @@ class MarkdownViewerPlugin extends React.Component<Props, State>
             <Card>
                 <CardContent classes={{ root: classes.mdRoot }}>
                     <RenderMarkdown
-                        text={fileContents}
+                        text={fileContents || ''}
                         repo={this.props.repo}
                         comments={this.props.comments}
                         users={this.props.users}
@@ -31,17 +30,55 @@ class MarkdownViewerPlugin extends React.Component<Props, State>
                         directEmbedPrefix={this.props.directEmbedPrefix}
                         dirname={path.dirname(this.props.filename)}
                         codeColorScheme={this.props.codeColorScheme}
-                        selectFile={null /*this.props.selectFile*/}
-                        selectDiscussion={null /*this.props.selectDiscussion*/}
+                        getFileContents={this.getFileContents}
+                        selectFile={this.selectFile}
+                        selectDiscussion={this.selectDiscussion}
                     />
                 </CardContent>
             </Card>
         )
     }
 
-    onChangeTextViewerMode(mode: 'raw'|'viewer') {
+    // @@TODO Hook these up to redux
+    async getFileContents(filename: string) {
+        console.log("Get file contents: ", filename)
+        return ""
+    }
+
+    selectFile(payload: { filename: string | undefined; mode: FileMode }) {
+        console.log('Selected File: ', payload)
+    }
+
+    selectDiscussion(payload: { discussionID: string | undefined }) {
+        console.log('Selected Discussion: ', payload)
+    }
+
+    onChangeTextViewerMode(mode: IViewerMode) {
         this.setState({ textViewerMode: mode })
     }
+}
+
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
+    repoID: string
+    directEmbedPrefix: string
+    filename: string
+    fileContents?: string
+}
+
+interface StateProps {
+    repo: IRepo
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
+    comments: { [commentID: string]: IComment }
+    codeColorScheme: string | undefined
+}
+
+type IViewerMode = 'raw' | 'viewr'
+
+interface State {
+    textViewerMode: IViewerMode
 }
 
 const styles = () => createStyles({
@@ -57,27 +94,6 @@ const styles = () => createStyles({
         },
     },
 })
-
-type Props = OwnProps & StateProps
-
-interface OwnProps {
-    repoID: string
-    directEmbedPrefix: string
-    filename: string
-    fileContents?: string
-}
-
-interface StateProps {
-    repo: IRepo
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
-    comments: {[commentID: string]: IComment}
-    codeColorScheme: string | undefined
-}
-
-interface State {
-    textViewerMode: 'raw' | 'viewer'
-}
 
 // @@TODO: change `state` back to type `IGlobalState`?  how to handle desktop vs. web?
 const mapStateToProps = (state: any, ownProps: OwnProps) => {
@@ -96,5 +112,8 @@ export default {
     pluginType: 'file viewer',
     name: 'markdown-viewer',
     humanName: 'Default Markdown viewer',
-    viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(MarkdownViewerPlugin)),
+    viewer: connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )(withStyles(styles)(MarkdownViewerPlugin)),
 }

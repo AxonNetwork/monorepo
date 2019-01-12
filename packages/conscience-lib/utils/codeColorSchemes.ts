@@ -1,4 +1,4 @@
-import * as schemes from 'react-syntax-highlighter/dist/styles/prism'
+import * as schemes from 'react-syntax-highlighter/styles/prism'
 
 schemes.pojoaque['pre[class*="language-"]'] = {
     background: 'rgb(50, 41, 49)',

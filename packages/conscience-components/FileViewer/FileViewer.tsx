@@ -8,10 +8,8 @@ import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { FileViewerComponent } from 'conscience-lib/plugins'
 
-
 @autobind
-class FileViewer extends React.Component<Props, State>
-{
+class FileViewer extends React.Component<Props, State> {
     render() {
         const { fileContents } = this.state
         const { filename, repo, classes } = this.props
@@ -21,11 +19,15 @@ class FileViewer extends React.Component<Props, State>
 
         const viewers = filetypes.getViewers(filename)
         if (viewers.length === 0) {
-            return <Typography>We don't have a viewer for this kind of file yet.</Typography>
+            return (
+                <Typography>
+                    We don't have a viewer for this kind of file yet.
+                </Typography>
+            )
         }
 
         const viewerName = this.state.viewerName || viewers[0].name
-        let Viewer: FileViewerComponent
+        let Viewer: FileViewerComponent | undefined
         for (let v of viewers) {
             if (v.name === viewerName) {
                 Viewer = v.viewer
@@ -39,8 +41,16 @@ class FileViewer extends React.Component<Props, State>
         return (
             <div className={classes.root}>
                 {this.props.showViewerPicker &&
-                    <Select value={viewerName} onChange={this.onChangeViewer} className={classes.viewerPicker}>
-                        {viewers.map(viewer => <MenuItem value={viewer.name}>{viewer.humanName}</MenuItem>)}
+                    <Select
+                        value={viewerName}
+                        onChange={this.onChangeViewer}
+                        className={classes.viewerPicker}
+                    >
+                        {viewers.map(viewer => (
+                            <MenuItem value={viewer.name}>
+                                {viewer.humanName}
+                            </MenuItem>
+                        ))}
                     </Select>
                 }
 
@@ -84,21 +94,20 @@ class FileViewer extends React.Component<Props, State>
     }
 }
 
-
 interface Props {
     filename: string
     directEmbedPrefix: string
     showViewerPicker: boolean
 
     repo: IRepo
-    comments: {[commentID: string]: IComment}
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
+    comments: { [commentID: string]: IComment }
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
     codeColorScheme?: string | undefined
     backgroundColor?: string
     getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
+    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
     classes: any
 }
 

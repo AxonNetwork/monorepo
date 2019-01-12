@@ -41,12 +41,12 @@ class RepoDiscussionPage extends React.Component<Props>
                     {discussionsSorted.map(d => {
                         const isSelected = selectedID && d.discussionID === selectedID
                         const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                        const username = (this.props.users[ d.userID ] || {}).name || d.userID
-                        const userPicture = (this.props.users[ d.userID ] || {}).picture
+                        const username = (this.props.users[d.userID] || {}).name || d.userID
+                        const userPicture = (this.props.users[d.userID] || {}).picture
                         return (
                             <ListItem
                                 button
-                                className={classnames(classes.listItem, {[classes.selectedDiscussion]: isSelected})}
+                                className={classnames(classes.listItem, { [classes.selectedDiscussion]: isSelected })}
                                 classes={{ button: classes.listItemHover }}
                                 onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
                             >
@@ -64,7 +64,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                             </div>
                                         </div>
                                     </React.Fragment>
-                                }/>
+                                } />
                             </ListItem>
                         )
                     })}
@@ -101,9 +101,10 @@ class RepoDiscussionPage extends React.Component<Props>
                             discussions={discussions}
                             users={users}
                             comments={comments}
-                            imgPrefix={this.props.imgPrefix}
+                            directEmbedPrefix={this.props.directEmbedPrefix}
                             newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp[selectedID] || 0}
                             unselect={() => this.props.selectDiscussion({ discussionID: undefined })}
+                            getFileContents={this.props.getFileContents}
                             selectFile={this.props.selectFile}
                             selectDiscussion={this.props.selectDiscussion}
                             createComment={this.props.createComment}
@@ -119,21 +120,22 @@ class RepoDiscussionPage extends React.Component<Props>
 interface Props {
     repo: IRepo
     user: IUser
-    discussions: {[discussionID: string]: IDiscussion}
-    users: {[email: string]: IUser}
-    comments: {[commentID: string]: IComment}
+    discussions: { [discussionID: string]: IDiscussion }
+    users: { [email: string]: IUser }
+    comments: { [commentID: string]: IComment }
     selectedID: string | undefined
-    imgPrefix: string
-    newestViewedCommentTimestamp: {[discussionID: string]: number}
-    newestCommentTimestampPerDiscussion: {[discussionID: string]: number}
+    directEmbedPrefix: string
+    newestViewedCommentTimestamp: { [discussionID: string]: number }
+    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
     discussionIDsSortedByNewestComment: string[]
 
-    getDiscussions: (payload: {repoID: string}) => void
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
-    createDiscussion: (payload: {repoID: string, subject: string, commentText: string}) => void
-    createComment: (payload: {repoID: string, discussionID: string, text: string, callback:(error?: Error) => void}) => void
-    sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
+    getDiscussions: (payload: { repoID: string }) => void
+    getFileContents: (filename: string) => Promise<string>
+    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
+    createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
+    createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
+    sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
 
     classes: any
 }

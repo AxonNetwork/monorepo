@@ -6,8 +6,7 @@ import { IRepo, IUser, IDiscussion, IComment, FileMode } from 'conscience-lib/co
 import { autobind } from 'conscience-lib/utils'
 
 @autobind
-class FileLink extends React.Component<Props, State>
-{
+class FileLink extends React.Component<Props, State> {
     state = {
         showPopper: false,
     }
@@ -35,11 +34,14 @@ class FileLink extends React.Component<Props, State>
                 >
                     <FileViewer
                         filename={this.props.filename}
+                        directEmbedPrefix={this.props.directEmbedPrefix}
+                        showViewerPicker={false}
                         repo={repo}
                         comments={this.props.comments}
                         users={this.props.users}
                         discussions={this.props.discussions}
                         codeColorScheme={this.props.codeColorScheme}
+                        getFileContents={this.props.getFileContents}
                         selectFile={this.props.selectFile}
                         selectDiscussion={this.props.selectDiscussion}
                     />
@@ -64,13 +66,15 @@ class FileLink extends React.Component<Props, State>
 
 interface Props {
     filename: string
+    directEmbedPrefix: string
     repo: IRepo
-    comments: {[commentID: string]: IComment}
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
+    comments: { [commentID: string]: IComment }
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
     codeColorScheme?: string | undefined
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
+    getFileContents: (filename: string) => Promise<string>
+    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
     classes: any
 }
 

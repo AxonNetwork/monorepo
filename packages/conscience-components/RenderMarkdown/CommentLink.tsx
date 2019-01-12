@@ -6,7 +6,6 @@ import CommentWrapper from '../CommentWrapper'
 import RenderMarkdown from '../RenderMarkdown'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 
-
 @autobind
 class CommentLink extends React.Component<Props, State>
 {
@@ -22,8 +21,8 @@ class CommentLink extends React.Component<Props, State>
         if (comment === undefined) {
             return null
         }
-        const username = (users[comment.userID] || {} as any).name || comment.userID
-        const userPicture = (users[comment.userID] || {} as any).picture
+        const username = (users[comment.userID] || ({} as any)).name || comment.userID
+        const userPicture = (users[comment.userID] || ({} as any)).picture
 
         return (
             <React.Fragment>
@@ -32,7 +31,7 @@ class CommentLink extends React.Component<Props, State>
                     onClick={undefined}
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
-                    ref={(x: any) => this._ref = x}
+                    ref={(x: any) => (this._ref = x)}
                 >
                     comment {comment.commentID}
                 </a>
@@ -44,22 +43,25 @@ class CommentLink extends React.Component<Props, State>
                     onMouseLeave={this.hidePopper}
                     className={classes.popper}
                 >
-                        <CommentWrapper
-                            username={username}
-                            userPicture={userPicture}
-                            created={comment.created}
-                        >
-                            <RenderMarkdown
-                                text={comment.text}
-                                repo={repo}
-                                comments={comments}
-                                users={users}
-                                discussions={this.props.discussions}
-                                codeColorScheme={this.props.codeColorScheme}
-                                selectFile={this.props.selectFile}
-                                selectDiscussion={this.props.selectDiscussion}
-                            />
-                        </CommentWrapper>
+                    <CommentWrapper
+                        username={username}
+                        userPicture={userPicture}
+                        created={comment.created}
+                    >
+                        <RenderMarkdown
+                            text={comment.text}
+                            repo={repo}
+                            comments={comments}
+                            users={users}
+                            discussions={this.props.discussions}
+                            directEmbedPrefix={this.props.directEmbedPrefix}
+                            dirname={this.props.dirname}
+                            codeColorScheme={this.props.codeColorScheme}
+                            getFileContents={this.props.getFileContents}
+                            selectFile={this.props.selectFile}
+                            selectDiscussion={this.props.selectDiscussion}
+                        />
+                    </CommentWrapper>
                 </Popper>
             </React.Fragment>
         )
@@ -76,13 +78,16 @@ class CommentLink extends React.Component<Props, State>
 
 interface Props {
     commentID: string
-    comments: {[commentID: string]: IComment}
-    users: {[userID: string]: IUser}
-    discussions: {[userID: string]: IDiscussion}
+    comments: { [commentID: string]: IComment }
+    users: { [userID: string]: IUser }
+    discussions: { [userID: string]: IDiscussion }
     repo: IRepo
+    directEmbedPrefix: string
+    dirname: string
     codeColorScheme?: string | undefined
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
+    getFileContents: (filename: string) => Promise<string>
+    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
     classes: any
 }
 
@@ -106,5 +111,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default (withStyles(styles)(CommentLink))
-
+export default withStyles(styles)(CommentLink)

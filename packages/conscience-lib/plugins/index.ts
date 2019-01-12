@@ -1,8 +1,9 @@
-
-export type PluginType = 'file type' | 'file viewer'
+export type PluginType = 'file type' | 'file viewer' | 'file editor'
 
 export interface IFileType {
     extensions: string[]
+    type: string
+    language?: string
     isTextFile: boolean
     viewers: string[]
     editors: string[]
@@ -21,7 +22,7 @@ export interface IFileViewerPlugin {
     viewer: FileViewerComponent
 }
 
-export type FileViewerComponent = React.Component<{
+export type FileViewerComponent = React.ComponentClass<{
     repoID: string
     directEmbedPrefix: string
     filename: string
@@ -35,17 +36,16 @@ export interface IFileEditorPlugin {
     editor: FileEditorComponent
 }
 
-export type FileEditorComponent = React.Component<{
+export type FileEditorComponent = React.ComponentClass<{
     repoID: string
     directEmbedPrefix: string
     filename: string
     fileContents?: string
 }>
 
-export type IPlugin = IFileTypePlugin | IFileViewerPlugin
+export type IPlugin = IFileTypePlugin | IFileViewerPlugin | IFileEditorPlugin
 
-
-const pluginRegistry = function() {
+const pluginRegistry = (function() {
     // Load all default plugins
     const defaultPlugins = [
         require('./defaults/filetype.defaults.tsx').default,
@@ -62,25 +62,32 @@ const pluginRegistry = function() {
     const plugins = [...defaultPlugins, ...userPlugins]
 
     const registry = {
-        'file type':   [] as IFileTypePlugin[],
+        'file type': [] as IFileTypePlugin[],
         'file viewer': [] as IFileViewerPlugin[],
-        'file editor': [] as IFileViewerPlugin[],
+        'file editor': [] as IFileEditorPlugin[],
     }
 
     for (let plugin of plugins) {
         switch (plugin.pluginType) {
-        case 'file type':
-        case 'file viewer':
-        case 'file editor':
-            registry[plugin.pluginType].push(plugin)
-            break
-        default:
-            console.error('Unknown plugin type:', plugin.pluginType)
+            case 'file type':
+                registry[plugin.pluginType].push(plugin as IFileTypePlugin)
+                break
+            case 'file viewer':
+                registry[plugin.pluginType].push(plugin as IFileViewerPlugin)
+                break
+            case 'file editor':
+                registry[plugin.pluginType].push(plugin as IFileEditorPlugin)
+                break
+            default:
+                console.error(
+                    'Unknown plugin type:',
+                    (plugin as any).pluginType
+                )
         }
     }
 
     return registry
-}()
+})()
 
 export function getPlugins(pluginType: PluginType) {
     return pluginRegistry[pluginType]

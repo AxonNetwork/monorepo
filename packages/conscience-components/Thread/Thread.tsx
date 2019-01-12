@@ -18,7 +18,7 @@ import values from 'lodash/values'
 class Thread extends React.Component<Props, State>
 {
     _intervalID: any | undefined // Timer ID, can't get Typescript to accept this
-    _commentRefs = {} as {[commentID: string]: {created: number, ref: any}}
+    _commentRefs = {} as { [commentID: string]: { created: number, ref: any } }
     _inputComment!: any
     _bottomDiv: HTMLDivElement | null = null
 
@@ -30,7 +30,7 @@ class Thread extends React.Component<Props, State>
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
         // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
         const checkSeenComments = () => {
-            let mostRecentVisible = { commentID: '', created: -1 } as {commentID: string, created: number}
+            let mostRecentVisible = { commentID: '', created: -1 } as { commentID: string, created: number }
 
             for (let commentID of Object.keys(this._commentRefs)) {
                 // Sometimes refs are null, probably when an element hasn't been rendered yet
@@ -111,14 +111,16 @@ class Thread extends React.Component<Props, State>
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                     onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
                                 >
-                                    <div ref={ ref => this._commentRefs[c.created] = {ref, created: c.created} }></div>
+                                    <div ref={ref => this._commentRefs[c.created] = { ref, created: c.created }}></div>
                                     <RenderMarkdown
                                         text={c.text}
                                         repo={repo}
                                         comments={comments}
                                         users={users}
                                         discussions={discussions}
-                                        imgPrefix={this.props.imgPrefix}
+                                        directEmbedPrefix={this.props.directEmbedPrefix}
+                                        dirname=""
+                                        getFileContents={this.props.getFileContents}
                                         selectFile={this.props.selectFile}
                                         selectDiscussion={this.props.selectDiscussion}
                                     />
@@ -175,17 +177,18 @@ interface Props {
     repo: IRepo
     user: IUser
     discussionID: string
-    discussions: {[discussionID: string]: IDiscussion}
-    users: {[userID: string]: IUser}
-    comments: {[commentID: string]: IComment}
-    imgPrefix: string
+    discussions: { [discussionID: string]: IDiscussion }
+    users: { [userID: string]: IUser }
+    comments: { [commentID: string]: IComment }
+    directEmbedPrefix: string
     newestViewedCommentTimestamp: number
 
     unselect: () => void
-    selectFile: (payload: {filename: string | undefined, mode: FileMode}) => void
-    selectDiscussion: (payload: {discussionID: string | undefined}) => void
-    createComment: (payload: {repoID: string, discussionID: string, text: string, callback: (error?: Error) => void}) => void
-    sawComment: (payload: {repoID: string, discussionID: string, commentTimestamp: number}) => void
+    getFileContents: (filename: string) => Promise<string>
+    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+    selectDiscussion: (payload: { discussionID: string | undefined }) => void
+    createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
+    sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
 
     classes: any
 }

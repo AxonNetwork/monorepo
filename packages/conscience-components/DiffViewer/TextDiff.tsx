@@ -1,6 +1,5 @@
 import path from 'path'
 import React from 'react'
-import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -118,5 +117,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default (withStyles(styles)(TextDiff)
-
+export default withStyles(styles)(TextDiff)

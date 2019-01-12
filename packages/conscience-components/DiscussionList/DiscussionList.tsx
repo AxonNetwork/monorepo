@@ -8,37 +8,38 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Badge from '@material-ui/core/Badge'
 import UserAvatar from '../UserAvatar'
+import { IDiscussion, IUser } from 'conscience-lib/common'
 import moment from 'moment'
 
 class DiscussionList extends React.Component<Props>
 {
-	render() {
-		const { discussions, selectedID, classes } = this.props
+    render() {
+        const { discussions, selectedID, classes } = this.props
 
         const newestComment = this.props.newestCommentTimestampPerDiscussion
 
         const order = this.props.order || Object.keys(discussions)
         let discussionsSorted = order.map(id => discussions[id])
         if (this.props.maxLength !== undefined) {
-        	discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
+            discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
         }
 
-		return(
-			<List className={classes.list}>
-				{discussionsSorted.map(d => {
+        return(
+            <List className={classes.list}>
+                {discussionsSorted.map(d => {
                     const isSelected = selectedID && d.discussionID === selectedID
                     const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
                     const username = (this.props.users[ d.userID ] || {}).name || d.userID
                     const userPicture = (this.props.users[ d.userID ] || {}).picture
                     return (
-                    	<ListItem
-	                    	button
+                        <ListItem
+                            button
                             className={classnames(classes.listItem, {[classes.listItemSelected]: isSelected})}
-	                        classes={{ button: classes.listItemHover }}
+                            classes={{ button: classes.listItemHover }}
                             onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
-                    	>
-                    		<ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
-                    			<React.Fragment>
+                        >
+                            <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
+                                <React.Fragment>
                                         {showBadge &&
                                             <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
                                         }
@@ -50,20 +51,20 @@ class DiscussionList extends React.Component<Props>
                                                 <UserAvatar username={username} userPicture={userPicture} />
                                             </div>
                                         </div>
-                    			</React.Fragment>
-                    		}/>
-                    	</ListItem>
-                	)
-				})}
+                                </React.Fragment>
+                            }/>
+                        </ListItem>
+                    )
+                })}
                 <ListItem button className={classnames(classes.listItem, classes.listItemLast)} key={0} onClick={() => this.props.selectDiscussion({ discussionID: 'new' })}>
                     <ListItemText primary={'New Discussion'} />
                     <ListItemIcon>
                         <ControlPointIcon />
                     </ListItemIcon>
                 </ListItem>
-			</List>
-		)
-	}
+            </List>
+        )
+    }
 }
 
 interface Props {
@@ -77,7 +78,7 @@ interface Props {
 
     selectDiscussion: (payload: {discussionID: string | undefined}) => void
 
-	classes:any
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({

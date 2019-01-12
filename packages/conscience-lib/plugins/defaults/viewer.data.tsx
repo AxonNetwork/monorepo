@@ -14,7 +14,7 @@ class DataViewerPlugin extends React.Component<Props, State>
         return (
             <Card>
                 <CardContent>
-                    <DataViewer fileFormat={extension} fileContents={this.props.fileContents} />
+                    <DataViewer fileFormat={extension} fileContents={this.props.fileContents || ''} />
                 </CardContent>
             </Card>
         )
