@@ -27,7 +27,7 @@ class RepoList extends React.Component<Props>
         return (
             <div className={classes.page}>
                 <div className={classes.profileSidebar}>
-                    <img src={user.picture} className={classes.userPic} />
+                    <img src={user.picture['512x512']} className={classes.userPic} />
                     <div className={classes.userDetails}>
                         <H5 className={classes.userRealName}>{user.name}</H5>
                         <div className={classes.userUserName}>{user.username}</div>

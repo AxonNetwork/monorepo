@@ -35,6 +35,7 @@ class SettingsPage extends React.Component<Props>
         if (user === undefined) {
             return <div>Not logged in</div>
         }
+        console.log('user.picture', user.picture)
         return (
             <div className={classes.container}>
                 <main className={classes.main}>
@@ -48,7 +49,7 @@ class SettingsPage extends React.Component<Props>
                                 <Typography variant="subtitle1"><strong>Profile picture</strong></Typography>
 
                                 {user.picture &&
-                                    <img src={user.picture} className={classes.currentUserPicture} />
+                                    <img src={user.picture['256x256']} className={classes.currentUserPicture} />
                                 }
                                 <input type="file" ref={x => this._inputUserPicture = x} /><br />
                                 <Button variant="contained" color="secondary" className={classes.button} onClick={this.uploadUserPicture}>Upload</Button>

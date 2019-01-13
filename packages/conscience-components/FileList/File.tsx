@@ -78,10 +78,10 @@ class File extends React.Component<Props>
                         <Typography variant="subheading" className={classes.filename}>{displayname}</Typography>
                     </div>
                 </TableCell>
-                <TableCell className={classes.tableCell}>{bytes(file.size)}</TableCell>
-                <TableCell className={classes.tableCell}>{moment(file.modified).fromNow()}</TableCell>
+                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{bytes(file.size)}</TableCell>
+                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{moment(file.modified).fromNow()}</TableCell>
                 {(this.canQuickEdit() || this.props.openFileIcon) &&
-                    <TableCell className={classnames(classes.tableCell, classes.tableCellActions)}>
+                    <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellActions)}>
                         {this.canQuickEdit() &&
                             <Tooltip title="Quick edit">
                                 <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
@@ -128,10 +128,13 @@ const styles = createStyles({
     },
     filename: {
         padding: '0 16px',
+        textOverflow: 'ellipsis',
+        maxWidth: '100%',
+        overflow: 'hidden',
     },
-
-    // This is here so that it can be overridden by FileList or other parent components
-    tableRow: {},
+    tableRow: {
+        height: 36,
+    },
     tableRowHover: {
         '&:hover': {
             backgroundColor: 'rgba(124, 170, 255, 0.13) !important',
@@ -145,16 +148,18 @@ const styles = createStyles({
             backgroundColor: deepOrange[400] + " !important"
         }
     },
-
-    // This is here so that it can be overridden by FileList or other parent components
     tableCell: {
+        borderBottom: 'none',
+        maxWidth: 680,
+        paddingRight: 20,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    tableCellActions: {
+    tableCellAlignRight: {
         textAlign: 'right',
-
+    },
+    tableCellActions: {
         '& button': {
             marginLeft: 16,
         },

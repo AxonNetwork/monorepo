@@ -54,10 +54,7 @@ class RenderMarkdown extends React.Component<Props> {
         switch (identifier) {
             case 'image':
                 return (
-                    <img
-                        src={urljoin(this.props.directEmbedPrefix, contents)}
-                        className={this.props.classes.embeddedImage}
-                    />
+                    <img src={urljoin(this.props.directEmbedPrefix, contents)} />
                 )
             case 'file':
                 return (
@@ -125,10 +122,6 @@ interface Props {
 }
 
 const styles = () => createStyles({
-    embeddedImage: {
-        maxWidth: '100%',
-        display: 'block',
-    },
     wrapper: {
         '& code': {
             backgroundColor: '#f5f5f5',
@@ -147,6 +140,7 @@ const styles = () => createStyles({
         '& img': {
             display: 'block',
             margin: '30px auto',
+            maxWidth: '100%',
         },
         '& blockquote': {
             borderLeft: '2px solid #dedede',

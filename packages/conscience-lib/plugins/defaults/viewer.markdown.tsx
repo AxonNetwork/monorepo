@@ -84,7 +84,7 @@ interface State {
 const styles = () => createStyles({
     mdRoot: {
         padding: 48,
-        minWidth: 680,
+        // minWidth: 680,
     },
     textViewerMode: {
         textAlign: 'right',

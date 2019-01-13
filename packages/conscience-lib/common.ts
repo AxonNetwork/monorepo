@@ -72,7 +72,11 @@ export interface IUser {
     emails: string[]
     name: string
     username: string
-    picture: string
+    picture: {
+        '512x512': string
+        '256x256': string
+        '128x128': string
+    }
     repos: string[]
     orgs: string[]
     profile: IUserProfile

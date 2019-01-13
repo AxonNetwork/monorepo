@@ -5,6 +5,7 @@ import Badge from '@material-ui/core/Badge'
 import UserAvatar from '../UserAvatar'
 import moment from 'moment'
 import { autobind } from 'conscience-lib/utils'
+import { IUser } from 'conscience-lib/common'
 
 
 @autobind
@@ -49,7 +50,7 @@ class CommentWrapper extends React.Component<Props>
 
 interface Props {
     username: string | undefined
-    userPicture: string | undefined
+    userPicture: IUser['picture'] | undefined
     created: number | string
     showBadge?: boolean
     onClickReplyLink?: () => void

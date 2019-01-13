@@ -74,7 +74,6 @@ class FileList extends React.Component<Props, State>
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             openFileIcon={this.props.openFileIcon}
                                             canEditFiles={this.props.canEditFiles}
-                                            classes={{ tableRow: classes.tableRow, tableCell: classes.tableCell }}
                                         />
                                     ))}
                                 </TableBody>
@@ -173,12 +172,6 @@ const styles = (theme: Theme) => createStyles({
     },
     breadcrumb: {
         flexGrow: 1,
-    },
-    tableRow: {
-        height: 36,
-    },
-    tableCell: {
-        borderBottom: 'none',
     },
     emptyRepoMessage: {
         fontSize: '1.1rem',

@@ -116,6 +116,7 @@ const styles = (theme: Theme) => createStyles({
     root: {},
     securedContainer: {
         display: 'flex',
+        flexShrink: 0,
         alignItems: 'center',
         marginTop: theme.spacing.unit,
     },

@@ -12,6 +12,7 @@ import FileViewer from './connected/FileViewer'
 import Timeline from './connected/Timeline'
 import DiscussionList from './connected/DiscussionList'
 import UserAvatar from 'conscience-components/UserAvatar'
+import { H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -44,7 +45,7 @@ import { union } from 'lodash'
                 <div className={classes.sidebarComponents}>
                     {(repo.commitList || []).length > 0 &&
                         <Card className={classes.card}>
-                            <CardContent classes={{ root: classes.securedTextCard}}>
+                            <CardContent classes={{ root: classes.securedTextCard }}>
                                 <SecuredText
                                     repoID={repo.repoID}
                                     history={this.props.history}
@@ -55,23 +56,23 @@ import { union } from 'lodash'
 
                     <Card className={classes.card}>
                         <CardContent>
-                            <Typography variant="h6">Team</Typography>
+                            <H6>Team</H6>
 
                             <div className={classes.sharedUsersRow}>
-                            {sharedUsers.map((user: IUser | undefined) => {
-                                if (user !== undefined) {
-                                    return <UserAvatar username={user.name} userPicture={user.picture} />
-                                }else {
-                                    return null
-                                }
-                            })}
+                                {sharedUsers.map((user: IUser | undefined) => {
+                                    if (user !== undefined) {
+                                        return <UserAvatar username={user.name} userPicture={user.picture} />
+                                    } else {
+                                        return null
+                                    }
+                                })}
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card className={classes.card}>
                         <CardContent>
-                            <Typography variant="h6">Recent Discussions</Typography>
+                            <H6>Recent Discussions</H6>
 
                             <DiscussionList
                                 repoID={repo.repoID}
@@ -82,7 +83,7 @@ import { union } from 'lodash'
                     </Card>
                     <Card className={classes.card}>
                         <CardContent>
-                            <Typography variant="h6">Recent Commits</Typography>
+                            <H6>Recent Commits</H6>
 
                             <Timeline
                                 repoID={repo.repoID}
@@ -107,7 +108,7 @@ interface MatchParams {
     repoID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams>{
+interface Props extends RouteComponentProps<MatchParams> {
     repo: IRepo
     sharedUsers: IUser[]
     classes: any
@@ -169,7 +170,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoID = ownProps.match.params.repoID
     const repo = state.repo.repos[repoID]
-    const { admins, pushers, pullers} = repo
+    const { admins, pushers, pullers } = repo
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])

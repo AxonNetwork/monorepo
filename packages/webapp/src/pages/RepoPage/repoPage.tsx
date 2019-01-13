@@ -32,7 +32,7 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'center',
     },
     main: {
-        width: 960,
+        width: 1024,
         marginTop: 32,
     }
 })

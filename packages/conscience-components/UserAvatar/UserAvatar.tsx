@@ -2,6 +2,7 @@ import React from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { autobind, strToColor } from 'conscience-lib/utils'
+import { IUser } from 'conscience-lib/common'
 
 
 @autobind
@@ -26,7 +27,7 @@ class UserAvatar extends React.Component<Props>
                 <Avatar
                     classes={this.props.classes}
                     className={this.props.className}
-                    src={userPicture}
+                    src={userPicture[this.props.userPictureSize || '128x128']}
                 />
             )
         }
@@ -35,7 +36,8 @@ class UserAvatar extends React.Component<Props>
 
 interface Props {
     username: string | undefined
-    userPicture: string | undefined
+    userPicture: IUser['picture'] | undefined
+    userPictureSize?: '512x512' | '256x256' | '128x128'
     className?: string
     classes: any
 }
