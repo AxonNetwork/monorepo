@@ -127,9 +127,9 @@ class UserProfile extends React.Component<Props, State>
                     />
                     <div className={classes.interests}>
                         <Typography>
-                            Fields & Interests:
+                            Fields &amp; Interests:
                         </Typography>
-                        {interests.map((interest: string) => (
+                        {interests && interests.map((interest: string) => (
                             <Chip
                                 key={interest}
                                 label={interest}
@@ -250,7 +250,6 @@ const styles = (theme: Theme) => createStyles({
     },
     button: {
         textTransform: 'none',
-        width: '50%',
     },
     spacer: {
         width: 16,

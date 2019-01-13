@@ -34,7 +34,7 @@ class OrgBlog extends React.Component<Props>
                                     <div>
                                         <H6>{blog.title}</H6>
                                         <div>{blog.author}</div>
-                                        <div>{moment(blog.created).fromNow()}</div>
+                                        <div>{moment(blog.created).calendar()}</div>
                                         <RenderMarkdown text={blog.body} />
                                     </div>
                                 </ListItem>

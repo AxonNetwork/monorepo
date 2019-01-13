@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { IFeaturedRepo } from 'conscience-lib/common'
+import { H5 } from 'conscience-components/Typography/Headers'
 const logo = require('../../../assets/logo-placeholder.png')
 
 
@@ -21,7 +22,7 @@ class FeaturedRepoCard extends React.Component<Props>
         const repoID = repoInfo.repoID
 
         return (
-            <Card className={classes.card}>
+            <Card className={classes.card} onClick={() => this.props.selectRepo({ repoID })}>
                 {canDelete &&
                     <div className={classes.buttonRow}>
                         <IconButton onClick={this.props.onEdit} >
@@ -36,23 +37,9 @@ class FeaturedRepoCard extends React.Component<Props>
                     <img src={image} />
                 </CardMedia>
                 <CardContent className={classes.content}>
-                    <Typography variant="h5">
-                        {repoInfo.title}
-                    </Typography>
-                    <Typography>
-                        {repoInfo.description}
-                    </Typography>
+                    <H5>{repoInfo.title}</H5>
+                    <div>{repoInfo.description}</div>
                 </CardContent>
-                <CardActions className={classes.actions}>
-                    <Button
-                        color="secondary"
-                        variant="outlined"
-                        className={classes.button}
-                        onClick={() => this.props.selectRepo({ repoID })}
-                    >
-                        Learn More
-					</Button>
-                </CardActions>
             </Card>
         )
     }
@@ -72,6 +59,7 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: 32,
         height: 'calc(100% - 32px)',
         position: 'relative',
+        cursor: 'pointer',
     },
     buttonRow: {
         display: 'flex',
@@ -86,7 +74,7 @@ const styles = (theme: Theme) => createStyles({
         }
     },
     content: {
-        marginBottom: 40
+        // marginBottom: 40
     },
     actions: {
         display: 'flex',

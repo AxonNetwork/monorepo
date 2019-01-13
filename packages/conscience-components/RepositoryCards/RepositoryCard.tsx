@@ -90,13 +90,14 @@ interface Props {
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        minWidth: 250,
-        maxWidth: 350,
+        flexGrow: 1,
+        minWidth: 300,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],
         borderRadius: 5,
-        marginRight: theme.spacing.unit * 3,
+        marginLeft: theme.spacing.unit * 1.5,
+        marginRight: theme.spacing.unit * 1.5,
         marginBottom: theme.spacing.unit * 3,
         cursor: 'pointer',
         '&:hover': {

@@ -128,6 +128,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
+        justifyContent: 'space-between',
     },
     newRepoCard: {
         padding: 0,

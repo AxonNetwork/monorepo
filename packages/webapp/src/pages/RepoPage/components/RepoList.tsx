@@ -141,9 +141,8 @@ const styles = (theme: Theme) => createStyles({
     },
     profileSidebar: {
         marginRight: 32,
-        maxWidth: 350,
-        minWidth: 350,
-        flexGrow: 1,
+        width: 280,
+        flexShrink: 0,
     },
     repoCards: {
         flexGrow: 1,
