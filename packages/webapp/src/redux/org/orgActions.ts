@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IOrganization, IOrgBlog, IFeaturedRepo } from 'conscience-lib/common'
+import { IOrganization, IOrgBlog, IFeaturedRepo, IUploadedPicture } from 'conscience-lib/common'
 
 export enum OrgActionType {
     CREATE_ORG = 'CREATE_ORG',
@@ -118,7 +118,7 @@ export interface IUploadOrgPictureSuccessAction {
     type: OrgActionType.UPLOAD_ORG_PICTURE_SUCCESS
     payload: {
         orgID: string
-        picture: string,
+        picture: IUploadedPicture
     }
 }
 

@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog } from './common'
+import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -252,7 +252,7 @@ const ServerRelay = {
 
     async uploadUserPicture(fileInput: HTMLInputElement) {
         interface IResponse {
-            picture: string
+            picture: IUploadedPicture
             userID: string
         }
 
@@ -326,7 +326,7 @@ const ServerRelay = {
 
     async uploadOrgPicture(orgID: string, fileInput: HTMLInputElement) {
         interface IResponse {
-            picture: string
+            picture: IUploadedPicture
             orgID: string
         }
 

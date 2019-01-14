@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IUser, IUserSettings, IUserProfile } from 'conscience-lib/common'
+import { IUser, IUserSettings, IUserProfile, IUploadedPicture } from 'conscience-lib/common'
 
 export enum UserActionType {
     WHO_AM_I = 'WHO_AM_I',
@@ -217,7 +217,7 @@ export interface IUploadUserPictureSuccessAction {
     type: UserActionType.UPLOAD_USER_PICTURE_SUCCESS
     payload: {
         userID: string,
-        picture: string,
+        picture: IUploadedPicture
     }
 }
 

@@ -10,13 +10,14 @@ class OrgInfo extends React.Component<Props>
 {
     render() {
         const { org, classes } = this.props
+        const picture = (org.picture || {})['512x512']
 
         return (
             <div className={classes.root}>
                 <div className={classes.orgInfoContainer}>
-                    {org.picture.length > 0 &&
+                    {picture &&
                         <div>
-                            <img src={nonCacheImg(org.picture)} className={classes.orgPicture} />
+                            <img src={nonCacheImg(picture)} className={classes.orgPicture} />
                         </div>
                     }
                     <div className={classes.orgInfo}>

@@ -143,7 +143,7 @@ const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPi
     async process({ action }) {
         const { fileInput } = action.payload
         const { userID, picture } = await ServerRelay.uploadUserPicture(fileInput)
-        return { userID, picture: picture + '?' + (new Date().getTime()) }
+        return { userID, picture }
     },
 })
 

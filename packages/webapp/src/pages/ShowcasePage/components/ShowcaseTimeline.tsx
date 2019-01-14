@@ -21,6 +21,7 @@ class ShowcaseTimeline extends React.Component<Props>
                     const email = extractEmail(event.user) || ''
                     const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
                     const userRealName = user.name || removeEmail(event.user)
+                    const username = user.name || removeEmail(event.user)
                     return (
                         <TimelineEvent
                             key={event.commit}
@@ -28,6 +29,8 @@ class ShowcaseTimeline extends React.Component<Props>
                             userRealName={userRealName}
                             userPicture={user.picture}
                             username={user.username}
+                            username={username}
+                            userPicture={user.picture}
                             selectCommit={this.props.selectCommit}
                         />
                     )

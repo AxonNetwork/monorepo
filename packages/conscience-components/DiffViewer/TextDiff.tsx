@@ -42,7 +42,7 @@ class TextDiff extends React.Component<Props, State>
                     {this.state.expanded &&
                         chunks.map((chunk, i) => (
                             <React.Fragment>
-                                <div>
+                                <div className={classes.line}>
                                     {type === 'text' &&
                                         <LineChunkContent chunk={chunk} codeColorScheme={this.props.codeColorScheme} language={language} />
                                     }
@@ -107,6 +107,7 @@ const styles = (theme: Theme) => createStyles({
     detailsRoot: {
         padding: 0,
         flexDirection: 'column',
+        overflow: 'auto',
     },
     diffBreakMarker: {
         padding: 15,
