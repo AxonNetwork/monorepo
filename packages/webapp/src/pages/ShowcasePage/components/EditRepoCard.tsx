@@ -12,8 +12,11 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
+import Divider from '@material-ui/core/Divider'
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
+import Button from '@material-ui/core/Button'
+import { H6 } from 'conscience-components/Typography/Headers'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Cancel'
 import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
@@ -27,6 +30,7 @@ class EditRepoCard extends React.Component<Props, State>
 {
     _inputTitle: HTMLInputElement | null = null
     _inputDescription: HTMLInputElement | null = null
+    _inputImage: HTMLInputElement | null = null
 
     state = {
         dialogOpen: false,
@@ -89,7 +93,7 @@ class EditRepoCard extends React.Component<Props, State>
 							</DialogContentText>
                         </DialogContent>
                     }
-                    <List>
+                    <List className={classes.imageList}>
                         {images.map(name => (
                             <ListItem
                                 button
@@ -99,6 +103,25 @@ class EditRepoCard extends React.Component<Props, State>
                             </ListItem>
                         ))}
                     </List>
+                    <DialogContent className={classes.imageForm}>
+                        <Divider />
+                        <H6>Or paste an image url</H6>
+                        <form onSubmit={this.addImageUrl}>
+                            <TextField
+                                label="ImageUrl"
+                                fullWidth
+                                inputRef={x => this._inputImage = x}
+                            />
+                            <Button
+                                type="submit"
+                                variant="outlined"
+                                color="secondary"
+                                className={classes.button}
+                            >
+                                Save Image
+                            </Button>
+                        </form>
+                    </DialogContent>
                 </Dialog>
             </Card>
         )
@@ -142,6 +165,16 @@ class EditRepoCard extends React.Component<Props, State>
         this.setState({ image })
         this.closeDialog()
     }
+
+    addImageUrl(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        if (this._inputImage === null) {
+            return
+        }
+        const image = this._inputImage.value
+        this.setState({ image })
+        this.closeDialog()
+    }
 }
 
 interface Props {
@@ -178,6 +211,17 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         justifyContent: 'flex-end'
     },
+    imageList: {
+        maxHeight: 400,
+        overflowY: 'scroll'
+    },
+    imageForm: {
+        paddingTop: 16
+    },
+    button: {
+        textTransform: 'none',
+        marginTop: 16,
+    }
 })
 
 export default withStyles(styles)(EditRepoCard)
