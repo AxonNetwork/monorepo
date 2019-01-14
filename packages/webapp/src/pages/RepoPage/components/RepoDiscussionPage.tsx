@@ -40,6 +40,7 @@ class RepoDiscussionPage extends React.Component<Props>
                     createDiscussion={this.props.createDiscussion}
                     createComment={this.props.createComment}
                     sawComment={this.props.sawComment}
+                    selectUser={this.selectUser}
                 />
             </div>
         )
@@ -81,6 +82,14 @@ class RepoDiscussionPage extends React.Component<Props>
 
     sawComment(payload: { repoID: string, discussionID: string, commentTimestamp: number }) {
         console.log(payload)
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        const { username } = payload
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 }
 

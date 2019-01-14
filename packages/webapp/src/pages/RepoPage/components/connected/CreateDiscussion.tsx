@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { History } from 'history'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { createDiscussion } from 'redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
@@ -20,8 +21,17 @@ class ConnectedCreateDiscussion extends React.Component<Props>
                 files={this.props.files}
                 discussions={this.props.discussions}
                 createDiscussion={this.props.createDiscussion}
+                selectUser={this.selectUser}
             />
         )
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 }
 
@@ -31,6 +41,7 @@ interface OwnProps {
     repoID: string | undefined
     attachedTo?: string
     commentWrapperClasses?: any
+    history: History
 }
 
 interface StateProps {

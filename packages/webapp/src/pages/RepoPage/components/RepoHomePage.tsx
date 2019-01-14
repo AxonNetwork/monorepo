@@ -61,7 +61,13 @@ import { union } from 'lodash'
                             <div className={classes.sharedUsersRow}>
                                 {sharedUsers.map((user: IUser | undefined) => {
                                     if (user !== undefined) {
-                                        return <UserAvatar username={user.name} userPicture={user.picture} />
+                                        return (
+                                            <UserAvatar
+                                                username={user.name}
+                                                userPicture={user.picture}
+                                                onClick={() => this.navigateUserPage(user.username)}
+                                            />
+                                        )
                                     } else {
                                         return null
                                     }
@@ -96,6 +102,10 @@ import { union } from 'lodash'
                 </div>
             </div>
         )
+    }
+
+    navigateUserPage(username: string) {
+        this.props.history.push(`/user/${username}`)
     }
 
     onClickEditReadme() {

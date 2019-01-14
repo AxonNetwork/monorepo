@@ -12,10 +12,6 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoSettingsPage extends React.Component<Props>
 {
-    changePermissions(payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) {
-        console.log(payload)
-    }
-
     render() {
         const { classes } = this.props
 
@@ -27,9 +23,22 @@ class RepoSettingsPage extends React.Component<Props>
                     usersByUsername={this.props.usersByUsername}
                     currentUser={this.props.currentUser}
                     changeUserPermissions={this.props.changeUserPermissions}
+                    selectUser={this.selectUser}
                 />
             </div>
         )
+    }
+
+    changePermissions(payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) {
+        console.log(payload)
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 }
 

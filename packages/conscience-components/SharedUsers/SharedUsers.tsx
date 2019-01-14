@@ -92,7 +92,11 @@ class SharedUsers extends React.Component<Props, State>
                                     <TableCell>
                                         <div className={classes.user}>
                                             <div className={classes.userAvatar}>
-                                                <UserAvatar username={user.name} userPicture={user.picture} />
+                                                <UserAvatar
+                                                    username={user.name}
+                                                    userPicture={user.picture}
+                                                    onClick={() => this.props.selectUser({ username: user.username })}
+                                                />
                                             </div>
                                             <div className={classes.userInfo}>
                                                 <Typography><strong>{user.name}</strong></Typography>
@@ -244,6 +248,7 @@ interface Props {
     usersByUsername: { [username: string]: string }
     currentUser: string
     changeUserPermissions: (payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) => void
+    selectUser: (payload: { username: string | undefined }) => void
     classes: any
 }
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Members from 'conscience-components/Members'
 import { IGlobalState } from 'redux/store'
@@ -17,9 +18,11 @@ class ConnectedMembers extends React.Component<Props>
                 currentUser={this.props.currentUser}
                 addMember={this.props.addMember}
                 removeMember={this.props.removeMember}
+                selectUser={this.props.selectUser}
             />
         )
     }
+
 }
 
 type Props = OwnProps & StateProps
@@ -29,6 +32,8 @@ interface OwnProps {
     adminList?: string[]
     addMember: (payload: { email: string }) => void
     removeMember: (payload: { userID: string }) => void
+    selectUser: (payload: { username: string | undefined }) => void
+    history: History
 }
 
 interface StateProps {

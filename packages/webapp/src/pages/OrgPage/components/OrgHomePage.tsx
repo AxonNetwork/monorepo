@@ -70,6 +70,7 @@ class OrgHomePage extends React.Component<Props>
                         adminList={[org.creator]}
                         addMember={this.addMember}
                         removeMember={this.removeMember}
+                        selectUser={this.selectUser}
                     />
 
                     <Button
@@ -127,6 +128,15 @@ class OrgHomePage extends React.Component<Props>
         const userID = payload.userID
         const orgID = this.props.match.params.orgID
         this.props.removeMemberFromOrg({ userID, orgID })
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        console.log(payload)
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 
     navigateShowcasePage() {

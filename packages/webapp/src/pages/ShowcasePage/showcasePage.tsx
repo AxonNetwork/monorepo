@@ -148,6 +148,7 @@ class ShowcasePage extends React.Component<Props, State>
                                         classes={{ root: classes.teamAvatar }}
                                         username={user.name}
                                         userPicture={user.picture}
+                                        onClick={() => this.selectUser({ username: user.username })}
                                     />
                                     <div>{user.name}</div>
                                 </div>
@@ -210,6 +211,15 @@ class ShowcasePage extends React.Component<Props, State>
 
     showAllMembers() {
         this.setState({ showAllMembers: true })
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        console.log(payload)
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 }
 

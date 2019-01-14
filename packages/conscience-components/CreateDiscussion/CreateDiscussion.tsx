@@ -43,9 +43,9 @@ class CreateDiscussion extends React.Component<Props, State>
         return (
             <CommentWrapper
                 classes={this.props.commentWrapperClasses}
-                username={user.name}
-                userPicture={user.picture}
+                user={user}
                 created={"right now"}
+                selectUser={this.props.selectUser}
             >
                 <form className={classes.form} onSubmit={this.onSubmit}>
                     <TextField
@@ -81,6 +81,7 @@ interface Props {
     files: { [name: string]: IRepoFile }
     discussions: { [discussionID: string]: IDiscussion }
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
+    selectUser: (payload: { username: string | undefined }) => void
     classes: any
 }
 

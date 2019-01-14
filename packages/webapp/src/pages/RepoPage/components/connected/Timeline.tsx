@@ -33,6 +33,7 @@ class ConnectedTimeline extends React.Component<Props>
                 commits={repo.commits}
                 commitList={commitList}
                 selectCommit={this.selectCommit}
+                selectUser={this.selectUser}
                 users={{}}
                 usersByEmail={{}}
             />
@@ -47,6 +48,14 @@ class ConnectedTimeline extends React.Component<Props>
         } else {
             this.props.history.push(`/repo/${repoID}/history/${commit}`)
         }
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 }
 

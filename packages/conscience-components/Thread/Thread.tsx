@@ -100,16 +100,15 @@ class Thread extends React.Component<Props, State>
                             <Typography className={classes.comment}>No comments yet. Start the discussion!</Typography>
                         }
                         {commentsList.map(c => {
-                            const username = (this.props.users[c.userID] || {}).name || c.userID
-                            const userPicture = (this.props.users[c.userID] || {}).picture
+                            const commentUser = this.props.users[c.userID]
                             return (
                                 <CommentWrapper
                                     key={c.created}
-                                    username={username}
-                                    userPicture={userPicture}
+                                    user={commentUser}
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                     onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
+                                    selectUser={this.props.selectUser}
                                 >
                                     <div ref={ref => this._commentRefs[c.created] = { ref, created: c.created }}></div>
                                     <RenderMarkdown
@@ -130,9 +129,9 @@ class Thread extends React.Component<Props, State>
 
                         {/* Create comment form */}
                         <CommentWrapper
-                            username={user.name || ''}
-                            userPicture={user.picture || ''}
+                            user={user}
                             created={new Date().getTime()}
+                            selectUser={this.props.selectUser}
                         >
                             {this.state.createCommentError &&
                                 <FormHelperText error className={classes.createCommentError}>{this.state.createCommentError}</FormHelperText>
@@ -189,6 +188,7 @@ interface Props {
     selectDiscussion: (payload: { discussionID: string | undefined }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
+    selectUser: (payload: { username: string | undefined }) => void
 
     classes: any
 }

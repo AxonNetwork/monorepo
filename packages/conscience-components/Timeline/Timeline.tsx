@@ -58,15 +58,16 @@ class Timeline extends React.Component<Props, State>
                     {timelinePage.map((event) => {
                         const email = extractEmail(event.user) || ''
                         const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
-                        const username = user.name || removeEmail(event.user)
-                        const userPicture = user.picture
+                        const userRealName = user.name || removeEmail(event.user)
                         return (
                             <TimelineEvent
                                 key={event.commit}
                                 event={event}
-                                username={username}
-                                userPicture={userPicture}
+                                userRealName={userRealName}
+                                userPicture={user.picture}
+                                username={user.username}
                                 selectCommit={this.selectCommit}
+                                selectUser={this.props.selectUser}
                             />
                         )
                     })}
@@ -86,6 +87,7 @@ interface Props {
     users: { [userID: string]: IUser }
     usersByEmail: { [email: string]: string }
     selectCommit?: (payload: { selectedCommit: string }) => void
+    selectUser: (payload: { username: string | undefined }) => void
     classes: any
 }
 

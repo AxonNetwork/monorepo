@@ -109,6 +109,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             selectDiscussion={this.props.selectDiscussion}
                             createComment={this.props.createComment}
                             sawComment={this.props.sawComment}
+                            selectUser={this.props.selectUser}
                         />
                     </div>
                 }
@@ -136,6 +137,7 @@ interface Props {
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
+    selectUser: (payload: { username: string | undefined }) => void
 
     classes: any
 }

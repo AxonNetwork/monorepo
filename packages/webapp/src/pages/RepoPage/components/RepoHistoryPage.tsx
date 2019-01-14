@@ -45,6 +45,7 @@ class RepoHistoryPage extends React.Component<Props>
                         codeColorScheme={this.props.codeColorScheme}
                         getDiff={this.getDiff}
                         selectCommit={this.selectCommit}
+                        selectUser={this.selectUser}
                     />
                     <div className={classes.createDiscussionContainer}>
                         <H5>Start a discussion on this commit:</H5>
@@ -52,6 +53,7 @@ class RepoHistoryPage extends React.Component<Props>
                             <CreateDiscussion
                                 repoID={repo.repoID}
                                 attachedTo={selectedCommit}
+                                history={this.props.history}
                             />
                         </div>
                     </div>
@@ -68,6 +70,14 @@ class RepoHistoryPage extends React.Component<Props>
         } else {
             this.props.history.push(`/repo/${repoID}/history/${commit}`)
         }
+    }
+
+    selectUser(payload: { username: string | undefined }) {
+        const username = payload.username
+        if (username === undefined) {
+            return
+        }
+        this.props.history.push(`/user/${username}`)
     }
 
     getDiff(payload: { repoID: string, repoRoot: string | undefined, commit: string }) {

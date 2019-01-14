@@ -66,7 +66,11 @@ class RepoFilesPage extends React.Component<Props>
                         </div>
                         <div className={classes.createDiscussion}>
                             <Typography variant="h5">Start a discussion on {selected}</Typography>
-                            <CreateDiscussion repoID={repo.repoID} attachedTo={selected} />
+                            <CreateDiscussion
+                                repoID={repo.repoID}
+                                attachedTo={selected}
+                                history={this.props.history}
+                            />
                         </div>
                     </div>
                 </div>

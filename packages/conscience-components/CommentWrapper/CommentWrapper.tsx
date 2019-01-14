@@ -12,12 +12,19 @@ import { IUser } from 'conscience-lib/common'
 class CommentWrapper extends React.Component<Props>
 {
     render() {
-        const { username, userPicture, created, classes } = this.props
+        const { user, created, classes } = this.props
         const time = typeof created === 'string' ? created : moment(created).fromNow()
+        const userRealName = (user || { name: '' }).name
+        const userPicture = (user || { picture: undefined }).picture
+        const username = (user || { username: undefined }).username
         return (
             <div className={classes.comment}>
                 <div className={classes.commentAvatar}>
-                    <UserAvatar username={username} userPicture={userPicture} />
+                    <UserAvatar
+                        username={userRealName}
+                        userPicture={userPicture}
+                        onClick={() => this.props.selectUser({ username })}
+                    />
                 </div>
 
                 <div className={classes.commentBody}>
@@ -49,11 +56,11 @@ class CommentWrapper extends React.Component<Props>
 }
 
 interface Props {
-    username: string | undefined
-    userPicture: IUser['picture'] | undefined
+    user: IUser | undefined
     created: number | string
     showBadge?: boolean
     onClickReplyLink?: () => void
+    selectUser: (payload: { username: string | undefined }) => void
     classes: any
 }
 
