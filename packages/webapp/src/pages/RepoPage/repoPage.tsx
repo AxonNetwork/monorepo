@@ -1,32 +1,98 @@
 import React from 'react'
-import { Switch, Route } from 'react-router'
+import { connect } from 'react-redux'
+import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import RepoList from './components/RepoList'
-import Repository from './RepoRoutes'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import RepoInfo from './components/RepoInfo'
+import RepoHomePage from './components/RepoHomePage'
+import RepoFilesPage from './components/RepoFilesPage'
+import RepoHistoryPage from './components/RepoHistoryPage'
+import RepoDiscussionPage from './components/RepoDiscussionPage'
+import RepoSettingsPage from './components/RepoSettingsPage'
+import { getRepo } from 'redux/repo/repoActions'
+import { IGlobalState } from 'redux/store'
+import { IRepo, RepoPage } from 'conscience-lib/common'
+import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
 
 
-class RepoPage extends React.Component<Props>
+@autobind
+class RepoRoutes extends React.Component<Props>
 {
+    componentWillMount() {
+        const repoID = this.props.match.params.repoID
+        if (this.props.repo === undefined) {
+            this.props.getRepo({ repoID })
+        }
+    }
+
+    navigateRepoPage(repoPage: RepoPage) {
+        const repoID = this.props.match.params.repoID
+        const page = repoPageToString(repoPage)
+        if (page === 'home') {
+            this.props.history.push(`/repo/${repoID}`)
+            return
+        }
+        this.props.history.push(`/repo/${repoID}/${page}`)
+    }
+
     render() {
-        const { classes } = this.props
+        const { repo, classes } = this.props
+        if (repo === undefined) {
+            return (
+                <div className={classes.progressContainer}>
+                    <CircularProgress color="secondary" />
+                </div>
+            )
+        }
+        const repoPage = stringToRepoPage(this.props.location.pathname)
+
         return (
             <div className={classes.container}>
                 <main className={classes.main}>
-                    <Switch>
-                        <Route exact path='/repo' component={RepoList} />
-                        <Route path='/repo/:repoID' component={Repository} />
-                    </Switch>
+                    <div className={classes.repository}>
+                        <RepoInfo
+                            repo={repo}
+                            repoPage={repoPage}
+                            menuLabelsHidden={this.props.menuLabelsHidden}
+                            navigateRepoPage={this.navigateRepoPage}
+                        />
+                        <div>
+                            <Switch>
+                                <Route path='/repo/:repoID/files/:filename+' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/files' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
+                                <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
+                                <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
+                                <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
+                                <Route path='/repo/:repoID/settings' component={RepoSettingsPage} />
+                                <Route path='/repo/:repoID' component={RepoHomePage} />
+                            </Switch>
+                        </div>
+                    </div>
                 </main>
             </div>
         )
     }
 }
 
-interface Props {
+interface MatchParams {
+    repoID: string
+}
+
+interface Props extends RouteComponentProps<MatchParams> {
+    repo: IRepo
+    menuLabelsHidden: boolean
+    getRepo: typeof getRepo
     classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
+    progressContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: 256,
+    },
     container: {
         display: 'flex',
         justifyContent: 'center',
@@ -34,7 +100,26 @@ const styles = (theme: Theme) => createStyles({
     main: {
         width: 1024,
         marginTop: 32,
+    },
+    subpage: {
+        marginTop: 32,
     }
 })
 
-export default withStyles(styles)(RepoPage)
+const mapStateToProps = (state: IGlobalState, props: Props) => {
+    const repoID = props.match.params.repoID
+    const repo = state.repo.repos[repoID]
+    return {
+        repo,
+        menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
+    }
+}
+
+const mapDispatchToProps = {
+    getRepo
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(RepoRoutes))

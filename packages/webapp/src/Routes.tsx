@@ -6,12 +6,14 @@ import Header from 'components/Header'
 import Footer from 'components/Footer'
 import LoginPage from 'pages/LoginPage'
 import RepoPage from 'pages/RepoPage'
+import UserPage from 'pages/UserPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
 import { IGlobalState } from 'redux/store'
 
-function Routes({ loginState, history }: Props) {
+
+function Routes({ loginState, username, history }: Props) {
     const location = history.location.pathname
     return (
         <div>
@@ -20,13 +22,14 @@ function Routes({ loginState, history }: Props) {
             }
             <Switch>
                 <Route exact path="/login" component={LoginPage} />
-                <PrivateRoute path="/repo" component={RepoPage} loginState={loginState} />
+                <PrivateRoute path="/repo/:repoID" component={RepoPage} loginState={loginState} />
                 <PrivateRoute path="/settings" component={SettingsPage} loginState={loginState} />
                 <PrivateRoute path="/org" component={OrgPage} loginState={loginState} />
                 <Route path="/showcase/:orgID" component={ShowcasePage} />
+                <Route path="/user/:username" component={UserPage} />
                 <Route render={() => {
                     if (loginState === LoginState.LoggedIn) {
-                        return <Redirect to="/repo" />
+                        return <Redirect to={`/user/${username}`} />
                     } else {
                         return <Redirect to="/login" />
                     }
@@ -46,6 +49,7 @@ enum LoginState {
 
 interface Props {
     loginState: LoginState
+    username: string | undefined
     history: History
 }
 
@@ -78,9 +82,12 @@ const mapStateToProps = (state: IGlobalState) => {
     if (state.user.currentUser !== undefined) {
         loginState = LoginState.LoggedIn
     }
+    const user = state.user.users[state.user.currentUser || '']
+    const username = (user || {}).username
 
     return {
         loginState,
+        username,
     }
 }
 

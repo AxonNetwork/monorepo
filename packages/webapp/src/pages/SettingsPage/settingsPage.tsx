@@ -35,7 +35,6 @@ class SettingsPage extends React.Component<Props>
         if (user === undefined) {
             return <div>Not logged in</div>
         }
-        console.log('user.picture', user.picture)
         return (
             <div className={classes.container}>
                 <main className={classes.main}>
