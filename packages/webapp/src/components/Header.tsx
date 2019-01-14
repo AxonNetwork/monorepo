@@ -25,9 +25,10 @@ class Header extends React.Component<Props, State>
 
     render() {
         const { user, classes } = this.props
+        const username = (user || { username: '' }).username
         return (
             <AppBar position="static" className={classes.appbar}>
-                <Link to='/repo'>
+                <Link to={`/user/${username}`}>
                     <img src={logo} className={classes.img} alt="Conscience Logo" />
                 </Link>
                 {user !== undefined &&
@@ -44,7 +45,7 @@ class Header extends React.Component<Props, State>
                             anchorEl={this.state.anchorEl}
                             onClose={this.handleClose}
                         >
-                            <MenuItem onClick={() => this.selectItem('repos')}>Your Repositories</MenuItem>
+                            <MenuItem onClick={() => this.selectItem('profile')}>Your Profile</MenuItem>
                             <MenuItem onClick={() => this.selectItem('settings')}>Settings</MenuItem>
                             <MenuItem onClick={() => this.selectItem('logout')}>Logout</MenuItem>
                         </Menu>
@@ -59,10 +60,11 @@ class Header extends React.Component<Props, State>
     }
 
     selectItem(selection?: string) {
+        const username = (this.props.user || { username: '' }).username
         this.handleClose()
         switch (selection) {
-            case 'repos':
-                this.props.history.push('/repo')
+            case 'profile':
+                this.props.history.push(`/user/${username}`)
                 return
             case 'settings':
                 this.props.history.push('/settings')
