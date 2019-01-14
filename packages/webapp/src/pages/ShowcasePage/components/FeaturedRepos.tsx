@@ -73,7 +73,7 @@ class FeaturedRepos extends React.Component<Props, State>
                         {editing.indexOf(repoID) < 0 &&
                             <FeaturedRepoCard
                                 repoInfo={featuredRepos[repoID]}
-                                canDelete={editMode}
+                                canEdit={editMode}
                                 onEdit={() => this.editRepoCard(repoID)}
                                 onDelete={() => this.deleteRepoCard(repoID)}
                                 selectRepo={this.props.selectRepo}

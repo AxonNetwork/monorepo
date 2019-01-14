@@ -1,29 +1,27 @@
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
-import CardActions from '@material-ui/core/CardActions'
-import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { IFeaturedRepo } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 import { H5 } from 'conscience-components/Typography/Headers'
 const logo = require('../../../assets/logo-placeholder.png')
 
 
+@autobind
 class FeaturedRepoCard extends React.Component<Props>
 {
     render() {
-        const { repoInfo, canDelete, classes } = this.props
+        const { repoInfo, canEdit, classes } = this.props
         const image = repoInfo.image || logo
-        const repoID = repoInfo.repoID
 
         return (
-            <Card className={classes.card} onClick={() => this.props.selectRepo({ repoID })}>
-                {canDelete &&
+            <Card className={classes.card} onClick={this.selectRepo}>
+                {canEdit &&
                     <div className={classes.buttonRow}>
                         <IconButton onClick={this.props.onEdit} >
                             <EditIcon fontSize='small' />
@@ -43,11 +41,19 @@ class FeaturedRepoCard extends React.Component<Props>
             </Card>
         )
     }
+
+    selectRepo() {
+        if (this.props.canEdit) {
+            return
+        }
+        const repoID = this.props.repoInfo.repoID
+        this.props.selectRepo({ repoID })
+    }
 }
 
 interface Props {
     repoInfo: IFeaturedRepo
-    canDelete?: boolean
+    canEdit?: boolean
     onEdit: () => void
     onDelete: () => void
     selectRepo: (payload: { repoID: string }) => void
