@@ -2,11 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import { updateOrg, uploadOrgPicture, uploadOrgBanner } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
+import { H6 } from 'conscience-components/Typography/Headers'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
 
@@ -21,12 +21,13 @@ class OrganizationPage extends React.Component<Props>
 
     render() {
         const { org, classes } = this.props
+        const hasOrgPicture = org.picture && Object.keys(org.picture).length === 0
+
         return (
             <div className={classes.settingsPage}>
                 <div className={classes.settings}>
-                    <Typography variant="h6" className={classes.header}>
-                        Settings
-                    </Typography>
+                    <H6 className={classes.header}>Settings</H6>
+
                     <TextField
                         key={org.orgID + ':1'}
                         label="Organization Name"
@@ -55,17 +56,13 @@ class OrganizationPage extends React.Component<Props>
                     </Button>
                 </div>
                 <div className={classes.imageContainer}>
-                    {org.picture.length === 0 &&
-                        <Typography>
-                            No Image Uploaded
-                        </Typography>
+                    {!hasOrgPicture &&
+                        <div>No Image Uploaded</div>
                     }
-                    {org.picture.length > 0 &&
+                    {hasOrgPicture &&
                         <div>
-                            <Typography>
-                                Current Image:
-                            </Typography>
-                            <img src={nonCacheImg(org.picture)} className={classes.orgPicture} />
+                            <div>Current Image:</div>
+                            <img src={nonCacheImg(org.picture['256x256'])} className={classes.orgPicture} />
                         </div>
                     }
                     <input type="file" ref={x => this._inputOrgPicture = x} /><br />
@@ -73,15 +70,11 @@ class OrganizationPage extends React.Component<Props>
                 </div>
                 <div className={classes.imageContainer}>
                     {org.banner.length === 0 &&
-                        <Typography>
-                            No Banner Uploaded
-                        </Typography>
+                        <div>No Banner Uploaded</div>
                     }
                     {org.banner.length > 0 &&
                         <div>
-                            <Typography>
-                                Current Banner:
-                            </Typography>
+                            <div>Current Banner:</div>
                             <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
                         </div>
                     }

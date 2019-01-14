@@ -67,16 +67,18 @@ export interface IDiscussion {
     subject: string
 }
 
+export interface IUploadedPicture {
+    '512x512': string
+    '256x256': string
+    '128x128': string
+}
+
 export interface IUser {
     userID: string
     emails: string[]
     name: string
     username: string
-    picture: {
-        '512x512': string
-        '256x256': string
-        '128x128': string
-    }
+    picture: IUploadedPicture
     repos: string[]
     orgs: string[]
     profile: IUserProfile
@@ -114,7 +116,7 @@ export interface IOrganization {
     name: string
     description: string
     creator: string //userID
-    picture: string
+    picture: IUploadedPicture
     banner: string
     readme: string
     members: string[] //userID[]

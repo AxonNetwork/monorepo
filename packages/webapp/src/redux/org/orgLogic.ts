@@ -60,8 +60,7 @@ const uploadOrgPicture = makeLogic<IUploadOrgPictureAction, IUploadOrgPictureSuc
     async process({ action }) {
         const { orgID, fileInput } = action.payload
         const resp = await ServerRelay.uploadOrgPicture(orgID, fileInput)
-        const picture = nonCacheImg(resp.picture)
-        return { orgID, picture }
+        return { orgID, picture: resp.picture }
     },
 })
 

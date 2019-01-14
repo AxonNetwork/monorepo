@@ -6,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LinkIcon from '@material-ui/icons/Link'
 
 import UserAvatar from '../UserAvatar'
-import { ITimelineEvent } from 'conscience-lib/common'
+import { ITimelineEvent, IUploadedPicture } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 @autobind
@@ -46,7 +46,7 @@ class TimelineEvent extends React.Component<Props>
 interface Props {
     event: ITimelineEvent
     username: string | undefined
-    userPicture: string | undefined
+    userPicture: IUploadedPicture | undefined
     selectCommit: (commit: string, repoID: string | undefined) => void
     classes: any
 }
