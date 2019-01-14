@@ -71,26 +71,20 @@ class UserPage extends React.Component<Props>
                         </div>
                     </div>
                     <div className={classes.repoCards}>
-                        {loading &&
-                            <div className={classes.progressContainer}>
-                                <CircularProgress color="secondary" />
-                            </div>
-                        }
-                        {!loading &&
-                            <div>
-                                <H6>Repositories</H6>
+                        <div>
+                            <H6>Repositories</H6>
 
-                                <Divider className={classes.repoDivider} />
+                            <Divider className={classes.repoDivider} />
 
-                                <RepositoryCards
-                                    repoList={this.props.repoList}
-                                    repos={this.props.repos}
-                                    discussions={this.props.discussions}
-                                    discussionsByRepo={this.props.discussionsByRepo}
-                                    selectRepoAndPage={this.selectRepoAndPage}
-                                />
-                            </div>
-                        }
+                            <RepositoryCards
+                                loading={loading}
+                                repoList={this.props.repoList}
+                                repos={this.props.repos}
+                                discussions={this.props.discussions}
+                                discussionsByRepo={this.props.discussionsByRepo}
+                                selectRepoAndPage={this.selectRepoAndPage}
+                            />
+                        </div>
                     </div>
                 </main>
             </div>

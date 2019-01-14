@@ -11,6 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
+import RepoCardLoader from '../ContentLoaders/RepoCardLoader'
 import { IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -24,6 +25,19 @@ class Repositories extends React.Component<Props, State>
 
     render() {
         const { repos, repoList, discussionsByRepo, classes } = this.props
+        if (this.props.loading) {
+            const loaderLength = repoList.length
+            return (
+                <div className={classes.root}>
+                    {Array(loaderLength).fill(0).map(i => (
+                        <Card className={classes.repoCard}>
+                            <RepoCardLoader />
+                        </Card>
+                    ))}
+                </div>
+            )
+        }
+
         let reposToAdd = [] as string[]
         if (this.state.dialogOpen) {
             reposToAdd = Object.keys(repos)
@@ -111,6 +125,7 @@ class Repositories extends React.Component<Props, State>
 }
 
 interface Props {
+    loading?: boolean
     repoList: string[]
     repos: { [repoID: string]: IRepo }
     discussions: { [discussionID: string]: IDiscussion }
@@ -141,6 +156,21 @@ const styles = (theme: Theme) => createStyles({
         border: '1px solid',
         borderColor: theme.palette.grey[300],
     },
+    repoCard: {
+        flexGrow: 1,
+        minWidth: 300,
+        padding: theme.spacing.unit,
+        border: '1px solid',
+        borderColor: theme.palette.grey[300],
+        borderRadius: 5,
+        marginLeft: theme.spacing.unit * 1.5,
+        marginRight: theme.spacing.unit * 1.5,
+        marginBottom: theme.spacing.unit * 3,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.grey[100],
+        },
+    }
 })
 
 export default withStyles(styles)(Repositories)
