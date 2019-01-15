@@ -32,7 +32,7 @@ interface OwnProps {
     adminList?: string[]
     addMember: (payload: { email: string }) => void
     removeMember: (payload: { userID: string }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
     history: History
 }
 

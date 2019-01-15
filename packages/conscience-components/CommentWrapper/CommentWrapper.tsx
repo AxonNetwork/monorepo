@@ -54,7 +54,7 @@ interface Props {
     created: number | string
     showBadge?: boolean
     onClickReplyLink?: () => void
-    selectUser: (payload: { username: string }) => void
+    selectUser?: (payload: { username: string }) => void
     classes: any
 }
 

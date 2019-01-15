@@ -21,8 +21,7 @@ class CommentLink extends React.Component<Props, State>
         if (comment === undefined) {
             return null
         }
-        const username = (users[comment.userID] || ({} as any)).name || comment.userID
-        const userPicture = (users[comment.userID] || ({} as any)).picture
+        const user = users[comment.userID]
 
         return (
             <React.Fragment>
@@ -44,8 +43,7 @@ class CommentLink extends React.Component<Props, State>
                     className={classes.popper}
                 >
                     <CommentWrapper
-                        username={username}
-                        userPicture={userPicture}
+                        user={user}
                         created={comment.created}
                     >
                         <RenderMarkdown

@@ -58,10 +58,9 @@ class CommitView extends React.Component<Props>
                                 </div>
                             }
                             <UserAvatar
+                                user={this.props.user}
+                                selectUser={this.props.selectUser}
                                 className={classes.userAvatar}
-                                username={this.props.user.name}
-                                userPicture={this.props.user.picture}
-                                onClick={() => this.props.selectUser({ username: this.props.user.username })}
                             />
                             <div>
                                 <Typography>{commit.user}</Typography>
@@ -100,7 +99,7 @@ interface Props {
     codeColorScheme?: string | undefined
     getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string }) => void
     selectCommit: (payload: { selectedCommit: string | undefined }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
     classes: any
 }
 

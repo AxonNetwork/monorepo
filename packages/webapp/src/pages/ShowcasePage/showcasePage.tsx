@@ -19,7 +19,6 @@ import FeaturedRepos from './components/FeaturedRepos'
 import UploadBannerDialog from './components/UploadBannerDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
 import OrgBlog from './components/connected/OrgBlog'
-import { getRepoList } from 'redux/repo/repoActions'
 import { fetchOrgInfo, uploadOrgBanner, changeOrgFeaturedRepos } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
@@ -173,7 +172,6 @@ class ShowcasePage extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
-        this.props.getRepoList({})
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
@@ -232,7 +230,6 @@ interface Props extends RouteComponentProps<MatchParams> {
     usersByEmail: { [email: string]: string }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
-    getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
     uploadOrgBanner: typeof uploadOrgBanner
     changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
@@ -354,7 +351,6 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
 
 const mapDispatchToProps = {
     fetchOrgInfo,
-    getRepoList,
     uploadOrgBanner,
     changeOrgFeaturedRepos,
 }

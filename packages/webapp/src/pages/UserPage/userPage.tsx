@@ -70,7 +70,7 @@ class UserPage extends React.Component<Props>
                                             <Avatar src={orgs[orgID].picture['128x128']} />
                                         }
                                         {orgs[orgID].picture === undefined &&
-                                            <Avatar>{orgs[orgID].name[0]}</Avatar>
+                                            <Avatar>{orgs[orgID].name}</Avatar>
                                         }
                                     </IconButton>
                                 )

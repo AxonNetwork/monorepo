@@ -13,7 +13,6 @@ import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Members from './connected/Members'
-import { getRepoList } from 'redux/repo/repoActions'
 import { fetchOrgInfo, addRepoToOrg, addMemberToOrg, removeMemberFromOrg } from 'redux/org/orgActions'
 import { IGlobalState } from 'redux/store'
 import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
@@ -71,6 +70,7 @@ class OrgHomePage extends React.Component<Props>
                         addMember={this.addMember}
                         removeMember={this.removeMember}
                         selectUser={this.selectUser}
+                        history={this.props.history}
                     />
 
                     <Button
@@ -89,7 +89,6 @@ class OrgHomePage extends React.Component<Props>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
-        this.props.getRepoList({})
     }
 
     onClickEditReadme() {
@@ -130,7 +129,7 @@ class OrgHomePage extends React.Component<Props>
         this.props.removeMemberFromOrg({ userID, orgID })
     }
 
-    selectUser(payload: { username: string | undefined }) {
+    selectUser(payload: { username: string }) {
         console.log(payload)
         const username = payload.username
         if (username === undefined) {
@@ -154,7 +153,6 @@ interface Props extends RouteComponentProps<MatchParams> {
     repos: { [repoID: string]: IRepo }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
-    getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
     addRepoToOrg: typeof addRepoToOrg
     addMemberToOrg: typeof addMemberToOrg
@@ -246,7 +244,6 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
 
 const mapDispatchToProps = {
     fetchOrgInfo,
-    getRepoList,
     addRepoToOrg,
     addMemberToOrg,
     removeMemberFromOrg,
