@@ -55,6 +55,7 @@ class SharedUsers extends React.Component<Props, State>
         const sharedUsers = union(admins, pushers, pullers)
             .map(username => usersByUsername[username])
             .map(id => users[id])
+            .filter(user => !!user)
 
         const adminIDs = admins.map(username => usersByUsername[username])
         const isAdmin = adminIDs.indexOf(currentUser) > -1
