@@ -5,41 +5,57 @@ import IconButton from '@material-ui/core/IconButton'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
 import { IUser } from 'conscience-lib/common'
-const IDENTICON_URL = process.env.API_URL + '/identicon/'
+import jdenticon from 'jdenticon'
+
 
 @autobind
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { user, userPictureSize, seedText = 'unknown', selectUser, classes } = this.props
-        let src
-        if (!user) {
-            src = IDENTICON_URL + seedText
-        } else if (!user.picture) {
-            src = IDENTICON_URL + user.userID
-        } else {
-            src = user.picture[userPictureSize || '128x128']
+        const { user, userPictureSize, selectUser, classes } = this.props
+        let seedText = this.props.seedText || "unknown"
+        if (user && user.userID) {
+            seedText = user.userID
         }
-        const name = user !== undefined ? user.name : seedText
-        const avatar = (
-            <Tooltip title={name}>
+        let avatar
+        if (user && user.picture) {
+            avatar = (
                 <Avatar
                     classes={this.props.classes}
                     className={this.props.className}
-                    src={src}
+                    src={user.picture[userPictureSize || '128x128']}
                 />
+            )
+        } else {
+            const svg = jdenticon.toSvg(seedText, 200)
+            avatar = (
+                <Avatar
+                    classes={this.props.classes}
+                    className={this.props.className}
+                >
+                    <div
+                        dangerouslySetInnerHTML={{ __html: svg }}
+                        className={classes.identicon}
+                    />
+                </Avatar>
+            )
+        }
+        const name = user !== undefined ? user.name : seedText
+        const withTooltip = (
+            <Tooltip title={name}>
+                {avatar}
             </Tooltip>
         )
 
         if (selectUser === undefined) {
-            return avatar
+            return withTooltip
         } else {
             return (
                 <IconButton
                     onClick={this.selectUser}
                     className={classes.iconButton}
                 >
-                    {avatar}
+                    {withTooltip}
                 </IconButton>
             )
         }
@@ -66,6 +82,13 @@ const styles = () => createStyles({
     root: {}, // pass-through
     iconButton: {
         padding: 0
+    },
+    identicon: {
+        paddingTop: 5,
+        "& svg": {
+            width: '100%',
+            height: '100%',
+        }
     }
 })
 

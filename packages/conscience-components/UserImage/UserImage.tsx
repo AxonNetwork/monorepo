@@ -1,19 +1,30 @@
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { IUser } from 'conscience-lib/common'
-const IDENTICON_URL = process.env.API_URL + '/identicon/'
+import jdenticon from 'jdenticon'
+jdenticon.config = { backColor: '#fafafaff' }
 
 function UserImage(props: Props) {
     const { user, userPictureSize, classes } = props
-    let src
-    if (!user) {
-        src = IDENTICON_URL + "unknown"
-    } else if (!user.picture) {
-        src = IDENTICON_URL + user.userID
-    } else {
-        src = user.picture[userPictureSize || '128x128']
+    if (user && user.picture) {
+        return (
+            <img
+                src={user.picture[userPictureSize || '128x128']}
+                className={classes.root}
+            />
+        )
     }
-    return <img src={src} className={classes.root} />
+    let seed = "unknown"
+    if (user && user.userID) {
+        seed = user.userID
+    }
+    const svg = jdenticon.toSvg(seed, 200)
+    return (
+        <div
+            dangerouslySetInnerHTML={{ __html: svg }}
+            className={classes.root}
+        />
+    )
 }
 
 interface Props {
@@ -24,7 +35,12 @@ interface Props {
 
 
 const styles = (theme: Theme) => createStyles({
-    root: {} // pass-through
+    root: {
+        "& svg": {
+            width: '100%',
+            height: '100%',
+        }
+    }
 })
 
 export default withStyles(styles)(UserImage)
