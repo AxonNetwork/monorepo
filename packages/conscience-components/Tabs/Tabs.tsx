@@ -6,6 +6,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import HistoryIcon from '@material-ui/icons/History'
 import CommentIcon from '@material-ui/icons/Comment'
+import PeopleIcon from '@material-ui/icons/People'
 
 
 function Tabs<T extends number>(props: {
@@ -46,6 +47,8 @@ function getIcon(tab: string) {
             return <HistoryIcon />
         case 'Discussion':
             return <CommentIcon />
+        case 'Team':
+            return <PeopleIcon />
     }
     return null
 }

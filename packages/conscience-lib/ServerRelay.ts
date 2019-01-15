@@ -145,6 +145,23 @@ const ServerRelay = {
         return response.data.sharedRepos
     },
 
+    async updateUserPermissions(repoID: string, username: string, admin: boolean, pusher: boolean, puller: boolean) {
+        interface IResponse {
+            repoID: string
+            admins: string[]
+            pushers: string[]
+            pullers: string[]
+        }
+        const response = await axios.post<IResponse>(API_URL + '/update-user-permissions', {
+            repoID,
+            username,
+            admin,
+            pusher,
+            puller,
+        })
+        return response.data
+    },
+
     async getRepoList(username: string) {
         interface IResponse {
             repoIDs: string[]

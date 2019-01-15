@@ -90,6 +90,23 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
+            const { repoID, admins, pushers, pullers } = action.payload
+
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [repoID]: {
+                        ...(state.repos[repoID] || {}),
+                        admins: admins,
+                        pushers: pushers,
+                        pullers: pullers,
+                    },
+                },
+            }
+        }
+
         default:
             return state
     }

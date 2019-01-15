@@ -8,6 +8,8 @@ export function repoPageToString(repoPage: RepoPage) {
             return 'history'
         case RepoPage.Discussion:
             return 'discussion'
+        case RepoPage.Team:
+            return 'team'
         case RepoPage.Settings:
             return 'settings'
         case RepoPage.Home:
@@ -26,6 +28,8 @@ export function stringToRepoPage(pathname: string) {
             return RepoPage.History
         case 'discussion':
             return RepoPage.Discussion
+        case 'team':
+            return RepoPage.Team
         case 'settings':
             return RepoPage.Settings
         case 'home':

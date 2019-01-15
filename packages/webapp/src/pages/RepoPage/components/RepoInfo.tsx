@@ -31,8 +31,7 @@ class RepoInfo extends React.Component<Props>
                         [RepoPage.Files, 'Files'],
                         [RepoPage.History, 'History'],
                         [RepoPage.Discussion, 'Discussion'],
-                        [RepoPage.Settings, 'Settings'],
-
+                        [RepoPage.Team, 'Team'],
                     ]}
                     activePage={this.props.repoPage}
                     onTabSelect={this.props.navigateRepoPage}

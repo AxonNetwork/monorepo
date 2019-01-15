@@ -8,7 +8,7 @@ import RepoHomePage from './components/RepoHomePage'
 import RepoFilesPage from './components/RepoFilesPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
-import RepoSettingsPage from './components/RepoSettingsPage'
+import RepoTeamPage from './components/RepoTeamPage'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, RepoPage } from 'conscience-lib/common'
@@ -64,7 +64,7 @@ class RepoRoutes extends React.Component<Props>
                                 <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
                                 <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
                                 <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
-                                <Route path='/repo/:repoID/settings' component={RepoSettingsPage} />
+                                <Route path='/repo/:repoID/team' component={RepoTeamPage} />
                                 <Route path='/repo/:repoID' component={RepoHomePage} />
                             </Switch>
                         </div>

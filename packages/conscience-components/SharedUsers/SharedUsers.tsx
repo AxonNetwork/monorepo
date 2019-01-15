@@ -19,6 +19,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
@@ -44,7 +45,7 @@ class SharedUsers extends React.Component<Props, State>
     _inputUser: HTMLInputElement | null = null
 
     render() {
-        const { repo, currentUser, users, usersByUsername, classes } = this.props
+        const { repo, currentUser, users, usersByUsername, updatingUserPermissions, classes } = this.props
         const { selectedUser } = this.state
 
         if (!repo) {
@@ -52,12 +53,15 @@ class SharedUsers extends React.Component<Props, State>
         }
 
         const { admins = [], pushers = [], pullers = [] } = repo || {}
-        const sharedUsers = union(admins, pushers, pullers)
-            .map(username => usersByUsername[username])
+        const sharedUsernames = union(admins, pushers, pullers)
+        const sharedUsers = sharedUsernames.map(username => usersByUsername[username])
             .map(id => users[id])
+            .filter(user => user !== undefined)
 
         const adminIDs = admins.map(username => usersByUsername[username])
         const isAdmin = adminIDs.indexOf(currentUser) > -1
+
+        const updatingNew = updatingUserPermissions !== undefined && sharedUsernames.indexOf(updatingUserPermissions) < 0
 
         return (
             <Card className={classes.root}>
@@ -68,7 +72,9 @@ class SharedUsers extends React.Component<Props, State>
                             color="secondary"
                             className={classes.button}
                             onClick={() => this.openDialog()}
+                            disabled={updatingNew}
                         >
+                            {updatingNew && <CircularProgress size={24} className={classes.buttonLoading} />}
                             <ControlPointIcon className={classes.controlPointIcon} />
                             Add User
                         </Button>
@@ -111,9 +117,16 @@ class SharedUsers extends React.Component<Props, State>
                                     </TableCell>
                                     {isAdmin &&
                                         <TableCell className={classes.centered}>
-                                            <IconButton onClick={() => this.openDialog(user.userID)}>
-                                                <SettingsIcon />
-                                            </IconButton>
+                                            {currentUser !== user.userID &&
+                                                <IconButton onClick={() => this.openDialog(user.username)}>
+                                                    {updatingUserPermissions === user.username &&
+                                                        <CircularProgress size={24} className={classes.buttonLoading} />
+                                                    }
+                                                    {updatingUserPermissions !== user.username &&
+                                                        <SettingsIcon />
+                                                    }
+                                                </IconButton>
+                                            }
                                         </TableCell>
                                     }
                                 </TableRow>
@@ -139,7 +152,7 @@ class SharedUsers extends React.Component<Props, State>
                             {selectedUser !== undefined &&
                                 <Typography>
                                     <strong>User:</strong>
-                                    {users[selectedUser || ''].username}
+                                    {selectedUser}
                                 </Typography>
                             }
                             <List>
@@ -161,7 +174,7 @@ class SharedUsers extends React.Component<Props, State>
                             <Button
                                 onClick={this.changePermissions}
                                 color="secondary"
-                                variant='outlined'
+                                variant='contained'
                             >
                                 Set Permissions
                             </Button>
@@ -181,15 +194,14 @@ class SharedUsers extends React.Component<Props, State>
         )
     }
 
-    openDialog(userID?: string) {
-        const username = (this.props.users[userID || ''] || {}).username || ''
+    openDialog(username?: string) {
         const { admins = [], pushers = [], pullers = [] } = this.props.repo || {}
         this.setState({
             dialogOpen: true,
-            selectedUser: userID,
-            adminChecked: admins.indexOf(username) > -1,
-            writeChecked: pushers.indexOf(username) > -1,
-            readChecked: pullers.indexOf(username) > -1,
+            selectedUser: username,
+            adminChecked: admins.indexOf(username || '') > -1,
+            writeChecked: pushers.indexOf(username || '') > -1,
+            readChecked: pullers.indexOf(username || '') > -1,
         })
     }
 
@@ -205,24 +217,25 @@ class SharedUsers extends React.Component<Props, State>
 
     changePermissions() {
         const { selectedUser, readChecked, writeChecked, adminChecked } = this.state
-        let userID = selectedUser as string | undefined
-        if (userID === undefined) {
+        let username = selectedUser as string | undefined
+        if (username === undefined) {
             if (this._inputUser === null) {
                 return
             }
-            userID = this._inputUser.value
-            if (userID.length < 1) {
+            username = this._inputUser.value
+            if (username.length < 1) {
                 return
             }
         }
         const repoID = (this.props.repo || { repoID: '' }).repoID
-        this.props.changeUserPermissions({
+        this.props.updateUserPermissions({
             repoID,
-            userID,
+            username,
             admin: adminChecked,
             pusher: writeChecked,
             puller: readChecked
         })
+        this.closeDialog()
     }
 
     toggleRead() {
@@ -243,8 +256,9 @@ interface Props {
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
     currentUser: string
-    changeUserPermissions: (payload: { repoID: string, userID: string, admin: boolean, pusher: boolean, puller: boolean }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    updatingUserPermissions: string | undefined
+    updateUserPermissions: (payload: { repoID: string, username: string, admin: boolean, pusher: boolean, puller: boolean }) => void
+    selectUser: (payload: { username: string }) => void
     classes: any
 }
 
@@ -289,6 +303,14 @@ const styles = (theme: Theme) => createStyles({
     },
     button: {
         textTransform: 'none',
+    },
+    buttonLoading: {
+        color: theme.palette.secondary.main,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
     },
     controlPointIcon: {
         marginRight: theme.spacing.unit,

@@ -5,6 +5,7 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
     IAddCollaboratorAction, IAddCollaboratorSuccessAction,
     IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
+    IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
     getRepo,
 } from './repoActions'
 import { makeLogic } from '../reduxUtils'
@@ -68,10 +69,20 @@ const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveColl
     }
 })
 
+const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
+    type: RepoActionType.UPDATE_USER_PERMISSIONS,
+    async process({ action }, dispatch) {
+        const { repoID, username, admin, pusher, puller } = action.payload
+        const { admins, pushers, pullers } = await ServerRelay.updateUserPermissions(repoID, username, admin, pusher, puller)
+        return { repoID, admins, pushers, pullers }
+    }
+})
+
 export default [
     getRepoListLogic,
     getRepoLogic,
     getDiffLogic,
     addCollaboratorLogic,
     removeCollaboratorLogic,
+    updateUserPermissionsLogic,
 ]

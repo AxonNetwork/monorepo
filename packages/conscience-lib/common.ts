@@ -146,6 +146,7 @@ export enum RepoPage {
     History,
     Discussion,
     Settings,
+    Team,
     New,
 }
 
