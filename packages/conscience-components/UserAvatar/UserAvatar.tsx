@@ -1,5 +1,6 @@
 import React from 'react'
 import Avatar from '@material-ui/core/Avatar'
+import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
@@ -10,7 +11,7 @@ const IDENTICON_URL = process.env.API_URL + '/identicon/'
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { user, userPictureSize, seedText = 'default', selectUser, classes } = this.props
+        const { user, userPictureSize, seedText = 'unknown', selectUser, classes } = this.props
         let src
         if (!user) {
             src = IDENTICON_URL + seedText
@@ -19,12 +20,15 @@ class UserAvatar extends React.Component<Props>
         } else {
             src = user.picture[userPictureSize || '128x128']
         }
+        const name = user !== undefined ? user.name : seedText
         const avatar = (
-            <Avatar
-                classes={this.props.classes}
-                className={this.props.className}
-                src={src}
-            />
+            <Tooltip title={name}>
+                <Avatar
+                    classes={this.props.classes}
+                    className={this.props.className}
+                    src={src}
+                />
+            </Tooltip>
         )
 
         if (selectUser === undefined) {

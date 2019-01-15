@@ -34,8 +34,8 @@ class ConnectedTimeline extends React.Component<Props>
                 commitList={commitList}
                 selectCommit={this.selectCommit}
                 selectUser={this.selectUser}
-                users={{}}
-                usersByEmail={{}}
+                users={this.props.users}
+                usersByEmail={this.props.usersByEmail}
             />
         )
     }
@@ -72,6 +72,8 @@ interface OwnProps {
 interface StateProps {
     repo: IRepo
     user: IUser
+    users: { [userID: string]: IUser }
+    usersByEmail: { [email: string]: string }
     history: History
 }
 
@@ -94,6 +96,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         repo,
         user,
+        users: state.user.users,
+        usersByEmail: state.user.usersByEmail,
     }
 }
 

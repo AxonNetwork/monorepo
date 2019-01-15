@@ -57,7 +57,7 @@ class Timeline extends React.Component<Props, State>
                 <div>
                     {timelinePage.map((event) => {
                         const email = extractEmail(event.user) || ''
-                        const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
+                        const user = this.props.users[this.props.usersByEmail[email] || '']
                         return (
                             <TimelineEvent
                                 key={event.commit}
