@@ -168,7 +168,7 @@ const styles = (theme: Theme) => createStyles({
     sharedUsersRow: {
         display: 'flex',
         flexDirection: 'row',
-        '& div': {
+        '& button': {
             marginRight: 4,
         },
     },
