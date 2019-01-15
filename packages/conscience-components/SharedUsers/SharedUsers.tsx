@@ -56,7 +56,7 @@ class SharedUsers extends React.Component<Props, State>
         const sharedUsernames = union(admins, pushers, pullers)
         const sharedUsers = sharedUsernames.map(username => usersByUsername[username])
             .map(id => users[id])
-            .filter(user => user !== undefined)
+            .filter(user => !!user)
 
         const adminIDs = admins.map(username => usersByUsername[username])
         const isAdmin = adminIDs.indexOf(currentUser) > -1
@@ -144,7 +144,7 @@ class SharedUsers extends React.Component<Props, State>
                         <DialogContent className={classes.dialog}>
                             {selectedUser === undefined &&
                                 <TextField
-                                    label="email or username"
+                                    label="Username"
                                     fullWidth
                                     inputRef={x => this._inputUser = x}
                                 />
