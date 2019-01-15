@@ -25,8 +25,10 @@ class Repositories extends React.Component<Props, State>
 
     render() {
         const { repos, repoList, discussionsByRepo, classes } = this.props
-        if (this.props.loading) {
-            const loaderLength = repoList.length
+        const loading = repoList === undefined || repoList.some(id => (repos[id] || {}).files === undefined)
+
+        if (loading) {
+            const loaderLength = repoList !== undefined ? repoList.length : 4
             return (
                 <div className={classes.root}>
                     {Array(loaderLength).fill(0).map(i => (
@@ -42,14 +44,14 @@ class Repositories extends React.Component<Props, State>
         if (this.state.dialogOpen) {
             reposToAdd = Object.keys(repos)
                 // repo is not already part of org
-                .filter((key: string) => repoList.indexOf(repos[key].repoID) < 0)
+                .filter((key: string) => (repoList || []).indexOf(repos[key].repoID) < 0)
                 .map((key: string) => repos[key].repoID)
         }
 
         return (
             <React.Fragment>
                 <div className={classes.root}>
-                    {repoList.map(id =>
+                    {(repoList || []).map(id =>
                         <RepositoryCard
                             repo={repos[id]}
                             numDiscussions={(discussionsByRepo[id] || []).length}
@@ -125,8 +127,7 @@ class Repositories extends React.Component<Props, State>
 }
 
 interface Props {
-    loading?: boolean
-    repoList: string[]
+    repoList: string[] | undefined
     repos: { [repoID: string]: IRepo }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }

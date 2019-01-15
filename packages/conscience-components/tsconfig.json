@@ -22,7 +22,9 @@
     "sourceMap": true,
     "strict": true,
     "typeRoots": [
-      "node_moduels/@types"
+      "../../node_modules/@types",
+      "node_modules/@types",
+      "./@types"
     ],
     "removeComments": true
   },
