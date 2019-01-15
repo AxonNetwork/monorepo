@@ -21,7 +21,7 @@ import { autobind } from 'conscience-lib/utils'
 class UserPage extends React.Component<Props>
 {
     render() {
-        const { repoList, repos, user, orgs, classes } = this.props
+        const { user, orgs, classes } = this.props
         if (user === undefined) {
             return (
                 <div className={classes.progressContainer}>
@@ -30,7 +30,6 @@ class UserPage extends React.Component<Props>
             )
         }
 
-        const loading = repoList.some(id => (repos[id] || {}).files === undefined)
         return (
             <div className={classes.container}>
                 <main className={classes.main}>
@@ -84,7 +83,6 @@ class UserPage extends React.Component<Props>
                             <Divider className={classes.repoDivider} />
 
                             <RepositoryCards
-                                loading={loading}
                                 repoList={this.props.repoList}
                                 repos={this.props.repos}
                                 discussions={this.props.discussions}
@@ -135,7 +133,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    repoList: string[]
+    repoList: string[] | undefined
     repos: { [repoID: string]: IRepo }
     user: IUser
     currentUser: string
@@ -202,7 +200,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
     const username = ownProps.match.params.username
     const selectedUserID = state.user.usersByUsername[username]
     const user = state.user.users[selectedUserID]
-    const repoList = state.repo.repoListByUser[username] || []
+    const repoList = state.repo.repoListByUser[username]
     return {
         repoList: repoList,
         repos: state.repo.repos,

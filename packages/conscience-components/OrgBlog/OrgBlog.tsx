@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import RenderMarkdown from '../RenderMarkdown'
+import ReactMarkdown from 'react-markdown'
 import { H5, H6 } from '../Typography/Headers'
 import { IOrgBlog } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -41,7 +41,7 @@ class OrgBlog extends React.Component<Props>
                                             <H6>{blog.title}</H6>
                                             <div>{blog.author}</div>
                                             <div>{moment(blog.created).calendar()}</div>
-                                            <RenderMarkdown text={blog.body} />
+                                            <ReactMarkdown source={blog.body} />
                                         </div>
                                     </ListItem>
                                 )

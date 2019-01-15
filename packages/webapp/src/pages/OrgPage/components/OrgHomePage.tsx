@@ -9,7 +9,8 @@ import IconButton from '@material-ui/core/IconButton'
 import Button from '@material-ui/core/Button'
 import EditIcon from '@material-ui/icons/Edit'
 import LargeAddButton from 'conscience-components/LargeAddButton'
-import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
+// import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
+import ReactMarkdown from 'react-markdown'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Members from './connected/Members'
@@ -48,7 +49,7 @@ class OrgHomePage extends React.Component<Props>
                                 <EditIcon fontSize="small" />
                             </IconButton>
                             <CardContent className={classes.readmeWrapper}>
-                                <RenderMarkdown text={org.readme} />
+                                <ReactMarkdown source={org.readme} />
                             </CardContent>
                         </Card>
                     }
