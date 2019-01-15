@@ -29,12 +29,15 @@ export enum RepoActionType {
 
 export interface IGetRepoListAction {
     type: RepoActionType.GET_REPO_LIST
-    payload: {}
+    payload: {
+        username: string
+    }
 }
 
 export interface IGetRepoListSuccessAction {
     type: RepoActionType.GET_REPO_LIST_SUCCESS
     payload: {
+        username: string
         repoList: string[]
     }
 }

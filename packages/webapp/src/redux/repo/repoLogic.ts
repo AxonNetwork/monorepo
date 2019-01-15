@@ -16,9 +16,10 @@ import { union } from 'lodash'
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
     async process({ action }, dispatch) {
-        const repoList = await ServerRelay.getRepoList()
+        const { username } = action.payload
+        const repoList = await ServerRelay.getRepoList(username)
         await Promise.all(repoList.map(repoID => dispatch(getRepo({ repoID }))))
-        return { repoList }
+        return { username, repoList }
     }
 })
 

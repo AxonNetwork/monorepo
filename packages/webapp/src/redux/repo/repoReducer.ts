@@ -4,20 +4,24 @@ import { uniq } from 'lodash'
 
 const initialState = {
     repos: {},
-    repoList: [],
+    repoListByUser: {},
 }
 
 export interface IRepoState {
     repos: { [repoID: string]: IRepo }
-    repoList: string[]
+    repoListByUser: { [username: string]: string[] }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.GET_REPO_LIST_SUCCESS: {
+            const { username, repoList } = action.payload
             return {
                 ...state,
-                repoList: action.payload.repoList
+                repoListByUser: {
+                    ...state.repoListByUser,
+                    [username]: repoList
+                }
             }
         }
 

@@ -35,8 +35,11 @@ class UserPage extends React.Component<Props>
             <div className={classes.container}>
                 <main className={classes.main}>
                     <div className={classes.profileSidebar}>
-                        <UserImage user={user} />
-                        {/*<img src={user.picture['512x512']} className={classes.userPic} />*/}
+                        <UserImage
+                            user={user}
+                            userPictureSize="512x512"
+                            classes={{ root: classes.userPic }}
+                        />
                         <div className={classes.userDetails}>
                             <H5 className={classes.userRealName}>{user.name}</H5>
                             <div className={classes.userUserName}>{user.username}</div>
@@ -95,8 +98,16 @@ class UserPage extends React.Component<Props>
         )
     }
 
+    componentDidUpdate(prevProps: Props) {
+        const username = this.props.match.params.username
+        if (username !== prevProps.match.params.username) {
+            this.props.getRepoList({ username })
+        }
+    }
+
     componentWillMount() {
-        this.props.getRepoList({})
+        const username = this.props.match.params.username
+        this.props.getRepoList({ username })
     }
 
     navigateOrgPage(orgID: string) {
@@ -191,8 +202,9 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
     const username = ownProps.match.params.username
     const selectedUserID = state.user.usersByUsername[username]
     const user = state.user.users[selectedUserID]
+    const repoList = state.repo.repoListByUser[username] || []
     return {
-        repoList: state.repo.repoList,
+        repoList: repoList,
         repos: state.repo.repos,
         user,
         currentUser: state.user.currentUser || '',

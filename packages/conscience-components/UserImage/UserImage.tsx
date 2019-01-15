@@ -7,7 +7,7 @@ function UserImage(props: Props) {
     const { user, userPictureSize, classes } = props
     let src
     if (!user) {
-        src = IDENTICON_URL + seedText
+        src = IDENTICON_URL + "unknown"
     } else if (!user.picture) {
         src = IDENTICON_URL + user.userID
     } else {
