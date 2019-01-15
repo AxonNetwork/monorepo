@@ -41,8 +41,7 @@ class RepoDiscussionPage extends React.Component<Props>
                     {discussionsSorted.map(d => {
                         const isSelected = selectedID && d.discussionID === selectedID
                         const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                        const username = (this.props.users[d.userID] || {}).name || d.userID
-                        const userPicture = (this.props.users[d.userID] || {}).picture
+                        const user = this.props.users[d.userID]
                         return (
                             <ListItem
                                 button
@@ -60,7 +59,7 @@ class RepoDiscussionPage extends React.Component<Props>
                                                 {moment(newestComment[d.discussionID]).fromNow()}
                                             </div>
                                             <div className={classes.sidebarListItemAvatar}>
-                                                <UserAvatar username={username} userPicture={userPicture} />
+                                                <UserAvatar user={user} />
                                             </div>
                                         </div>
                                     </React.Fragment>
@@ -89,6 +88,7 @@ class RepoDiscussionPage extends React.Component<Props>
                             files={repo.files || {}}
                             discussions={discussions}
                             createDiscussion={this.props.createDiscussion}
+                            selectUser={this.props.selectUser}
                         />
                     </div>
                 }
@@ -137,7 +137,7 @@ interface Props {
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
 
     classes: any
 }

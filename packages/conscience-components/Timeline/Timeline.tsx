@@ -3,7 +3,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import TablePagination from '@material-ui/core/TablePagination'
 import TimelineEvent from '../TimelineEvent'
 import { IUser, ITimelineEvent } from 'conscience-lib/common'
-import { autobind, removeEmail, extractEmail } from 'conscience-lib/utils'
+import { autobind, extractEmail } from 'conscience-lib/utils'
 
 
 @autobind
@@ -58,14 +58,12 @@ class Timeline extends React.Component<Props, State>
                     {timelinePage.map((event) => {
                         const email = extractEmail(event.user) || ''
                         const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
-                        const userRealName = user.name || removeEmail(event.user)
                         return (
                             <TimelineEvent
                                 key={event.commit}
                                 event={event}
-                                userRealName={userRealName}
-                                userPicture={user.picture}
-                                username={user.username}
+                                user={user}
+                                userEmail={email}
                                 selectCommit={this.selectCommit}
                                 selectUser={this.props.selectUser}
                             />
@@ -87,7 +85,7 @@ interface Props {
     users: { [userID: string]: IUser }
     usersByEmail: { [email: string]: string }
     selectCommit?: (payload: { selectedCommit: string }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
     classes: any
 }
 

@@ -92,11 +92,7 @@ class SharedUsers extends React.Component<Props, State>
                                     <TableCell>
                                         <div className={classes.user}>
                                             <div className={classes.userAvatar}>
-                                                <UserAvatar
-                                                    username={user.name}
-                                                    userPicture={user.picture}
-                                                    onClick={() => this.props.selectUser({ username: user.username })}
-                                                />
+                                                <UserAvatar user={user} selectUser={this.props.selectUser} />
                                             </div>
                                             <div className={classes.userInfo}>
                                                 <Typography><strong>{user.name}</strong></Typography>

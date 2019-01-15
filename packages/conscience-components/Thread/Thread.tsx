@@ -188,7 +188,7 @@ interface Props {
     selectDiscussion: (payload: { discussionID: string | undefined }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
 
     classes: any
 }

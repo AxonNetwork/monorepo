@@ -34,10 +34,7 @@ class Header extends React.Component<Props, State>
                 {user !== undefined &&
                     <div className={classes.avatar}>
                         <IconButton onClick={this.openUserMenu} classes={{ root: classes.avatarButton }}>
-                            <UserAvatar
-                                username={user.name}
-                                userPicture={user.picture}
-                            />
+                            <UserAvatar user={user} />
                         </IconButton>
                         <Menu
                             classes={{ paper: classes.menuPaper }}

@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import RenderMarkdown from '../RenderMarkdown'
-import { H6 } from '../Typography/Headers'
+import { H5, H6 } from '../Typography/Headers'
 import { IOrgBlog } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -15,7 +15,7 @@ import { autobind } from 'conscience-lib/utils'
 class OrgBlog extends React.Component<Props>
 {
     render() {
-        const { blogs, limit } = this.props
+        const { blogs, limit, classes } = this.props
         const blogMap = blogs.map || {}
         let sortedIDs = blogs.sortedIDs || []
 
@@ -23,26 +23,33 @@ class OrgBlog extends React.Component<Props>
             sortedIDs = sortedIDs.slice(0, limit)
         }
 
+        if (sortedIDs.length === 0) {
+            return null
+        }
+
         return (
-            <Card>
-                <CardContent>
-                    <List>
-                        {sortedIDs.map(id => {
-                            const blog = blogMap[`${id}`]
-                            return (
-                                <ListItem>
-                                    <div>
-                                        <H6>{blog.title}</H6>
-                                        <div>{blog.author}</div>
-                                        <div>{moment(blog.created).calendar()}</div>
-                                        <RenderMarkdown text={blog.body} />
-                                    </div>
-                                </ListItem>
-                            )
-                        })}
-                    </List>
-                </CardContent>
-            </Card>
+            <div>
+                <H5 className={classes.sectionHeader}>News and Updates</H5>
+                <Card>
+                    <CardContent>
+                        <List>
+                            {sortedIDs.map(id => {
+                                const blog = blogMap[`${id}`]
+                                return (
+                                    <ListItem>
+                                        <div>
+                                            <H6>{blog.title}</H6>
+                                            <div>{blog.author}</div>
+                                            <div>{moment(blog.created).calendar()}</div>
+                                            <RenderMarkdown text={blog.body} />
+                                        </div>
+                                    </ListItem>
+                                )
+                            })}
+                        </List>
+                    </CardContent>
+                </Card>
+            </div>
         )
     }
 
@@ -66,6 +73,9 @@ interface Props {
 }
 
 const styles = () => createStyles({
+    sectionHeader: {
+        margin: '20px 0 30px',
+    },
 })
 
 export default withStyles(styles)(OrgBlog)

@@ -5,8 +5,9 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Avatar from '@material-ui/core/Avatar'
 import UserProfile from 'conscience-components/UserProfile'
-import UserAvatar from 'conscience-components/UserAvatar'
+import UserImage from 'conscience-components/UserImage'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'redux/repo/repoActions'
@@ -34,7 +35,8 @@ class UserPage extends React.Component<Props>
             <div className={classes.container}>
                 <main className={classes.main}>
                     <div className={classes.profileSidebar}>
-                        <img src={user.picture['512x512']} className={classes.userPic} />
+                        <UserImage user={user} />
+                        {/*<img src={user.picture['512x512']} className={classes.userPic} />*/}
                         <div className={classes.userDetails}>
                             <H5 className={classes.userRealName}>{user.name}</H5>
                             <div className={classes.userUserName}>{user.username}</div>
@@ -61,10 +63,12 @@ class UserPage extends React.Component<Props>
                                         classes={{ root: classes.orgIcon }}
                                         key={orgID}
                                     >
-                                        <UserAvatar
-                                            username={orgs[orgID].name}
-                                            userPicture={orgs[orgID].picture}
-                                        />
+                                        {orgs[orgID].picture !== undefined &&
+                                            <Avatar src={orgs[orgID].picture['128x128']} />
+                                        }
+                                        {orgs[orgID].picture === undefined &&
+                                            <Avatar>{orgs[orgID].name[0]}</Avatar>
+                                        }
                                     </IconButton>
                                 )
                             })}

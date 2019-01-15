@@ -81,7 +81,7 @@ interface Props {
     files: { [name: string]: IRepoFile }
     discussions: { [discussionID: string]: IDiscussion }
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
-    selectUser: (payload: { username: string | undefined }) => void
+    selectUser: (payload: { username: string }) => void
     classes: any
 }
 

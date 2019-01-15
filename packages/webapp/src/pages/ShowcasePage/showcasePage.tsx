@@ -117,7 +117,6 @@ class ShowcasePage extends React.Component<Props, State>
                             />
 
                             <div>
-                                <H5 className={classes.sectionHeader}>News and Updates</H5>
                                 <OrgBlog orgID={this.props.match.params.orgID} />
                             </div>
                         </Grid>
@@ -145,10 +144,9 @@ class ShowcasePage extends React.Component<Props, State>
                             return (
                                 <div className={classes.teamAvatarWrapper}>
                                     <UserAvatar
+                                        user={user}
+                                        selectUser={this.selectUser}
                                         classes={{ root: classes.teamAvatar }}
-                                        username={user.name}
-                                        userPicture={user.picture}
-                                        onClick={() => this.selectUser({ username: user.username })}
                                     />
                                     <div>{user.name}</div>
                                 </div>
@@ -283,9 +281,6 @@ const styles = (theme: Theme) => createStyles({
         right: 16,
         textTransform: 'none',
     },
-    sectionHeader: {
-        margin: '20px 0 30px',
-    },
     statsContainer: {
         width: '100%',
         display: 'flex',
@@ -308,7 +303,7 @@ const styles = (theme: Theme) => createStyles({
     },
     teamHeader: {
         textAlign: 'center',
-        marginTop: 16,
+        marginTop: 64,
     },
     team: {
         marginTop: 16,

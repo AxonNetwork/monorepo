@@ -2,44 +2,37 @@ import React from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-import { autobind, strToColor } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
 import { IUser } from 'conscience-lib/common'
-
+const IDENTICON_URL = process.env.API_URL + '/identicon/'
 
 @autobind
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { username, userPicture, onClick, classes } = this.props
-        let avatar
-        if (!userPicture) {
-            const userInitials = (username || '').split(' ').map(x => x.substring(0, 1)).map(x => x.toUpperCase()).join('')
-            const color = strToColor(username || '')
-            avatar = (
-                <Avatar
-                    classes={this.props.classes}
-                    className={this.props.className}
-                    style={{ backgroundColor: color }}
-                >
-                    {userInitials}
-                </Avatar>
-            )
+        const { user, userPictureSize, seedText = 'default', selectUser, classes } = this.props
+        let src
+        if (!user) {
+            src = IDENTICON_URL + seedText
+        } else if (!user.picture) {
+            src = IDENTICON_URL + user.userID
         } else {
-            avatar = (
-                <Avatar
-                    classes={this.props.classes}
-                    className={this.props.className}
-                    src={userPicture[this.props.userPictureSize || '128x128']}
-                />
-            )
+            src = user.picture[userPictureSize || '128x128']
         }
+        const avatar = (
+            <Avatar
+                classes={this.props.classes}
+                className={this.props.className}
+                src={src}
+            />
+        )
 
-        if (onClick === undefined) {
+        if (selectUser === undefined) {
             return avatar
         } else {
             return (
                 <IconButton
-                    onClick={onClick}
+                    onClick={this.selectUser}
                     className={classes.iconButton}
                 >
                     {avatar}
@@ -47,13 +40,20 @@ class UserAvatar extends React.Component<Props>
             )
         }
     }
+
+    selectUser() {
+        const user = this.props.user
+        if (user && user.username && this.props.selectUser) {
+            this.props.selectUser({ username: user.username })
+        }
+    }
 }
 
 interface Props {
-    username: string | undefined
-    userPicture: IUser['picture'] | undefined
+    user?: IUser
     userPictureSize?: '512x512' | '256x256' | '128x128'
-    onClick?: () => void
+    seedText?: string
+    selectUser?: (payload: { username: string }) => void
     className?: string
     classes: any
 }

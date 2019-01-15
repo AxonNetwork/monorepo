@@ -19,15 +19,13 @@ class ShowcaseTimeline extends React.Component<Props>
                 {commitList.map(hash => {
                     const event = commits[hash]
                     const email = extractEmail(event.user) || ''
-                    const user = this.props.users[this.props.usersByEmail[email] || ''] || {}
-                    const userRealName = user.name || removeEmail(event.user)
+                    const user = this.props.users[this.props.usersByEmail[email] || '']
                     return (
                         <TimelineEvent
                             key={event.commit}
                             event={event}
-                            userRealName={userRealName}
-                            userPicture={user.picture}
-                            username={user.username}
+                            user={user}
+                            userEmail={email}
                             selectCommit={this.props.selectCommit}
                         />
                     )

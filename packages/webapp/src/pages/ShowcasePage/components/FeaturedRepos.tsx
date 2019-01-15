@@ -64,9 +64,11 @@ class FeaturedRepos extends React.Component<Props, State>
                     }
                 </Grid>
                 {Object.keys(featuredRepos).length < 1 &&
-                    <Typography>
-                        No featured studies at the moment
-                    </Typography>
+                    <Grid item xs={12}>
+                        <Typography>
+                            No featured studies at the moment
+                        </Typography>
+                    </Grid>
                 }
                 {Object.keys(featuredRepos).map((repoID: string) => (
                     <Grid item xs={12} sm={6}>

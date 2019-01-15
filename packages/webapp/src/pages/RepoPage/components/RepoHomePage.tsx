@@ -62,11 +62,7 @@ import { union } from 'lodash'
                                 {sharedUsers.map((user: IUser | undefined) => {
                                     if (user !== undefined) {
                                         return (
-                                            <UserAvatar
-                                                username={user.name}
-                                                userPicture={user.picture}
-                                                onClick={() => this.navigateUserPage(user.username)}
-                                            />
+                                            <UserAvatar user={user} selectUser={this.navigateUserPage} />
                                         )
                                     } else {
                                         return null
@@ -104,7 +100,8 @@ import { union } from 'lodash'
         )
     }
 
-    navigateUserPage(username: string) {
+    navigateUserPage(payload: { username: string }) {
+        const username = payload.username
         this.props.history.push(`/user/${username}`)
     }
 

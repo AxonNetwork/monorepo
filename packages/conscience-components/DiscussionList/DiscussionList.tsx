@@ -29,8 +29,7 @@ class DiscussionList extends React.Component<Props>
                 {discussionsSorted.map(d => {
                     const isSelected = selectedID && d.discussionID === selectedID
                     const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                    const username = (this.props.users[d.userID] || {}).name || d.userID
-                    const userPicture = (this.props.users[d.userID] || {}).picture
+                    const user = this.props.users[d.userID]
                     return (
                         <ListItem
                             button
@@ -48,7 +47,7 @@ class DiscussionList extends React.Component<Props>
                                             {moment(newestComment[d.discussionID]).fromNow()}
                                         </div>
                                         <div className={classes.avatar}>
-                                            <UserAvatar username={username} userPicture={userPicture} />
+                                            <UserAvatar user={user} />
                                         </div>
                                     </div>
                                 </React.Fragment>

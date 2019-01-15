@@ -6,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LinkIcon from '@material-ui/icons/Link'
 
 import UserAvatar from '../UserAvatar'
-import { ITimelineEvent, IUploadedPicture } from 'conscience-lib/common'
+import { IUser, ITimelineEvent } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 @autobind
@@ -29,9 +29,9 @@ class TimelineEvent extends React.Component<Props>
                 }
                 <div className={classes.eventIconContainer}>
                     <UserAvatar
-                        username={this.props.userRealName}
-                        userPicture={this.props.userPicture}
-                        onClick={() => this.selectUser({ username: this.props.username })}
+                        user={this.props.user}
+                        seedText={this.props.userEmail}
+                        selectUser={this.props.selectUser}
                         className={classes.avatar}
                     />
                 </div>
@@ -46,21 +46,14 @@ class TimelineEvent extends React.Component<Props>
             </div>
         )
     }
-
-    selectUser(payload: { username: string | undefined }) {
-        if (this.props.selectUser !== undefined) {
-            this.props.selectUser(payload)
-        }
-    }
 }
 
 interface Props {
     event: ITimelineEvent
-    userRealName: string | undefined
-    userPicture: IUploadedPicture | undefined
-    username: string | undefined
+    user?: IUser | undefined
+    userEmail: string
     selectCommit: (commit: string, repoID: string | undefined) => void
-    selectUser?: (payload: { username: string | undefined }) => void
+    selectUser?: (payload: { username: string }) => void
     classes: any
 }
 
