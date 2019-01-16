@@ -2,11 +2,11 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
 import logic from './logic'
 import reducer from './reducer'
-import { IRepoState } from './repository/repoReducer'
-import { IDiscussionState } from './discussion/discussionReducer'
-import { IUserState } from './user/userReducer'
+import { IUserState } from 'conscience-components/redux/user/userReducer'
+import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
+import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+import { IOrgState } from 'conscience-components/redux/org/orgReducer'
 import { IEditorState } from './editor/editorReducer'
-import { IOrgState } from './org/orgReducer'
 import { INavigationState } from './navigation/navigationReducer'
 import { IUIState } from './ui/uiReducer'
 
@@ -17,18 +17,18 @@ const logicDeps = {}
 const logicMiddleware = createLogicMiddleware(logic, logicDeps as any)
 
 const store = createStore(
-  reducer,
-  composeEnhancers(
-    applyMiddleware(
-      logicMiddleware,
+    reducer,
+    composeEnhancers(
+        applyMiddleware(
+            logicMiddleware,
+        ),
     ),
-  ),
 )
 
 export default store
 
 export interface IGlobalState {
-    repository: IRepoState
+    repo: IRepoState
     discussion: IDiscussionState
     user: IUserState
     editor: IEditorState

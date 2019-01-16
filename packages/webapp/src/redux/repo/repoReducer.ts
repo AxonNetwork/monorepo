@@ -1,30 +1,18 @@
-import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepo } from 'conscience-lib/common'
-import { uniq } from 'lodash'
+import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import repoReducer, { initialState, IRepoState } from 'conscience-components/redux/repo/repoReducer'
+import { IWebRepoAction } from './repoActions'
 
-const initialState = {
-    repos: {},
-    repoListByUser: {},
+const webInitialState = {
+    ...initialState,
 }
 
-export interface IRepoState {
-    repos: { [repoID: string]: IRepo }
-    repoListByUser: { [username: string]: string[] }
+declare module 'conscience-components/redux/repo/repoReducer' {
+    export interface IRepoState {
+    }
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
+const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.GET_REPO_LIST_SUCCESS: {
-            const { username, repoList } = action.payload
-            return {
-                ...state,
-                repoListByUser: {
-                    ...state.repoListByUser,
-                    [username]: repoList
-                }
-            }
-        }
-
         case RepoActionType.GET_REPO_SUCCESS: {
             const { repo } = action.payload
             return {
@@ -36,80 +24,13 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        case RepoActionType.GET_DIFF_SUCCESS: {
-            const { repoID, commit, diffs } = action.payload
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoID]: {
-                        ...(state.repos[repoID] || {}),
-                        path: repoID,
-                        commits: {
-                            ...((state.repos[repoID] || {}).commits || {}),
-                            [commit]: {
-                                ...(((state.repos[repoID] || {}).commits || {})[commit] || {}),
-                                diffs,
-                            },
-                        },
-                    },
-                },
-            }
-        }
-
-        case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
-            const { repoID, userID } = action.payload
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoID]: {
-                        ...(state.repos[repoID] || {}),
-                        sharedUsers: [
-                            ...((state.repos[repoID] || {}).sharedUsers || []),
-                            userID
-                        ]
-                    }
-                }
-            }
-        }
-
-        case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
-            const { repoID, userID } = action.payload
-            const sharedUsers = uniq(((state.repos[repoID] || {}).sharedUsers || []).filter(id => id !== userID))
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoID]: {
-                        ...(state.repos[repoID] || {}),
-                        path: repoID,
-                        sharedUsers,
-                    },
-                },
-            }
-        }
-
-        case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
-            const { repoID, admins, pushers, pullers } = action.payload
-
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoID]: {
-                        ...(state.repos[repoID] || {}),
-                        admins: admins,
-                        pushers: pushers,
-                        pullers: pullers,
-                    },
-                },
-            }
-        }
-
         default:
             return state
     }
 }
 
-export default repoReducer
+export default function(state: IRepoState = webInitialState, action: IWebRepoAction): IRepoState {
+    state = repoReducer(state, action as IRepoAction)
+    state = webRepoReducer(state, action)
+    return state
+}

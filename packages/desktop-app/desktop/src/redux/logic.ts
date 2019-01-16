@@ -1,9 +1,9 @@
+import discussionLogic from 'conscience-components/redux/discussion/discussionLogic'
+import orgLogic from 'conscience-components/redux/org/orgLogic'
 import userLogic from './user/userLogic'
 import repoLogic from './repository/repoLogic'
 import navigationLogic from './navigation/navigationLogic'
-import discussionLogic from './discussion/discussionLogic'
 import editorLogic from './editor/editorLogic'
-import orgLogic from './org/orgLogic'
 
 export default [
     ...userLogic,

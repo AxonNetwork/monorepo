@@ -1,18 +1,18 @@
+import union from 'lodash/union'
 import {
     RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
-    IGetRepoAction, IGetRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
-    IAddCollaboratorAction, IAddCollaboratorSuccessAction,
-    IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+} from 'conscience-components/redux/repo/repoActions'
+import {
+    IGetRepoAction, IGetRepoSuccessAction,
     getRepo,
 } from './repoActions'
-import { makeLogic } from '../reduxUtils'
-import { getDiscussions } from '../discussion/discussionActions'
-import { fetchUserData, fetchUserDataByUsername } from '../user/userActions'
+import { makeLogic } from 'conscience-components/redux/reduxUtils'
+import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
+import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import { union } from 'lodash'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
@@ -50,25 +50,6 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     }
 })
 
-const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
-    type: RepoActionType.ADD_COLLABORATOR,
-    async process({ action }, dispatch) {
-        const { repoID, email } = action.payload
-        const { userID } = await ServerRelay.shareRepo(repoID, undefined, email)
-        await dispatch(fetchUserData({ userIDs: [userID] }))
-        return { repoID, userID }
-    }
-})
-
-const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
-    type: RepoActionType.REMOVE_COLLABORATOR,
-    async process({ action }, dispatch) {
-        const { repoID, userID } = action.payload
-        await ServerRelay.unshareRepo(repoID, userID)
-        return { repoID, userID }
-    }
-})
-
 const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
     async process({ action }, dispatch) {
@@ -82,7 +63,5 @@ export default [
     getRepoListLogic,
     getRepoLogic,
     getDiffLogic,
-    addCollaboratorLogic,
-    removeCollaboratorLogic,
     updateUserPermissionsLogic,
 ]

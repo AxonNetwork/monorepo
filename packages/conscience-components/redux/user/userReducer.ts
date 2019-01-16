@@ -1,8 +1,8 @@
+import fromPairs from 'lodash/fromPairs'
 import { IUser, IUserSettings } from 'conscience-lib/common'
 import { UserActionType, IUserAction } from './userActions'
-import { fromPairs } from 'lodash'
 
-const initialState = {
+export const initialState = {
     users: {},
     usersByEmail: {},
     usersByUsername: {},
@@ -36,8 +36,9 @@ export interface IUserState {
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {
     switch (action.type) {
         case UserActionType.WHO_AM_I_SUCCESS:
-        case UserActionType.LOGIN_SUCCESS: {
-            const { user } = action.payload
+        case UserActionType.LOGIN_SUCCESS:
+        case UserActionType.SIGNUP_SUCCESS: {
+            const user = action.payload
             const { userID, emails } = user
             const usersByEmail = fromPairs(emails.map(email => [email, userID]))
             return {
@@ -74,10 +75,12 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.LOGIN_FAILED: {
+        case UserActionType.LOGIN_FAILED:
+        case UserActionType.SIGNUP_FAILED: {
             return {
                 ...state,
                 checkedLoggedIn: true,
+                currentUser: undefined,
             }
         }
 
@@ -89,6 +92,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         }
 
         case UserActionType.FETCH_USER_DATA_SUCCESS:
+        case UserActionType.FETCH_USER_DATA_BY_EMAIL_SUCCESS:
         case UserActionType.FETCH_USER_DATA_BY_USERNAME_SUCCESS: {
             const { users } = action.payload
             const usersByEmail = {} as { [email: string]: string }
@@ -118,7 +122,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.SAW_COMMENT: {
+        case UserActionType.SAW_COMMENT_SUCCESS: {
             const { repoID, discussionID, commentTimestamp } = action.payload
             return {
                 ...state,

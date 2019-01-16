@@ -1,8 +1,12 @@
-import { makeLogic, makeContinuousLogic } from '../reduxUtils'
-import { keyBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
+import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
 import fileType from 'utils/fileType'
-import { ILocalRepo, IRepoFile, ITimelineEvent } from '../../common'
-import { RepoActionType,
+import { ILocalRepo, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import {
+    RepoActionType,
+    IGetDiffAction, IGetDiffSuccessAction,
+} from 'conscience-components/redux/repo/repoActions'
+import {
     ICreateRepoAction, ICreateRepoSuccessAction,
     IGetLocalReposAction, IGetLocalReposSuccessAction,
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
@@ -13,22 +17,21 @@ import { RepoActionType,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     ISelectRepoAction, ISelectRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
-    IGetDiffAction, IGetDiffSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
     IWatchRepoAction,
-    IAddCollaboratorAction, IAddCollaboratorSuccessAction,
-    IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers,
     fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote, cloneRepoProgress,
-    pullRepoProgress, pullRepoSuccess } from './repoActions'
-import { fetchUserData } from '../user/userActions'
-import { getDiscussions } from '../discussion/discussionActions'
-import { addRepoToOrg } from '../org/orgActions'
-import ServerRelay from 'lib/ServerRelay'
+    pullRepoProgress, pullRepoSuccess
+} from './repoActions'
+import { fetchUserData } from 'conscience-components/redux/user/userActions'
+import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
+import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
+import ServerRelay from 'conscience-lib/ServerRelay'
+import * as rpc from 'conscience-lib/rpc'
+
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
-import * as rpc from '../../rpc'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: RepoActionType.CREATE_REPO,
@@ -57,18 +60,18 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
 
-        // if attempt to fetch local repos 3 times in case node isn't running yet
+        // Attempt to fetch local repos 10 times in case node isn't running yet
         const repoList = await new Promise<ILocalRepo[]>(async (resolve, reject) => {
             let repeat = 10
-            const attempt = async function(){
-                try{
+            const attempt = async function() {
+                try {
                     const result = await rpcClient.getLocalReposAsync()
                     resolve(result)
-                }catch(err){
+                } catch (err) {
                     repeat -= 1
-                    if(repeat > 0){
+                    if (repeat > 0) {
                         setTimeout(attempt, 200)
-                    }else{
+                    } else {
                         reject(err)
                     }
                 }
@@ -76,7 +79,7 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
             attempt()
         })
 
-        let repos = {} as {[path: string]: ILocalRepo}
+        let repos = {} as { [path: string]: ILocalRepo }
 
         for (let repo of repoList) {
             // await dispatch(fetchedRepo({ repo }))
@@ -133,12 +136,12 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
         const filesListRaw = (await rpcClient.getRepoFilesAsync({ path, repoID })).files
         const filesList = filesListRaw.map(file => ({
             name: file.name,
-            size: file.size ? file.size.toNumber() :  0,
+            size: file.size ? file.size.toNumber() : 0,
             modified: new Date(file.modified * 1000),
             type: fileType(file.name),
             status: file.stagedStatus,
-            mergeConflict : file.mergeConflict,
-            mergeUnresolved : file.mergeUnresolved,
+            mergeConflict: file.mergeConflict,
+            mergeUnresolved: file.mergeUnresolved,
         } as IRepoFile))
         const files = keyBy(filesList, 'name')
 
@@ -153,7 +156,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
 
         const rpcClient = rpc.initClient()
         console.log('fetching for ', path)
-        const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, page: 0}))
+        const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, page: 0 }))
         const timeline = history.commits.map(event => ({
             version: 0,
             commit: event.commitHash,
@@ -186,7 +189,7 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
         const { repoID, path } = action.payload
         const rpcClient = rpc.initClient()
         const resp = await rpcClient.getLocalRefsAsync({ repoID, path })
-        const localRefs = {} as {[refName: string]: string}
+        const localRefs = {} as { [refName: string]: string }
         for (let ref of resp.refs) {
             localRefs[ref.refName] = ref.commitHash
         }
@@ -209,7 +212,7 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
     async process({ action }, dispatch) {
         const { repoID, folderPath, message } = action.payload
         const rpcClient = rpc.initClient()
-        await rpcClient.checkpointRepoAsync({path: folderPath, message: message})
+        await rpcClient.checkpointRepoAsync({ path: folderPath, message: message })
         await dispatch(fetchFullRepo({ repoID, path: folderPath }))
         return {}
     },
@@ -219,6 +222,10 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }) {
         const { repoRoot, commit } = action.payload
+
+        if (repoRoot === undefined) {
+            throw new Error('repoRoot should never be undefined in getDiffLogic')
+        }
 
         let diffBlob: string
         try {
@@ -232,7 +239,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         let filename = ''
         let skipLines = 0
         let pastHeader = false
-        let diffs = {} as {[filename: string]: string}
+        let diffs = {} as { [filename: string]: string }
         for (let line of lines) {
             if (line.indexOf('diff ') === 0) {
                 const parts = line.split(' ')
@@ -282,18 +289,18 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         var path = ""
         var success = false
         stream.on('data', async (data: any) => {
-            if(data.progress !== undefined){
+            if (data.progress !== undefined) {
                 const fetched = data.progress.fetched !== undefined ? data.progress.fetched.toNumber() : 0
                 const toFetch = data.progress.toFetch !== undefined ? data.progress.toFetch.toNumber() : 0
                 await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
             }
-            if(data.success !== undefined){
+            if (data.success !== undefined) {
                 path = data.success.path
                 success = true
             }
         })
         stream.on('end', async () => {
-            if(success){
+            if (success) {
                 await dispatch(watchRepo({ repoID, path }))
                 await dispatch(selectRepo({ repoID, path }))
             }
@@ -329,37 +336,37 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
     },
 })
 
-const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
-    type: RepoActionType.ADD_COLLABORATOR,
-    async process({ action, getState }, dispatch) {
-        const { repoRoot, repoID, email } = action.payload
-        const user = (await ServerRelay.fetchUsersByEmail([ email ]))[0]
-        if (user === undefined) {
-            throw new Error('user does not exist')
-        }
-        const username = user.username
-        const rpcClient = rpc.initClient()
-        await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
-        const userID = user.userID
-        await ServerRelay.shareRepo(repoID, userID)
-        dispatch(fetchUserData({ userIDs: [ userID ] }))
-        return { repoRoot, repoID, userID }
-    },
-})
+// const addCollaboratorLogic = makeLogic<IAddCollaboratorAction, IAddCollaboratorSuccessAction>({
+//     type: RepoActionType.ADD_COLLABORATOR,
+//     async process({ action, getState }, dispatch) {
+//         const { repoRoot, repoID, email } = action.payload
+//         const user = (await ServerRelay.fetchUsersByEmail([email]))[0]
+//         if (user === undefined) {
+//             throw new Error('user does not exist')
+//         }
+//         const username = user.username
+//         const rpcClient = rpc.initClient()
+//         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: true, pusher: true, admin: false })
+//         const userID = user.userID
+//         await ServerRelay.shareRepo(repoID, userID)
+//         dispatch(fetchUserData({ userIDs: [userID] }))
+//         return { repoRoot, repoID, userID }
+//     },
+// })
 
-const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
-    type: RepoActionType.REMOVE_COLLABORATOR,
-    async process({ action, getState }) {
-        const { repoRoot, repoID, userID } = action.payload
-        const user = getState().user.users[userID]
-        // @@TODO fetch if not exists
-        const username = user.username
-        const rpcClient = rpc.initClient()
-        await rpcClient.setUserPermissionsAsync({ repoID, username, puller: false, pusher: false, admin: false })
-        await ServerRelay.unshareRepo(repoID, userID)
-        return { repoRoot, repoID, userID }
-    },
-})
+// const removeCollaboratorLogic = makeLogic<IRemoveCollaboratorAction, IRemoveCollaboratorSuccessAction>({
+//     type: RepoActionType.REMOVE_COLLABORATOR,
+//     async process({ action, getState }) {
+//         const { repoRoot, repoID, userID } = action.payload
+//         const user = getState().user.users[userID]
+//         // @@TODO fetch if not exists
+//         const username = user.username
+//         const rpcClient = rpc.initClient()
+//         await rpcClient.setUserPermissionsAsync({ repoID, username, puller: false, pusher: false, admin: false })
+//         await ServerRelay.unshareRepo(repoID, userID)
+//         return { repoRoot, repoID, userID }
+//     },
+// })
 
 const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     type: RepoActionType.WATCH_REPO,
@@ -371,7 +378,7 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
                 dispatch(fetchRepoFiles({ path, repoID }))
             })
             watcher.on('behind_remote', () => {
-                dispatch(behindRemote({path}))
+                dispatch(behindRemote({ path }))
             })
             watcher.on('end', () => {
                 done()
@@ -395,7 +402,7 @@ export default [
     // revertFilesLogic,
     cloneRepoLogic,
     pullRepoLogic,
-    addCollaboratorLogic,
-    removeCollaboratorLogic,
+    // addCollaboratorLogic,
+    // removeCollaboratorLogic,
     watchRepoLogic,
 ]

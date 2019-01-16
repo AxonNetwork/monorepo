@@ -78,10 +78,10 @@ export interface IUser {
     emails: string[]
     name: string
     username: string
-    picture: IUploadedPicture
+    picture: IUploadedPicture | null
     repos: string[]
     orgs: string[]
-    profile: IUserProfile
+    profile: IUserProfile | null
 }
 
 export interface IUserProfile {

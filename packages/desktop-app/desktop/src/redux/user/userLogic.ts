@@ -1,35 +1,83 @@
 import { bugsnagClient } from 'bugsnag'
-import { keyBy, uniq } from 'lodash'
-import { makeLogic } from '../reduxUtils'
-import { IUser, ISharedRepoInfo } from '../../common'
+import keyBy from 'lodash/keyBy'
+import { makeLogic } from 'conscience-components/redux/reduxUtils'
+import { ISharedRepoInfo } from 'conscience-lib/common'
+import ServerRelay from 'conscience-lib/ServerRelay'
+import * as rpc from 'conscience-lib/rpc'
 import {
     UserActionType,
     ILoginAction, ILoginSuccessAction,
     ISignupAction, ISignupSuccessAction,
-    IFetchUserDataAction, IFetchUserDataSuccessAction,
-    IFetchUserDataByEmailAction, IFetchUserDataByEmailSuccessAction,
+    ILogoutAction, ILogoutSuccessAction,
+    ISawCommentAction, ISawCommentSuccessAction,
+    fetchUserOrgs,
+} from 'conscience-components/redux/user/userActions'
+import {
+    fetchUserDataLogic,
+    fetchUserDataByUsernameLogic,
+    fetchUserDataByEmailLogic,
+    fetchUserOrgsLogic,
+    uploadUserPictureLogic,
+    updateUserProfileLogic,
+    modifyUserEmailLogic,
+} from 'conscience-components/redux/user/userLogic'
+import {
     ICheckNodeUserAction, ICheckNodeUserSuccessAction,
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
-    ILogoutAction, ILogoutSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
     IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction,
     IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction,
-    IFetchOrgsAction, IFetchOrgsSuccessAction,
     IReadLocalConfigAction, IReadLocalConfigSuccessAction,
     ISetLocalConfigAction, ISetLocalConfigSuccessAction,
-    // ISetCodeColorSchemeAction, ISetCodeColorSchemeSuccessAction,
-    // IHideMenuLabelsAction, IHideMenuLabelsSuccessAction,
-    ISawCommentAction, ISawCommentSuccessAction,
-    IUploadUserPictureAction, IUploadUserPictureSuccessAction,
-    IModifyUserEmailAction, IModifyUserEmailSuccessAction,
-    getSharedRepos, fetchOrgs, gotNodeUsername,
+    getSharedRepos, gotNodeUsername,
 } from './userActions'
 import { getLocalRepos } from '../repository/repoActions'
-import { fetchOrgInfo } from '../org/orgActions'
-import ServerRelay from '../../lib/ServerRelay'
 import UserData from '../../lib/UserData'
 import ElectronRelay from '../../lib/ElectronRelay'
-import * as rpc from '../../rpc'
+
+const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
+    type: UserActionType.CHECK_NODE_USER,
+    async process(_, dispatch) {
+        const rpcClient = rpc.initClient()
+        const rpcResp = await rpcClient.getUsernameAsync({})
+
+        if (!rpcResp.username || rpcResp.username === '') {
+            return new Error('No node user')
+        } else {
+            dispatch(gotNodeUsername({ username: rpcResp.username }))
+        }
+
+        const hexSignature = rpcResp.signature.toString('hex')
+        const resp = await ServerRelay.loginWithKey(rpcResp.username, hexSignature)
+        if (resp instanceof Error) {
+            return resp
+        }
+        const { userID, emails, name, username, picture, orgs, profile, jwt } = resp
+        await UserData.setJWT(jwt)
+        bugsnagClient.user = { userID, emails, name, username, loginMethod: 'checkNodeUser' }
+
+        dispatch(getSharedRepos({ userID }))
+        dispatch(fetchUserOrgs({ userID }))
+        dispatch(getLocalRepos())
+
+        return { userID, emails, name, username, picture, orgs, profile }
+    },
+})
+
+const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
+    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
+    async process(_, dispatch) {
+        const rpcClient = rpc.initClient()
+        const { address } = await rpcClient.ethAddressAsync({})
+        let balance = await ServerRelay.getEthBalance(address)
+        if (balance < 1) {
+            await ServerRelay.hitEthFaucet(address)
+            balance += 10
+        }
+        return { balance }
+    },
+})
+
 
 const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
     type: UserActionType.LOGIN,
@@ -41,7 +89,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         if (resp instanceof Error) {
             return resp
         }
-        const { userID, emails, name, username, picture, jwt, mnemonic } = resp
+        const { userID, emails, name, username, picture, orgs, profile, jwt, mnemonic } = resp
         bugsnagClient.user = { userID, emails, name, username, jwt, mnemonic, loginMethod: 'login' }
         await UserData.setJWT(jwt)
         await ElectronRelay.killNode()
@@ -49,10 +97,10 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         await ElectronRelay.startNode()
 
         dispatch(getSharedRepos({ userID }))
-        dispatch(fetchOrgs({ userID }))
+        dispatch(fetchUserOrgs({ userID }))
         dispatch(getLocalRepos())
 
-        return { userID, emails, name, username, picture }
+        return { userID, emails, name, username, picture, orgs, profile }
     },
 })
 
@@ -71,96 +119,16 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
         if (resp instanceof Error) {
             return resp
         }
-        const { userID, emails, name, username, jwt } = resp
+        const { userID, emails, name, username, picture, orgs, profile, jwt } = resp
         bugsnagClient.user = { userID, emails, name, username, jwt, mnemonic, loginMethod: 'signup' }
         await UserData.set('jwt', jwt)
 
         // Fetch the user's data
         dispatch(getSharedRepos({ userID }))
-        dispatch(fetchOrgs({ userID }))
+        dispatch(fetchUserOrgs({ userID }))
         dispatch(getLocalRepos())
 
-        return { userID, emails, name, username, picture: undefined }
-    },
-})
-
-const fetchUserDataLogic = makeLogic<IFetchUserDataAction, IFetchUserDataSuccessAction>({
-    type: UserActionType.FETCH_USER_DATA,
-    async process({ action, getState }) {
-        const knownUsers = getState().user.users
-        const toFetch = uniq(action.payload.userIDs).filter(userID => !knownUsers[userID])
-        if (toFetch.length <= 0) {
-            return { users: {} }
-        }
-        const userList = await ServerRelay.fetchUsers(toFetch)
-
-        // Convert the list into an object
-        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
-
-        return { users }
-    },
-})
-
-const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchUserDataByEmailSuccessAction>({
-    type: UserActionType.FETCH_USER_DATA_BY_EMAIL,
-    async process({ action, getState }) {
-        const inRedux = Object.keys(getState().user.users)
-        const toFetch = action.payload.emails.filter(email => !inRedux.includes(email))
-        const userList = await ServerRelay.fetchUsersByEmail(toFetch)
-
-        let usersByEmail = {} as {[email: string]: string}
-        for (let i = 0; i < userList.length; i++) {
-            const user = userList[i]
-            for (let j = 0; j < user.emails.length; j++) {
-                usersByEmail[user.emails[j]] = user.userID
-            }
-        }
-        // Convert the list into an object
-        const users = keyBy(userList, 'userID') as {[userID: string]: IUser}
-
-        return { users, usersByEmail }
-    },
-})
-
-const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
-    type: UserActionType.CHECK_NODE_USER,
-    async process(_, dispatch) {
-        const rpcClient = rpc.initClient()
-        const { username, signature } = await rpcClient.getUsernameAsync({})
-
-        if (!username || username === '') {
-            return new Error('No node user')
-        } else {
-            dispatch(gotNodeUsername({ username }))
-        }
-
-        const hexSignature = signature.toString('hex')
-        const resp = await ServerRelay.loginWithKey(username, hexSignature)
-        if (resp instanceof Error) {
-            return resp
-        }
-        const { userID, emails, name, picture } = resp
-        bugsnagClient.user = { userID, emails, name, username, loginMethod: 'checkNodeUser' }
-
-        dispatch(getSharedRepos({ userID }))
-        dispatch(fetchOrgs({ userID }))
-        dispatch(getLocalRepos())
-
-        return { userID, emails, name, picture, username }
-    },
-})
-
-const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
-    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
-    async process(_, dispatch) {
-        const rpcClient = rpc.initClient()
-        const { address } = await rpcClient.ethAddressAsync({})
-        let balance = await ServerRelay.getEthBalance(address)
-        if (balance < 1) {
-            await ServerRelay.hitEthFaucet(address)
-            balance += 10
-        }
-        return { balance }
+        return { userID, emails, name, username, picture, orgs, profile }
     },
 })
 
@@ -178,24 +146,13 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
     async process({ action }) {
         const { userID } = action.payload
         const sharedRepoIDs = await ServerRelay.getSharedRepos(userID)
-        const ignoredList = await Promise.all( sharedRepoIDs.map(UserData.isRepoIgnored) )
+        const ignoredList = await Promise.all(sharedRepoIDs.map(UserData.isRepoIgnored))
         const sharedReposList = sharedRepoIDs.map((repoID, i) => ({
             repoID,
             ignored: ignoredList[i],
         }))
-        const sharedRepos = keyBy(sharedReposList, 'repoID') as {[repoID: string]: ISharedRepoInfo}
+        const sharedRepos = keyBy(sharedReposList, 'repoID') as { [repoID: string]: ISharedRepoInfo }
         return { sharedRepos }
-      },
-})
-
-const fetchOrgsLogic = makeLogic<IFetchOrgsAction, IFetchOrgsSuccessAction>({
-    type: UserActionType.FETCH_ORGS,
-    async process({ action }, dispatch) {
-        const { userID } = action.payload
-        const { orgs } = await ServerRelay.fetchOrgs(userID)
-
-        await Promise.all( orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))) )
-        return { userID, orgs }
     },
 })
 
@@ -245,39 +202,28 @@ const setLocalConfigLogic = makeLogic<ISetLocalConfigAction, ISetLocalConfigSucc
     },
 })
 
-const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPictureSuccessAction>({
-    type: UserActionType.UPLOAD_USER_PICTURE,
-    async process({ action }) {
-        const { fileInput } = action.payload
-        const { userID, picture } = await ServerRelay.uploadUserPicture(fileInput)
-        return { userID, picture: picture + '?' + (new Date().getTime()) }
-    },
-})
 
-const modifyUserEmailLogic = makeLogic<IModifyUserEmailAction, IModifyUserEmailSuccessAction>({
-    type: UserActionType.MODIFY_USER_EMAIL,
-    async process({ action }) {
-        const { userID, email, add } = action.payload
-        await ServerRelay.modifyEmail(email, add)
-        return { userID, email, add }
-    },
-})
 
 export default [
-    loginLogic,
-    signupLogic,
+    // imported from conscience-components
     fetchUserDataLogic,
     fetchUserDataByEmailLogic,
+    fetchUserDataByUsernameLogic,
+    fetchUserOrgsLogic,
+    modifyUserEmailLogic,
+    uploadUserPictureLogic,
+    updateUserProfileLogic,
+
+    // desktop-specific
+    loginLogic,
+    signupLogic,
     checkNodeUserLogic,
     checkBalanceAndHitFaucetLogic,
     logoutLogic,
     getSharedReposLogic,
     ignoreSharedRepoLogic,
     unshareRepoFromSelfLogic,
-    fetchOrgsLogic,
     sawCommentLogic,
     readLocalConfigLogic,
     setLocalConfigLogic,
-    uploadUserPictureLogic,
-    modifyUserEmailLogic,
 ]

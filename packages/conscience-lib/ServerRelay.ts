@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture } from './common'
+import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -14,8 +14,16 @@ const ServerRelay = {
     },
 
     async login(email: string, password: string) {
-        interface IResponse extends IUser {
+        interface IResponse {
+            userID: string
+            emails: string[]
+            name: string
+            username: string
+            picture: IUploadedPicture | null
+            orgs: string[]
+            profile: IUserProfile | null
             jwt: string
+            mnemonic: string
         }
         let resp
         try {
@@ -34,7 +42,14 @@ const ServerRelay = {
     },
 
     async loginWithKey(username: string, hexSignature: string) {
-        interface IResponse extends IUser {
+        interface IResponse {
+            userID: string
+            emails: string[]
+            name: string
+            username: string
+            picture: IUploadedPicture | null
+            orgs: string[]
+            profile: IUserProfile | null
             jwt: string
         }
 
@@ -54,18 +69,21 @@ const ServerRelay = {
         return resp.data
     },
 
-    async signup(name: string, username: string, email: string, password: string, hexSignature: string, mnemonic: string) {
+    async signup(_name: string, _username: string, email: string, password: string, hexSignature: string, mnemonic: string) {
         interface IResponse {
             userID: string
             emails: string[]
             name: string
             username: string
-            token: string
+            picture: null
+            orgs: string[]
+            profile: null
+            jwt: string
         }
 
         let resp
         try {
-            resp = await axios.post<IResponse>(API_URL + '/create-user', { name, username, email, password, hexSignature, mnemonic })
+            resp = await axios.post<IResponse>(API_URL + '/create-user', { name: _name, username: _username, email, password, hexSignature, mnemonic })
         } catch (err) {
             if (err.response.status === 403) {
                 return new Error('Access denied')
@@ -75,18 +93,24 @@ const ServerRelay = {
             throw err.response.data.error
         }
 
-        ServerRelay.setJWT(resp.data.token)
-        return {
-            userID: resp.data.userID,
-            emails: resp.data.emails,
-            name: resp.data.name,
-            username: resp.data.username,
-            jwt: resp.data.token,
-        }
+        const { userID, emails, name, username, picture, orgs, profile, jwt } = resp.data
+        ServerRelay.setJWT(jwt)
+
+        return { userID, emails, name, username, picture, orgs, profile, jwt }
     },
 
     async whoami() {
-        const response = await axios.get<IUser>(API_URL + '/whoami')
+        interface IResponse {
+            userID: string
+            emails: string[]
+            name: string
+            username: string
+            picture: IUploadedPicture | null
+            orgs: string[]
+            profile: IUserProfile | null
+        }
+
+        const response = await axios.get<IResponse>(API_URL + '/whoami')
         return response.data
     },
 
@@ -111,15 +135,6 @@ const ServerRelay = {
         await axios.post<IResponse>(API_URL + '/create-repo', { repoID })
     },
 
-    async shareRepo(repoID: string, userID: string | undefined, email?: string) {
-        interface IResponse {
-            repoID: string
-            userID: string
-        }
-        const resp = await axios.post<IResponse>(API_URL + '/share-repo', { repoID, userID, email })
-        return resp.data
-    },
-
     async getSharedUsers(repoID: string) {
         interface IResponse {
             sharedUsers: { name: string, userID: string }[]
@@ -127,13 +142,6 @@ const ServerRelay = {
 
         const response = await axios.get<IResponse>(API_URL + '/shared-users?repoID=' + repoID)
         return response.data.sharedUsers
-    },
-
-    async unshareRepo(repoID: string, userID: string) {
-        interface IResponse {
-            message: string
-        }
-        await axios.post<IResponse>(API_URL + '/unshare-repo', { repoID, userID })
     },
 
     async getSharedRepos(userID: string) {

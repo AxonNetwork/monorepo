@@ -4,10 +4,10 @@ import { createStore, applyMiddleware, compose, Store } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
 import logic from './logic'
 import reducer from './reducer'
-import { IUserState } from './user/userReducer'
+import { IUserState } from 'conscience-components/redux/user/userReducer'
 import { IRepoState } from './repo/repoReducer'
-import { IDiscussionState } from './discussion/discussionReducer'
-import { IOrgState } from './org/orgReducer'
+import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+import { IOrgState } from 'conscience-components/redux/org/orgReducer'
 import { IUIState } from './ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
@@ -26,18 +26,18 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
         connectRouter(history)(reducer),
         initialState,
         enhancer
-    );
+    )
 
     // Enable Webpack hot module replacement for reducers
     if (module.hot) {
         module.hot.accept('./reducer', () => {
-            const nextReducers = require('./reducer').default;
-            store.replaceReducer(connectRouter(history)(nextReducers));
-        });
+            const nextReducers = require('./reducer').default
+            store.replaceReducer(connectRouter(history)(nextReducers))
+        })
     }
 
-    return store;
-};
+    return store
+}
 
 export interface IGlobalState {
     user: IUserState

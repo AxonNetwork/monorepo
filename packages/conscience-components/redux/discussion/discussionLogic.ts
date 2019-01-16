@@ -9,7 +9,7 @@ import {
     getCommentsForDiscussion
 } from './discussionActions'
 import { push as pushToHistory } from 'connected-react-router'
-import { fetchUserData, sawComment } from 'redux/user/userActions'
+import { fetchUserData, sawComment } from '../user/userActions'
 import { IDiscussion, IComment } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 

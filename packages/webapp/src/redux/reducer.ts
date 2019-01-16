@@ -2,8 +2,8 @@ import { combineReducers } from 'redux'
 
 import userReducer from './user/userReducer'
 import repoReducer from './repo/repoReducer'
-import discussionReducer from './discussion/discussionReducer'
-import orgReducer from './org/orgReducer'
+import discussionReducer from 'conscience-components/redux/discussion/discussionReducer'
+import orgReducer from 'conscience-components/redux/org/orgReducer'
 import uiReducer from './ui/uiReducer'
 
 import { IGlobalState } from './store'

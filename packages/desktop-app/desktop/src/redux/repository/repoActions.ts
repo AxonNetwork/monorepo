@@ -1,82 +1,79 @@
-import { IRepoFile, ITimelineEvent } from '../../common'
-import { FailedAction } from '../reduxUtils'
+import { IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { FailedAction } from 'conscience-components/redux/reduxUtils'
+import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import { RepoPage, FileMode } from './repoReducer'
 
-export enum RepoActionType {
-    CREATE_REPO = 'CREATE_REPO',
-    CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
-    CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
+declare module 'conscience-components/redux/repo/repoActions' {
+    export enum RepoActionType {
+        CREATE_REPO = 'CREATE_REPO',
+        CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
+        CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
 
-    GET_LOCAL_REPOS = 'GET_LOCAL_REPOS',
-    GET_LOCAL_REPOS_SUCCESS = 'GET_LOCAL_REPOS_SUCCESS',
-    GET_LOCAL_REPOS_FAILED = 'GET_LOCAL_REPOS_FAILED',
+        GET_LOCAL_REPOS = 'GET_LOCAL_REPOS',
+        GET_LOCAL_REPOS_SUCCESS = 'GET_LOCAL_REPOS_SUCCESS',
+        GET_LOCAL_REPOS_FAILED = 'GET_LOCAL_REPOS_FAILED',
 
-    FETCH_FULL_REPO = 'FETCH_FULL_REPO',
-    FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
-    FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
+        FETCH_FULL_REPO = 'FETCH_FULL_REPO',
+        FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
+        FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
 
-    FETCH_REPO_FILES = 'FETCH_REPO_FILES',
-    FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
-    FETCH_REPO_FILES_FAILED = 'FETCH_REPO_FILES_FAILED',
+        FETCH_REPO_FILES = 'FETCH_REPO_FILES',
+        FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
+        FETCH_REPO_FILES_FAILED = 'FETCH_REPO_FILES_FAILED',
 
-    FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
-    FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
-    FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
+        FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
+        FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
+        FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
 
-    FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
-    FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
-    FETCH_REMOTE_REFS_FAILED = 'FETCH_REMOTE_REFS_FAILED',
+        FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
+        FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
+        FETCH_REMOTE_REFS_FAILED = 'FETCH_REMOTE_REFS_FAILED',
 
-    FETCH_LOCAL_REFS = 'FETCH_LOCAL_REFS',
-    FETCH_LOCAL_REFS_SUCCESS = 'FETCH_LOCAL_REFS_SUCCESS',
-    FETCH_LOCAL_REFS_FAILED = 'FETCH_LOCAL_REFS_FAILED',
+        FETCH_LOCAL_REFS = 'FETCH_LOCAL_REFS',
+        FETCH_LOCAL_REFS_SUCCESS = 'FETCH_LOCAL_REFS_SUCCESS',
+        FETCH_LOCAL_REFS_FAILED = 'FETCH_LOCAL_REFS_FAILED',
 
-    FETCH_REPO_SHARED_USERS = 'FETCH_REPO_SHARED_USERS',
-    FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
-    FETCH_REPO_SHARED_USERS_FAILED = 'FETCH_REPO_SHARED_USERS_FAILED',
+        FETCH_REPO_SHARED_USERS = 'FETCH_REPO_SHARED_USERS',
+        FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
+        FETCH_REPO_SHARED_USERS_FAILED = 'FETCH_REPO_SHARED_USERS_FAILED',
 
-    WATCH_REPO = 'WATCH_REPO',
-    WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
+        WATCH_REPO = 'WATCH_REPO',
+        WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
 
-    SELECT_REPO = 'SELECT_REPO',
-    SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
+        SELECT_REPO = 'SELECT_REPO',
+        SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
 
-    SELECT_FILE = 'SELECT_FILE',
-    SELECT_COMMIT = 'SELECT_COMMIT',
+        SELECT_FILE = 'SELECT_FILE',
+        SELECT_COMMIT = 'SELECT_COMMIT',
 
-    CHECKPOINT_REPO = 'CHECKPOINT_REPO',
-    CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
-    CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
+        CHECKPOINT_REPO = 'CHECKPOINT_REPO',
+        CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
+        CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
 
-    CLONE_REPO = 'CLONE_REPO',
-    CLONE_REPO_PROGRESS = 'CLONE_REPO_PROGRESS',
-    CLONE_REPO_SUCCESS = 'CLONE_REPO_SUCCESS',
-    CLONE_REPO_FAILED = 'CLONE_REPO_FAILED',
+        CLONE_REPO = 'CLONE_REPO',
+        CLONE_REPO_PROGRESS = 'CLONE_REPO_PROGRESS',
+        CLONE_REPO_SUCCESS = 'CLONE_REPO_SUCCESS',
+        CLONE_REPO_FAILED = 'CLONE_REPO_FAILED',
 
-    PULL_REPO = 'PULL_REPO',
-    PULL_REPO_PROGRESS = 'PULL_REPO_PROGRESS',
-    PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
-    PULL_REPO_FAILED = 'PULL_REPO_FAILED',
+        PULL_REPO = 'PULL_REPO',
+        PULL_REPO_PROGRESS = 'PULL_REPO_PROGRESS',
+        PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
+        PULL_REPO_FAILED = 'PULL_REPO_FAILED',
 
-    NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
+        NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
 
-    FETCHED_REPO = 'FETCHED_REPO',
+        FETCHED_REPO = 'FETCHED_REPO',
 
-    ADD_COLLABORATOR = 'ADD_COLLABORATOR',
-    ADD_COLLABORATOR_SUCCESS = 'ADD_COLLABORATOR_SUCCESS',
+        CHANGE_TIMELINE_PAGE = 'CHANGE_TIMELINE_PAGE',
 
-    REMOVE_COLLABORATOR = 'REMOVE_COLLABORATOR',
-    REMOVE_COLLABORATOR_SUCCESS = 'REMOVE_COLLABORATOR_SUCCESS',
+        REVERT_FILES = 'REVERT_FILES',
+        REVERT_FILES_SUCCESS = 'REVERT_FILES_SUCCESS',
 
-    CHANGE_TIMELINE_PAGE = 'CHANGE_TIMELINE_PAGE',
+        FETCHED_FILES = 'FETCHED_FILES',
+        FETCHED_TIMELINE = 'FETCHED_TIMELINE',
 
-    GET_DIFF = 'GET_DIFF',
-    GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
-    REVERT_FILES = 'REVERT_FILES',
-    REVERT_FILES_SUCCESS = 'REVERT_FILES_SUCCESS',
-    FETCHED_FILES = 'FETCHED_FILES',
-    FETCHED_TIMELINE = 'FETCHED_TIMELINE',
-    BEHIND_REMOTE = 'BEHIND_REMOTE',
+        BEHIND_REMOTE = 'BEHIND_REMOTE',
+    }
 }
 
 export interface ICreateRepoAction {
@@ -148,7 +145,7 @@ export interface IFetchRepoFilesSuccessAction {
     payload: {
         path: string
         repoID: string
-        files: {[path: string]: IRepoFile},
+        files: { [path: string]: IRepoFile },
     }
 }
 
@@ -185,7 +182,7 @@ export interface IFetchLocalRefsSuccessAction {
     type: RepoActionType.FETCH_LOCAL_REFS_SUCCESS
     payload: {
         path: string
-        localRefs: {[name: string]: string},
+        localRefs: { [name: string]: string },
     }
 }
 
@@ -202,7 +199,7 @@ export interface IFetchRemoteRefsSuccessAction {
     type: RepoActionType.FETCH_REMOTE_REFS_SUCCESS
     payload: {
         repoID: string
-        remoteRefs: {[name: string]: string},
+        remoteRefs: { [name: string]: string },
     }
 }
 
@@ -347,59 +344,6 @@ export interface ISelectCommitAction {
     }
 }
 
-export interface IAddCollaboratorAction {
-    type: RepoActionType.ADD_COLLABORATOR
-    payload: {
-        repoID: string
-        repoRoot: string
-        email: string,
-    }
-}
-
-export interface IAddCollaboratorSuccessAction {
-    type: RepoActionType.ADD_COLLABORATOR_SUCCESS
-    payload: {
-        repoID: string
-        repoRoot: string
-        userID: string,
-    }
-}
-
-export interface IRemoveCollaboratorAction {
-    type: RepoActionType.REMOVE_COLLABORATOR
-    payload: {
-        repoID: string
-        repoRoot: string
-        userID: string,
-    }
-}
-
-export interface IRemoveCollaboratorSuccessAction {
-    type: RepoActionType.REMOVE_COLLABORATOR_SUCCESS
-    payload: {
-        repoID: string
-        repoRoot: string
-        userID: string,
-    }
-}
-
-export interface IGetDiffAction {
-    type: RepoActionType.GET_DIFF
-    payload: {
-        repoRoot: string
-        commit: string,
-    }
-}
-
-export interface IGetDiffSuccessAction {
-    type: RepoActionType.GET_DIFF_SUCCESS
-    payload: {
-        diffs: {[filename: string]: string}
-        repoRoot: string
-        commit: string,
-    }
-}
-
 export interface IRevertFilesAction {
     type: RepoActionType.REVERT_FILES
     payload: {
@@ -414,7 +358,7 @@ export interface IRevertFilesSuccessAction {
     payload: {}
 }
 
-export interface IBehindRemoteAction{
+export interface IBehindRemoteAction {
     type: RepoActionType.BEHIND_REMOTE
     payload: {
         path: string,
@@ -430,7 +374,9 @@ export interface IChangeTimelinePageAction {
 }
 
 
-export type IRepoAction =
+export type IDesktopRepoAction =
+    IRepoAction |
+
     ICreateRepoAction |
     ICreateRepoSuccessAction |
     ICreateRepoFailedAction |
@@ -484,14 +430,6 @@ export type IRepoAction =
     IPullRepoSuccessAction |
     IPullRepoFailedAction |
 
-    IAddCollaboratorAction |
-    IAddCollaboratorSuccessAction |
-
-    IRemoveCollaboratorAction |
-    IRemoveCollaboratorSuccessAction |
-
-    IGetDiffAction |
-    IGetDiffSuccessAction |
     IRevertFilesAction |
     IRevertFilesSuccessAction |
 
@@ -519,9 +457,6 @@ export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']):
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
 export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): IPullRepoProgressAction => ({ type: RepoActionType.PULL_REPO_PROGRESS, payload })
 export const pullRepoSuccess = (payload: IPullRepoSuccessAction['payload']): IPullRepoSuccessAction => ({ type: RepoActionType.PULL_REPO_SUCCESS, payload })
-export const addCollaborator = (payload: IAddCollaboratorAction['payload']): IAddCollaboratorAction => ({ type: RepoActionType.ADD_COLLABORATOR, payload })
-export const removeCollaborator = (payload: IRemoveCollaboratorAction['payload']): IRemoveCollaboratorAction => ({ type: RepoActionType.REMOVE_COLLABORATOR, payload })
-export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: RepoActionType.REVERT_FILES, payload })
 export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, payload })
 export const changeTimelinePage = (payload: IChangeTimelinePageAction['payload']): IChangeTimelinePageAction => ({ type: RepoActionType.CHANGE_TIMELINE_PAGE, payload })

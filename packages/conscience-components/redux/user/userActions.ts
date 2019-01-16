@@ -22,6 +22,10 @@ export enum UserActionType {
     FETCH_USER_DATA_SUCCESS = 'FETCH_USER_DATA_SUCCESS',
     FETCH_USER_DATA_FAILED = 'FETCH_USER_DATA_FAILED',
 
+    FETCH_USER_DATA_BY_EMAIL = 'FETCH_USER_DATA_BY_EMAIL',
+    FETCH_USER_DATA_BY_EMAIL_SUCCESS = 'FETCH_USER_DATA_BY_EMAIL_SUCCESS',
+    FETCH_USER_DATA_BY_EMAIL_FAILED = 'FETCH_USER_DATA_BY_EMAIL_FAILED',
+
     FETCH_USER_DATA_BY_USERNAME = 'FETCH_USER_DATA_BY_USERNAME',
     FETCH_USER_DATA_BY_USERNAME_SUCCESS = 'FETCH_USER_DATA_BY_USERNAME_SUCCESS',
     FETCH_USER_DATA_BY_USERNAME_FAILED = 'FETCH_USER_DATA_BY_USERNAME_FAILED',
@@ -65,7 +69,13 @@ export interface IWhoAmIAction {
 export interface IWhoAmISuccessAction {
     type: UserActionType.WHO_AM_I_SUCCESS
     payload: {
-        user: IUser,
+        userID: string
+        emails: string[]
+        name: string
+        username: string
+        picture: IUploadedPicture | null
+        orgs: string[]
+        profile: IUserProfile | null
     }
 }
 
@@ -82,7 +92,13 @@ export interface ILoginAction {
 export interface ILoginSuccessAction {
     type: UserActionType.LOGIN_SUCCESS
     payload: {
-        user: IUser,
+        userID: string
+        emails: string[]
+        name: string
+        username: string
+        picture: IUploadedPicture | null
+        orgs: string[]
+        profile: IUserProfile | null
     }
 }
 
@@ -103,9 +119,11 @@ export interface ISignupSuccessAction {
     payload: {
         userID: string
         emails: string[]
-        username: string
         name: string
-        picture: string | undefined,
+        username: string
+        picture: null
+        orgs: string[]
+        profile: null
     }
 }
 
@@ -138,6 +156,23 @@ export interface IFetchUserDataSuccessAction {
 }
 
 export type IFetchUserDataFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_FAILED>
+
+export interface IFetchUserDataByEmailAction {
+    type: UserActionType.FETCH_USER_DATA_BY_EMAIL
+    payload: {
+        emails: string[],
+    }
+}
+
+export interface IFetchUserDataByEmailSuccessAction {
+    type: UserActionType.FETCH_USER_DATA_BY_EMAIL_SUCCESS
+    payload: {
+        users: { [userID: string]: IUser },
+        usersByEmail: { [email: string]: string }, // value is userID
+    }
+}
+
+export type IFetchUserDataByEmailFailedAction = FailedAction<UserActionType.FETCH_USER_DATA_BY_EMAIL_FAILED>
 
 export interface IFetchUserDataByUsernameAction {
     type: UserActionType.FETCH_USER_DATA_BY_USERNAME
@@ -309,6 +344,10 @@ export type IUserAction =
     IFetchUserDataByUsernameSuccessAction |
     IFetchUserDataByUsernameFailedAction |
 
+    IFetchUserDataByEmailAction |
+    IFetchUserDataByEmailSuccessAction |
+    IFetchUserDataByEmailFailedAction |
+
     ISawCommentAction |
     ISawCommentSuccessAction |
     ISawCommentFailedAction |
@@ -347,6 +386,7 @@ export const signup = (payload: ISignupAction['payload']): ISignupAction => ({ t
 
 export const fetchUserData = (payload: IFetchUserDataAction['payload']): IFetchUserDataAction => ({ type: UserActionType.FETCH_USER_DATA, payload })
 export const fetchUserDataByUsername = (payload: IFetchUserDataByUsernameAction['payload']): IFetchUserDataByUsernameAction => ({ type: UserActionType.FETCH_USER_DATA_BY_USERNAME, payload })
+export const fetchUserDataByEmail = (payload: IFetchUserDataByEmailAction['payload']): IFetchUserDataByEmailAction => ({ type: UserActionType.FETCH_USER_DATA_BY_EMAIL, payload })
 
 export const sawComment = (payload: ISawCommentAction['payload']): ISawCommentAction => ({ type: UserActionType.SAW_COMMENT, payload })
 export const getUserSettings = (payload: IGetUserSettingsAction['payload']): IGetUserSettingsAction => ({ type: UserActionType.GET_USER_SETTINGS, payload })

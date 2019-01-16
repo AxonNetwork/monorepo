@@ -1,7 +1,7 @@
-import { uniq } from 'lodash'
-import { RepoActionType, IRepoAction } from './repoActions'
-import { DiscussionActionType, IDiscussionAction } from '../discussion/discussionActions'
-import { IRepo, ITimelineEvent } from '../../common'
+import { ITimelineEvent } from 'conscience-lib/common'
+import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
+import { IDesktopRepoAction } from './repoActions'
 
 export enum RepoPage {
     Home,
@@ -19,8 +19,8 @@ export enum FileMode {
 }
 
 
-const initialState = {
-    repos: {},
+const desktopInitialState = {
+    ...initialState,
     repoPage: RepoPage.Home,
     selectedRepo: undefined,
     selectedFile: undefined,
@@ -29,22 +29,23 @@ const initialState = {
     checkpointed: false,
 }
 
-export interface IRepoState {
-    repos: { [folderPath: string]: IRepo }
-    selectedRepo: string | undefined
-    repoPage: RepoPage
-    selectedFile: {
-        file: string
-        isFolder: boolean
-        mode: FileMode
-        defaultEditorContents?: string | undefined,
-    } | undefined
-    selectedCommit: string | undefined
-    timelinePage: {[repoID: string]: number}
-    checkpointed: boolean
+declare module 'conscience-components/redux/repo/repoReducer' {
+    export interface IRepoState {
+        selectedRepo: string | undefined
+        repoPage: RepoPage
+        selectedFile: {
+            file: string
+            isFolder: boolean
+            mode: FileMode
+            defaultEditorContents?: string | undefined,
+        } | undefined
+        selectedCommit: string | undefined
+        timelinePage: { [repoID: string]: number }
+        checkpointed: boolean
+    }
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDiscussionAction): IRepoState => {
+const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS: {
             const { repoID, path } = action.payload
@@ -115,7 +116,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
             const { path, timeline } = action.payload
-            const commits = {} as {[commit: string]: ITimelineEvent}
+            const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
             for (let commit of timeline) {
                 commits[commit.commit] = commit
@@ -137,6 +138,9 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
 
         case RepoActionType.GET_DIFF_SUCCESS: {
             const { commit, diffs, repoRoot } = action.payload
+            if (!repoRoot) {
+                throw new Error('repoReducer GET_DIFF_SUCCESS: repoRoot can never be null')
+            }
             return {
                 ...state,
                 repos: {
@@ -204,40 +208,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
             }
         }
 
-        case RepoActionType.ADD_COLLABORATOR_SUCCESS: {
-            const { repoRoot, userID } = action.payload
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoRoot]: {
-                        ...(state.repos[repoRoot] || {}),
-                        path: repoRoot,
-                        sharedUsers: uniq([
-                            ...((state.repos[repoRoot] || {}).sharedUsers || []),
-                            userID,
-                        ]),
-                    },
-                },
-            }
-        }
-
-        case RepoActionType.REMOVE_COLLABORATOR_SUCCESS: {
-            const { repoRoot, userID } = action.payload
-            const sharedUsers = uniq(((state.repos[repoRoot] || {}).sharedUsers || []).filter(id => id !== userID))
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoRoot]: {
-                        ...(state.repos[repoRoot] || {}),
-                        path: repoRoot,
-                        sharedUsers,
-                    },
-                },
-            }
-        }
-
         case RepoActionType.PULL_REPO_SUCCESS: {
             const { folderPath } = action.payload
             return {
@@ -279,16 +249,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
             }
         }
 
-        case DiscussionActionType.SELECT_DISCUSSION: {
-            return {
-                ...state,
-                repoPage: RepoPage.Discussion,
-            }
-        }
-
         default:
             return state
     }
 }
 
-export default repoReducer
+export default function(state: IRepoState = desktopInitialState, action: IDesktopRepoAction): IRepoState {
+    state = repoReducer(state, action as IRepoAction)
+    state = desktopRepoReducer(state, action)
+    return state
+}
+
