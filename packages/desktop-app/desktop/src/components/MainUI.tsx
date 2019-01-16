@@ -1,19 +1,21 @@
 import React from 'react'
 import classnames from 'classnames'
 import { connect } from 'react-redux'
+import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
 import Sidebar from './Sidebar/Sidebar'
+import Routes from '../Routes'
 import Login from './Login/LoginPage'
-import NewRepository from './NewRepository/NewRepository'
-import Welcome from './NewRepository/Welcome'
-import Settings from './Settings/Settings'
-import OrganizationPage from './Organization/OrganizationPage'
-import Repository from './Repository/Repository'
-import autobind from 'utils/autobind'
+// import NewRepository from './NewRepository/NewRepository'
+// import Welcome from './NewRepository/Welcome'
+// import Settings from './Settings/Settings'
+// import OrganizationPage from './Organization/OrganizationPage'
+// import Repository from './Repository/Repository'
 import { IGlobalState } from 'redux/store'
+import { autobind } from 'conscience-lib/utils'
 
 @autobind
 class MainUI extends React.Component<Props, State>
@@ -25,7 +27,7 @@ class MainUI extends React.Component<Props, State>
     }
 
     render() {
-        const { currentPage, loggedIn, checkedLocalUser, classes } = this.props
+        const { loggedIn, checkedLocalUser, classes } = this.props
         if (!checkedLocalUser) {
             return null
         }
@@ -53,21 +55,7 @@ class MainUI extends React.Component<Props, State>
                     </div>
 
                     <div className={classes.mainUIContentWrapper}>
-                        {currentPage === 'welcome' &&
-                            <Welcome />
-                        }
-                        {currentPage === 'new' &&
-                            <NewRepository />
-                        }
-                        {currentPage === 'settings' &&
-                            <Settings />
-                        }
-                        {currentPage === 'repo' &&
-                            <Repository sidebarOpen={this.state.sidebarOpen} />
-                        }
-                        {currentPage === 'org' &&
-                            <OrganizationPage />
-                        }
+                        <Routes />
                     </div>
                 </main>
             </div>
@@ -79,6 +67,7 @@ interface Props {
     loggedIn: boolean
     checkedLocalUser: boolean
     currentPage: string
+    history: History
     classes: any
 }
 

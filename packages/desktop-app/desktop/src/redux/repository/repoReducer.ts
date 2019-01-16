@@ -1,26 +1,14 @@
-import { ITimelineEvent } from 'conscience-lib/common'
+import fromPairs from 'lodash/fromPairs'
+import { ITimelineEvent, RepoPage } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
 import { IDesktopRepoAction } from './repoActions'
-
-export enum RepoPage {
-    Home,
-    Files,
-    Manuscript,
-    History,
-    Discussion,
-    Settings,
-}
-
-export enum FileMode {
-    View,
-    Edit,
-    ResolveConflict,
-}
+import getHash from 'utils/getHash'
 
 
 const desktopInitialState = {
     ...initialState,
+    reposByHash: {},
     repoPage: RepoPage.Home,
     selectedRepo: undefined,
     selectedFile: undefined,
@@ -31,6 +19,7 @@ const desktopInitialState = {
 
 declare module 'conscience-components/redux/repo/repoReducer' {
     export interface IRepoState {
+        reposByHash: { [hash: string]: string }
         selectedRepo: string | undefined
         repoPage: RepoPage
         selectedFile: {
@@ -59,17 +48,27 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
                         repoID,
                     },
                 },
+                reposByHash: {
+                    ...state.reposByHash,
+                    [getHash(path)]: path
+                }
             }
         }
 
         case RepoActionType.GET_LOCAL_REPOS_SUCCESS: {
             const { repos } = action.payload
+            const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
+            const reposByHash = fromPairs(repoPairs)
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     ...repos,
                 },
+                reposByHash: {
+                    ...state.reposByHash,
+                    ...reposByHash,
+                }
             }
         }
 

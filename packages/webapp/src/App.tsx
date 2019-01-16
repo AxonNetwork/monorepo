@@ -1,10 +1,10 @@
+import React from 'react'
 import { ConnectedRouter } from 'connected-react-router'
 import { History } from 'history'
-import React from 'react'
 import { Provider } from 'react-redux'
 import { Store } from 'redux'
-import Routes from 'Routes'
 import { IGlobalState } from 'redux/store'
+import Routes from 'Routes'
 
 import Typography from '@material-ui/core/Typography'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'

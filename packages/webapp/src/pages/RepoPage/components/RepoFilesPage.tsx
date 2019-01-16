@@ -17,18 +17,6 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
-    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
-        const repoID = this.props.match.params.repoID
-        const { filename, mode } = payload
-        if (filename === undefined) {
-            this.props.history.push(`/repo/${repoID}/files`)
-        } else if (mode === FileMode.View) {
-            this.props.history.push(`/repo/${repoID}/files/${filename}`)
-        } else {
-            this.props.history.push(`/repo/${repoID}/edit/${filename}`)
-        }
-    }
-
     render() {
         const { repo, classes } = this.props
         const files = repo.files
@@ -62,7 +50,11 @@ class RepoFilesPage extends React.Component<Props>
                     </div>
                     <div className={classes.fileViewerContainer}>
                         <div className={classes.fileViewer}>
-                            <FileViewer filename={selected} repoID={repoID} showViewerPicker={true} />
+                            <FileViewer
+                                filename={selected}
+                                repoID={repoID}
+                                showViewerPicker={true}
+                            />
                         </div>
                         <div className={classes.createDiscussion}>
                             <Typography variant="h5">Start a discussion on {selected}</Typography>
@@ -87,6 +79,18 @@ class RepoFilesPage extends React.Component<Props>
                 />
             </div>
         )
+    }
+
+    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
+        const repoID = this.props.match.params.repoID
+        const { filename, mode } = payload
+        if (filename === undefined) {
+            this.props.history.push(`/repo/${repoID}/files`)
+        } else if (mode === FileMode.View) {
+            this.props.history.push(`/repo/${repoID}/files/${filename}`)
+        } else {
+            this.props.history.push(`/repo/${repoID}/edit/${filename}`)
+        }
     }
 }
 

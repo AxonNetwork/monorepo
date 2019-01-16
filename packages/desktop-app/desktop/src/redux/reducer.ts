@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-// import { routerReducer } from 'react-router-redux'
 
 import discussionReducer from 'conscience-components/redux/discussion/discussionReducer'
 import orgReducer from 'conscience-components/redux/org/orgReducer'
@@ -10,11 +9,8 @@ import navigationReducer from './navigation/navigationReducer'
 import uiReducer from './ui/uiReducer'
 
 import { IGlobalState } from './store'
-// @@TODO: is this necessary?
-// import { UserActionType } from './user/userActions'
 
 const appReducer = combineReducers({
-    // routing: routerReducer,
     user: userReducer,
     repo: repoReducer,
     discussion: discussionReducer,
@@ -25,10 +21,6 @@ const appReducer = combineReducers({
 })
 
 const rootReducer = (state: IGlobalState | undefined, action: { type: string }): IGlobalState => {
-    // @@TODO: is this necessary?
-    // if (action.type === UserActionType.LOGOUT_SUCCESS) {
-    //     state = undefined
-    // }
     return appReducer(state, action)
 }
 
