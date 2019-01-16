@@ -1,6 +1,6 @@
 import { fromPairs } from 'lodash'
 import { UserActionType, IUserAction } from './userActions'
-import { IUser, ISharedRepoInfo } from '../../common'
+import { IUser, ISharedRepoInfo } from 'conscience-lib/common'
 import { pickBy } from 'lodash'
 
 const initialState = {
@@ -22,12 +22,12 @@ const initialState = {
 }
 
 export interface IUserState {
-    users: {[userID: string]: IUser}
-    usersByEmail: {[email: string]: string} // value is userID
+    users: { [userID: string]: IUser }
+    usersByEmail: { [email: string]: string } // value is userID
 
     currentUser: string | undefined
     nodeUsername: string | undefined
-    sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    sharedRepos: { [repoID: string]: ISharedRepoInfo }
     userSettings: {
         codeColorScheme: string | undefined
         menuLabelsHidden: boolean
@@ -56,7 +56,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 picture,
                 repos: [],
             }
-            const usersByEmail = fromPairs(emails.map(email => [ email, userID ]))
+            const usersByEmail = fromPairs(emails.map(email => [email, userID]))
             return {
                 ...state,
                 users: {
@@ -85,7 +85,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
 
         case UserActionType.FETCH_USER_DATA_SUCCESS: {
             const { users } = action.payload
-            const usersByEmail = {} as {[email: string]: string}
+            const usersByEmail = {} as { [email: string]: string }
             for (let userID of Object.keys(users)) {
                 for (let email of (users[userID].emails || [])) {
                     usersByEmail[email] = userID

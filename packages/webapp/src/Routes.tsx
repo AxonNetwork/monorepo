@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Route, Switch, Redirect, withRouter } from 'react-router'
-import { History } from 'history'
+import { Route, Switch, Redirect, withRouter, RouteComponentProps } from 'react-router'
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 import LoginPage from 'pages/LoginPage'
@@ -47,10 +46,9 @@ enum LoginState {
     NotLoggedIn,
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
     loginState: LoginState
     username: string | undefined
-    history: History
 }
 
 export function PrivateRoute({ component: Component, loginState, ...rest }: any) {

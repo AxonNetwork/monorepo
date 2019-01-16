@@ -34,16 +34,16 @@ class RepoList extends React.Component<Props>
                                     button
                                     dense
                                     className={classnames({ [classes.selected]: isSelected })}
-                                    onClick={() => this.props.selectRepo({ path: repo.path, repoID: repo.repoID })}
+                                    onClick={() => this.props.selectRepo({ repoRoot: repo.path })}
                                 >
-                                { isChanged &&
-                                     <Badge classes={{badge: classes.badge}} badgeContent="" color="secondary">
+                                    {isChanged &&
+                                        <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
+                                            <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                        </Badge>
+                                    }
+                                    {!isChanged &&
                                         <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                    </Badge>
-                                }
-                                { !isChanged &&
-                                    <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                }
+                                    }
                                 </ListItem>
                             </React.Fragment>
                         )
@@ -55,10 +55,10 @@ class RepoList extends React.Component<Props>
 }
 
 interface Props {
-    repos: {[folderPath: string]: IRepo}
+    repos: { [folderPath: string]: IRepo }
     selectedRepo?: string | null
     currentPage: string
-    selectRepo: Function
+    selectRepo: (payload: { repoRoot: string }) => void
     classes: any
 }
 

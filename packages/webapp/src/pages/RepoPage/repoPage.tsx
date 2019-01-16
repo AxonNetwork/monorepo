@@ -16,7 +16,7 @@ import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/uti
 
 
 @autobind
-class RepoRoutes extends React.Component<Props>
+class RepoPageRoutes extends React.Component<Props>
 {
     componentWillMount() {
         const repoID = this.props.match.params.repoID
@@ -122,4 +122,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoRoutes))
+)(withStyles(styles)(RepoPageRoutes))

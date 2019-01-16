@@ -2,15 +2,9 @@ import { uniq } from 'lodash'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { DiscussionActionType, IDiscussionAction } from '../discussion/discussionActions'
 import { IRepo, ITimelineEvent } from '../../common'
-
-export enum RepoPage {
-    Home,
-    Files,
-    Manuscript,
-    History,
-    Discussion,
-    Settings,
-}
+import { RepoPage } from 'conscience-lib/common'
+import { fromPairs } from 'lodash'
+import getHash from 'utils/getHash'
 
 export enum FileMode {
     View,
@@ -18,8 +12,8 @@ export enum FileMode {
     ResolveConflict,
 }
 
-
 const initialState = {
+    reposByHash: {},
     repos: {},
     repoPage: RepoPage.Home,
     selectedRepo: undefined,
@@ -30,6 +24,7 @@ const initialState = {
 }
 
 export interface IRepoState {
+    reposByHash: { [hash: string]: string }
     repos: { [folderPath: string]: IRepo }
     selectedRepo: string | undefined
     repoPage: RepoPage
@@ -40,7 +35,7 @@ export interface IRepoState {
         defaultEditorContents?: string | undefined,
     } | undefined
     selectedCommit: string | undefined
-    timelinePage: {[repoID: string]: number}
+    timelinePage: { [repoID: string]: number }
     checkpointed: boolean
 }
 
@@ -58,17 +53,27 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
                         repoID,
                     },
                 },
+                reposByHash: {
+                    ...state.reposByHash,
+                    [getHash(path)]: path
+                }
             }
         }
 
         case RepoActionType.GET_LOCAL_REPOS_SUCCESS: {
             const { repos } = action.payload
+            const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
+            const reposByHash = fromPairs(repoPairs)
             return {
                 ...state,
                 repos: {
                     ...state.repos,
                     ...repos,
                 },
+                reposByHash: {
+                    ...state.reposByHash,
+                    ...reposByHash,
+                }
             }
         }
 
@@ -115,7 +120,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IDi
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
             const { path, timeline } = action.payload
-            const commits = {} as {[commit: string]: ITimelineEvent}
+            const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
             for (let commit of timeline) {
                 commits[commit.commit] = commit

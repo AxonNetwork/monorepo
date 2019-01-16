@@ -1,7 +1,7 @@
-import path from 'path'
-import merge from 'webpack-merge'
-import Dotenv from 'dotenv-webpack'
-import BaseWebpackConfig from './webpack.config.base.babel'
+import path from 'path';
+import merge from 'webpack-merge';
+import Dotenv from 'dotenv-webpack';
+import BaseWebpackConfig from './webpack.config.base.babel';
 
 export default merge(BaseWebpackConfig, {
     // The point or points to enter the application.
@@ -20,6 +20,7 @@ export default merge(BaseWebpackConfig, {
         filename: '[name].[hash:10].js',
         // chunkFilename: specifies the name of non-entry output files (e.g. dynamic import component)
         chunkFilename: '[name].[hash:10].js',
+        publicPath: '/',
     },
 
     devServer: {
@@ -35,10 +36,20 @@ export default merge(BaseWebpackConfig, {
         // Automatically open page
         open: false,
         // Served index.html (contains 404 page in react-router) in place of any 404 responses
-        historyApiFallback: true,
+        historyApiFallback: {
+            // rewrite all requests to "/" to prevent errors when trying to load URLs with file extensions
+            rewrites: [
+                {
+                    from: /.*/,
+                    to() {
+                        return '/';
+                    },
+                },
+            ],
+        },
         watchOptions: {
-            ignored: /node_modules/
-        }
+            ignored: /node_modules/,
+        },
     },
 
     // Source map mode
@@ -48,5 +59,5 @@ export default merge(BaseWebpackConfig, {
 
     plugins: [
         new Dotenv(),
-    ]
+    ],
 });

@@ -77,6 +77,8 @@
     "concurrently": "^4.0.1",
     "connect-redis": "^3.3.3",
     "connected-react-router": "^4.4.1",
+    "conscience-components": "^1.0.0",
+    "conscience-lib": "^1.0.0",
     "cookie-parser": "^1.4.3",
     "copy-webpack-plugin": "^4.5.2",
     "cross-env": "^5.2.0",

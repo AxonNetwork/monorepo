@@ -1,7 +1,8 @@
 import React from 'react'
-import classnames from 'classnames'
 import { connect } from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router'
 import { Theme, createStyles, withStyles } from '@material-ui/core'
+import classnames from 'classnames'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Divider from '@material-ui/core/Divider'
@@ -20,10 +21,10 @@ import RepoList from './RepoList'
 import OrgList from './OrgList'
 import { IRepo, IUser, IOrganization } from 'common'
 import { IGlobalState } from 'redux/store'
-import { selectRepo } from 'redux/repository/repoActions'
 import { selectOrg, createOrg } from 'redux/org/orgActions'
-import { navigateNewRepo, navigateSettings } from 'redux/navigation/navigationActions'
+import { navigateNewRepo } from 'redux/navigation/navigationActions'
 import autobind from 'utils/autobind'
+import getHash from 'utils/getHash'
 import UserAvatar from 'components/UserAvatar'
 import { keyBy } from 'lodash'
 
@@ -39,7 +40,7 @@ class Sidebar extends React.Component<Props, State>
 
     render() {
         const { user, open, classes } = this.props
-        return(
+        return (
             <Drawer
                 variant="permanent"
                 classes={{
@@ -70,7 +71,7 @@ class Sidebar extends React.Component<Props, State>
                             repos={this.props.repos}
                             selectedRepo={this.props.selectedRepo}
                             currentPage={this.props.currentPage}
-                            selectRepo={this.props.selectRepo}
+                            selectRepo={this.navigateRepo}
                         />
                     </Collapse>
 
@@ -96,7 +97,7 @@ class Sidebar extends React.Component<Props, State>
                         button
                         key="new"
                         onClick={this.props.navigateNewRepo as (event: any) => void}
-                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new'})}
+                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new' })}
                     >
                         <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         <ListItemIcon>
@@ -108,8 +109,8 @@ class Sidebar extends React.Component<Props, State>
                     <ListItem
                         button
                         key="settings"
-                        onClick={this.props.navigateSettings as (event: any) => void}
-                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'settings'})}
+                        onClick={this.navigateSettings as (event: any) => void}
+                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'settings' })}
                     >
                         <ListItemText primary="Settings" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         <ListItemIcon>
@@ -128,24 +129,40 @@ class Sidebar extends React.Component<Props, State>
     onClickExpandOrganizations() {
         this.setState({ orgOpen: !this.state.orgOpen })
     }
+
+    navigateRepo(payload: { repoRoot: string }) {
+        const repoHash = getHash(payload.repoRoot)
+        this.props.history.push(`/repo/${repoHash}`)
+    }
+
+    navigateSettings() {
+        this.props.history.push('/settings')
+    }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface MatchParams {
+    repoHash?: string
+}
+
+interface OwnProps extends RouteComponentProps<MatchParams> {
+    open: boolean
+    toggleSidebar: () => void
+}
+
+interface StateProps {
     user: IUser
-    repos: {[folderPath: string]: IRepo}
+    repos: { [folderPath: string]: IRepo }
     selectedRepo?: string | null
     currentPage: string
-    orgs: {[orgID: string]: IOrganization}
-    toggleSidebar: () => void
+    orgs: { [orgID: string]: IOrganization }
+}
 
-    selectRepo: typeof selectRepo
+interface DispatchProps {
     selectOrg: typeof selectOrg
     createOrg: typeof createOrg
     navigateNewRepo: typeof navigateNewRepo
-    navigateSettings: typeof navigateSettings
-    open: boolean
-
-    classes: any
 }
 
 interface State {
@@ -182,11 +199,7 @@ const styles = (theme: Theme) => createStyles({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        // width: theme.spacing.unit * 7,
         width: 0,
-        // [theme.breakpoints.up('sm')]: {
-        //     width: theme.spacing.unit * 9,
-        // },
     },
     sidebarSpacer: {
         flexGrow: 1,
@@ -238,14 +251,12 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    selectRepo,
     selectOrg,
     createOrg,
     navigateNewRepo,
-    navigateSettings,
 }
 
-export default connect(
+export default withRouter(connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(Sidebar))
+)(withStyles(styles)(Sidebar)))

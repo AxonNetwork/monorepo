@@ -26,18 +26,18 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
         connectRouter(history)(reducer),
         initialState,
         enhancer
-    );
+    )
 
     // Enable Webpack hot module replacement for reducers
     if (module.hot) {
         module.hot.accept('./reducer', () => {
-            const nextReducers = require('./reducer').default;
-            store.replaceReducer(connectRouter(history)(nextReducers));
-        });
+            const nextReducers = require('./reducer').default
+            store.replaceReducer(connectRouter(history)(nextReducers))
+        })
     }
 
-    return store;
-};
+    return store
+}
 
 export interface IGlobalState {
     user: IUserState
