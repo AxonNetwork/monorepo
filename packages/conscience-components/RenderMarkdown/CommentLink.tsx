@@ -104,18 +104,13 @@ const styles = (theme: Theme) => createStyles({
     },
     popper: {
         width: 450,
-        // height: 350,
-        // height: '100%',
-        // backgroundColor: theme.palette.background.default,
-        // border: '1px solid',
-        // borderColor: theme.palette.grey[400],
-        // overflow: 'auto',
     },
     comment: {
         // height: '100%',
     },
     commentBody: {
         margin: 0,
+        boxShadow: '1px 1px 6px #00000021',
     },
     commentText: {
         overflow: 'auto',

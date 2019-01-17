@@ -3,7 +3,7 @@ import keyBy from 'lodash/keyBy'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { ISharedRepoInfo } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import * as rpc from 'rpc'
+import * as rpc from 'conscience-lib/rpc'
 import {
     UserActionType,
     ILoginAction, ILoginSuccessAction,
@@ -39,8 +39,7 @@ import ElectronRelay from '../../lib/ElectronRelay'
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
     type: DesktopUserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
-        const rpcClient = rpc.initClient()
-        const rpcResp = await rpcClient.getUsernameAsync({})
+        const rpcResp = await rpc.client.getUsernameAsync({})
 
         if (!rpcResp.username || rpcResp.username === '') {
             return new Error('No node user')
@@ -68,8 +67,7 @@ const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccess
 const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
     type: DesktopUserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
     async process(_, dispatch) {
-        const rpcClient = rpc.initClient()
-        const { address } = await rpcClient.ethAddressAsync({})
+        const { address } = await rpc.client.ethAddressAsync({})
         let balance = await ServerRelay.getEthBalance(address)
         if (balance < 1) {
             await ServerRelay.hitEthFaucet(address)
@@ -109,8 +107,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
     type: UserActionType.SIGNUP,
     async process({ action }, dispatch) {
         const { payload } = action
-        const rpcClient = rpc.initClient()
-        const { signature } = await rpcClient.setUsernameAsync({ username: payload.username })
+        const { signature } = await rpc.client.setUsernameAsync({ username: payload.username })
         const hexSignature = signature.toString('hex')
 
         const mnemonic = await UserData.getMnemonic()

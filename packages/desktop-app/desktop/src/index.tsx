@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import path from 'path'
 import { ErrorBoundary } from './bugsnag'
 import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 import * as React from 'react'
@@ -9,11 +10,17 @@ import App from './App'
 import history from './redux/history'
 import createStore from './redux/store'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
+import * as rpc from 'conscience-lib/rpc'
 import { isProduction } from 'utils'
 import 'typeface-roboto'
 
 console.log('app version ~>', process.env.APP_VERSION)
 console.log('env ~>', process.env)
+
+const appPath = (window as any).require('electron').remote.app.getAppPath()
+const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
+rpc.initClient(protoPath)
+
 
 const initialState = {}
 

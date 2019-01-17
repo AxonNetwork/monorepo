@@ -1,5 +1,5 @@
 import events from 'events'
-import * as rpc from 'rpc'
+import * as rpc from 'conscience-lib/rpc'
 const chokidar = (window as any).require('chokidar')
 
 const watching: {
@@ -111,9 +111,8 @@ async function checkBehindRemote(path: string) {
     if (repo === undefined) {
         return
     }
-    const rpcClient = rpc.initClient()
     try {
-        const res = await rpcClient.isBehindRemoteAsync({repoID: repo.repoID, path: repo.path})
+        const res = await rpc.client.isBehindRemoteAsync({ repoID: repo.repoID, path: repo.path })
         const isBehind = res.isBehindRemote === true
         if (isBehind) {
             repo.emitter.emit('behind_remote')
