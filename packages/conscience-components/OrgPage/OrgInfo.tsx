@@ -48,7 +48,6 @@ interface Props {
     orgPage: OrgPage
     menuLabelsHidden: boolean
     navigateOrgPage: (orgPage: OrgPage) => void
-
     classes: any
 }
 

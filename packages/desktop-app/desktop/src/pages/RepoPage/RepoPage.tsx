@@ -102,7 +102,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         overflowY: 'auto',
-    }
+    },
     repoPageInner: {
         marginTop: 32,
         marginRight: 60,

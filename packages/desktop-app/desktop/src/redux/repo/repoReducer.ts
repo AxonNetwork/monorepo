@@ -3,7 +3,7 @@ import { ITimelineEvent, RepoPage } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
 import { DesktopRepoActionType, IDesktopRepoAction } from './repoActions'
-import getHash from 'utils/getHash'
+import { getHash } from 'conscience-lib/utils'
 
 
 const desktopInitialState = {

@@ -23,7 +23,7 @@ function Routes({ loginState, username, history }: Props) {
                 <Route exact path="/login" component={LoginPage} />
                 <PrivateRoute path="/repo/:repoID" component={RepoPage} loginState={loginState} />
                 <PrivateRoute path="/settings" component={SettingsPage} loginState={loginState} />
-                <PrivateRoute path="/org" component={OrgPage} loginState={loginState} />
+                <PrivateRoute path="/org/:orgID" component={OrgPage} loginState={loginState} />
                 <Route path="/showcase/:orgID" component={ShowcasePage} />
                 <Route path="/user/:username" component={UserPage} />
                 <Route render={() => {

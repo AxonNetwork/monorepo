@@ -5,7 +5,6 @@ import { Theme, withStyles, createStyles } from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import { updateOrg, uploadOrgPicture, uploadOrgBanner } from 'conscience-components/redux/org/orgActions'
-import { IGlobalState } from 'redux/store'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
@@ -111,16 +110,22 @@ class OrganizationPage extends React.Component<Props>
     }
 }
 
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
 interface MatchParams {
     orgID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams> {
+interface OwnProps extends RouteComponentProps<MatchParams> { }
+
+interface StateProps {
     org: IOrganization
+}
+
+interface DispatchProps {
     updateOrg: typeof updateOrg
     uploadOrgPicture: typeof uploadOrgPicture
     uploadOrgBanner: typeof uploadOrgBanner
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -156,7 +161,13 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
+interface IPartialState {
+    org: {
+        orgs: { [orgID: string]: IOrganization }
+    }
+}
+
+const mapStateToProps = (state: IPartialState, props: RouteComponentProps<MatchParams>) => {
     const orgID = props.match.params.orgID
     const org = state.org.orgs[orgID]
     return {
@@ -170,7 +181,7 @@ const mapDispatchToProps = {
     uploadOrgBanner,
 }
 
-export default connect(
+export default connect<StateProps, DispatchProps, OwnProps, IPartialState>(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(OrganizationPage))

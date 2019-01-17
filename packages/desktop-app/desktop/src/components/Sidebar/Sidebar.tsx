@@ -19,12 +19,11 @@ import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import RepoList from './RepoList'
 import OrgList from './OrgList'
-import { IRepo, IUser, IOrganization } from 'conscience-lib/common'
-import { IGlobalState } from 'redux/store'
-import { createOrg } from 'conscience-components/redux/org/orgActions'
-import autobind from 'utils/autobind'
-import getHash from 'utils/getHash'
 import UserAvatar from 'conscience-components/UserAvatar'
+import { createOrg } from 'conscience-components/redux/org/orgActions'
+import { IGlobalState } from 'redux/store'
+import { IRepo, IUser, IOrganization } from 'conscience-lib/common'
+import { autobind, getHash } from 'conscience-lib/utils'
 import { keyBy } from 'lodash'
 
 
@@ -147,7 +146,7 @@ class Sidebar extends React.Component<Props, State>
     }
 
     navigateOrg(payload: { orgID: string }) {
-        console.log('here')
+        this.props.history.push(`/org/${payload.orgID}`)
     }
 }
 
