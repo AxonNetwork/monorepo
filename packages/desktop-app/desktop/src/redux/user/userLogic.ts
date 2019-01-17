@@ -32,7 +32,7 @@ import {
     ISetLocalConfigAction, ISetLocalConfigSuccessAction,
     getSharedRepos, gotNodeUsername,
 } from './userActions'
-import { getLocalRepos } from '../repository/repoActions'
+import { getLocalRepos } from '../repo/repoActions'
 import UserData from '../../lib/UserData'
 import ElectronRelay from '../../lib/ElectronRelay'
 

@@ -17,6 +17,12 @@ export interface IRepo {
     behindRemote?: boolean
 }
 
+export interface IRepoPermissions {
+    admins: string[]
+    pushers: string[]
+    pullers: string[]
+}
+
 export interface ISharedRepoInfo {
     ignored: boolean
     repoID: string

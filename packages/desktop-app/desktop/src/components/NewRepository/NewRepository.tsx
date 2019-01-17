@@ -13,26 +13,26 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import SharedRepos from './elements/SharedRepos'
 import { IGlobalState } from 'redux/store'
-import { createRepo } from 'redux/repository/repoActions'
-import { IOrganization } from 'common'
+import { createRepo } from 'redux/repo/repoActions'
+import { IOrganization } from 'conscience-lib/common'
 import autobind from 'utils/autobind'
 
 @autobind
 class NewRepository extends React.Component<Props, State>
 {
-    _inputRepoID : HTMLInputElement | null = null
+    _inputRepoID: HTMLInputElement | null = null
 
     state = {
         orgID: ''
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.setState({
             orgID: this.props.selectedOrg
         })
     }
 
-    handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>){
+    handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
         this.setState({
             orgID: event.target.value
         })
@@ -40,7 +40,7 @@ class NewRepository extends React.Component<Props, State>
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        if(this._inputRepoID === null){
+        if (this._inputRepoID === null) {
             return
         }
         const repoID = this._inputRepoID.value
@@ -100,7 +100,7 @@ class NewRepository extends React.Component<Props, State>
 }
 
 interface Props {
-    orgs: {[orgID: string]: IOrganization}
+    orgs: { [orgID: string]: IOrganization }
     selectedOrg: string
     createRepoLoading: boolean
     createRepo: typeof createRepo
@@ -112,7 +112,7 @@ interface State {
 }
 
 const styles = (theme: Theme) => createStyles({
-    form:{
+    form: {
         marginRight: 128
     },
     button: {
@@ -128,7 +128,7 @@ const styles = (theme: Theme) => createStyles({
         marginTop: -12,
         marginLeft: -12,
     },
-    selectContainer:{
+    selectContainer: {
         width: '100%',
         marginTop: 16
     }

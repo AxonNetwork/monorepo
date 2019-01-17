@@ -25,7 +25,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
-import { IRepo, IUser } from 'conscience-lib/common'
+import { IRepoPermissions, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { H6 } from '../Typography/Headers'
 import { union } from 'lodash'
@@ -45,14 +45,12 @@ class SharedUsers extends React.Component<Props, State>
     _inputUser: HTMLInputElement | null = null
 
     render() {
-        const { repo, currentUser, users, usersByUsername, updatingUserPermissions, classes } = this.props
+        const { permissions, currentUser, users, usersByUsername, updatingUserPermissions, classes } = this.props
         const { selectedUser } = this.state
 
-        if (!repo) {
-            return null
-        }
+        if (permissions === undefined) { return null }
 
-        const { admins = [], pushers = [], pullers = [] } = repo || {}
+        const { admins = [], pushers = [], pullers = [] } = permissions
         const sharedUsernames = union(admins, pushers, pullers)
         const sharedUsers = sharedUsernames.map(username => usersByUsername[username])
             .map(id => users[id])
@@ -195,7 +193,7 @@ class SharedUsers extends React.Component<Props, State>
     }
 
     openDialog(username?: string) {
-        const { admins = [], pushers = [], pullers = [] } = this.props.repo || {}
+        const { admins = [], pushers = [], pullers = [] } = this.props.permissions
         this.setState({
             dialogOpen: true,
             selectedUser: username,
@@ -227,7 +225,7 @@ class SharedUsers extends React.Component<Props, State>
                 return
             }
         }
-        const repoID = (this.props.repo || { repoID: '' }).repoID
+        const repoID = this.props.repoID
         this.props.updateUserPermissions({
             repoID,
             username,
@@ -252,7 +250,8 @@ class SharedUsers extends React.Component<Props, State>
 }
 
 interface Props {
-    repo: IRepo | undefined
+    repoID: string
+    permissions: IRepoPermissions
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
     currentUser: string

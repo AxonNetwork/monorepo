@@ -20,6 +20,14 @@ const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState =
                 repos: {
                     ...state.repos,
                     [repo.repoID]: repo
+                },
+                repoPermissions: {
+                    ...state.repoPermissions,
+                    [repo.repoID]: {
+                        admins: repo.admins || [],
+                        pushers: repo.pushers || [],
+                        pullers: repo.pullers || [],
+                    }
                 }
             }
         }

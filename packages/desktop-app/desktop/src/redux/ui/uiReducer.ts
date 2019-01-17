@@ -1,5 +1,6 @@
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import { DesktopRepoActionType, IDesktopRepoAction } from '../repo/repoActions'
 import { OrgActionType, IOrgAction } from 'conscience-components/redux/org/orgActions'
 
 const initialState = {
@@ -34,7 +35,7 @@ export interface IUIState {
     updatingUserPermissions: string | undefined
 }
 
-const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
+const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IDesktopRepoAction | IOrgAction): IUIState => {
     switch (action.type) {
         case UserActionType.SIGNUP:
         case UserActionType.LOGIN:
@@ -52,33 +53,33 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                 loginLoading: false
             }
 
-        case RepoActionType.CREATE_REPO:
+        case DesktopRepoActionType.CREATE_REPO:
             return {
                 ...state,
                 createRepoLoading: true
             }
 
-        case RepoActionType.CREATE_REPO_SUCCESS:
-        case RepoActionType.CREATE_REPO_FAILED:
+        case DesktopRepoActionType.CREATE_REPO_SUCCESS:
+        case DesktopRepoActionType.CREATE_REPO_FAILED:
             return {
                 ...state,
                 createRepoLoading: false
             }
 
-        case RepoActionType.CHECKPOINT_REPO:
+        case DesktopRepoActionType.CHECKPOINT_REPO:
             return {
                 ...state,
                 checkpointLoading: true
             }
 
-        case RepoActionType.CHECKPOINT_REPO_SUCCESS:
-        case RepoActionType.CHECKPOINT_REPO_FAILED:
+        case DesktopRepoActionType.CHECKPOINT_REPO_SUCCESS:
+        case DesktopRepoActionType.CHECKPOINT_REPO_FAILED:
             return {
                 ...state,
                 checkpointLoading: false
             }
 
-        case RepoActionType.PULL_REPO_PROGRESS: {
+        case DesktopRepoActionType.PULL_REPO_PROGRESS: {
             const { folderPath, fetched, toFetch } = action.payload
             return {
                 ...state,
@@ -92,7 +93,7 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             }
         }
 
-        case RepoActionType.PULL_REPO_SUCCESS: {
+        case DesktopRepoActionType.PULL_REPO_SUCCESS: {
             const { folderPath } = action.payload
             return {
                 ...state,
@@ -103,7 +104,7 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             }
         }
 
-        case RepoActionType.CLONE_REPO_PROGRESS: {
+        case DesktopRepoActionType.CLONE_REPO_PROGRESS: {
             const { repoID, fetched, toFetch } = action.payload
             return {
                 ...state,
@@ -114,6 +115,21 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                         toFetch: toFetch,
                     }
                 }
+            }
+        }
+
+        case RepoActionType.UPDATE_USER_PERMISSIONS: {
+            const { username } = action.payload
+            return {
+                ...state,
+                updatingUserPermissions: username
+            }
+        }
+
+        case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
+            return {
+                ...state,
+                updatingUserPermissions: undefined
             }
         }
 
