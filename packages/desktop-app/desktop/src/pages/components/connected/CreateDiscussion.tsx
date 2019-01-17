@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { History } from 'history'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
-import { createDiscussion } from 'redux/discussion/discussionActions'
+import { createDiscussion } from 'conscience-components/redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
 import { IRepoFile, IUser, IDiscussion } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -57,7 +57,7 @@ interface DispatchProps {
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         user: state.user.users[state.user.currentUser || ''],
-        files: (state.repository.repos[ownProps.repoID || ''] || {}).files || {},
+        files: (state.repo.repos[ownProps.repoID || ''] || {}).files || {},
         discussions: state.discussion.discussions,
     }
 }

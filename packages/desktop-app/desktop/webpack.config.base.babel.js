@@ -191,6 +191,7 @@ export default {
             '.scss',
         ],
     },
+    externals: ['grpc'],
     node: {
         __dirname: false,
         __filename: false,

@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
-import axios from 'axios'
 import FileViewer from 'conscience-components/FileViewer'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
@@ -35,7 +34,7 @@ class ConnectedFileViewer extends React.Component<Props>
 
     async getFileContents(filename: string) {
         return new Promise<string>((resolve, reject) => {
-            fs.readFile(path.join(this.props.repo.path || "", this.props.filename), 'utf8', (err: Error, contents: string) => {
+            fs.readFile(path.join(this.props.repo.path || "", filename), 'utf8', (err: Error, contents: string) => {
                 if (err) {
                     reject(err)
                 }
@@ -83,9 +82,9 @@ interface StateProps {
 }
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoRoot = state.repository.reposByHash[ownProps.repoHash]
+    const repoRoot = state.repo.reposByHash[ownProps.repoHash]
     return {
-        repo: state.repository.repos[repoRoot],
+        repo: state.repo.repos[repoRoot],
         users: state.user.users,
         discussions: state.discussion.discussions,
         comments: state.discussion.comments,

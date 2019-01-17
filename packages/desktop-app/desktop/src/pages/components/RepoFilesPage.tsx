@@ -11,11 +11,10 @@ import FileViewer from './connected/FileViewer'
 import CreateDiscussion from './connected/CreateDiscussion'
 // import MergeConflictResolver from './MergeConflictResolver/MergeConflictResolver'
 // import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
-import { IRepo } from 'common'
 import { IGlobalState } from 'redux/store'
-import { getDiff, revertFiles } from 'redux/repository/repoActions'
-import { FileMode } from 'conscience-lib/common'
-import autobind from 'utils/autobind'
+import { getDiff } from 'conscience-components/redux/repo/repoActions'
+import { IRepo, FileMode } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
@@ -32,14 +31,13 @@ class RepoFilesPage extends React.Component<Props>
 
         const selected = this.props.match.params.filename || ''
         const file = files[selected]
-        console.log(selected)
-        console.log(file)
+
         if (file !== undefined) {
             return (
                 <div>
                     <div className={classes.fileInfo}>
                         <Breadcrumbs
-                            repoRoot={repo.path}
+                            repoRoot={repo.path || ""}
                             selectedFolder={selected}
                             selectFile={this.selectFile}
                         />
@@ -74,7 +72,7 @@ class RepoFilesPage extends React.Component<Props>
         return (
             <div className={classes.fileListContainer}>
                 <FileList
-                    repoRoot={repo.path}
+                    repoRoot={repo.path || ""}
                     files={repo.files || {}}
                     selectFile={this.selectFile}
                     selectedFolder={selected}
@@ -171,7 +169,6 @@ interface Props extends RouteComponentProps<MatchParams> {
     repo: IRepo | undefined
     fileExtensionsHidden: boolean
     getDiff: typeof getDiff
-    revertFiles: typeof revertFiles
     classes: any
 }
 
@@ -213,8 +210,8 @@ const styles = createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoHash = ownProps.match.params.repoHash
-    const repoRoot = state.repository.reposByHash[repoHash]
-    const repo = state.repository.repos[repoRoot]
+    const repoRoot = state.repo.reposByHash[repoHash]
+    const repo = state.repo.repos[repoRoot]
 
     return {
         repo,
@@ -224,7 +221,6 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
 
 const mapDispatchToProps = {
     getDiff,
-    revertFiles,
 }
 
 export default connect(

@@ -3,8 +3,8 @@ import { ILocalRepo, IRef } from '../common'
 
 const protoPath = process.env.PROTO_PATH || ''
 
-import protoLoader from '@grpc/proto-loader'
-import grpcLibrary from 'grpc'
+const protoLoader = require('@grpc/proto-loader')
+const grpcLibrary = require('grpc')
 // const protoLoader = (window as any).require('@grpc/proto-loader')
 // const grpcLibrary = (window as any).require('grpc')
 const packageDefinition = protoLoader.loadSync(protoPath, {})

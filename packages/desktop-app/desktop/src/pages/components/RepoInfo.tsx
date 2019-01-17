@@ -111,7 +111,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoRoot = ownProps.repo.path
-    const menuLabelsHidden = state.user.userSettings.menuLabelsHidden
+    const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     const pullProgress = state.ui.pullRepoProgress[repoRoot || ""]
     const checkpointLoading = state.ui.checkpointLoading
     return {

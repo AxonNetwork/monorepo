@@ -3,7 +3,7 @@ import keyBy from 'lodash/keyBy'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { ISharedRepoInfo } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import * as rpc from 'conscience-lib/rpc'
+import * as rpc from 'rpc'
 import {
     UserActionType,
     ILoginAction, ILoginSuccessAction,

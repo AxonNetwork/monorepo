@@ -22,7 +22,7 @@ class OrgList extends React.Component<Props, State>
         dialogOpen: false,
     }
 
-    _inputName : HTMLInputElement | null = null
+    _inputName: HTMLInputElement | null = null
 
     render() {
         const { orgs, selectedOrg, classes } = this.props
@@ -79,7 +79,7 @@ class OrgList extends React.Component<Props, State>
     }
 
     onClickOpenOrgDialog() {
-        this.setState({ dialogOpen: true})
+        this.setState({ dialogOpen: true })
     }
 
     handleDialogClose() {
@@ -97,9 +97,9 @@ class OrgList extends React.Component<Props, State>
 }
 
 interface Props {
-    orgs: {[orgID: string]: IOrganization}
+    orgs: { [orgID: string]: IOrganization }
     selectedOrg?: string | null
-    selectOrg: Function
+    selectOrg: (payload: { orgID: string }) => void
     createOrg: Function
     classes: any
 }

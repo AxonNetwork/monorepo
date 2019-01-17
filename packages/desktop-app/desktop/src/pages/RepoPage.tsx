@@ -5,7 +5,11 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RepoInfo from './components/RepoInfo'
 import RepoFilesPage from './components/RepoFilesPage'
-import { fetchFullRepo } from 'redux/repository/repoActions'
+import RepoHistoryPage from './components/RepoHistoryPage'
+import RepoDiscussionPage from './components/RepoDiscussionPage'
+import RepoTeamPage from './components/RepoTeamPage'
+import RepoHomePage from './components/RepoHomePage'
+import { fetchFullRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, RepoPage } from 'conscience-lib/common'
 import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
@@ -28,28 +32,24 @@ class RepoPageRoutes extends React.Component<Props>
 
         return (
             <main className={classes.main}>
-                <div className={classes.repository}>
-                    <RepoInfo
-                        repo={repo}
-                        repoPage={repoPage}
-                        navigateRepoPage={this.navigateRepoPage}
-                    />
-                    <div className={classes.repoPage}>
+                <RepoInfo
+                    repo={repo}
+                    repoPage={repoPage}
+                    navigateRepoPage={this.navigateRepoPage}
+                />
+                <div className={classes.repoPage}>
+                    <div className={classes.repoPageInner}>
                         <Switch>
                             <Route path='/repo/:repoHash/files/:filename+' component={RepoFilesPage} />
                             <Route path='/repo/:repoHash/files' component={RepoFilesPage} />
-                            <Route path='/repo/:repoHash' component={RepoFilesPage} />
+                            <Route path='/repo/:repoHash/history/:commit' component={RepoHistoryPage} />
+                            <Route path='/repo/:repoHash/history' component={RepoHistoryPage} />
+                            <Route path='/repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
+                            <Route path='/repo/:repoHash/discussion' component={RepoDiscussionPage} />
+                            <Route path='/repo/:repoHash/team' component={RepoTeamPage} />
+                            <Route path='/repo/:repoHash' component={RepoHomePage} />
                             <Route render={() => null} />
                         </Switch>
-                        {/*                            <Switch>
-                            <Route path='/repo/:repoID/files/:filename+' component={RepoFilesPage} />
-                            <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoID/team' component={RepoTeamPage} />
-                            <Route path='/repo/:repoID' component={RepoHomePage} />
-                        </Switch>*/}
                     </div>
                 </div>
             </main>
@@ -98,14 +98,22 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
     },
     repoPage: {
-        marginRight: 60
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'auto',
+    }
+    repoPageInner: {
+        marginTop: 32,
+        marginRight: 60,
+        marginBottom: 96,
     }
 })
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
     const repoHash = props.match.params.repoHash
-    const repoRoot = state.repository.reposByHash[repoHash]
-    const repo = state.repository.repos[repoRoot]
+    const repoRoot = state.repo.reposByHash[repoHash]
+    const repo = state.repo.repos[repoRoot]
     return {
         repo,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,

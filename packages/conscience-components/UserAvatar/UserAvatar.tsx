@@ -12,7 +12,7 @@ import jdenticon from 'jdenticon'
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { user, userPictureSize, selectUser, classes } = this.props
+        const { user, userPictureSize, selectUser, noTooltip, classes } = this.props
         let seedText = this.props.seedText || "unknown"
         if (user && user.userID) {
             seedText = user.userID
@@ -41,21 +41,24 @@ class UserAvatar extends React.Component<Props>
             )
         }
         const name = user !== undefined ? user.name : seedText
-        const withTooltip = (
-            <Tooltip title={name}>
-                {avatar}
-            </Tooltip>
-        )
+        if (!noTooltip) {
+            avatar = (
+                <Tooltip title={name}>
+                    {avatar}
+                </Tooltip>
+            )
+
+        }
 
         if (selectUser === undefined) {
-            return withTooltip
+            return avatar
         } else {
             return (
                 <IconButton
                     onClick={this.selectUser}
                     className={classes.iconButton}
                 >
-                    {withTooltip}
+                    {avatar}
                 </IconButton>
             )
         }
@@ -73,6 +76,7 @@ interface Props {
     user?: IUser
     userPictureSize?: '512x512' | '256x256' | '128x128'
     seedText?: string
+    noTooltip?: boolean
     selectUser?: (payload: { username: string }) => void
     className?: string
     classes: any

@@ -3,6 +3,7 @@ import userReducer, { IUserState, initialState } from 'conscience-components/red
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
 import { DesktopUserActionType, IDesktopUserAction } from './userActions'
 import { ISharedRepoInfo } from 'conscience-lib/common'
+import { fromPairs } from 'lodash'
 
 const desktopInitialState = {
     ...initialState,
@@ -19,6 +20,28 @@ declare module 'conscience-components/redux/user/userReducer' {
 
 const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUserState => {
     switch (action.type) {
+        case DesktopUserActionType.CHECK_NODE_USER_SUCCESS: {
+            const user = action.payload
+            const { userID, emails } = user
+            const usersByEmail = fromPairs(emails.map(email => [email, userID]))
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [userID]: user,
+                },
+                usersByEmail: {
+                    ...state.usersByEmail,
+                    ...usersByEmail,
+                },
+                usersByUsername: {
+                    ...state.usersByUsername,
+                    [user.username]: userID,
+                },
+                currentUser: userID,
+                checkedLoggedIn: true,
+            }
+        }
         case DesktopUserActionType.CHECK_NODE_USER_FAILED:
             return {
                 ...state,

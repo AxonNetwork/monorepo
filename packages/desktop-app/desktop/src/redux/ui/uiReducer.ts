@@ -1,6 +1,6 @@
-import { UserActionType, IUserAction } from '../user/userActions'
-import { RepoActionType, IRepoAction } from '../repository/repoActions'
-import { OrgActionType, IOrgAction } from '../org/orgActions'
+import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
+import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import { OrgActionType, IOrgAction } from 'conscience-components/redux/org/orgActions'
 
 const initialState = {
     loginLoading: false,
@@ -10,6 +10,7 @@ const initialState = {
     updateOrgLoading: false,
     pullRepoProgress: {},
     cloneRepoProgress: {},
+    updatingUserPermissions: undefined,
 }
 
 export interface IUIState {
@@ -20,20 +21,21 @@ export interface IUIState {
     updateOrgLoading: boolean
     pullRepoProgress: {
         [path: string]: {
-            fetched:number
+            fetched: number
             toFetch: number
         } | undefined
     }
     cloneRepoProgress: {
         [repoID: string]: {
-            fetched:number
+            fetched: number
             toFetch: number
         } | undefined
     }
+    updatingUserPermissions: string | undefined
 }
 
 const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
-    switch(action.type){
+    switch (action.type) {
         case UserActionType.SIGNUP:
         case UserActionType.LOGIN:
             return {
@@ -80,7 +82,7 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             const { folderPath, fetched, toFetch } = action.payload
             return {
                 ...state,
-                    pullRepoProgress: {
+                pullRepoProgress: {
                     ...state.pullRepoProgress,
                     [folderPath]: {
                         fetched: fetched,

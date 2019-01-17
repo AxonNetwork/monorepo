@@ -29,7 +29,7 @@ import { fetchUserData } from 'conscience-components/redux/user/userActions'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import * as rpc from 'conscience-lib/rpc'
+import * as rpc from 'rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
@@ -106,7 +106,7 @@ const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
     async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
         // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
-        if (!(getState().repository.repos[path] || {}).hasBeenFetched) {
+        if (!(getState().repo.repos[path] || {}).hasBeenFetched) {
             await dispatch(fetchFullRepo({ repoID, path }))
         }
         return { repoID, path }
@@ -156,7 +156,6 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
         const { path, repoID } = action.payload
 
         const rpcClient = rpc.initClient()
-        console.log('fetching for ', path)
         const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, page: 0 }))
         const timeline = history.commits.map(event => ({
             version: 0,

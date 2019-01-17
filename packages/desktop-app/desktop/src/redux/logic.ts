@@ -1,7 +1,7 @@
 import discussionLogic from 'conscience-components/redux/discussion/discussionLogic'
 import orgLogic from 'conscience-components/redux/org/orgLogic'
 import userLogic from './user/userLogic'
-import repoLogic from './repository/repoLogic'
+import repoLogic from './repo/repoLogic'
 import navigationLogic from './navigation/navigationLogic'
 import editorLogic from './editor/editorLogic'
 

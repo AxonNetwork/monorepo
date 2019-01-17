@@ -60,8 +60,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoRoot = state.repository.reposByHash[ownProps.repoHash]
-    const repo = state.repository.repos[repoRoot]
+    const repoRoot = state.repo.reposByHash[ownProps.repoHash]
+    const repo = state.repo.repos[repoRoot]
     return {
         commits: repo.commits || {},
         commitList: repo.commitList || [],

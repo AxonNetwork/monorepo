@@ -1,5 +1,6 @@
-import { makeLogic } from '../reduxUtils'
-import { EditorActionType,
+import { makeLogic } from 'conscience-components/redux/reduxUtils'
+import {
+    EditorActionType,
     ILoadTextContentAction, ILoadTextContentSuccessAction,
     ISaveTextContentAction, ISaveTextContentSuccessAction,
 } from './editorActions'

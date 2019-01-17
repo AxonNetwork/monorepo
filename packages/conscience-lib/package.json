@@ -12,7 +12,7 @@
     "@types/url-join": "^4.0.0",
     "axios": "^0.18.0",
     "bluebird": "^3.5.3",
-    "grpc": "^1.17.0-pre1",
+    "grpc": "^1.15.1",
     "lodash": "^4.17.11",
     "querystring": "^0.2.0",
     "react": "^16.6.3",

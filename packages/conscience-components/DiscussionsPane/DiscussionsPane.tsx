@@ -35,7 +35,7 @@ class RepoDiscussionPage extends React.Component<Props>
         const discussionsSorted = this.props.discussionIDsSortedByNewestComment.map(discussionID => discussions[discussionID] || { discussionID })
 
         return (
-            <div className={classes.discussionPage}>
+            <div className={classes.discussionPane}>
                 <List className={classes.list}>
 
                     {discussionsSorted.map(d => {
@@ -143,8 +143,8 @@ interface Props {
 }
 
 const styles = (theme: Theme) => createStyles({
-    discussionPage: {
-        maxHeight: 'calc(100% - 84px)',
+    discussionPane: {
+        height: 'calc(100% - 80px)',
         display: 'flex',
     },
     list: {

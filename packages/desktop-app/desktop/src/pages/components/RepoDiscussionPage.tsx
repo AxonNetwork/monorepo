@@ -2,13 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import axios from 'axios'
 import DiscussionsPane from 'conscience-components/DiscussionsPane'
-import { updateUserSettings, sawComment } from 'conscience-components/redux/user/userActions'
+import { sawComment } from 'conscience-components/redux/user/userActions'
 import { getDiscussions, createDiscussion, createComment } from 'conscience-components/redux/discussion/discussionActions'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser, IDiscussion, IComment, IUserSettings, FileMode } from 'conscience-lib/common'
+import { IRepo, IUser, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import fs from 'fs'
+import path from 'path'
 
 
 @autobind
@@ -40,42 +41,46 @@ class RepoDiscussionPage extends React.Component<Props>
                     createComment={this.props.createComment}
                     sawComment={this.props.sawComment}
                     selectUser={this.selectUser}
+                    classes={{ threadPane: classes.threadPane }}
                 />
             </div>
         )
     }
 
     directEmbedPrefix() {
-        const API_URL = process.env.API_URL
-        const repoID = this.props.match.params.repoID
-        const prefix = `${API_URL}/repo/${repoID}/file`
+        const path = this.props.repo.path
+        const prefix = "file://" + path
         return prefix
     }
 
     async getFileContents(filename: string) {
-        const directEmbedPrefix = this.directEmbedPrefix()
-        const fileUrl = `${directEmbedPrefix}/${filename}`
-        const resp = await axios.get<string>(fileUrl)
-        return resp.data
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(path.join(this.props.repo.path || "", filename), 'utf8', (err: Error, contents: string) => {
+                if (err) {
+                    reject(err)
+                }
+                resolve(contents)
+            })
+        })
     }
 
     selectFile(payload: { filename: string | undefined, mode: FileMode }) {
-        const repoID = this.props.match.params.repoID
+        const repoHash = this.props.match.params.repoHash
         const filename = payload.filename
         if (filename === undefined) {
-            this.props.history.push(`/repo/${repoID}/files`)
+            this.props.history.push(`/repo/${repoHash}/files`)
         } else {
-            this.props.history.push(`/repo/${repoID}/files/${filename}`)
+            this.props.history.push(`/repo/${repoHash}/files/${filename}`)
         }
     }
 
     selectDiscussion(payload: { discussionID: string | undefined }) {
-        const repoID = this.props.match.params.repoID
+        const repoHash = this.props.match.params.repoHash
         const discussionID = payload.discussionID
         if (discussionID === undefined) {
-            this.props.history.push(`/repo/${repoID}/discussion`)
+            this.props.history.push(`/repo/${repoHash}/discussion`)
         } else {
-            this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
+            this.props.history.push(`/repo/${repoHash}/discussion/${discussionID}`)
         }
     }
 
@@ -89,7 +94,7 @@ class RepoDiscussionPage extends React.Component<Props>
 }
 
 interface MatchParams {
-    repoID: string
+    repoHash: string
     discussionID: string | undefined
 }
 
@@ -106,7 +111,6 @@ interface Props extends RouteComponentProps<MatchParams> {
     getDiscussions: (payload: { repoID: string }) => void
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
-    updateUserSettings: (payload: { settings: IUserSettings }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
 
     classes: any
@@ -115,12 +119,15 @@ interface Props extends RouteComponentProps<MatchParams> {
 const styles = (theme: Theme) => createStyles({
     page: {
         marginTop: 16,
+        width: '100%',
+        height: '100%',
     },
 })
 
-const mapStateToProps = (state: IGlobalState, props: Props) => {
-    const repoID = props.match.params.repoID
-    const repo = state.repo.repos[repoID] || {}
+const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+    const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
+    const repo = state.repo.repos[repoRoot] || {}
+    const repoID = repo.repoID || ''
     const users = state.user.users
     const user = users[state.user.currentUser || ''] || {}
     return {
@@ -139,7 +146,6 @@ const mapDispatchToProps = {
     getDiscussions,
     createDiscussion,
     createComment,
-    updateUserSettings,
     sawComment,
 }
 

@@ -19,13 +19,12 @@ import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import RepoList from './RepoList'
 import OrgList from './OrgList'
-import { IRepo, IUser, IOrganization } from 'common'
+import { IRepo, IUser, IOrganization } from 'conscience-lib/common'
 import { IGlobalState } from 'redux/store'
-import { selectOrg, createOrg } from 'redux/org/orgActions'
-import { navigateNewRepo } from 'redux/navigation/navigationActions'
+import { createOrg } from 'conscience-components/redux/org/orgActions'
 import autobind from 'utils/autobind'
 import getHash from 'utils/getHash'
-import UserAvatar from 'components/UserAvatar'
+import UserAvatar from 'conscience-components/UserAvatar'
 import { keyBy } from 'lodash'
 
 
@@ -55,7 +54,7 @@ class Sidebar extends React.Component<Props, State>
                 </div>
                 <Divider />
                 <div className={classes.avatarWrapper}>
-                    <UserAvatar username={user.name} userPicture={user.picture} />
+                    <UserAvatar user={user} noTooltip />
                     <Typography className={classes.avatarName} classes={{ root: classes.sidebarItemText }}>{this.props.user.name}</Typography>
                 </div>
 
@@ -82,7 +81,7 @@ class Sidebar extends React.Component<Props, State>
                     <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
                         <OrgList
                             orgs={this.props.orgs}
-                            selectOrg={this.props.selectOrg}
+                            selectOrg={this.navigateOrg}
                             createOrg={this.props.createOrg}
                         />
                     </Collapse>
@@ -96,7 +95,7 @@ class Sidebar extends React.Component<Props, State>
                     <ListItem
                         button
                         key="new"
-                        onClick={this.props.navigateNewRepo as (event: any) => void}
+                        onClick={this.navigateRepo}
                         className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new' })}
                     >
                         <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
@@ -135,8 +134,16 @@ class Sidebar extends React.Component<Props, State>
         this.props.history.push(`/repo/${repoHash}`)
     }
 
+    navigateNewRepo() {
+        console.log("HERE")
+    }
+
     navigateSettings() {
         this.props.history.push('/settings')
+    }
+
+    navigateOrg(payload: { orgID: string }) {
+        console.log('here')
     }
 }
 
@@ -160,9 +167,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    selectOrg: typeof selectOrg
     createOrg: typeof createOrg
-    navigateNewRepo: typeof navigateNewRepo
 }
 
 interface State {
@@ -242,8 +247,8 @@ const mapStateToProps = (state: IGlobalState) => {
         .map((id: string) => state.org.orgs[id] || {})
     const orgs = keyBy(orgList, 'orgID')
     return {
-        repos: state.repository.repos,
-        selectedRepo: state.repository.selectedRepo,
+        repos: state.repo.repos,
+        selectedRepo: state.repo.selectedRepo,
         currentPage: state.navigation.currentPage,
         user,
         orgs,
@@ -251,9 +256,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    selectOrg,
     createOrg,
-    navigateNewRepo,
 }
 
 export default withRouter(connect<StateProps, DispatchProps, OwnProps, IGlobalState>(

@@ -64,6 +64,7 @@ const ServerRelay = {
             }
             throw err.response.data.error
         }
+        console.log(resp)
 
         ServerRelay.setJWT(resp.data.jwt)
         return resp.data

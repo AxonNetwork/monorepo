@@ -1,7 +1,6 @@
 import { IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 import { FailedAction } from 'conscience-components/redux/reduxUtils'
 import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
-import { RepoPage, FileMode } from './repoReducer'
 
 export enum DesktopRepoActionType {
     CREATE_REPO = 'CREATE_REPO',
