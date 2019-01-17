@@ -1,26 +1,25 @@
-import 'dotenv/config'; // Allow webpack config file to use .env variables
+import 'dotenv/config' // Allow webpack config file to use .env variables
 
-import path from 'path';
-import webpack from 'webpack';
+import path from 'path'
+import webpack from 'webpack'
 
-import cssnano from 'cssnano';
-import postcssImport from 'postcss-import';
-import postcssPresetEnv from 'postcss-preset-env';
+import cssnano from 'cssnano'
+import postcssImport from 'postcss-import'
+import postcssPresetEnv from 'postcss-preset-env'
 
-import AddAssetHtmlPlugin from 'add-asset-html-webpack-plugin';
-import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import DotenvPlugin from 'dotenv-webpack';
-import DuplicatePackageCheckerPlugin from 'duplicate-package-checker-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
+import AddAssetHtmlPlugin from 'add-asset-html-webpack-plugin'
+import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import DuplicatePackageCheckerPlugin from 'duplicate-package-checker-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin'
 
-const ReactManifest = './dist/dll/react_manifest.json';
-const I18nextManifest = './dist/dll/i18next_manifest.json';
-const ImmutableManifest = './dist/dll/immutable_manifest.json';
-const MaterializeManifest = './dist/dll/materialize_manifest.json';
-const devMode = process.env.NODE_ENV !== 'production';
+const ReactManifest = './dist/dll/react_manifest.json'
+const I18nextManifest = './dist/dll/i18next_manifest.json'
+const ImmutableManifest = './dist/dll/immutable_manifest.json'
+const MaterializeManifest = './dist/dll/materialize_manifest.json'
+const devMode = process.env.NODE_ENV !== 'production'
 
 export default {
     // The base directory, an absolute path, for resolving entry points and loaders from configuration
@@ -35,16 +34,16 @@ export default {
             // Use awesome-typescript-loader and babel-loader for ts(x) files
             {
                 test: /\.tsx?$/,
-                use: [
+                use:  [
                     { loader: 'babel-loader' },
                     {
-                        loader: 'awesome-typescript-loader',
+                        loader:  'awesome-typescript-loader',
                         options: {
-                            silent: true,
+                            silent:      true,
                             // Use those two flags to speed up babel compilation
                             // https://github.com/s-panferov/awesome-typescript-loader#differences-between-ts-loader
-                            useBabel: true,
-                            useCache: true,
+                            useBabel:    true,
+                            useCache:    true,
                             // Workaround for at-loader not respecting "exclude" property
                             // https://github.com/s-panferov/awesome-typescript-loader/issues/492
                             reportFiles: [
@@ -61,20 +60,20 @@ export default {
             // Use a list of loaders to load materialize and prism css files
             {
                 test: /\.css$/,
-                use: [
+                use:  [
                     devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
-                        loader: 'css-loader',
+                        loader:  'css-loader',
                         options: {
-                            sourceMap: !devMode,
+                            sourceMap:     !devMode,
                             importLoaders: 1,
                         },
                     }, // TODO: enable sourceMap in devMode without FOUC
                     {
-                        loader: 'postcss-loader',
+                        loader:  'postcss-loader',
                         options: {
                             sourceMap: true,
-                            plugins: () => [postcssImport, postcssPresetEnv, cssnano],
+                            plugins:   () => [ postcssImport, postcssPresetEnv, cssnano ],
                         },
                     },
                 ],
@@ -82,22 +81,22 @@ export default {
             // Use a list of loaders to load scss files
             {
                 test: /\.scss$/,
-                use: [
+                use:  [
                     devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
-                        loader: 'css-loader',
+                        loader:  'css-loader',
                         options: {
-                            sourceMap: !devMode,
-                            importLoaders: 2,
-                            modules: true,
+                            sourceMap:      !devMode,
+                            importLoaders:  2,
+                            modules:        true,
                             localIdentName: '[local]--[hash:base64:8]',
                         },
                     }, // TODO: enable sourceMap in devMode without FOUC
                     {
-                        loader: 'postcss-loader',
+                        loader:  'postcss-loader',
                         options: {
                             sourceMap: true,
-                            plugins: () => [postcssImport, postcssPresetEnv, cssnano],
+                            plugins:   () => [ postcssImport, postcssPresetEnv, cssnano ],
                         },
                     },
                     { loader: 'sass-loader', options: { sourceMap: true } },
@@ -106,7 +105,7 @@ export default {
             // Use image-webpack-loader and url-loader to load images
             {
                 test: /\.(png|jpe?g|gif|svg|webp|tiff)(\?.*)?$/,
-                use: [
+                use:  [
                     { loader: 'url-loader', options: { limit: 10000, name: '[name].[hash:7].[ext]' } },
                     { loader: 'image-webpack-loader', options: { disable: devMode } },
                 ],
@@ -114,14 +113,14 @@ export default {
             // Use url-loader to load font related files
             {
                 test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                use: [
+                use:  [
                     { loader: 'url-loader', options: { limit: 10000, name: '[name].[hash:7].[ext]' } },
                 ],
             },
             // Use url-loader to load audio related files
             {
                 test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                use: [
+                use:  [
                     { loader: 'url-loader', options: { limit: 10000, name: '[name].[hash:7].[ext]' } },
                 ],
             },
@@ -132,8 +131,6 @@ export default {
     plugins: [
     // Enforces case sensitive paths.
         new CaseSensitivePathsPlugin(),
-        // Supports dotenv file
-        new DotenvPlugin(),
         // Warns when multiple versions of the same package exist in a build
         new DuplicatePackageCheckerPlugin(),
         // Load pre-build dll reference files
@@ -143,27 +140,27 @@ export default {
         new webpack.DllReferencePlugin({ manifest: MaterializeManifest }),
         // Extract css part from javascript bundle into separated file
         new MiniCssExtractPlugin({
-            filename: '[name].[contenthash:10].css',
+            filename:      '[name].[contenthash:10].css',
             chunkFilename: '[name].[contenthash:10].css',
         }),
         // Better building progress display
         new ProgressBarWebpackPlugin(),
         // Generate html file to dist folder
         new HtmlWebpackPlugin({
-            title: 'Conscience',
+            title:    'Conscience',
             template: path.resolve(__dirname, 'public/index.ejs'),
         }),
         // Add dll reference files to html
         new AddAssetHtmlPlugin({
-            filepath: path.resolve(__dirname, 'dist/dll/*_dll.js'),
+            filepath:         path.resolve(__dirname, 'dist/dll/*_dll.js'),
             includeSourcemap: false,
         }),
         // Copy static files to build dir
         new CopyWebpackPlugin([
             {
-                from: 'public/**/*',
-                to: '[name].[ext]',
-                ignore: ['index.ejs'],
+                from:   'public/**/*',
+                to:     '[name].[ext]',
+                ignore: [ 'index.ejs' ],
             },
         ]),
     ],
@@ -186,4 +183,4 @@ export default {
             '.scss',
         ],
     },
-};
+}
