@@ -4,11 +4,7 @@ import { IRepo, IRepoPermissions } from 'conscience-lib/common'
 export const initialState = {
     repos: {},
     repoListByUser: {},
-    repoPermissions: {
-        admins: [],
-        pushers: [],
-        pullers: [],
-    },
+    repoPermissions: {},
 }
 
 export interface IRepoState {

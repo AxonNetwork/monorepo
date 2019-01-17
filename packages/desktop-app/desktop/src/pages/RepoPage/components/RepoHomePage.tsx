@@ -184,7 +184,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
     const repo = state.repo.repos[repoRoot]
-    const { admins, pushers, pullers } = repo
+    const { admins = [], pushers = [], pullers = [] } = state.repo.repoPermissions[repo.repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
