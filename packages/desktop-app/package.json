@@ -12,8 +12,7 @@
   "scripts": {
     "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
     "dll": "cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.dll.babel.js",
-    "dev": "yarn clean && yarn dll && concurrently --raw \"yarn dev-server\" \"yarn dev-client\"",
-    "dev-server": "cross-env NODE_ENV=development nodemon --exec babel-node backend/server.js",
+    "dev": "yarn clean && yarn dll && yarn dev-client",
     "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config ./desktop/webpack.config.dev.babel.js",
     "prod": "yarn build && yarn serve",
     "build": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.prod.babel.js",

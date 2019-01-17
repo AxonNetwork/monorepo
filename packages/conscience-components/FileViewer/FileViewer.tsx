@@ -59,6 +59,7 @@ class FileViewer extends React.Component<Props, State> {
                     directEmbedPrefix={this.props.directEmbedPrefix}
                     filename={filename}
                     fileContents={fileContents}
+                    classes={classes}
                 />
             </div>
         )

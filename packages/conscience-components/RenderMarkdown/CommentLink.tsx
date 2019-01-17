@@ -23,6 +23,7 @@ class CommentLink extends React.Component<Props, State>
         }
         const user = users[comment.userID]
 
+        const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
         return (
             <React.Fragment>
                 <a
@@ -42,6 +43,11 @@ class CommentLink extends React.Component<Props, State>
                     onMouseLeave={this.hidePopper}
                     className={classes.popper}
                     style={{ maxHeight: window.innerHeight * 0.8 }}
+                    popperOptions={{
+                        modifiers: {
+                            preventOverflow: { enabled: true, boundariesElement },
+                        },
+                    }}
                 >
                     <CommentWrapper
                         user={user}
