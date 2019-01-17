@@ -5,10 +5,7 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
 } from 'conscience-components/redux/repo/repoActions'
-import {
-    IGetRepoAction, IGetRepoSuccessAction,
-    getRepo,
-} from './repoActions'
+import { WebRepoActionType, IGetRepoAction, IGetRepoSuccessAction, getRepo } from './repoActions'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
@@ -25,7 +22,7 @@ const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction
 })
 
 const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
-    type: RepoActionType.GET_REPO,
+    type: WebRepoActionType.GET_REPO,
     async process({ action }, dispatch) {
         const { repoID } = action.payload
         const repo = await ServerRelay.getRepo(repoID)

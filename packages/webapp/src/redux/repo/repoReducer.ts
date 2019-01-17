@@ -1,6 +1,6 @@
-import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { initialState, IRepoState } from 'conscience-components/redux/repo/repoReducer'
-import { IWebRepoAction } from './repoActions'
+import { WebRepoActionType, IWebRepoAction } from './repoActions'
 
 const webInitialState = {
     ...initialState,
@@ -13,7 +13,7 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.GET_REPO_SUCCESS: {
+        case WebRepoActionType.GET_REPO_SUCCESS: {
             const { repo } = action.payload
             return {
                 ...state,
