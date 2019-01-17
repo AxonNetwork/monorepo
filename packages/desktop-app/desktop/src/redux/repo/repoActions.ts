@@ -31,9 +31,9 @@ export enum DesktopRepoActionType {
     FETCH_LOCAL_REFS_SUCCESS = 'FETCH_LOCAL_REFS_SUCCESS',
     FETCH_LOCAL_REFS_FAILED = 'FETCH_LOCAL_REFS_FAILED',
 
-    FETCH_REPO_SHARED_USERS = 'FETCH_REPO_SHARED_USERS',
-    FETCH_REPO_SHARED_USERS_SUCCESS = 'FETCH_REPO_SHARED_USERS_SUCCESS',
-    FETCH_REPO_SHARED_USERS_FAILED = 'FETCH_REPO_SHARED_USERS_FAILED',
+    FETCH_REPO_USERS_PERMISSIONS = 'FETCH_REPO_USERS_PERMISSIONS',
+    FETCH_REPO_USERS_PERMISSIONS_SUCCESS = 'FETCH_REPO_USERS_PERMISSIONS_SUCCESS',
+    FETCH_REPO_USERS_PERMISSIONS_FAILED = 'FETCH_REPO_USERS_PERMISSIONS_FAILED',
 
     WATCH_REPO = 'WATCH_REPO',
     WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
@@ -202,24 +202,24 @@ export interface IFetchRemoteRefsSuccessAction {
 
 export type IFetchRemoteRefsFailedAction = FailedAction<DesktopRepoActionType.FETCH_REMOTE_REFS_FAILED>
 
-export interface IFetchRepoSharedUsersAction {
-    type: DesktopRepoActionType.FETCH_REPO_SHARED_USERS
+export interface IFetchRepoUsersPermissionsAction {
+    type: DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS
     payload: {
-        path: string
         repoID: string,
     }
 }
 
-export interface IFetchRepoSharedUsersSuccessAction {
-    type: DesktopRepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS
+export interface IFetchRepoUsersPermissionsSuccessAction {
+    type: DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS
     payload: {
-        path: string
         repoID: string
-        sharedUsers: string[],
+        admins: string[]
+        pushers: string[]
+        pullers: string[]
     }
 }
 
-export type IFetchRepoSharedUsersFailedAction = FailedAction<DesktopRepoActionType.FETCH_REPO_SHARED_USERS_FAILED>
+export type IFetchRepoUsersPermissionsFailedAction = FailedAction<DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS_FAILED>
 
 export interface ISelectRepoAction {
     type: DesktopRepoActionType.SELECT_REPO
@@ -394,9 +394,9 @@ export type IDesktopRepoAction =
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
 
-    IFetchRepoSharedUsersAction |
-    IFetchRepoSharedUsersSuccessAction |
-    IFetchRepoSharedUsersFailedAction |
+    IFetchRepoUsersPermissionsAction |
+    IFetchRepoUsersPermissionsSuccessAction |
+    IFetchRepoUsersPermissionsFailedAction |
 
     IFetchRemoteRefsAction |
     IFetchRemoteRefsSuccessAction |
@@ -439,7 +439,7 @@ export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IG
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: DesktopRepoActionType.FETCH_FULL_REPO, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: DesktopRepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: DesktopRepoActionType.FETCH_REPO_TIMELINE, payload })
-export const fetchRepoSharedUsers = (payload: IFetchRepoSharedUsersAction['payload']): IFetchRepoSharedUsersAction => ({ type: DesktopRepoActionType.FETCH_REPO_SHARED_USERS, payload })
+export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: DesktopRepoActionType.FETCH_LOCAL_REFS, payload })
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: DesktopRepoActionType.FETCH_REMOTE_REFS, payload })
 

@@ -192,18 +192,18 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case DesktopRepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS: {
-            const { path, sharedUsers } = action.payload
+        case DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS: {
+            const { repoID, admins, pushers, pullers } = action.payload
             return {
                 ...state,
-                repos: {
-                    ...state.repos,
-                    [path]: {
-                        ...state.repos[path],
-                        path,
-                        sharedUsers: sharedUsers,
-                    },
-                },
+                repoPermissions: {
+                    ...state.repoPermissions,
+                    [repoID]: {
+                        admins: admins,
+                        pushers: pushers,
+                        pullers: pullers,
+                    }
+                }
             }
         }
 

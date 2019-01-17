@@ -1,10 +1,12 @@
 import keyBy from 'lodash/keyBy'
+import union from 'lodash/union'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
 import fileType from 'utils/fileType'
 import { ILocalRepo, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetDiffAction, IGetDiffSuccessAction,
+    IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     DesktopRepoActionType,
@@ -13,7 +15,7 @@ import {
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
-    IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction,
+    IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     ISelectRepoAction, ISelectRepoSuccessAction,
@@ -21,11 +23,11 @@ import {
     ICloneRepoAction,
     IPullRepoAction,
     IWatchRepoAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoSharedUsers,
+    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
     fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote, cloneRepoProgress,
     pullRepoProgress, pullRepoSuccess
 } from './repoActions'
-import { fetchUserData } from 'conscience-components/redux/user/userActions'
+import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
@@ -121,7 +123,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         dispatch(fetchRepoFiles({ path, repoID }))
         dispatch(fetchRepoTimeline({ path, repoID }))
         dispatch(getDiscussions({ repoID }))
-        dispatch(fetchRepoSharedUsers({ path, repoID }))
+        dispatch(fetchRepoUsersPermissions({ repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))
         dispatch(fetchRemoteRefs({ repoID }))
         return { path, repoID }
@@ -171,15 +173,36 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     },
 })
 
-const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
-    type: DesktopRepoActionType.FETCH_REPO_SHARED_USERS,
+const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction>({
+    type: DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS,
     async process({ action }, dispatch) {
-        const { path, repoID } = action.payload
-        const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.userID)
+        const { repoID } = action.payload
+        const rpcClient = rpc.initClient()
+        const [admins, pushers, pullers] = await Promise.all([
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
+        ])
 
-        dispatch(fetchUserData({ userIDs: sharedUsers }))
+        const usernames = union(admins, pushers, pullers)
+        await dispatch(fetchUserDataByUsername({ usernames: usernames }))
 
-        return { path, repoID, sharedUsers }
+        return { repoID, admins, pushers, pullers }
+    },
+})
+
+const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
+    type: RepoActionType.UPDATE_USER_PERMISSIONS,
+    async process({ action }, dispatch) {
+        const { repoID, username, admin, pusher, puller } = action.payload
+        const rpcClient = rpc.initClient()
+        await rpcClient.setUserPermissionsAsync({ repoID, username, puller, pusher, admin })
+        const [admins, pushers, pullers] = await Promise.all([
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
+        ])
+        return { repoID, admins, pushers, pullers }
     },
 })
 
@@ -388,13 +411,17 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
 })
 
 export default [
+    // imported from conscience-components
+    updateUserPermissionsLogic,
+
+    // desktop-specific
     createRepoLogic,
     getLocalReposLogic,
     selectRepoLogic,
     fetchFullRepoLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
-    fetchRepoSharedUsersLogic,
+    fetchRepoUsersPermissionsLogic,
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,
     checkpointRepoLogic,

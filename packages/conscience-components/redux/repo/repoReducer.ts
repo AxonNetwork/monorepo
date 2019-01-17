@@ -1,14 +1,16 @@
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, IRepoPermissions } from 'conscience-lib/common'
 
 export const initialState = {
     repos: {},
     repoListByUser: {},
+    repoPermissions: {},
 }
 
 export interface IRepoState {
     repos: { [repoID: string]: IRepo }
     repoListByUser: { [username: string]: string[] }
+    repoPermissions: { [repoID: string]: IRepoPermissions }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
@@ -40,15 +42,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
             return {
                 ...state,
-                repos: {
-                    ...state.repos,
+                repoPermissions: {
+                    ...state.repoPermissions,
                     [repoID]: {
-                        ...(state.repos[repoID] || {}),
                         admins: admins,
                         pushers: pushers,
                         pullers: pullers,
-                    },
-                },
+                    }
+                }
             }
         }
 

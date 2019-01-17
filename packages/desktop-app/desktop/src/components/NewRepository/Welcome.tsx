@@ -8,17 +8,17 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import logo from '../../assets/img/logo.png'
 import { IGlobalState } from 'redux/store'
-import { createRepo } from 'redux/repository/repoActions'
+import { createRepo } from 'redux/repo/repoActions'
 import autobind from 'utils/autobind'
 
 @autobind
 class NewRepository extends React.Component<Props>
 {
-    _inputRepoID : HTMLInputElement | null = null
+    _inputRepoID: HTMLInputElement | null = null
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        if(this._inputRepoID === null){
+        if (this._inputRepoID === null) {
             return
         }
         const repoID = this._inputRepoID.value
@@ -30,7 +30,7 @@ class NewRepository extends React.Component<Props>
         const { classes } = this.props
         return (
             <div className={classes.welcomePage}>
-                <img src={logo} alt="Conscience Logo" className={classes.logo}/>
+                <img src={logo} alt="Conscience Logo" className={classes.logo} />
                 <Typography variant="h3">
                     Welcome to Conscience
                 </Typography>
@@ -79,7 +79,7 @@ const styles = (theme: Theme) => createStyles({
     logo: {
         width: 128
     },
-    form:{
+    form: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

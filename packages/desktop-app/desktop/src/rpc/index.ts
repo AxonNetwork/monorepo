@@ -12,8 +12,8 @@ const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
 const noderpc = packageObject.noderpc
 
 interface IRPCClient {
-    setUsernameAsync: (params : { username: string}) => Promise<{ signature: Buffer }>
-    getUsernameAsync: (params : {}) => Promise<{ username: string, signature: Buffer }>
+    setUsernameAsync: (params: { username: string }) => Promise<{ signature: Buffer }>
+    getUsernameAsync: (params: {}) => Promise<{ username: string, signature: Buffer }>
 
     initRepoAsync: (params: { repoID: string, path?: string, name?: string, email?: string }) => Promise<{ path: string }>
     checkpointRepoAsync: (params: { path: string, message?: string }) => Promise<{ ok: boolean }>
@@ -21,29 +21,37 @@ interface IRPCClient {
     cloneRepo: (params: { repoID: string, path?: string, name?: string, email?: string }) => any // emitter for progress stream
     getLocalRepos: any
     getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
-    getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise< { files: {
-        name: string,
-        size: Long,
-        modified: number,
-        stagedStatus: string,
-        mergeConflict: boolean,
-        mergeUnresolved: boolean,
-    }[] } >
-    getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: {
-        commitHash: string
-        author: string
-        message: string
-        timestamp: Long
-        files: string[]
-        verified?: Long,
-    }[] }>
+    getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise<{
+        files: {
+            name: string,
+            size: Long,
+            modified: number,
+            stagedStatus: string,
+            mergeConflict: boolean,
+            mergeUnresolved: boolean,
+        }[]
+    }>
+    getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{
+        commits: {
+            commitHash: string
+            author: string
+            message: string
+            timestamp: Long
+            files: string[]
+            verified?: Long,
+        }[]
+    }>
     getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
     getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
-    getAllRemoteRefsAsync: (repoID: string) => Promise<{[refName: string]: string}>
-    isBehindRemoteAsync: (params: { repoID: string, path: string}) => Promise<{ path: string, isBehindRemote: boolean}>
+    getAllRemoteRefsAsync: (repoID: string) => Promise<{ [refName: string]: string }>
+    isBehindRemoteAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, isBehindRemote: boolean }>
     signMessageAsync: (params: { message: Buffer }) => Promise<{ signature: Buffer }>
     ethAddressAsync: (params: {}) => Promise<{ address: string }>
+
     setUserPermissionsAsync: (params: { repoID: string, username: string, puller: boolean, pusher: boolean, admin: boolean }) => Promise<{}>
+    getRepoUsersAsync: (params: { repoID: string, type: (0 | 1 | 2), pageSize: number, page: number }) => Promise<string[]>
+    getAllUsersOfTypeAsync: (params: { repoID: string, type: (0 | 1 | 2) }) => Promise<string[]>
+
     getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
     // @@TODO: convert to enum
@@ -85,10 +93,10 @@ export function initClient() {
             })
         }
 
-        client.getAllRemoteRefsAsync = async (repoID: string): Promise<{[refName: string]: string}> => {
+        client.getAllRemoteRefsAsync = async (repoID: string): Promise<{ [refName: string]: string }> => {
             const REF_PAGE_SIZE = 10
             let page = 0
-            let refMap = {} as {[refName: string]: string}
+            let refMap = {} as { [refName: string]: string }
 
             while (true) {
                 const { total, refs } = await client.getRemoteRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
@@ -102,6 +110,21 @@ export function initClient() {
                 page++
             }
             return refMap
+        }
+
+        client.getAllUsersOfTypeAsync = async (params: { repoID: string, type: (0 | 1 | 2) }) => {
+            let page = 0
+            let users = [] as string[]
+            const { repoID, type } = params
+            while (true) {
+                const result = await client.getRepoUsersAsync({ repoID, type, pageSize: 10, page: page })
+                users = users.concat(result.users)
+                if (result.users.length < 10) {
+                    break
+                }
+                page++
+            }
+            return users
         }
     }
     return client

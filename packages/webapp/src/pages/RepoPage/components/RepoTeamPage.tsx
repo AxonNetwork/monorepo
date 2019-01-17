@@ -5,7 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import SharedUsers from 'conscience-components/SharedUsers'
 import { updateUserPermissions } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser } from 'conscience-lib/common'
+import { IRepoPermissions, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -18,7 +18,8 @@ class RepoTeamPage extends React.Component<Props>
         return (
             <div className={classes.page}>
                 <SharedUsers
-                    repo={this.props.repo}
+                    repoID={this.props.match.params.repoID}
+                    permissions={this.props.permissions}
                     users={this.props.users}
                     usersByUsername={this.props.usersByUsername}
                     currentUser={this.props.currentUser}
@@ -44,7 +45,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    repo: IRepo | undefined
+    permissions: IRepoPermissions
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
     currentUser: string
@@ -62,7 +63,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
     const repoID = props.match.params.repoID
     return {
-        repo: state.repo.repos[repoID],
+        permissions: state.repo.repoPermissions[repoID],
         users: state.user.users,
         usersByUsername: state.user.usersByUsername,
         currentUser: state.user.currentUser || '',
