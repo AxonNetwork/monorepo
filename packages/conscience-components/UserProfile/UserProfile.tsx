@@ -33,7 +33,7 @@ class UserProfile extends React.Component<Props, State>
     render() {
         const { interests } = this.state
         const { user, currentUser, classes } = this.props
-        const { bio, geolocation, university, orcid } = user.profile
+        const { bio = undefined, geolocation = undefined, university = undefined, orcid = undefined } = (user.profile || {})
         const ownProfile = user.userID === currentUser
         if (!this.state.editing) {
             return (
@@ -176,8 +176,10 @@ class UserProfile extends React.Component<Props, State>
     }
 
     componentDidMount() {
-        const interests = this.props.user.profile.interests
-        this.setState({ interests })
+        if (this.props.user.profile) {
+            const interests = this.props.user.profile.interests
+            this.setState({ interests })
+        }
     }
 
     toggleEditing() {

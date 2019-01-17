@@ -24,7 +24,7 @@ import { IOrgBlog } from 'conscience-lib/common'
 
 const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
     type: OrgActionType.CREATE_ORG,
-    async process({ action, getState }, dispatch) {
+    async process({ action }, dispatch) {
         const { name } = action.payload
         const org = await ServerRelay.createOrg(name)
         const userID = org.members[0]

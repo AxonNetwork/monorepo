@@ -6,7 +6,7 @@ import { AppContainer } from 'react-hot-loader'
 import App from 'App'
 import history from 'redux/history'
 import createStore from 'redux/store'
-import { whoami } from 'redux/user/userActions'
+import { whoami } from 'conscience-components/redux/user/userActions'
 import { isProduction } from 'utils'
 
 import 'typeface-roboto'

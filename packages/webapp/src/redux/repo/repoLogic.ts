@@ -44,6 +44,9 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }, dispatch) {
         const { repoID, commit } = action.payload
+        if (!repoID) {
+            throw new Error('repoLogic.getDiffLogic: repoID must be specified')
+        }
         const resp = await ServerRelay.getDiff(repoID, commit)
         const diffs = resp.diffs
         return { repoID, commit, diffs }

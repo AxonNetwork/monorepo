@@ -1,4 +1,4 @@
-import { IRepoAction, RepoActionType } from '../repo/repoActions'
+import { IRepoAction, RepoActionType } from 'conscience-components/redux/repo/repoActions'
 
 const initialState = {
     updatingUserPermissions: undefined

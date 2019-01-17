@@ -77,7 +77,7 @@ const uploadUserPictureLogic = makeLogic<IUploadUserPictureAction, IUploadUserPi
     async process({ action }) {
         const { fileInput } = action.payload
         const { userID, picture } = await ServerRelay.uploadUserPicture(fileInput)
-        return { userID, picture: picture + '?' + (new Date().getTime()) }
+        return { userID, picture }
     },
 })
 
@@ -105,7 +105,7 @@ const updateUserProfileLogic = makeLogic<IUpdateUserProfileAction, IUpdateUserPr
     async process({ action }) {
         const { userID, profile } = action.payload
         const user = await ServerRelay.updateUserProfile(profile)
-        return { userID, profile: user.profile }
+        return { userID, profile: user.profile! }
     },
 })
 

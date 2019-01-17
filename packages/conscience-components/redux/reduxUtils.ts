@@ -1,11 +1,10 @@
 import { createLogic } from 'redux-logic'
-import { IGlobalState } from './store'
 
 interface ActionType {
     payload: any
 }
 
-interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType extends ActionType> {
+interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType extends ActionType, IGlobalState> {
     (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): Promise<SuccessActionType['payload'] | Error | void>
 }
 
@@ -17,8 +16,8 @@ interface ProcessFunc<HandledActionType extends ActionType, SuccessActionType ex
 //     <HandledActionType extends ActionType, undefined>
 //     (opts: { type: string, warnTimeout?: number, process: ProcessFuncNoReturn<HandledActionType> })
 export function makeLogic
-    <HandledActionType extends ActionType, SuccessActionType extends ActionType>
-    (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType> }) {
+    <HandledActionType extends ActionType, SuccessActionType extends ActionType, IGlobalState = any>
+    (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType, IGlobalState> }) {
     return createLogic({
         type: opts.type,
         warnTimeout: opts.warnTimeout || 60000,
@@ -41,13 +40,13 @@ export function makeLogic
     })
 }
 
-interface ContinuousProcessFunc<HandledActionType extends ActionType> {
+interface ContinuousProcessFunc<HandledActionType extends ActionType, IGlobalState> {
     (depObj: { getState: () => IGlobalState, action: HandledActionType }, dispatch: Function, done: Function): void
 }
 
 export function makeContinuousLogic
-    <HandledActionType extends ActionType>
-    (opts: { type: string, warnTimeout?: number, process: ContinuousProcessFunc<HandledActionType> }) {
+    <HandledActionType extends ActionType, IGlobalState = any>
+    (opts: { type: string, warnTimeout?: number, process: ContinuousProcessFunc<HandledActionType, IGlobalState> }) {
     return createLogic({
         type: opts.type,
         warnTimeout: 0,

@@ -37,6 +37,9 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
         case RepoActionType.GET_DIFF_SUCCESS: {
             const { repoID, commit, diffs } = action.payload
+            if (!repoID) {
+                throw new Error('conscience-components repoReducer GET_DIFF_SUCCESS: repoID must be specified')
+            }
             return {
                 ...state,
                 repos: {

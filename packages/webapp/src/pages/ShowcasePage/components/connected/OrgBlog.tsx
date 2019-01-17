@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import OrgBlog from 'conscience-components/OrgBlog/OrgBlog'
 import { IGlobalState } from 'redux/store'
 import { IOrgBlog } from 'conscience-lib/common'
-import { fetchOrgBlogs } from 'redux/org/orgActions'
+import { fetchOrgBlogs } from 'conscience-components/redux/org/orgActions'
 
 
 class ConnectedOrgBlog extends React.Component<Props>

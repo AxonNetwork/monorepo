@@ -79,7 +79,6 @@ export interface IUser {
     name: string
     username: string
     picture: IUploadedPicture | null
-    repos: string[]
     orgs: string[]
     profile: IUserProfile | null
 }
