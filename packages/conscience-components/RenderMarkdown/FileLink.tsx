@@ -11,8 +11,11 @@ class FileLink extends React.Component<Props, State> {
         showPopper: false,
     }
 
+    _link: HTMLAnchorElement | null = null
+
     render() {
         const { filename, repo, classes } = this.props
+        const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
         return (
             <React.Fragment>
                 <a
@@ -20,16 +23,21 @@ class FileLink extends React.Component<Props, State> {
                     onClick={this.goToFile}
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
-                    id={filename}
+                    ref={x => this._link = x}
                 >
                     {filename}
                 </a>
                 <Popper
                     open={this.state.showPopper}
-                    anchorEl={document.getElementById(filename)}
-                    placement="left"
+                    anchorEl={this._link}
+                    placement="top"
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
+                    popperOptions={{
+                        modifiers: {
+                            preventOverflow: { enabled: true, boundariesElement },
+                        },
+                    }}
                     className={classes.popper}
                 >
                     <FileViewer
@@ -44,6 +52,7 @@ class FileLink extends React.Component<Props, State> {
                         getFileContents={this.props.getFileContents}
                         selectFile={this.props.selectFile}
                         selectDiscussion={this.props.selectDiscussion}
+                        classes={{ codeContainer: classes.codeContainer }}
                     />
                 </Popper>
             </React.Fragment>
@@ -89,13 +98,17 @@ const styles = (theme: Theme) => createStyles({
         cursor: 'pointer',
     },
     popper: {
-        width: 450,
-        height: 350,
+        maxWidth: '50%',
+        maxHeight: '50%',
         backgroundColor: theme.palette.background.default,
         border: '1px solid',
         borderColor: theme.palette.grey[400],
-        overflow: 'scroll',
+        overflow: 'auto',
         zIndex: 10,
+        boxShadow: '1px 1px 6px #00000021',
+    },
+    codeContainer: {
+        overflowX: 'unset',
     },
 })
 

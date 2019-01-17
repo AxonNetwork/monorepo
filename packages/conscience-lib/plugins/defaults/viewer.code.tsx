@@ -19,7 +19,9 @@ class CodeViewerPlugin extends React.Component<Props>
                     <CodeViewer
                         language={language}
                         fileContents={this.props.fileContents || ''}
-                        codeColorScheme={this.props.codeColorScheme} />
+                        codeColorScheme={this.props.codeColorScheme}
+                        classes={classes}
+                    />
                 </CardContent>
             </Card>
         )

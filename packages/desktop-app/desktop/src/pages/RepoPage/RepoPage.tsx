@@ -37,7 +37,7 @@ class RepoPageRoutes extends React.Component<Props>
                     repoPage={repoPage}
                     navigateRepoPage={this.navigateRepoPage}
                 />
-                <div className={classes.repoPage}>
+                <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
                     <div className={classes.repoPageInner}>
                         <Switch>
                             <Route path='/repo/:repoHash/files/:filename+' component={RepoFilesPage} />

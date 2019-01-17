@@ -27,6 +27,7 @@ export type FileViewerComponent = React.ComponentClass<{
     directEmbedPrefix: string
     filename: string
     fileContents?: string
+    classes?: any
 }>
 
 export interface IFileEditorPlugin {
