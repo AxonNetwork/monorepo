@@ -16,7 +16,7 @@ class CommentWrapper extends React.Component<Props>
         const time = typeof created === 'string' ? created : moment(created).fromNow()
         const username = (user || { username: undefined }).username
         return (
-            <div className={classes.comment}>
+            <div className={classes.comment} style={this.props.style}>
                 <div className={classes.commentAvatar}>
                     <UserAvatar user={user} selectUser={this.props.selectUser} />
                 </div>
@@ -55,6 +55,7 @@ interface Props {
     showBadge?: boolean
     onClickReplyLink?: () => void
     selectUser?: (payload: { username: string }) => void
+    style?: any
     classes: any
 }
 

@@ -41,10 +41,13 @@ class CommentLink extends React.Component<Props, State>
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
                     className={classes.popper}
+                    style={{ maxHeight: window.innerHeight * 0.8 }}
                 >
                     <CommentWrapper
                         user={user}
                         created={comment.created}
+                        classes={{ comment: classes.comment, commentBody: classes.commentBody, commentText: classes.commentText }}
+                        style={{ maxHeight: window.innerHeight * 0.8 }}
                     >
                         <RenderMarkdown
                             text={comment.text}
@@ -101,11 +104,22 @@ const styles = (theme: Theme) => createStyles({
     },
     popper: {
         width: 450,
-        height: 350,
-        backgroundColor: theme.palette.background.default,
-        border: '1px solid',
-        borderColor: theme.palette.grey[400],
-        overflow: 'scroll',
+        // height: 350,
+        // height: '100%',
+        // backgroundColor: theme.palette.background.default,
+        // border: '1px solid',
+        // borderColor: theme.palette.grey[400],
+        // overflow: 'auto',
+    },
+    comment: {
+        // height: '100%',
+    },
+    commentBody: {
+        margin: 0,
+    },
+    commentText: {
+        overflow: 'auto',
+        height: 'calc(100% - 38px)',
     },
 })
 
