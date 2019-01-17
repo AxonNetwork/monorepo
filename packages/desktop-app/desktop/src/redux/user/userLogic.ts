@@ -22,6 +22,7 @@ import {
     modifyUserEmailLogic,
 } from 'conscience-components/redux/user/userLogic'
 import {
+    DesktopUserActionType,
     ICheckNodeUserAction, ICheckNodeUserSuccessAction,
     ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction,
     IGetSharedReposAction, IGetSharedReposSuccessAction,
@@ -36,7 +37,7 @@ import UserData from '../../lib/UserData'
 import ElectronRelay from '../../lib/ElectronRelay'
 
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
-    type: UserActionType.CHECK_NODE_USER,
+    type: DesktopUserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
         const rpcResp = await rpcClient.getUsernameAsync({})
@@ -65,7 +66,7 @@ const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccess
 })
 
 const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
-    type: UserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
+    type: DesktopUserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
         const { address } = await rpcClient.ethAddressAsync({})
@@ -142,7 +143,7 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
 })
 
 const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSuccessAction>({
-    type: UserActionType.FETCH_SHARED_REPOS,
+    type: DesktopUserActionType.FETCH_SHARED_REPOS,
     async process({ action }) {
         const { userID } = action.payload
         const sharedRepoIDs = await ServerRelay.getSharedRepos(userID)
@@ -167,7 +168,7 @@ const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
 })
 
 const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRepoSuccessAction>({
-    type: UserActionType.IGNORE_SHARED_REPO,
+    type: DesktopUserActionType.IGNORE_SHARED_REPO,
     async process({ action }) {
         const { repoID } = action.payload
         await UserData.ignoreSharedRepo(repoID)
@@ -176,7 +177,7 @@ const ignoreSharedRepoLogic = makeLogic<IIgnoreSharedRepoAction, IIgnoreSharedRe
 })
 
 const unshareRepoFromSelfLogic = makeLogic<IUnshareRepoFromSelfAction, IUnshareRepoFromSelfSuccessAction>({
-    type: UserActionType.UNSHARE_REPO_FROM_SELF,
+    type: DesktopUserActionType.UNSHARE_REPO_FROM_SELF,
     async process({ action, getState }) {
         const { repoID } = action.payload
         const userID = getState().user.currentUser || ""
@@ -186,7 +187,7 @@ const unshareRepoFromSelfLogic = makeLogic<IUnshareRepoFromSelfAction, IUnshareR
 })
 
 const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigSuccessAction>({
-    type: UserActionType.READ_LOCAL_CONFIG,
+    type: DesktopUserActionType.READ_LOCAL_CONFIG,
     async process(_) {
         const config = await UserData.readAll()
         return { config }
@@ -194,7 +195,7 @@ const readLocalConfigLogic = makeLogic<IReadLocalConfigAction, IReadLocalConfigS
 })
 
 const setLocalConfigLogic = makeLogic<ISetLocalConfigAction, ISetLocalConfigSuccessAction>({
-    type: UserActionType.SET_LOCAL_CONFIG,
+    type: DesktopUserActionType.SET_LOCAL_CONFIG,
     async process({ action }) {
         const { config } = action.payload
         await UserData.merge(config)

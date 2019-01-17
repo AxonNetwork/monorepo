@@ -1,4 +1,4 @@
-import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
+import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { initialState, IRepoState } from 'conscience-components/redux/repo/repoReducer'
 import { WebRepoActionType, IWebRepoAction } from './repoActions'
 
@@ -21,6 +21,30 @@ const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState =
                     ...state.repos,
                     [repo.repoID]: repo
                 }
+            }
+        }
+
+        case RepoActionType.GET_DIFF_SUCCESS: {
+            const { repoID, commit, diffs } = action.payload
+            if (!repoID) {
+                throw new Error('conscience-components repoReducer GET_DIFF_SUCCESS: repoID must be specified')
+            }
+            return {
+                ...state,
+                repos: {
+                    ...state.repos,
+                    [repoID]: {
+                        ...(state.repos[repoID] || {}),
+                        path: repoID,
+                        commits: {
+                            ...((state.repos[repoID] || {}).commits || {}),
+                            [commit]: {
+                                ...(((state.repos[repoID] || {}).commits || {})[commit] || {}),
+                                diffs,
+                            },
+                        },
+                    },
+                },
             }
         }
 

@@ -7,6 +7,7 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
 } from 'conscience-components/redux/repo/repoActions'
 import {
+    DesktopRepoActionType,
     ICreateRepoAction, ICreateRepoSuccessAction,
     IGetLocalReposAction, IGetLocalReposSuccessAction,
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
@@ -34,7 +35,7 @@ import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
-    type: RepoActionType.CREATE_REPO,
+    type: DesktopRepoActionType.CREATE_REPO,
     async process({ action, getState }, dispatch) {
         const { repoID, orgID } = action.payload
         const state = getState()
@@ -56,7 +57,7 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
 })
 
 const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccessAction>({
-    type: RepoActionType.GET_LOCAL_REPOS,
+    type: DesktopRepoActionType.GET_LOCAL_REPOS,
     async process(_, dispatch) {
         const rpcClient = rpc.initClient()
 
@@ -101,7 +102,7 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
 })
 
 const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
-    type: RepoActionType.SELECT_REPO,
+    type: DesktopRepoActionType.SELECT_REPO,
     async process({ getState, action }, dispatch) {
         const { repoID, path } = action.payload
         // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
@@ -113,7 +114,7 @@ const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
 })
 
 const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccessAction>({
-    type: RepoActionType.FETCH_FULL_REPO,
+    type: DesktopRepoActionType.FETCH_FULL_REPO,
     async process({ action }, dispatch) {
         const { path, repoID } = action.payload
 
@@ -128,7 +129,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
 })
 
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
-    type: RepoActionType.FETCH_REPO_FILES,
+    type: DesktopRepoActionType.FETCH_REPO_FILES,
     async process({ action }) {
         const { path, repoID } = action.payload
 
@@ -150,7 +151,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 })
 
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
-    type: RepoActionType.FETCH_REPO_TIMELINE,
+    type: DesktopRepoActionType.FETCH_REPO_TIMELINE,
     async process({ action }) {
         const { path, repoID } = action.payload
 
@@ -172,7 +173,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
 })
 
 const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchRepoSharedUsersSuccessAction>({
-    type: RepoActionType.FETCH_REPO_SHARED_USERS,
+    type: DesktopRepoActionType.FETCH_REPO_SHARED_USERS,
     async process({ action }, dispatch) {
         const { path, repoID } = action.payload
         const sharedUsers = (await ServerRelay.getSharedUsers(repoID)).map(user => user.userID)
@@ -184,7 +185,7 @@ const fetchRepoSharedUsersLogic = makeLogic<IFetchRepoSharedUsersAction, IFetchR
 })
 
 const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSuccessAction>({
-    type: RepoActionType.FETCH_LOCAL_REFS,
+    type: DesktopRepoActionType.FETCH_LOCAL_REFS,
     async process({ action }) {
         const { repoID, path } = action.payload
         const rpcClient = rpc.initClient()
@@ -198,7 +199,7 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
 })
 
 const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction>({
-    type: RepoActionType.FETCH_REMOTE_REFS,
+    type: DesktopRepoActionType.FETCH_REMOTE_REFS,
     async process({ action }) {
         const { repoID } = action.payload
         const rpcClient = rpc.initClient()
@@ -208,7 +209,7 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
 })
 
 const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSuccessAction>({
-    type: RepoActionType.CHECKPOINT_REPO,
+    type: DesktopRepoActionType.CHECKPOINT_REPO,
     async process({ action }, dispatch) {
         const { repoID, folderPath, message } = action.payload
         const rpcClient = rpc.initClient()
@@ -273,7 +274,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 // })
 
 const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
-    type: RepoActionType.CLONE_REPO,
+    type: DesktopRepoActionType.CLONE_REPO,
     async process({ action, getState }, dispatch, done) {
         const { repoID } = action.payload
         const state = getState()
@@ -313,7 +314,7 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
 })
 
 const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
-    type: RepoActionType.PULL_REPO,
+    type: DesktopRepoActionType.PULL_REPO,
     async process({ action }, dispatch, done) {
         const { folderPath, repoID } = action.payload
         const rpcClient = rpc.initClient()
@@ -369,7 +370,7 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
 // })
 
 const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
-    type: RepoActionType.WATCH_REPO,
+    type: DesktopRepoActionType.WATCH_REPO,
     async process({ action }, dispatch, done) {
         const { repoID, path } = action.payload
         const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists

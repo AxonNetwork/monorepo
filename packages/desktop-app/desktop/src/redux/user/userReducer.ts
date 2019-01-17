@@ -1,7 +1,7 @@
 import pickBy from 'lodash/pickBy'
 import userReducer, { IUserState, initialState } from 'conscience-components/redux/user/userReducer'
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
-import { IDesktopUserAction } from './userActions'
+import { DesktopUserActionType, IDesktopUserAction } from './userActions'
 import { ISharedRepoInfo } from 'conscience-lib/common'
 
 const desktopInitialState = {
@@ -19,19 +19,19 @@ declare module 'conscience-components/redux/user/userReducer' {
 
 const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUserState => {
     switch (action.type) {
-        case UserActionType.CHECK_NODE_USER_FAILED:
+        case DesktopUserActionType.CHECK_NODE_USER_FAILED:
             return {
                 ...state,
                 checkedLoggedIn: true,
             }
 
-        case UserActionType.GOT_NODE_USERNAME:
+        case DesktopUserActionType.GOT_NODE_USERNAME:
             return {
                 ...state,
                 nodeUsername: action.payload.username,
             }
 
-        case UserActionType.FETCH_SHARED_REPOS_SUCCESS: {
+        case DesktopUserActionType.FETCH_SHARED_REPOS_SUCCESS: {
             const { sharedRepos } = action.payload
             return {
                 ...state,
@@ -39,7 +39,7 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
             }
         }
 
-        case UserActionType.IGNORE_SHARED_REPO_SUCCESS: {
+        case DesktopUserActionType.IGNORE_SHARED_REPO_SUCCESS: {
             const { repoID } = action.payload
             return {
                 ...state,
@@ -49,7 +49,7 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
             }
         }
 
-        case UserActionType.UNSHARE_REPO_FROM_SELF_SUCCESS: {
+        case DesktopUserActionType.UNSHARE_REPO_FROM_SELF_SUCCESS: {
             const { repoID } = action.payload
             const sharedRepos = state.sharedRepos
             const updated = pickBy(
@@ -62,7 +62,7 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
             }
         }
 
-        case UserActionType.READ_LOCAL_CONFIG_SUCCESS: {
+        case DesktopUserActionType.READ_LOCAL_CONFIG_SUCCESS: {
             const { config } = action.payload
             return {
                 ...state,
@@ -75,7 +75,7 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
             }
         }
 
-        case UserActionType.SET_LOCAL_CONFIG_SUCCESS: {
+        case DesktopUserActionType.SET_LOCAL_CONFIG_SUCCESS: {
             const { config } = action.payload
             return {
                 ...state,

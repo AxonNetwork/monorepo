@@ -2,7 +2,7 @@ import fromPairs from 'lodash/fromPairs'
 import { ITimelineEvent, RepoPage } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
-import { IDesktopRepoAction } from './repoActions'
+import { DesktopRepoActionType, IDesktopRepoAction } from './repoActions'
 import getHash from 'utils/getHash'
 
 
@@ -36,7 +36,7 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.CREATE_REPO_SUCCESS: {
+        case DesktopRepoActionType.CREATE_REPO_SUCCESS: {
             const { repoID, path } = action.payload
             return {
                 ...state,
@@ -55,7 +55,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.GET_LOCAL_REPOS_SUCCESS: {
+        case DesktopRepoActionType.GET_LOCAL_REPOS_SUCCESS: {
             const { repos } = action.payload
             const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
             const reposByHash = fromPairs(repoPairs)
@@ -72,7 +72,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.SELECT_REPO_SUCCESS: {
+        case DesktopRepoActionType.SELECT_REPO_SUCCESS: {
             const { path } = action.payload
             return {
                 ...state,
@@ -82,7 +82,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.FETCH_FULL_REPO_SUCCESS: {
+        case DesktopRepoActionType.FETCH_FULL_REPO_SUCCESS: {
             const { path, repoID } = action.payload
             return {
                 ...state,
@@ -98,7 +98,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
+        case DesktopRepoActionType.FETCH_REPO_FILES_SUCCESS: {
             const { path, files } = action.payload
             return {
                 ...state,
@@ -113,7 +113,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
+        case DesktopRepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
             const { path, timeline } = action.payload
             const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
@@ -159,14 +159,14 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.CHECKPOINT_REPO: {
+        case DesktopRepoActionType.CHECKPOINT_REPO: {
             return {
                 ...state,
                 checkpointed: false,
             }
         }
 
-        case RepoActionType.SELECT_FILE: {
+        case DesktopRepoActionType.SELECT_FILE: {
             const { selectedFile } = action.payload
             return {
                 ...state,
@@ -174,7 +174,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.SELECT_COMMIT: {
+        case DesktopRepoActionType.SELECT_COMMIT: {
             const { selectedCommit } = action.payload
             return {
                 ...state,
@@ -183,7 +183,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.NAVIGATE_REPO_PAGE: {
+        case DesktopRepoActionType.NAVIGATE_REPO_PAGE: {
             const { repoPage } = action.payload
             return {
                 ...state,
@@ -192,7 +192,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS: {
+        case DesktopRepoActionType.FETCH_REPO_SHARED_USERS_SUCCESS: {
             const { path, sharedUsers } = action.payload
             return {
                 ...state,
@@ -207,7 +207,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.PULL_REPO_SUCCESS: {
+        case DesktopRepoActionType.PULL_REPO_SUCCESS: {
             const { folderPath } = action.payload
             return {
                 ...state,
@@ -222,7 +222,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.BEHIND_REMOTE: {
+        case DesktopRepoActionType.BEHIND_REMOTE: {
             const { path } = action.payload
             return {
                 ...state,
@@ -237,7 +237,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.CHANGE_TIMELINE_PAGE: {
+        case DesktopRepoActionType.CHANGE_TIMELINE_PAGE: {
             const { repoID, page } = action.payload
             return {
                 ...state,
