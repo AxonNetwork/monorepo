@@ -5,6 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import RepoInfo from './components/RepoInfo'
 import RepoFilesPage from './components/RepoFilesPage'
+import RepoEditorPage from './components/RepoEditorPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
@@ -42,6 +43,7 @@ class RepoPageRoutes extends React.Component<Props>
                         <Switch>
                             <Route path='/repo/:repoHash/files/:filename+' component={RepoFilesPage} />
                             <Route path='/repo/:repoHash/files' component={RepoFilesPage} />
+                            <Route path='/repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
                             <Route path='/repo/:repoHash/history/:commit' component={RepoHistoryPage} />
                             <Route path='/repo/:repoHash/history' component={RepoHistoryPage} />
                             <Route path='/repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />

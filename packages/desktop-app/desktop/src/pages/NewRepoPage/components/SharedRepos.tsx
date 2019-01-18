@@ -2,21 +2,19 @@ import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { values } from 'lodash'
-import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-// import CancelIcon from '@material-ui/icons/Cancel'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import { H4 } from 'conscience-components/Typography/Headers'
 
 import { pickBy } from 'lodash'
-import { cloneRepo } from 'redux/repository/repoActions'
-import { unshareRepoFromSelf } from 'redux/user/userActions'
-import { ISharedRepoInfo } from 'common'
+import { cloneRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
+import { ISharedRepoInfo } from 'conscience-lib/common'
 
 class SharedRepos extends React.Component<Props>
 {
@@ -24,19 +22,17 @@ class SharedRepos extends React.Component<Props>
         const { sharedRepos, classes, cloneRepoProgress } = this.props
         return (
             <React.Fragment>
-                <Typography variant="headline">
-                    Repos Shared with You
-                </Typography>
+                <H4> Repos Shared with You </H4>
                 <List>
                     {
                         values(sharedRepos).map(repo => {
-                            const repoProgress = cloneRepoProgress[repo.repoID] || { fetched: 0, toFetch: 1}
+                            const repoProgress = cloneRepoProgress[repo.repoID] || { fetched: 0, toFetch: 1 }
                             const isDownloading = repoProgress !== undefined
                             let percentDownloaded
-                            if(isDownloading){
-                                percentDownloaded = Math.floor(100*(repoProgress.fetched)/(repoProgress.toFetch))
+                            if (isDownloading) {
+                                percentDownloaded = Math.floor(100 * (repoProgress.fetched) / (repoProgress.toFetch))
                             }
-                            return(
+                            return (
                                 <React.Fragment>
                                     <ListItem key={repo.repoID}>
                                         <ListItemText primary={repo.repoID} />
@@ -44,10 +40,6 @@ class SharedRepos extends React.Component<Props>
                                             <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })}>
                                                 <ControlPointIcon />
                                             </IconButton>
-
-                                           {/*<IconButton onClick={() => this.props.unshareRepoFromSelf({ repoID: repo.repoID })}>
-                                                <CancelIcon />
-                                            </IconButton>*/}
                                         </ListItemSecondaryAction>
                                         {isDownloading &&
                                             <div className={classes.progressBar}>
@@ -66,15 +58,14 @@ class SharedRepos extends React.Component<Props>
 }
 
 interface Props {
-    sharedRepos: {[repoID: string]: ISharedRepoInfo}
+    sharedRepos: { [repoID: string]: ISharedRepoInfo }
     cloneRepoProgress: {
-        [repoID: string]:{
+        [repoID: string]: {
             fetched: number,
             toFetch: number
         } | undefined
     }
     cloneRepo: typeof cloneRepo
-    unshareRepoFromSelf: typeof unshareRepoFromSelf
 
     classes?: any
 }
@@ -94,7 +85,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const sharedRepos = state.user.sharedRepos || {}
-    const repos = state.repository.repos
+    const repos = state.repo.repos
     const repoList = Object.keys(repos).map(r => repos[r].repoID)
     const filteredSharedRepos = pickBy(
         sharedRepos,
@@ -112,7 +103,6 @@ const mapStateToProps = (state: IGlobalState) => {
 
 const mapDispatchToProps = {
     cloneRepo,
-    unshareRepoFromSelf,
 }
 
 export default connect(

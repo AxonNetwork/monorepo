@@ -5,26 +5,16 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
-
-import logo from '../../assets/img/logo.png'
 import { IGlobalState } from 'redux/store'
 import { createRepo } from 'redux/repo/repoActions'
-import autobind from 'utils/autobind'
+import { autobind } from 'conscience-lib/utils'
+import logo from '../../assets/img/logo.png'
+
 
 @autobind
 class NewRepository extends React.Component<Props>
 {
     _inputRepoID: HTMLInputElement | null = null
-
-    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        if (this._inputRepoID === null) {
-            return
-        }
-        const repoID = this._inputRepoID.value
-        const orgID = ""
-        this.props.createRepo({ repoID, orgID })
-    }
 
     render() {
         const { classes } = this.props
@@ -57,6 +47,16 @@ class NewRepository extends React.Component<Props>
                 </form>
             </div>
         )
+    }
+
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+        if (this._inputRepoID === null) {
+            return
+        }
+        const repoID = this._inputRepoID.value
+        const orgID = ""
+        this.props.createRepo({ repoID, orgID })
     }
 }
 

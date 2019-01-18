@@ -77,6 +77,8 @@ class RepoFilesPage extends React.Component<Props>
                     selectFile={this.selectFile}
                     selectedFolder={selected}
                     fileExtensionsHidden={this.props.fileExtensionsHidden}
+                    canEditFiles
+                    openFileIcon
                 />
             </div>
         )

@@ -98,7 +98,7 @@ class Sidebar extends React.Component<Props, State>
                     <ListItem
                         button
                         key="new"
-                        onClick={this.navigateRepo}
+                        onClick={this.navigateNewRepo}
                         className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new' })}
                     >
                         <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
@@ -138,7 +138,7 @@ class Sidebar extends React.Component<Props, State>
     }
 
     navigateNewRepo() {
-        console.log("HERE")
+        this.props.history.push(`/new-repo`)
     }
 
     navigateSettings() {

@@ -47,9 +47,10 @@ class File extends React.Component<Props>
         if (!this.props.canEditFiles || this.props.file.type === 'folder') {
             return false
         }
+        return filetypes.isTextFile(this.props.file.name)
 
-        const editors = filetypes.getEditors(this.props.file.name)
-        return editors.length > 0
+        // const editors = filetypes.getEditors(this.props.file.name)
+        // return editors.length > 0
     }
 
     render() {
@@ -84,12 +85,16 @@ class File extends React.Component<Props>
                     <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellActions)}>
                         {this.canQuickEdit() &&
                             <Tooltip title="Quick edit">
-                                <IconButton onClick={this.openEditor} className={classes.editIconButton}><EditIcon /></IconButton>
+                                <IconButton onClick={this.openEditor} className={classes.editIconButton}>
+                                    <EditIcon />
+                                </IconButton>
                             </Tooltip>
                         }
                         {this.props.openFileIcon &&
                             <Tooltip title="Open this file with another app">
-                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}><OpenInNewIcon /></IconButton>
+                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}>
+                                    <OpenInNewIcon />
+                                </IconButton>
                             </Tooltip>
                         }
                     </TableCell>

@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
@@ -10,15 +10,16 @@ import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
-
-import SharedRepos from './elements/SharedRepos'
+import { H4 } from 'conscience-components/Typography/Headers'
+import SharedRepos from './components/SharedRepos'
 import { IGlobalState } from 'redux/store'
 import { createRepo } from 'redux/repo/repoActions'
 import { IOrganization } from 'conscience-lib/common'
-import autobind from 'utils/autobind'
+import { autobind } from 'conscience-lib/utils'
+
 
 @autobind
-class NewRepository extends React.Component<Props, State>
+class NewRepositoryPage extends React.Component<Props, State>
 {
     _inputRepoID: HTMLInputElement | null = null
 
@@ -26,36 +27,12 @@ class NewRepository extends React.Component<Props, State>
         orgID: ''
     }
 
-    componentWillMount() {
-        this.setState({
-            orgID: this.props.selectedOrg
-        })
-    }
-
-    handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
-        this.setState({
-            orgID: event.target.value
-        })
-    }
-
-    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        if (this._inputRepoID === null) {
-            return
-        }
-        const repoID = this._inputRepoID.value
-        const orgID = this.state.orgID
-        this.props.createRepo({ repoID, orgID })
-    }
-
     render() {
         const { orgs, classes } = this.props
         return (
             <Grid container spacing={24}>
                 <Grid item className={classes.column} xs={12} sm={6}>
-                    <Typography variant="headline">
-                        Create New Repository
-                    </Typography>
+                    <H4>Create New Repository</H4>
                     <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
                         <TextField
                             id="repo-id"
@@ -97,18 +74,37 @@ class NewRepository extends React.Component<Props, State>
             </Grid>
         )
     }
-}
 
-interface Props {
-    orgs: { [orgID: string]: IOrganization }
-    selectedOrg: string
-    createRepoLoading: boolean
-    createRepo: typeof createRepo
-    classes: any
+    componentWillMount() {
+        this.setState({
+            orgID: this.props.match.params.orgID || ""
+        })
+    }
+
+    handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        this.setState({
+            orgID: this.props.match.params.orgID || ""
+        })
+    }
+
+    handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+    }
 }
 
 interface State {
-    orgID: string
+    orgID: string | undefined
+}
+
+interface MatchParams {
+    orgID?: string
+}
+
+interface Props extends RouteComponentProps<MatchParams> {
+    orgs: { [orgID: string]: IOrganization }
+    createRepoLoading: boolean
+    createRepo: typeof createRepo
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -134,22 +130,18 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-const mapStateToProps = (state: IGlobalState) => {
-    const orgs = state.org.orgs
-    const selectedOrg = state.org.selectedOrg || ""
-    const createRepoLoading = state.ui.createRepoLoading
+const mapStateToProps = (state: IGlobalState, props: Props) => {
     return {
-        orgs,
-        selectedOrg,
-        createRepoLoading,
+        orgs: state.org.orgs,
+        createRepoLoading: state.ui.createRepoLoading,
     }
 }
 
 const mapDispatchToProps = {
-    createRepo,
+    createRepo
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(NewRepository))
+)(withStyles(styles)(NewRepositoryPage))
