@@ -1,19 +1,14 @@
 import React from 'react'
-import classnames from 'classnames'
 import { connect } from 'react-redux'
-import { History } from 'history'
+import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import classnames from 'classnames'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
 import Sidebar from './Sidebar/Sidebar'
 import Routes from '../Routes'
 import Login from './Login/LoginPage'
-// import NewRepository from './NewRepository/NewRepository'
-// import Welcome from './NewRepository/Welcome'
-// import Settings from './Settings/Settings'
-// import OrganizationPage from './Organization/OrganizationPage'
-// import Repository from './Repository/Repository'
 import { IGlobalState } from 'redux/store'
 import { autobind } from 'conscience-lib/utils'
 
@@ -63,11 +58,9 @@ class MainUI extends React.Component<Props, State>
     }
 }
 
-interface Props {
+interface Props extends RouteComponentProps {
     loggedIn: boolean
     checkedLoggedIn: boolean
-    currentPage: string
-    history: History
     classes: any
 }
 
@@ -127,7 +120,6 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         loggedIn: loggedIn,
         checkedLoggedIn: checkedLoggedIn,
-        currentPage: state.navigation.currentPage,
     }
 }
 

@@ -64,8 +64,6 @@ class RepoEditorPage extends React.Component<Props>
     }
 
     selectFile(payload: { filename: string | undefined, mode: FileMode }) {
-        console.log('here')
-        console.log(payload)
         const repoHash = this.props.match.params.repoHash
         const { filename, mode } = payload
         if (filename === undefined) {

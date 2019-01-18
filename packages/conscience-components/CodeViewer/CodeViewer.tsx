@@ -44,7 +44,7 @@ class CodeViewer extends React.Component<Props>
 interface Props {
     language: string
     fileContents: string
-    codeColorScheme: string | undefined
+    codeColorScheme?: string | undefined
     backgroundColor?: string
     classes: any
 }

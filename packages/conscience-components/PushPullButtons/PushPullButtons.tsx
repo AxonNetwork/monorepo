@@ -18,7 +18,6 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { IRepo, FileMode } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
-// const shell = (window as any).require('electron').shell
 
 
 @autobind
@@ -182,7 +181,8 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickOpenFolder() {
-        // shell.openItem(this.props.repo.path)
+        const shell = (window as any).require('electron').shell
+        shell.openItem(this.props.repo.path)
     }
 }
 

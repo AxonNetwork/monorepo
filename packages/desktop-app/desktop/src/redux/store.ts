@@ -8,8 +8,6 @@ import { IUserState } from 'conscience-components/redux/user/userReducer'
 import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
 import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
 import { IOrgState } from 'conscience-components/redux/org/orgReducer'
-import { IEditorState } from './editor/editorReducer'
-import { INavigationState } from './navigation/navigationReducer'
 import { IUIState } from './ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
@@ -45,9 +43,7 @@ export interface IGlobalState {
     repo: IRepoState
     discussion: IDiscussionState
     user: IUserState
-    editor: IEditorState
     org: IOrgState
-    navigation: INavigationState
     ui: IUIState
     rotuer?: RouterState
 }
