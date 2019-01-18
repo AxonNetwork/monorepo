@@ -95,6 +95,7 @@ const styles = (theme: Theme) => createStyles({
     },
     mainUISidebarToggle: {
         marginTop: theme.spacing.unit * 3,
+        width: 48,
         flexGrow: 0,
         flexShrink: 0,
         opacity: 1,
@@ -111,6 +112,7 @@ const styles = (theme: Theme) => createStyles({
         }),
     },
     mainUIContentWrapper: {
+        width: 'calc(100% - 48px)',
         flexGrow: 1,
         paddingTop: theme.spacing.unit * 3,
         display: 'flex',

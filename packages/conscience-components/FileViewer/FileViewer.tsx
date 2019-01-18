@@ -133,10 +133,6 @@ const styles = () => createStyles({
     codeContainer: {
         padding: 30,
     },
-    mdRoot: {
-        padding: 48,
-        minWidth: 680,
-    },
     embedRoot: {
         padding: 0,
         paddingBottom: '0 !important',
