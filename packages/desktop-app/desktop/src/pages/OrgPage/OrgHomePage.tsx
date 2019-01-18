@@ -33,6 +33,7 @@ class OrgHomePage extends React.Component<Props>
         const repos = uniqBy(values(this.props.repos), (repo: IRepo) => repo.repoID)
             .filter((repo: IRepo) => org.repos.indexOf(repo.repoID) > -1)
         const reposByID = keyBy(repos, 'repoID')
+        const repoList = this.props.org.repos.filter(id => reposByID[id] !== undefined)
 
         return (
             <div className={classes.page}>
@@ -43,7 +44,7 @@ class OrgHomePage extends React.Component<Props>
                     />
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
-                        repoList={this.props.org.repos}
+                        repoList={repoList}
                         repos={reposByID}
                         discussions={this.props.discussions}
                         discussionsByRepo={this.props.discussionsByRepo}
@@ -65,8 +66,10 @@ class OrgHomePage extends React.Component<Props>
         const repos = this.props.repos
         for (let i = 0; i < repoIDs.length; i++) {
             const repoID = repoIDs[i]
-            const path = Object.keys(repos).find(path => (repos[path].repoID === repoID)) || ''
-            this.props.fetchFullRepo({ repoID, path })
+            const path = Object.keys(repos).find(path => (repos[path].repoID === repoID))
+            if (path !== undefined) {
+                this.props.fetchFullRepo({ repoID, path })
+            }
         }
     }
 

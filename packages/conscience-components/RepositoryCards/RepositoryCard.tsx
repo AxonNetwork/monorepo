@@ -92,6 +92,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         flexGrow: 1,
         minWidth: 300,
+        maxWidth: 350,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],
@@ -111,6 +112,9 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         justifyContent: 'flex-end',
         margin: '32px -20px -24px',
+        "& svg": {
+            marginRight: 4
+        }
     },
 })
 

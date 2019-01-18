@@ -32,11 +32,13 @@ class OrgPageRoutes extends React.Component<Props>
                     navigateOrgPage={this.navigateOrgPage}
                 />
                 <div className={classes.orgPage}>
-                    <Switch>
-                        <Route exact path='/org/:orgID' component={OrgHomePage} />
-                        <Route exact path='/org/:orgID/editor' component={OrgEditorPage} />
-                        <Route exact path='/org/:orgID/settings' component={OrgSettingsPage} />
-                    </Switch>
+                    <div className={classes.orgPageInner}>
+                        <Switch>
+                            <Route exact path='/org/:orgID' component={OrgHomePage} />
+                            <Route exact path='/org/:orgID/editor' component={OrgEditorPage} />
+                            <Route exact path='/org/:orgID/settings' component={OrgSettingsPage} />
+                        </Switch>
+                    </div>
                 </div>
             </main>
         )
@@ -75,7 +77,13 @@ const styles = (theme: Theme) => createStyles({
     },
     orgPage: {
         width: '100%',
-        paddingRight: 60,
+        height: '100%',
+        overflowY: 'auto',
+    },
+    orgPageInner: {
+        marginBottom: 128,
+        marginRight: 48,
+        marginTop: 16,
     },
 })
 

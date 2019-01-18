@@ -144,7 +144,6 @@ const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
     },
     newRepoCard: {
         padding: 0,
@@ -160,6 +159,7 @@ const styles = (theme: Theme) => createStyles({
     repoCard: {
         flexGrow: 1,
         minWidth: 300,
+        maxWidth: 350,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],
