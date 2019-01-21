@@ -1,7 +1,8 @@
 import React from 'react'
 import { Route, Switch, Redirect, withRouter, RouteComponentProps } from 'react-router'
-import Welcome from './components/NewRepository/Welcome'
+import WelcomePage from './pages/WelcomePage'
 import RepoPage from './pages/RepoPage'
+import NewRepoPage from './pages/NewRepoPage'
 import OrgPage from './pages/OrgPage'
 import SettingsPage from './pages/SettingsPage'
 
@@ -10,8 +11,10 @@ function Routes(props: Props) {
     return (
         <Switch>
             <Route path="/repo/:repoHash" component={RepoPage} />
+            <Route path="/new-repo" component={NewRepoPage} />
+            <Route path="/new-repo/:orgID" component={NewRepoPage} />
             <Route path="/org/:orgID" component={OrgPage} />
-            <Route path="/welcome" component={Welcome} />
+            <Route path="/welcome" component={WelcomePage} />
             <Route path="/settings" component={SettingsPage} />
             <Route render={() => (
                 <Redirect to="/welcome" />

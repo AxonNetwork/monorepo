@@ -9,8 +9,6 @@ import { H5 } from 'conscience-components/Typography/Headers'
 import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
 import CreateDiscussion from './connected/CreateDiscussion'
-// import MergeConflictResolver from './MergeConflictResolver/MergeConflictResolver'
-// import MarkdownEditor from 'components/Repository/elements/MarkdownEditor'
 import { IGlobalState } from 'redux/store'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IRepo, FileMode } from 'conscience-lib/common'
@@ -77,6 +75,8 @@ class RepoFilesPage extends React.Component<Props>
                     selectFile={this.selectFile}
                     selectedFolder={selected}
                     fileExtensionsHidden={this.props.fileExtensionsHidden}
+                    canEditFiles
+                    openFileIcon
                 />
             </div>
         )
@@ -87,77 +87,15 @@ class RepoFilesPage extends React.Component<Props>
         const { filename, mode } = payload
         if (filename === undefined) {
             this.props.history.push(`/repo/${repoHash}/files`)
-        } else if (mode === FileMode.View) {
-            this.props.history.push(`/repo/${repoHash}/files/${filename}`)
-        } else {
+        } else if (mode === FileMode.Edit) {
             this.props.history.push(`/repo/${repoHash}/edit/${filename}`)
+        } else if (mode === FileMode.ResolveConflict) {
+            this.props.history.push(`/repo/${repoHash}/conflict/${filename}`)
+        } else {
+            this.props.history.push(`/repo/${repoHash}/files/${filename}`)
         }
     }
 
-    //     if (selectedFile !== undefined && selectedFile.file !== undefined && !selectedFile.isFolder) {
-    //         switch(selectedFile.mode) {
-    //             case FileMode.Edit: {
-    //                 return (
-    //                     <MarkdownEditor
-    //                         repoRoot={repo.path}
-    //                         filename={selectedFile.file}
-    //                         defaultContents={selectedFile.defaultEditorContents}
-    //                     />
-    //                 )
-    //             }
-
-    //             case FileMode.ResolveConflict: {
-    //                 return (
-    //                     <MergeConflictResolver
-    //                         repoRoot={repo.path}
-    //                         filename={selectedFile.file}
-    //                         selectFile={this.props.selectFile}
-    //                     />
-
-    //                 )
-    //             }
-
-    //             case FileMode.View:
-    //             default: {
-    //                 const relPath = selectedFile.file.replace(repo.path + '/', '')
-    //                 return (
-    //                     <div className={classes.fileInfoContainer}>
-    //                         <FileInfo
-    //                             file={files[relPath]}
-    //                             repoRoot={repo.path}
-    //                         />
-    //                     </div>
-    //                 )
-    //             }
-
-    //         }
-    //     } else {
-    //         const selectedFolder = selectedFile !== undefined ? selectedFile.file : undefined
-    //         return (
-    //             <div className={classes.fileListContainer}>
-    //                 <div className={classes.fileList}>
-    //                     <FileList
-    //                         repoRoot={repo.path}
-    //                         files={files}
-    //                         selectedFolder={selectedFolder}
-    //                     />
-    //                 </div>
-    //             </div>
-    //         )
-    //     }
-    // }
-
-    // selectFile(payload: { filename: string | undefined, mode: FileMode }) {
-    //     const repoID = this.props.match.params.repoID
-    //     const { filename, mode } = payload
-    //     if (filename === undefined) {
-    //         this.props.history.push(`/repo/${repoID}/files`)
-    //     } else if (mode === FileMode.View) {
-    //         this.props.history.push(`/repo/${repoID}/files/${filename}`)
-    //     } else {
-    //         this.props.history.push(`/repo/${repoID}/edit/${filename}`)
-    //     }
-    // }
 }
 
 interface MatchParams {

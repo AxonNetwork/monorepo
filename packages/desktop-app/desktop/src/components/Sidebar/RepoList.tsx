@@ -6,15 +6,15 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
 
-import { IRepo } from 'common'
-import autobind from 'utils/autobind'
+import { IRepo } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoList extends React.Component<Props>
 {
     render() {
-        const { repos, selectedRepo, currentPage, classes } = this.props
+        const { repos, selectedRepo, classes } = this.props
         return (
             <List>
                 {
@@ -27,7 +27,7 @@ class RepoList extends React.Component<Props>
                                 (name) => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U',
                             )
                         }
-                        const isSelected = currentPage === 'repo' && repo.path === selectedRepo
+                        const isSelected = repo.path === selectedRepo
                         return (
                             <React.Fragment key={repo.path}>
                                 <ListItem
@@ -56,9 +56,8 @@ class RepoList extends React.Component<Props>
 
 interface Props {
     repos: { [folderPath: string]: IRepo }
-    selectedRepo?: string | null
-    currentPage: string
-    selectRepo: (payload: { repoRoot: string }) => void
+    selectedRepo?: string | undefined
+    selectRepo: (payload: { repoRoot: string | undefined }) => void
     classes: any
 }
 

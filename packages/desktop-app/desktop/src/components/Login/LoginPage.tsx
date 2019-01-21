@@ -9,9 +9,9 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import logo from '../../assets/img/logo.png'
 
-import { login, signup } from '../../redux/user/userActions'
+import { login, signup } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'redux/store'
-import autobind from 'utils/autobind'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
@@ -48,63 +48,63 @@ class LoginPage extends React.Component<Props, State>
         return (
             <div className={classes.loginContainer}>
                 <div>
-                        <img src={logo} alt="Conscience Logo" />
+                    <img src={logo} alt="Conscience Logo" />
 
-                        <Typography className={classes.headline} variant="headline">
-                            {this.state.displaySignup ? 'Signup' : 'Login'}
-                        </Typography>
-                        <form noValidate autoComplete="off" onSubmit={this.handleSubmit}>
-                            {this.state.displaySignup &&
-                                <React.Fragment>
-                                    <TextField
-                                        label="Username"
-                                        defaultValue={this.props.nodeUsername || ''}
-                                        inputRef={ x => this._inputUsername = x }
-                                        disabled={!!this.props.nodeUsername}
-                                        className={classes.textField}
-                                        error={!!error}
-                                    />
-                                    <TextField
-                                        label="Full Name"
-                                        inputRef={ x => this._inputName = x }
-                                        className={classes.textField}
-                                        error={!!error}
-                                    />
-                                </React.Fragment>
-                            }
-                            <TextField
-                                label="Email"
-                                inputRef={ x => this._inputEmail = x }
-                                className={classes.textField}
-                                error={!!error}
-                            />
-                            <TextField
-                                label="Password"
-                                type="password"
-                                inputRef={ x => this._inputPassword = x }
-                                className={classes.textField}
-                                error={!!error}
-                            />
-                            {error !== undefined &&
-                                <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
-                            }
-                            <Button
-                                variant="raised"
-                                color="secondary"
-                                className={classes.button}
-                                disabled={this.props.loginLoading}
-                                type="submit"
-                            >
-                                {this.state.displaySignup ? 'Signup' : 'Login'}
-                                {this.props.loginLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
-
-                            </Button>
-                        </form>
-                        <ToggleText
-                            displaySignup={this.state.displaySignup}
-                            toggleView={this.toggleView}
-                            className={classes.button}
+                    <Typography className={classes.headline} variant="headline">
+                        {this.state.displaySignup ? 'Signup' : 'Login'}
+                    </Typography>
+                    <form noValidate autoComplete="off" onSubmit={this.handleSubmit}>
+                        {this.state.displaySignup &&
+                            <React.Fragment>
+                                <TextField
+                                    label="Username"
+                                    defaultValue={this.props.nodeUsername || ''}
+                                    inputRef={x => this._inputUsername = x}
+                                    disabled={!!this.props.nodeUsername}
+                                    className={classes.textField}
+                                    error={!!error}
+                                />
+                                <TextField
+                                    label="Full Name"
+                                    inputRef={x => this._inputName = x}
+                                    className={classes.textField}
+                                    error={!!error}
+                                />
+                            </React.Fragment>
+                        }
+                        <TextField
+                            label="Email"
+                            inputRef={x => this._inputEmail = x}
+                            className={classes.textField}
+                            error={!!error}
                         />
+                        <TextField
+                            label="Password"
+                            type="password"
+                            inputRef={x => this._inputPassword = x}
+                            className={classes.textField}
+                            error={!!error}
+                        />
+                        {error !== undefined &&
+                            <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
+                        }
+                        <Button
+                            variant="raised"
+                            color="secondary"
+                            className={classes.button}
+                            disabled={this.props.loginLoading}
+                            type="submit"
+                        >
+                            {this.state.displaySignup ? 'Signup' : 'Login'}
+                            {this.props.loginLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
+
+                        </Button>
+                    </form>
+                    <ToggleText
+                        displaySignup={this.state.displaySignup}
+                        toggleView={this.toggleView}
+                        className={classes.button}
+                    />
                 </div>
             </div>
         )

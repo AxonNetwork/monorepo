@@ -1,7 +1,6 @@
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import fileType from 'utils/fileType'
 import { ILocalRepo, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 import {
     RepoActionType,
@@ -34,7 +33,8 @@ import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
-import spawnCmd from 'utils/spawnCmd'
+import { spawnCmd } from 'conscience-lib/utils'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
     type: DesktopRepoActionType.CREATE_REPO,
@@ -138,7 +138,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
             name: file.name,
             size: file.size ? file.size.toNumber() : 0,
             modified: new Date(file.modified * 1000),
-            type: fileType(file.name),
+            type: filetypes.getType(file.name),
             status: file.stagedStatus,
             mergeConflict: file.mergeConflict,
             mergeUnresolved: file.mergeUnresolved,

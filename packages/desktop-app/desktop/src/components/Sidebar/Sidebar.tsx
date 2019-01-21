@@ -72,7 +72,6 @@ class Sidebar extends React.Component<Props, State>
                         <RepoList
                             repos={this.props.repos}
                             selectedRepo={this.props.selectedRepo}
-                            currentPage={this.props.currentPage}
                             selectRepo={this.navigateRepo}
                         />
                     </Collapse>
@@ -98,7 +97,7 @@ class Sidebar extends React.Component<Props, State>
                     <ListItem
                         button
                         key="new"
-                        onClick={this.navigateRepo}
+                        onClick={this.navigateNewRepo}
                         className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new' })}
                     >
                         <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
@@ -132,13 +131,16 @@ class Sidebar extends React.Component<Props, State>
         this.setState({ orgOpen: !this.state.orgOpen })
     }
 
-    navigateRepo(payload: { repoRoot: string }) {
+    navigateRepo(payload: { repoRoot: string | undefined }) {
+        if (payload.repoRoot === undefined) {
+            return
+        }
         const repoHash = getHash(payload.repoRoot)
         this.props.history.push(`/repo/${repoHash}`)
     }
 
     navigateNewRepo() {
-        console.log("HERE")
+        this.props.history.push(`/new-repo`)
     }
 
     navigateSettings() {
@@ -164,8 +166,7 @@ interface OwnProps extends RouteComponentProps<MatchParams> {
 interface StateProps {
     user: IUser
     repos: { [folderPath: string]: IRepo }
-    selectedRepo?: string | null
-    currentPage: string
+    selectedRepo?: string | undefined
     orgs: { [orgID: string]: IOrganization }
 }
 
@@ -241,7 +242,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const currentUser = state.user.currentUser || ''
     const user = state.user.users[currentUser] || {}
     const orgIDs = user.orgs || []
@@ -249,10 +250,10 @@ const mapStateToProps = (state: IGlobalState) => {
         .filter((id: string) => state.org.orgs[id] !== undefined)
         .map((id: string) => state.org.orgs[id] || {})
     const orgs = keyBy(orgList, 'orgID')
+    const selectedRepo = state.repo.reposByHash[ownProps.match.params.repoHash || '']
     return {
         repos: state.repo.repos,
-        selectedRepo: state.repo.selectedRepo,
-        currentPage: state.navigation.currentPage,
+        selectedRepo,
         user,
         orgs,
     }

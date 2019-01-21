@@ -6,12 +6,12 @@ import SaveIcon from '@material-ui/icons/Save'
 import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import RenderMarkdown from '../RenderMarkdown'
 import Breadcrumbs from '../Breadcrumbs'
 import FormattingHelp from '../FormattingHelp'
 import { IRepo, IUser, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 import path from 'path'
 
 
@@ -19,25 +19,18 @@ import path from 'path'
 class MarkdownEditor extends React.Component<Props, State>
 {
     state = {
-        contents: '',
+        fileContents: '',
+        contentsOnDisk: '',
+        fileExistsOnDisk: false,
         error: undefined,
     }
 
     _inputText: HTMLTextAreaElement | null = null
 
     render() {
-        const { filename, loading, repo, classes } = this.props
+        const { filename, repo, classes } = this.props
 
-        if (loading) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
-        }
-
-        const contentsOnDisk = ((repo.files || {})[filename] || {}).contents
-        const modified = contentsOnDisk !== this.state.contents
+        const modified = this.state.contentsOnDisk !== this.state.fileContents
 
         return (
             <div className={classes.root}>
@@ -67,7 +60,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             fullWidth
                             variant="outlined"
                             rows="38"
-                            defaultValue={contentsOnDisk}
+                            value={this.state.fileContents}
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
                         />
@@ -78,12 +71,15 @@ class MarkdownEditor extends React.Component<Props, State>
                         <Card>
                             <CardContent>
                                 <RenderMarkdown
-                                    text={this.state.contents}
+                                    text={this.state.fileContents}
                                     repo={this.props.repo}
                                     comments={this.props.comments}
                                     users={this.props.users}
                                     discussions={this.props.discussions}
+                                    directEmbedPrefix={this.props.directEmbedPrefix}
+                                    dirname=""
                                     codeColorScheme={this.props.codeColorScheme}
+                                    getFileContents={this.props.getFileContents}
                                     selectFile={this.props.selectFile}
                                     selectDiscussion={this.props.selectDiscussion}
                                 />
@@ -95,22 +91,51 @@ class MarkdownEditor extends React.Component<Props, State>
         )
     }
 
-    onClickSave() {
-        this.props.saveFileContents({
-            contents: this.state.contents,
-            repoID: this.props.repo.repoID,
-            filename: this.props.filename,
-            callback: (error?: Error) => {
-                if (error) {
-                    console.error(error)
-                }
-            }
-        })
-        // @@TODO: Error checking
+    componentDidMount() {
+        this.updateFileContents()
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (prevProps.filename !== this.props.filename || prevProps.repo.path !== this.props.repo.path) {
+            this.updateFileContents()
+        }
+    }
+
+    async updateFileContents() {
+        // Don't handle binary files, only text
+        if (!filetypes.isTextFile(this.props.filename)) {
+            this.setState({ fileContents: '' })
+            return
+        }
+
+        try {
+            const fileContents = await this.props.getFileContents(this.props.filename)
+            this.setState({
+                fileContents,
+                contentsOnDisk: fileContents,
+                fileExistsOnDisk: true,
+            })
+        } catch (error) {
+            this.setState({ fileContents: '', contentsOnDisk: '', fileExistsOnDisk: false, error })
+        }
+    }
+
+    async onClickSave() {
+        try {
+            this.props.saveFileContents({
+                contents: this.state.fileContents,
+                repoID: this.props.repo.repoID,
+                filename: this.props.filename,
+            })
+        } catch (error) {
+            this.setState({ error })
+            return
+        }
+        this.setState({ contentsOnDisk: this.state.fileContents })
     }
 
     onClickClose() {
-        if (this.props.fileExistsOnDisk) {
+        if (this.state.fileExistsOnDisk) {
             this.props.selectFile({ filename: this.props.filename, mode: FileMode.View })
         } else {
             const dir = path.dirname(this.props.filename)
@@ -126,54 +151,33 @@ class MarkdownEditor extends React.Component<Props, State>
         if (!this._inputText) {
             return
         }
-        this.setState({ contents: this._inputText.value })
-    }
-
-    componentDidMount() {
-        // fs.readFile(path.join(this.props.reprepoRoot, this.props.filename), 'utf8', (err: Error, contents: string) => {
-        //     if (err) {
-        //         // @@TODO: display error in UI
-        //         console.error('error loading ~>', err)
-        //         this.setState({
-        //             loading: false,
-        //             contents: this.props.defaultContents || '',
-        //             contentsOnDisk: '',
-        //             fileExistsOnDisk: false,
-        //             error: err,
-        //         })
-        //         return
-        //     }
-
-        //     this.setState({
-        //         loading: false,
-        //         contents: contents,
-        //         contentsOnDisk: contents,
-        //         fileExistsOnDisk: true,
-        //         error: undefined,
-        //     })
-        // })
+        this.setState({ fileContents: this._inputText.value })
     }
 }
 
 interface Props {
     repo: IRepo
     filename: string
-    loading: boolean
     comments: { [commentID: string]: IComment }
     users: { [userID: string]: IUser }
     discussions: { [userID: string]: IDiscussion }
     codeColorScheme?: string | undefined
     fileExistsOnDisk?: boolean
+    directEmbedPrefix: string
 
+    getFileContents: (filename: string) => Promise<string>
     selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
     selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    saveFileContents: (payload: { contents: string, repoID: string, filename: string, callback: (error?: Error) => void }) => void
+    saveFileContents: (payload: { contents: string, repoID: string, filename: string }) => Promise<{}>
+    // saveFileContents: (payload: { contents: string, repoID: string, filename: string, callback: (error?: Error) => void }) => void
 
     classes: any
 }
 
 interface State {
-    contents: string
+    fileContents: string
+    contentsOnDisk: string
+    fileExistsOnDisk: boolean
     error: Error | undefined
 }
 

@@ -7,6 +7,8 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import SecuredText from './connected/SecuredText'
 import FileViewer from './connected/FileViewer'
@@ -32,15 +34,23 @@ class RepoHomePage extends React.Component<Props>
             <div className={classes.main}>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readme })}>
                     {readme &&
-                        <FileViewer
-                            repoHash={repoHash}
-                            filename={'README.md'}
-                            objectID={readme.hash}
-                            showViewerPicker={false}
-                        />
+                        <div>
+                            <FileViewer
+                                repoHash={repoHash}
+                                filename={'README.md'}
+                                objectID={readme.hash}
+                                showViewerPicker={false}
+                            />
+                            <IconButton
+                                onClick={this.onClickEditReadme}
+                                className={classes.editReadmeButton}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>
                     }
                     {!readme &&
-                        <div className={classes.readmeContainerNoReadmeContents}>
+                        <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
                             <Typography className={classes.noReadmeText}>
                                 Add a welcome message and instructions to this repository using the Conscience Desktop App.
                             </Typography>
@@ -147,6 +157,11 @@ const styles = (theme: Theme) => createStyles({
         [theme.breakpoints.down(1080)]: {
             marginBottom: 16,
         },
+    },
+    editReadmeButton: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
     },
     readmeContainerNoReadme: {
         backgroundColor: '#f1f1f1',

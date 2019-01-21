@@ -23,6 +23,9 @@ class OrgHomePage extends React.Component<Props>
             return <LargeProgressSpinner />
         }
 
+        const repos = this.props.repos
+        const repoList = this.props.org.repos.filter(repoID => repos[repoID] !== undefined)
+
         return (
             <div className={classes.page}>
                 <div className={classes.main}>
@@ -32,8 +35,8 @@ class OrgHomePage extends React.Component<Props>
                     />
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
-                        repoList={this.props.org.repos}
-                        repos={this.props.repos}
+                        repoList={repoList}
+                        repos={repos}
                         discussions={this.props.discussions}
                         discussionsByRepo={this.props.discussionsByRepo}
                         addRepo={this.addRepo}
