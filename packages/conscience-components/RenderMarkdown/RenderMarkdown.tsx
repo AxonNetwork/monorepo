@@ -10,7 +10,7 @@ import CodeViewer from '../CodeViewer'
 import shortcodes from './remark-references'
 import { autobind } from 'conscience-lib/utils'
 import { directEmbedPrefix } from 'conscience-components/env-specific'
-import { URI, URIType } from 'conscience-lib/common'
+import { URI } from 'conscience-lib/common'
 
 
 @autobind
@@ -45,8 +45,8 @@ class RenderMarkdown extends React.Component<Props>
         if (node.src.startsWith('http://') || node.src.startsWith('https://')) {
             return <img src={node.src} />
         } else {
-            const uri = { type: URIType.Network, repoID: this.props.repoID, commit: 'HEAD', filename: undefined } as URI
-            return <img src={urljoin(directEmbedPrefix(uri), this.props.dirname || '', node.src)} />
+            // images with local relative paths
+            return <img src={urljoin(directEmbedPrefix(this.props.uri), this.props.dirname || '', node.src)} />
         }
     }
 
@@ -56,16 +56,11 @@ class RenderMarkdown extends React.Component<Props>
         switch (identifier) {
             case 'image':
                 return (
-                    <img src={urljoin(this.props.directEmbedPrefix, contents)} />
+                    <img src={urljoin(directEmbedPrefix(this.props.uri), contents)} />
                 )
             case 'file':
                 return (
-                    <FileLink
-                        repoID={this.props.repoID}
-                        commit={'HEAD'}
-                        filename={contents}
-                        directEmbedPrefix={this.props.directEmbedPrefix}
-                    />
+                    <FileLink uri={this.props.uri} />
                 )
             case 'discussion':
                 return (
@@ -73,11 +68,7 @@ class RenderMarkdown extends React.Component<Props>
                 )
             case 'comment':
                 return (
-                    <CommentLink
-                        repoID={this.props.repoID}
-                        commentID={contents}
-                        directEmbedPrefix={this.props.directEmbedPrefix}
-                    />
+                    <CommentLink uri={this.props.uri} commentID={contents} />
                 )
             default:
                 return (
@@ -90,12 +81,11 @@ class RenderMarkdown extends React.Component<Props>
 }
 
 interface Props {
-    repoID: string
+    uri: URI
     text: string
-    directEmbedPrefix: string
     dirname?: string
 
-    classes: any
+    classes?: any
 }
 
 const styles = () => createStyles({

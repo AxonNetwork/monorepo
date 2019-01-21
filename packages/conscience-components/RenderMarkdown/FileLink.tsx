@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import FileViewer from '../FileViewer'
-import { FileMode } from 'conscience-lib/common'
+import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { selectFile } from '../env-specific'
 
@@ -18,7 +18,7 @@ class FileLink extends React.Component<Props, State>
     _anchorElement: HTMLAnchorElement | null = null
 
     render() {
-        const { repoID, commit, filename, classes } = this.props
+        const { classes } = this.props
         const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
 
         return (
@@ -30,7 +30,7 @@ class FileLink extends React.Component<Props, State>
                     onMouseLeave={this.hidePopper}
                     ref={x => this._anchorElement = x}
                 >
-                    {filename}
+                    {this.props.uri.filename || ''}
                 </a>
                 <Popper
                     open={this.state.showPopper}
@@ -46,9 +46,7 @@ class FileLink extends React.Component<Props, State>
                     className={classes.popper}
                 >
                     <FileViewer
-                        blobIdentifier={{ repoID, commit, filename }}
-                        filename={filename}
-                        directEmbedPrefix={this.props.directEmbedPrefix}
+                        uri={this.props.uri}
                         showViewerPicker={false}
                         classes={{ codeContainer: classes.codeContainer }}
                     />
@@ -58,8 +56,7 @@ class FileLink extends React.Component<Props, State>
     }
 
     goToFile() {
-        const filename = this.props.filename
-        selectFile(this.props.history, { filename, mode: FileMode.View })
+        selectFile(this.props.history, this.props.uri, FileMode.View)
     }
 
     showPopper() {
@@ -74,10 +71,7 @@ class FileLink extends React.Component<Props, State>
 type Props = OwnProps & RouteComponentProps<{}>
 
 interface OwnProps {
-    repoID: string
-    commit: string
-    filename: string
-    directEmbedPrefix: string
+    uri: URI
     classes: any
 }
 

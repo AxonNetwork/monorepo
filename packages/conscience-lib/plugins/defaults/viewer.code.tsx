@@ -6,20 +6,20 @@ import CardContent from '@material-ui/core/CardContent'
 import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
+import { URI } from 'conscience-lib/common'
 
 @autobind
 class CodeViewerPlugin extends React.Component<Props>
 {
     render() {
         const { classes } = this.props
-        const language = filetypes.getLanguage(this.props.filename)
+        const language = this.props.uri.filename ? filetypes.getLanguage(this.props.uri.filename) : ''
         return (
             <Card>
                 <CardContent classes={{ root: classes.codeRoot }}>
                     <CodeViewer
                         language={language}
                         fileContents={this.props.fileContents || ''}
-                        codeColorScheme={this.props.codeColorScheme}
                         classes={classes}
                     />
                 </CardContent>
@@ -39,9 +39,7 @@ const styles = () => createStyles({
 type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
-    repoID: string
-    directEmbedPrefix: string
-    filename: string
+    uri: URI
     fileContents?: string
 }
 

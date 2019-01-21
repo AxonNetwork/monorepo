@@ -4,13 +4,14 @@ import CardContent from '@material-ui/core/CardContent'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import DataViewer from 'conscience-components/DataViewer/DataViewer'
+import { URI } from 'conscience-lib/common'
 
 
 @autobind
 class DataViewerPlugin extends React.Component<Props, State>
 {
     render() {
-        const extension = filetypes.ext(this.props.filename)
+        const extension = this.props.uri.filename ? filetypes.ext(this.props.uri.filename) : 'csv'
         return (
             <Card>
                 <CardContent>
@@ -22,9 +23,7 @@ class DataViewerPlugin extends React.Component<Props, State>
 }
 
 interface Props {
-    repoID: string
-    directEmbedPrefix: string
-    filename: string
+    uri: URI
     fileContents?: string
 }
 

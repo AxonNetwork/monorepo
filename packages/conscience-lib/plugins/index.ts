@@ -1,4 +1,4 @@
-import { BlobIdentifier } from 'conscience-lib/common'
+import { URI } from 'conscience-lib/common'
 
 export type PluginType = 'file type' | 'file viewer' | 'file editor'
 
@@ -27,7 +27,7 @@ export interface IFileViewerPlugin {
 export type FileViewerComponent = React.ComponentClass<IFileViewerPluginProps>
 
 export interface IFileViewerPluginProps {
-    blobIdentifier: BlobIdentifier
+    uri: URI
     fileContents?: string
     classes: any
 }

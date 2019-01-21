@@ -14,12 +14,12 @@ class FileViewer extends React.Component<Props, State>
 {
     render() {
         const { fileContents } = this.state
-        const { filename, classes } = this.props
-        if (!filename) {
+        const { classes } = this.props
+        if (!this.props.uri.filename) {
             return null
         }
 
-        const viewers = filetypes.getViewers(filename)
+        const viewers = filetypes.getViewers(this.props.uri.filename)
         if (viewers.length === 0) {
             return (
                 <div>We don't have a viewer for this kind of file yet.</div>
@@ -78,8 +78,13 @@ class FileViewer extends React.Component<Props, State>
     }
 
     async updateFileContents() {
+        if (!this.props.uri.filename) {
+            this.setState({ fileContents: '' })
+            return
+        }
+
         // Don't handle binary files, only text
-        if (!filetypes.isTextFile(this.props.filename)) {
+        if (!filetypes.isTextFile(this.props.uri.filename)) {
             this.setState({ fileContents: '' })
             return
         }

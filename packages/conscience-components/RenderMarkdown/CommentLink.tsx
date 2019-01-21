@@ -5,7 +5,7 @@ import Popper from '@material-ui/core/Popper'
 import { autobind } from 'conscience-lib/utils'
 import CommentWrapper from '../CommentWrapper'
 import RenderMarkdown from '../RenderMarkdown'
-import { IComment, IUser, FileMode } from 'conscience-lib/common'
+import { IComment, IUser, URI } from 'conscience-lib/common'
 import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
 import { IUserState } from 'conscience-components/redux/user/userReducer'
 
@@ -59,8 +59,7 @@ class CommentLink extends React.Component<Props, State>
                     >
                         <RenderMarkdown
                             text={comment.text}
-                            repoID={this.props.repoID}
-                            directEmbedPrefix={this.props.directEmbedPrefix}
+                            uri={this.props.uri}
                         />
                     </CommentWrapper>
                 </Popper>
@@ -80,9 +79,8 @@ class CommentLink extends React.Component<Props, State>
 type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
+    uri: URI
     commentID: string
-    repoID: string
-    directEmbedPrefix: string
 }
 
 interface StateProps {

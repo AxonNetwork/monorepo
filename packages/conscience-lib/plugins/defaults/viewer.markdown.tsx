@@ -22,10 +22,9 @@ class MarkdownViewerPlugin extends React.Component<Props, State>
             <Card>
                 <CardContent classes={{ root: classes.mdRoot }}>
                     <RenderMarkdown
-                        repoID={this.props.uri.repoID}
+                        uri={this.props.uri}
                         text={fileContents || ''}
                         dirname={path.dirname(this.props.filename)}
-                        directEmbedPrefix={''}
                     />
                 </CardContent>
             </Card>
