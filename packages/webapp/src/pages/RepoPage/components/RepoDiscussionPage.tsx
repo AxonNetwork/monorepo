@@ -48,7 +48,7 @@ class RepoDiscussionPage extends React.Component<Props>
     directEmbedPrefix() {
         const API_URL = process.env.API_URL
         const repoID = this.props.match.params.repoID
-        const prefix = `${API_URL}/repo/${repoID}/file`
+        const prefix = `${API_URL}/repo/${repoID}/file/HEAD`
         return prefix
     }
 
@@ -59,13 +59,14 @@ class RepoDiscussionPage extends React.Component<Props>
         return resp.data
     }
 
-    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
+    selectFile(payload: { commit?: string, filename: string | undefined, mode: FileMode }) {
         const repoID = this.props.match.params.repoID
+        const commit = payload.commit || 'HEAD'
         const filename = payload.filename
         if (filename === undefined) {
-            this.props.history.push(`/repo/${repoID}/files`)
+            this.props.history.push(`/repo/${repoID}/files/${commit}`)
         } else {
-            this.props.history.push(`/repo/${repoID}/files/${filename}`)
+            this.props.history.push(`/repo/${repoID}/files/${commit}/${filename}`)
         }
     }
 

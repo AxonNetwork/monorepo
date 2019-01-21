@@ -1,3 +1,4 @@
+import axios from 'axios'
 import OfflinePluginRuntime from 'offline-plugin/runtime'
 import React from 'react'
 import ReactDom from 'react-dom'
@@ -10,6 +11,47 @@ import { whoami } from 'conscience-components/redux/user/userActions'
 import { isProduction } from 'utils'
 
 import 'typeface-roboto'
+
+import * as envSpecific from 'conscience-components/env-specific'
+import { History } from 'history'
+import { FileMode, URI, URIType } from 'conscience-lib/common'
+
+envSpecific.init({
+    selectFile: (history: History, uri: URI, mode: FileMode) => {
+        if (uri.type === URIType.Local) {
+            throw new Error('web platform does not support URIType.Local')
+        }
+
+        const { repoID, commit, filename } = uri
+        if (filename === undefined) {
+            history.push(`/repo/${repoID}/files/${commit}`)
+        } else if (mode === FileMode.View) {
+            history.push(`/repo/${repoID}/files/${commit}/${filename}`)
+        } else if (mode === FileMode.Edit) {
+            history.push(`/repo/${repoID}/edit/${commit}/${filename}`)
+        } else {
+            throw new Error(`unknown FileMode: ${mode}`)
+        }
+    },
+    getFileContents: async (uri: URI) => {
+        if (uri.type === URIType.Local) {
+            throw new Error('web platform cannot getFileContents with a local URI')
+        }
+        const API_URL = process.env.API_URL
+        const { repoID, commit, filename } = uri
+        const fileURL = `${API_URL}/repo/${repoID}/file/${commit}/${filename}`
+        const resp = await axios.get<string>(fileURL)
+        return resp.data
+    },
+    directEmbedPrefix: (uri: URI) => {
+        if (uri.type === URIType.Local) {
+            throw new Error('web platform cannot directEmbedPrefix with a local URI')
+        }
+        const API_URL = process.env.API_URL
+        const { repoID, commit } = uri
+        return `${API_URL}/repo/${repoID}/file/${commit}`
+    }
+})
 
 // Webpack offline plugin
 if (isProduction) {

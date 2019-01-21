@@ -1,10 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import { autobind } from 'conscience-lib/utils'
 import CommentWrapper from '../CommentWrapper'
 import RenderMarkdown from '../RenderMarkdown'
-import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
+import { IComment, IUser, FileMode } from 'conscience-lib/common'
+import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+import { IUserState } from 'conscience-components/redux/user/userReducer'
 
 @autobind
 class CommentLink extends React.Component<Props, State>
@@ -13,17 +16,16 @@ class CommentLink extends React.Component<Props, State>
         showPopper: false,
     }
 
-    _ref!: HTMLAnchorElement
+    _anchorElement: HTMLAnchorElement | null = null
 
     render() {
-        const { commentID, comments, users, repo, classes } = this.props
-        const comment = comments[commentID]
-        if (comment === undefined) {
+        const { comment, classes } = this.props
+        if (!comment) {
             return null
         }
-        const user = users[comment.userID]
 
         const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
+
         return (
             <React.Fragment>
                 <a
@@ -31,13 +33,13 @@ class CommentLink extends React.Component<Props, State>
                     onClick={undefined}
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
-                    ref={(x: any) => (this._ref = x)}
+                    ref={x => this._anchorElement = x}
                 >
                     comment {comment.commentID}
                 </a>
                 <Popper
                     open={this.state.showPopper}
-                    anchorEl={this._ref}
+                    anchorEl={this._anchorElement}
                     placement="right"
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
@@ -50,23 +52,15 @@ class CommentLink extends React.Component<Props, State>
                     }}
                 >
                     <CommentWrapper
-                        user={user}
+                        user={this.props.user}
                         created={comment.created}
                         classes={{ comment: classes.comment, commentBody: classes.commentBody, commentText: classes.commentText }}
                         style={{ maxHeight: window.innerHeight * 0.8 }}
                     >
                         <RenderMarkdown
                             text={comment.text}
-                            repo={repo}
-                            comments={comments}
-                            users={users}
-                            discussions={this.props.discussions}
+                            repoID={this.props.repoID}
                             directEmbedPrefix={this.props.directEmbedPrefix}
-                            dirname={this.props.dirname}
-                            codeColorScheme={this.props.codeColorScheme}
-                            getFileContents={this.props.getFileContents}
-                            selectFile={this.props.selectFile}
-                            selectDiscussion={this.props.selectDiscussion}
                         />
                     </CommentWrapper>
                 </Popper>
@@ -83,19 +77,17 @@ class CommentLink extends React.Component<Props, State>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
     commentID: string
-    comments: { [commentID: string]: IComment }
-    users: { [userID: string]: IUser }
-    discussions: { [userID: string]: IDiscussion }
-    repo: IRepo
+    repoID: string
     directEmbedPrefix: string
-    dirname: string
-    codeColorScheme?: string | undefined
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    classes: any
+}
+
+interface StateProps {
+    comment: IComment | undefined
+    user: IUser | undefined
 }
 
 interface State {
@@ -124,4 +116,13 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(CommentLink)
+const mapStateToProps = (state: { discussion: IDiscussionState, user: IUserState }, ownProps: OwnProps) => {
+    const comment = state.discussion.comments[ownProps.commentID]
+    const user = comment ? state.user.users[comment.userID || ''] : undefined
+    return {
+        comment,
+        user,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(CommentLink))

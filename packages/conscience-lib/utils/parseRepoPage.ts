@@ -3,7 +3,7 @@ import { RepoPage } from '../common'
 export function repoPageToString(repoPage: RepoPage) {
     switch (repoPage) {
         case RepoPage.Files:
-            return 'files'
+            return 'files/HEAD'
         case RepoPage.History:
             return 'history'
         case RepoPage.Discussion:

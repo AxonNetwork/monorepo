@@ -26,7 +26,6 @@ import { autobind, schemes } from 'conscience-lib/utils'
 @autobind
 class SettingsPage extends React.Component<Props>
 {
-
     _inputUserPicture!: HTMLInputElement | null
     _inputNewEmail!: HTMLInputElement | null
 
@@ -91,7 +90,6 @@ class SettingsPage extends React.Component<Props>
                         <CodeViewer
                             language="go"
                             fileContents={codeSample}
-                            codeColorScheme={userSettings.codeColorScheme}
                         />
                     </section>
                     <section className={classes.section}>

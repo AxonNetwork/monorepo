@@ -8,11 +8,14 @@ import DiscussionLink from './DiscussionLink'
 import CommentLink from './CommentLink'
 import CodeViewer from '../CodeViewer'
 import shortcodes from './remark-references'
-import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { directEmbedPrefix } from 'conscience-components/env-specific'
+import { URI, URIType } from 'conscience-lib/common'
+
 
 @autobind
-class RenderMarkdown extends React.Component<Props> {
+class RenderMarkdown extends React.Component<Props>
+{
     render() {
         return (
             <Typography className={this.props.classes.wrapper}>
@@ -34,7 +37,6 @@ class RenderMarkdown extends React.Component<Props> {
             <CodeViewer
                 fileContents={node.value}
                 language={node.language}
-                codeColorScheme={this.props.codeColorScheme}
             />
         )
     }
@@ -43,13 +45,13 @@ class RenderMarkdown extends React.Component<Props> {
         if (node.src.startsWith('http://') || node.src.startsWith('https://')) {
             return <img src={node.src} />
         } else {
-            return <img src={urljoin(this.props.directEmbedPrefix, this.props.dirname, node.src)} />
+            const uri = { type: URIType.Network, repoID: this.props.repoID, commit: 'HEAD', filename: undefined } as URI
+            return <img src={urljoin(directEmbedPrefix(uri), this.props.dirname || '', node.src)} />
         }
     }
 
     parseShortcodes(node: { identifier: string; contents: string }) {
         const { identifier, contents } = node
-        const { repo, comments, users, discussions } = this.props
 
         switch (identifier) {
             case 'image':
@@ -59,41 +61,22 @@ class RenderMarkdown extends React.Component<Props> {
             case 'file':
                 return (
                     <FileLink
+                        repoID={this.props.repoID}
+                        commit={'HEAD'}
                         filename={contents}
                         directEmbedPrefix={this.props.directEmbedPrefix}
-                        repo={repo}
-                        comments={comments}
-                        users={users}
-                        discussions={discussions}
-                        codeColorScheme={this.props.codeColorScheme}
-                        getFileContents={this.props.getFileContents}
-                        selectFile={this.props.selectFile}
-                        selectDiscussion={this.props.selectDiscussion}
                     />
                 )
             case 'discussion':
-                const subject = (discussions[contents] || ({} as any)).subject || ''
                 return (
-                    <DiscussionLink
-                        discussionID={contents}
-                        discussionSubject={subject}
-                        selectDiscussion={this.props.selectDiscussion}
-                    />
+                    <DiscussionLink repoID={this.props.repoID} discussionID={contents} />
                 )
             case 'comment':
                 return (
                     <CommentLink
+                        repoID={this.props.repoID}
                         commentID={contents}
-                        comments={comments}
-                        users={users}
-                        repo={repo}
-                        discussions={discussions}
                         directEmbedPrefix={this.props.directEmbedPrefix}
-                        dirname={this.props.dirname}
-                        codeColorScheme={this.props.codeColorScheme}
-                        getFileContents={this.props.getFileContents}
-                        selectFile={this.props.selectFile}
-                        selectDiscussion={this.props.selectDiscussion}
                     />
                 )
             default:
@@ -107,17 +90,11 @@ class RenderMarkdown extends React.Component<Props> {
 }
 
 interface Props {
+    repoID: string
     text: string
-    repo: IRepo
-    comments: { [commentID: string]: IComment }
-    users: { [userID: string]: IUser }
-    discussions: { [userID: string]: IDiscussion }
     directEmbedPrefix: string
-    dirname: string
-    codeColorScheme?: string | undefined
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
+    dirname?: string
+
     classes: any
 }
 

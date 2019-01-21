@@ -1,6 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
+import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+
 
 @autobind
 class DiscussionLink extends React.Component<Props>
@@ -15,16 +20,20 @@ class DiscussionLink extends React.Component<Props>
     }
 
     onClick() {
-        const discussionID = this.props.discussionID
-        this.props.selectDiscussion({ discussionID })
+        const { repoID, discussionID } = this.props
+        this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & RouteComponentProps<{}> & { classes: any }
+
+interface OwnProps {
+    repoID: string
     discussionID: string
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
+}
+
+interface StateProps {
     discussionSubject: string
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -35,4 +44,10 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default (withStyles(styles)(DiscussionLink))
+const mapStateToProps = (state: { discussion: IDiscussionState }, ownProps: OwnProps) => {
+    return {
+        discussionSubject: (state.discussion.discussions[ownProps.discussionID] || {}).subject,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(withRouter(DiscussionLink)))

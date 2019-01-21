@@ -1,3 +1,4 @@
+import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
@@ -5,38 +6,45 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import SecuredText from './connected/SecuredText'
-import FileViewer from './connected/FileViewer'
-import Timeline from './connected/Timeline'
-import DiscussionList from './connected/DiscussionList'
-import UserAvatar from 'conscience-components/UserAvatar'
-import { H6 } from 'conscience-components/Typography/Headers'
-import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { union } from 'lodash'
+import FileViewer from 'conscience-components/FileViewer'
+import UserAvatar from 'conscience-components/UserAvatar'
+import { H6 } from 'conscience-components/Typography/Headers'
+import SecuredText from './connected/SecuredText'
+import Timeline from './connected/Timeline'
+import DiscussionList from './connected/DiscussionList'
+import { IGlobalState } from 'redux/store'
 
 
-@autobind class RepoHomePage extends React.Component<Props>
+@autobind
+class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { repo, sharedUsers, classes } = this.props
 
-        const readmeExists = (repo.files || {})['README.md']
+        const readme = (repo.files || {})['README.md']
 
         return (
             <div className={classes.main}>
-                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readmeExists })}>
-                    {readmeExists &&
-                        <FileViewer repoID={repo.repoID} filename={'README.md'} showViewerPicker={false} />
+                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readme })}>
+                    {readme &&
+                        <FileViewer
+                            blobIdentifier={{
+                                repoID: repo.repoID,
+                                commit: 'HEAD',
+                                filename: 'README.md',
+                            }}
+                            filename={'README.md'}
+                            showViewerPicker={false}
+                        />
                     }
-                    {!readmeExists &&
+                    {!readme &&
                         <div className={classes.readmeContainerNoReadmeContents}>
-                            <Typography className={classes.noReadmeText}>
-                                Add a welcome message and instructions to this repository using the Conscience Desktop App.
-                            </Typography>
+                            <div className={classes.noReadmeText}>
+                                Add a welcome message and instructions to this repository using the Conscience desktop app.
+                            </div>
 
                             <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
                         </div>

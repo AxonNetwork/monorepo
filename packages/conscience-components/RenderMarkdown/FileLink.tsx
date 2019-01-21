@@ -1,21 +1,26 @@
 import React from 'react'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import FileViewer from '../FileViewer'
-import { IRepo, IUser, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
+import { FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { selectFile } from '../env-specific'
 
 @autobind
-class FileLink extends React.Component<Props, State> {
+class FileLink extends React.Component<Props, State>
+{
     state = {
         showPopper: false,
     }
 
-    _link: HTMLAnchorElement | null = null
+    _anchorElement: HTMLAnchorElement | null = null
 
     render() {
-        const { filename, repo, classes } = this.props
+        const { repoID, commit, filename, classes } = this.props
         const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
+
         return (
             <React.Fragment>
                 <a
@@ -23,13 +28,13 @@ class FileLink extends React.Component<Props, State> {
                     onClick={this.goToFile}
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
-                    ref={x => this._link = x}
+                    ref={x => this._anchorElement = x}
                 >
                     {filename}
                 </a>
                 <Popper
                     open={this.state.showPopper}
-                    anchorEl={this._link}
+                    anchorEl={this._anchorElement}
                     placement="top"
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
@@ -41,17 +46,10 @@ class FileLink extends React.Component<Props, State> {
                     className={classes.popper}
                 >
                     <FileViewer
-                        filename={this.props.filename}
+                        blobIdentifier={{ repoID, commit, filename }}
+                        filename={filename}
                         directEmbedPrefix={this.props.directEmbedPrefix}
                         showViewerPicker={false}
-                        repo={repo}
-                        comments={this.props.comments}
-                        users={this.props.users}
-                        discussions={this.props.discussions}
-                        codeColorScheme={this.props.codeColorScheme}
-                        getFileContents={this.props.getFileContents}
-                        selectFile={this.props.selectFile}
-                        selectDiscussion={this.props.selectDiscussion}
                         classes={{ codeContainer: classes.codeContainer }}
                     />
                 </Popper>
@@ -61,7 +59,7 @@ class FileLink extends React.Component<Props, State> {
 
     goToFile() {
         const filename = this.props.filename
-        this.props.selectFile({ filename, mode: FileMode.View })
+        selectFile(this.props.history, { filename, mode: FileMode.View })
     }
 
     showPopper() {
@@ -73,17 +71,13 @@ class FileLink extends React.Component<Props, State> {
     }
 }
 
-interface Props {
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
+    repoID: string
+    commit: string
     filename: string
     directEmbedPrefix: string
-    repo: IRepo
-    comments: { [commentID: string]: IComment }
-    users: { [userID: string]: IUser }
-    discussions: { [userID: string]: IDiscussion }
-    codeColorScheme?: string | undefined
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
     classes: any
 }
 
@@ -112,4 +106,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileLink)
+export default withStyles(styles)(withRouter(FileLink))

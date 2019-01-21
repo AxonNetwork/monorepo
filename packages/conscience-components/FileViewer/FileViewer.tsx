@@ -1,28 +1,28 @@
+import isEqual from 'lodash/isEqual'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
-import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
+import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { FileViewerComponent } from 'conscience-lib/plugins'
+import { getFileContents } from '../env-specific'
 
 @autobind
-class FileViewer extends React.Component<Props, State> {
+class FileViewer extends React.Component<Props, State>
+{
     render() {
         const { fileContents } = this.state
-        const { filename, repo, classes } = this.props
-        if (!filename || !repo) {
+        const { filename, classes } = this.props
+        if (!filename) {
             return null
         }
 
         const viewers = filetypes.getViewers(filename)
         if (viewers.length === 0) {
             return (
-                <Typography>
-                    We don't have a viewer for this kind of file yet.
-                </Typography>
+                <div>We don't have a viewer for this kind of file yet.</div>
             )
         }
 
@@ -55,9 +55,7 @@ class FileViewer extends React.Component<Props, State> {
                 }
 
                 <Viewer
-                    repoID={this.props.repo.repoID}
-                    directEmbedPrefix={this.props.directEmbedPrefix}
-                    filename={filename}
+                    uri={this.props.uri}
                     fileContents={fileContents}
                     classes={classes}
                 />
@@ -74,7 +72,7 @@ class FileViewer extends React.Component<Props, State> {
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (prevProps.filename !== this.props.filename || prevProps.repo !== this.props.repo) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
             this.updateFileContents()
         }
     }
@@ -87,7 +85,7 @@ class FileViewer extends React.Component<Props, State> {
         }
 
         try {
-            const fileContents = await this.props.getFileContents(this.props.filename)
+            const fileContents = await getFileContents(this.props.uri)
             this.setState({ fileContents })
         } catch (error) {
             this.setState({ fileContents: '', error })
@@ -95,21 +93,11 @@ class FileViewer extends React.Component<Props, State> {
     }
 }
 
-interface Props {
-    filename: string
-    directEmbedPrefix: string
-    showViewerPicker: boolean
 
-    repo: IRepo
-    comments: { [commentID: string]: IComment }
-    users: { [userID: string]: IUser }
-    discussions: { [userID: string]: IDiscussion }
-    codeColorScheme?: string | undefined
-    backgroundColor?: string
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined; mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    classes: any
+interface Props {
+    uri: URI
+    showViewerPicker: boolean
+    classes?: any
 }
 
 interface State {

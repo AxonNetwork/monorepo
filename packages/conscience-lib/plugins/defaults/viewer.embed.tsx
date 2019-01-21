@@ -3,8 +3,9 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import urljoin from 'url-join'
+import { IFileViewerPluginProps } from '../index'
 
-function EmbedViewerPlugin(props: { repoID: string, directEmbedPrefix: string, filename: string, fileContents?: string, classes: any }) {
+function EmbedViewerPlugin(props: IFileViewerPluginProps) {
     const { directEmbedPrefix, filename, classes } = props
     return (
         <Card>

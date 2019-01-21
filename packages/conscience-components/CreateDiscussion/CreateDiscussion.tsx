@@ -61,7 +61,7 @@ class CreateDiscussion extends React.Component<Props, State>
                         innerRef={(x: any) => this._inputComment = x}
                         files={this.props.files}
                         discussions={this.props.discussions}
-                        onSubmit={() => this.onSubmit()}
+                        onSubmit={this.onSubmit}
                     />
                     <Button color="secondary" variant="contained" onClick={this.onSubmit}>
                         Create

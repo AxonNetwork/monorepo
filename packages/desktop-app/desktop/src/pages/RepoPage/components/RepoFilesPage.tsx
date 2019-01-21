@@ -1,5 +1,5 @@
 import React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import FileList from 'conscience-components/FileList'
@@ -172,7 +172,7 @@ interface Props extends RouteComponentProps<MatchParams> {
     classes: any
 }
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     fileInfo: {
         display: 'flex',
         flexDirection: 'row',
@@ -186,8 +186,10 @@ const styles = createStyles({
     fileViewerContainer: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
+        [theme.breakpoints.up(1090)]: {
+            alignItems: 'center',
+        },
     },
     fileViewer: {
         maxWidth: 960,

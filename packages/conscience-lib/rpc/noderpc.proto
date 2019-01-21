@@ -14,7 +14,6 @@ service NodeRPC {
   rpc PullRepo(PullRepoRequest) returns (stream PullRepoResponsePacket) {}
   rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
   rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponse) {}
-  rpc GetObject(GetObjectRequest) returns (stream GetObjectResponsePacket) {}
   rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
   rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
   rpc GetLocalRepos(GetLocalReposRequest) returns (stream GetLocalReposResponsePacket) {}
@@ -25,7 +24,7 @@ service NodeRPC {
   rpc IsBehindRemote(IsBehindRemoteRequest) returns (IsBehindRemoteResponse) {}
   rpc GetRepoUsers(GetRepoUsersRequest) returns (GetRepoUsersResponse) {}
   rpc UpdateRef(UpdateRefRequest) returns (UpdateRefResponse) {}
-  rpc RequestReplication(ReplicationRequest) returns (ReplicationResponse) {}
+  rpc RequestReplication(ReplicationRequest) returns (stream ReplicationResponsePacket) {}
 
   rpc GetRepoHistory(GetRepoHistoryRequest) returns (GetRepoHistoryResponse) {}
   rpc GetRepoFiles(GetRepoFilesRequest) returns (GetRepoFilesResponse) {}
@@ -33,6 +32,8 @@ service NodeRPC {
   rpc SignMessage(SignMessageRequest) returns (SignMessageResponse) {}
   rpc EthAddress(EthAddressRequest) returns (EthAddressResponse) {}
   rpc SetUserPermissions(SetUserPermissionsRequest) returns (SetUserPermissionsResponse) {}
+
+  rpc GetObject(GetObjectRequest) returns (stream GetObjectResponse) {}
 }
 
 message SetUsernameRequest {
@@ -105,7 +106,7 @@ message CloneRepoResponsePacket {
 message FetchFromCommitRequest {
     string repoID = 1;
     string path = 2;
-    string commit = 3;
+    bytes commit = 3;
 }
 
 message FetchFromCommitResponse {
@@ -119,13 +120,9 @@ message FetchFromCommitResponse {
     }
 
     message PackfileData {
-        bytes objHash = 1;
-        int32 objType = 2;
-        uint64 objLen = 3;
-        int64 toFetch = 4;
-        int64 fetched = 5;
-        bytes data = 6;
-        bool end = 7;
+        bytes packfileID = 1;
+        bytes data = 2;
+        bool end = 3;
     }
 
     oneof payload {
@@ -133,15 +130,6 @@ message FetchFromCommitResponse {
         PackfileHeader packfileHeader = 2;
         PackfileData packfileData = 3;
     }
-}
-
-message GetObjectRequest {
-    string repoID = 1;
-    bytes objectID = 2;
-}
-
-message GetObjectResponsePacket {
-    bytes data = 1;
 }
 
 message RegisterRepoIDRequest {
@@ -152,6 +140,7 @@ message RegisterRepoIDResponse {}
 
 message TrackLocalRepoRequest {
     string repoPath = 1;
+    bool forceReload = 2;
 }
 
 message TrackLocalRepoResponse {}
@@ -236,7 +225,9 @@ message ReplicationRequest {
     string repoID = 1;
 }
 
-message ReplicationResponse {}
+message ReplicationResponsePacket {
+    int32 percent = 1;
+}
 
 message GetRepoHistoryRequest {
     string repoID = 1;
@@ -311,3 +302,37 @@ message SetUserPermissionsRequest {
 }
 
 message SetUserPermissionsResponse {}
+
+message GetObjectRequest {
+    // need one or the other
+    string repoID = 1;
+    string repoRoot = 2;
+
+    // need objectID -or-
+    //  (filename -and-
+    //     (commitHash -or- commitRef)
+    //  )
+    // @@TODO: unfuck this
+    bytes objectID = 3;
+    string filename = 4;
+    bytes commitHash = 5;
+    string commitRef = 6;
+    uint64 maxSize = 7;
+}
+
+message GetObjectResponse {
+    message Header {
+        uint64 uncompressedSize = 1;
+    }
+
+    message Data {
+        bytes data = 1;
+        bool end = 2;
+    }
+
+    oneof payload {
+        Header header = 1;
+        Data data = 2;
+    }
+}
+

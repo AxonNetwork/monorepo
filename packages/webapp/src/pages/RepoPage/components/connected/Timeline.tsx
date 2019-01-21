@@ -4,7 +4,6 @@ import { History } from 'history'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Timeline from 'conscience-components/Timeline'
-import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -59,7 +58,7 @@ class ConnectedTimeline extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     repoID: string
@@ -75,10 +74,6 @@ interface StateProps {
     users: { [userID: string]: IUser }
     usersByEmail: { [email: string]: string }
     history: History
-}
-
-interface DispatchProps {
-    getDiff: (payload: { repoID: string, commit: string }) => void
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -101,9 +96,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-const mapDispatchToProps = {
-    getDiff,
-}
+const mapDispatchToProps = {}
 
 export default connect(
     mapStateToProps,

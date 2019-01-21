@@ -97,7 +97,7 @@ class Thread extends React.Component<Props, State>
                 <div className={classes.thread}>
                     <div className={classes.comments}>
                         {commentsList.length === 0 &&
-                            <Typography className={classes.comment}>No comments yet. Start the discussion!</Typography>
+                            <div className={classes.comment}>No comments yet. Start the discussion!</div>
                         }
                         {commentsList.map(c => {
                             const commentUser = this.props.users[c.userID]
@@ -184,7 +184,7 @@ interface Props {
 
     unselect: () => void
     getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+    selectFile: (payload: { commit?: string, filename: string | undefined, mode: FileMode }) => void
     selectDiscussion: (payload: { discussionID: string | undefined }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
     sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void

@@ -1,5 +1,7 @@
 import path from 'path'
 import React from 'react'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -18,8 +20,9 @@ import FolderIcon from '@material-ui/icons/Folder'
 import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
-import { IRepoFile, FileMode } from 'conscience-lib/common'
+import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
+import { selectFile } from 'conscience-components/env-specific'
 
 
 @autobind
@@ -30,21 +33,16 @@ class FileList extends React.Component<Props, State>
     _inputNewFileName: HTMLInputElement | null = null
 
     render() {
-        let { classes, files, selectedFolder } = this.props
-        if (selectedFolder !== undefined) {
-            files = filterSubfolder(files, selectedFolder)
+        let { classes, files } = this.props
+        if (this.props.uri.filename !== undefined) {
+            files = filterSubfolder(files, this.props.uri.filename)
         }
-        files = mergeFolders(files, selectedFolder)
+        files = mergeFolders(files, this.props.uri.filename)
         const names = sortFolders(files)
         return (
             <React.Fragment>
                 <div className={classes.toolbar}>
-                    <Breadcrumbs
-                        repoRoot={this.props.repoRoot}
-                        selectedFolder={selectedFolder}
-                        selectFile={this.props.selectFile}
-                        classes={{ root: classes.breadcrumb }}
-                    />
+                    <Breadcrumbs uri={this.props.uri} classes={{ root: classes.breadcrumb }} />
 
                     {this.props.canEditFiles &&
                         <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
@@ -65,12 +63,11 @@ class FileList extends React.Component<Props, State>
                         <CardContent className={classes.fileListCardContent}>
                             <Table>
                                 <TableBody>
-                                    {names.map(name => (
+                                    {names.map(filename => (
                                         <File
-                                            file={files[name]}
-                                            repoRoot={this.props.repoRoot}
-                                            key={name}
-                                            selectFile={this.props.selectFile}
+                                            uri={{ ...this.props.uri, filename }}
+                                            file={files[filename]}
+                                            key={filename}
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             openFileIcon={this.props.openFileIcon}
                                             canEditFiles={this.props.canEditFiles}
@@ -116,10 +113,10 @@ class FileList extends React.Component<Props, State>
             return
         }
 
-        const basepath = this.props.selectedFolder || '.'
+        const basepath = this.props.uri.filename || '.'
         const fullpath = path.join(basepath, filename)
 
-        this.props.selectFile({ filename: fullpath, mode: FileMode.Edit })
+        selectFile(this.props.history, { ...this.props.uri, filename: fullpath }, FileMode.Edit)
     }
 
     onClickCancelNewFile() {
@@ -130,15 +127,16 @@ class FileList extends React.Component<Props, State>
     }
 }
 
-interface Props {
-    repoRoot: string
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
+    uri: URI
+    // repoRoot: string
     files: { [name: string]: IRepoFile }
-    selectedFolder: string | undefined
+    // selectedFolder: string | undefined
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
-
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
 
     classes: any
 }
@@ -196,4 +194,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileList)
+export default withStyles(styles)(withRouter(FileList))

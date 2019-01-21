@@ -5,8 +5,9 @@ import FileViewer from 'conscience-components/FileViewer'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IComment, IUser, IDiscussion, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import fs from 'fs'
-import path from 'path'
+// import fs from 'fs'
+// import path from 'path'
+import * as rpc from 'conscience-lib/rpc'
 
 
 @autobind
@@ -34,12 +35,13 @@ class ConnectedFileViewer extends React.Component<Props>
 
     async getFileContents(filename: string) {
         return new Promise<string>((resolve, reject) => {
-            fs.readFile(path.join(this.props.repo.path || "", filename), 'utf8', (err: Error, contents: string) => {
-                if (err) {
-                    reject(err)
-                }
-                resolve(contents)
-            })
+            // fs.readFile(path.join(this.props.repo.path || "", filename), 'utf8', (err: Error, contents: string) => {
+            //     if (err) {
+            //         reject(err)
+            //     }
+            //     resolve(contents)
+            // })
+            const stream = rpc.client.getObject({ repoID: '', repoRoot: '/home/bryn/conscience/conscience-drive', objectID: Buffer.from(objectID, 'hex'), maxSize: 999999999999999 })
         })
     }
 
@@ -68,6 +70,7 @@ type Props = OwnProps & StateProps & RouteComponentProps<any>
 
 interface OwnProps {
     filename: string
+    objectID: string
     repoHash: string
     showViewerPicker: boolean
 }

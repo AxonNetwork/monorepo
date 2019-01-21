@@ -58,8 +58,8 @@ class RepoPageRoutes extends React.Component<Props>
                         />
                         <div>
                             <Switch>
-                                <Route path='/repo/:repoID/files/:filename+' component={RepoFilesPage} />
-                                <Route path='/repo/:repoID/files' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/files/:commit/:filename+' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/files/:commit' component={RepoFilesPage} />
                                 <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
                                 <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
                                 <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />

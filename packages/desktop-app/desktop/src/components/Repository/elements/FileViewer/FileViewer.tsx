@@ -28,53 +28,53 @@ class FileViewer extends React.Component<Props, State>
 
         // @@TODO: filetype standardization
         switch (extension) {
-        case 'md':
-        case 'mdown':
-        case 'markdown':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.mdRoot }}>
-                        <RenderMarkdown text={this.state.fileContents || ''} basePath={this.props.repoRoot} />
-                    </CardContent>
-                </Card>
-            )
-        case 'jpg':
-        case 'jpeg':
-        case 'gif':
-        case 'png':
-        case 'tif':
-        case 'tiff':
-            return <img src={'file://' + path.join(this.props.repoRoot, filename)} className={classes.imageEmbed} />
-        case 'go':
-        case 'js':
-        case 'jsx':
-        case 'json':
-        case 'ts':
-        case 'tsx':
-        case 'py':
-        case 'proto':
-        case 'tex':
-        case 'rb':
-        case 'rs':
-        case 'r':
-        case 'txt':
-            return (
-                <Card>
-                    <CardContent classes={{ root: classes.codeRoot }}>
-                        <CodeViewer language={extension} contents={this.state.fileContents} />
-                    </CardContent>
-                </Card>
-            )
-        case 'csv':
-            return(
-                <Card>
-                    <CardContent classes={{ root: classes.dataRoot }}>
-                        <DataViewer fileType={extension} contents={this.state.fileContents} />
-                    </CardContent>
-                </Card>
-            )
-        default:
-            return <div>We don't have a viewer for this kind of file yet.</div>
+            case 'md':
+            case 'mdown':
+            case 'markdown':
+                return (
+                    <Card>
+                        <CardContent classes={{ root: classes.mdRoot }}>
+                            <RenderMarkdown text={this.state.fileContents || ''} basePath={this.props.repoRoot} />
+                        </CardContent>
+                    </Card>
+                )
+            case 'jpg':
+            case 'jpeg':
+            case 'gif':
+            case 'png':
+            case 'tif':
+            case 'tiff':
+                return <img src={'file://' + path.join(this.props.repoRoot, filename)} className={classes.imageEmbed} />
+            case 'go':
+            case 'js':
+            case 'jsx':
+            case 'json':
+            case 'ts':
+            case 'tsx':
+            case 'py':
+            case 'proto':
+            case 'tex':
+            case 'rb':
+            case 'rs':
+            case 'r':
+            case 'txt':
+                return (
+                    <Card>
+                        <CardContent classes={{ root: classes.codeRoot }}>
+                            <CodeViewer language={extension} contents={this.state.fileContents} />
+                        </CardContent>
+                    </Card>
+                )
+            case 'csv':
+                return (
+                    <Card>
+                        <CardContent classes={{ root: classes.dataRoot }}>
+                            <DataViewer fileType={extension} contents={this.state.fileContents} />
+                        </CardContent>
+                    </Card>
+                )
+            default:
+                return <div>We don't have a viewer for this kind of file yet.</div>
         }
     }
 

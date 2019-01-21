@@ -16,7 +16,7 @@ export function initClient(protoPath) {
 
     // We have to manually keep this in sync with the types specified in the Protocol.sol UserType enum
     client.UserType = {
-        ADMIN: 0,
+        ADMIN:  0,
         PULLER: 1,
         PUSHER: 2,
     }
@@ -25,21 +25,21 @@ export function initClient(protoPath) {
     client.getLocalReposAsync = (params) => {
         return new Promise((resolve, reject) => {
             const emitter = client.getLocalRepos(params)
-            let repos = []
-            emitter.on('data',  (repo) => { repos.push(repo) })
-            emitter.on('end',   ()     => { resolve(repos) })
-            emitter.on('error', (err)  => { reject(err) })
+            const repos = []
+            emitter.on('data', (repo) => { repos.push(repo) })
+            emitter.on('end', () => { resolve(repos) })
+            emitter.on('error', (err) => { reject(err) })
         })
     }
 
     client.getAllRemoteRefsAsync = async (repoID) => {
         const REF_PAGE_SIZE = 10
         let page = 0
-        let refMap = {}
+        const refMap = {}
 
         while (true) {
             const { total, refs } = await client.getRemoteRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
-            for (let ref of refs) {
+            for (const ref of refs) {
                 refMap[ref.refName] = ref.commitHash
             }
 
@@ -56,7 +56,7 @@ export function initClient(protoPath) {
         let users = []
         const { repoID, type } = params
         while (true) {
-            const result = await client.getRepoUsersAsync({ repoID, type, pageSize: 10, page: page })
+            const result = await client.getRepoUsersAsync({ repoID, type, pageSize: 10, page })
             users = users.concat(result.users)
             if (result.users.length < 10) {
                 break
@@ -66,4 +66,3 @@ export function initClient(protoPath) {
         return users
     }
 }
-

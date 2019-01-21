@@ -1,5 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
@@ -15,9 +17,10 @@ import moment from 'moment'
 import bytes from 'bytes'
 import path from 'path'
 
-import { IRepoFile, FileMode } from 'conscience-lib/common'
+import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
+import { selectFile } from 'conscience-components/env-specific'
 
 
 @autobind
@@ -26,21 +29,25 @@ class File extends React.Component<Props>
     selectFile() {
         const { file } = this.props
         if (file.mergeConflict) {
-            this.props.selectFile({ filename: file.name, mode: FileMode.ResolveConflict })
+            selectFile(this.props.history, this.props.uri, FileMode.ResolveConflict)
         } else {
-            this.props.selectFile({ filename: file.name, mode: FileMode.View })
+            selectFile(this.props.history, this.props.uri, FileMode.View)
         }
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {
+        if (this.props.uri.type === URIType.Network) {
+            throw new Error('network URIs cannot be opened locally')
+        }
+
         e.stopPropagation()
         const shell = (window as any).require('electron').shell
-        shell.openItem(path.join(this.props.repoRoot, this.props.file.name))
+        shell.openItem(path.join(this.props.uri.repoRoot, this.props.file.name))
     }
 
     openEditor(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        this.props.selectFile({ filename: this.props.file.name, mode: FileMode.Edit })
+        selectFile(this.props.history, this.props.uri, FileMode.Edit)
     }
 
     canQuickEdit() {
@@ -53,8 +60,7 @@ class File extends React.Component<Props>
     }
 
     render() {
-        const { file, selectFile, classes } = this.props
-        const canClickFile = !!selectFile
+        const { file, classes } = this.props
         const name = path.basename(file.name)
 
         let displayname: string
@@ -67,7 +73,7 @@ class File extends React.Component<Props>
 
         const fileRow = (
             <TableRow
-                hover={canClickFile}
+                hover
                 onClick={this.selectFile}
                 className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : '')}
                 classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
@@ -108,10 +114,11 @@ class File extends React.Component<Props>
     }
 }
 
-interface Props {
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
+    uri: URI
     file: IRepoFile
-    repoRoot: string
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
@@ -166,4 +173,4 @@ const styles = createStyles({
     },
 })
 
-export default withStyles(styles)(File)
+export default withStyles(styles)(withRouter(File))

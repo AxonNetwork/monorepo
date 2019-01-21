@@ -1,10 +1,13 @@
+import path from 'path'
 import React from 'react'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { FileMode } from 'conscience-lib/common'
+import { FileMode, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import path from 'path'
+import { selectFile } from 'conscience-components/env-specific'
 
 
 @autobind
@@ -15,7 +18,9 @@ class Breadcrumbs extends React.Component<Props>
     }
 
     componentWillReceiveProps(props: Props) {
-        if (props.repoRoot !== this.props.repoRoot) {
+        if ((this.props.uri.type !== props.uri.type) ||
+            (this.props.uri.type === URIType.Local && props.uri.type === URIType.Local && props.uri.repoRoot !== this.props.uri.repoRoot) ||
+            (this.props.uri.type === URIType.Network && props.uri.type === URIType.Network && props.uri.repoID !== this.props.uri.repoID)) {
             this.setState({ showBasePath: false })
         }
     }
@@ -25,38 +30,41 @@ class Breadcrumbs extends React.Component<Props>
     }
 
     selectCrumb(index: number) {
+        let filename: string | undefined
         if (index === 0) {
-            this.props.selectFile({ filename: undefined, mode: FileMode.View })
-            return
+            filename = undefined
+        } else {
+            filename = this.getParts().slice(1, index + 1).join('/')
         }
 
-        const { repoRoot, selectedFolder } = this.props
-        const parts = this.getParts(repoRoot, selectedFolder)
-        const filename = parts.slice(1, index + 1).join('/')
-        this.props.selectFile({ filename, mode: FileMode.View })
+        selectFile(this.props.history, { ...this.props.uri, filename }, FileMode.View)
     }
 
-    getParts(repoRoot: string, selectedFolder: string | undefined) {
-        let parts = [path.basename(repoRoot)]
-        if (selectedFolder !== undefined) {
-            parts = parts.concat(selectedFolder.split('/'))
+    getParts() {
+        let parts: string[]
+
+        if (this.props.uri.type === URIType.Local) {
+            parts = [path.basename(this.props.uri.repoRoot)]
+        } else {
+            parts = [this.props.uri.repoID]
+        }
+
+        if (this.props.uri.filename !== undefined) {
+            parts = parts.concat(this.props.uri.filename.split('/'))
         }
         return parts
     }
 
     render() {
-        const { repoRoot, selectedFolder, classes } = this.props
-        if (repoRoot === undefined) {
-            return null
-        }
+        const { uri, classes } = this.props
 
-        const basePath = path.dirname(repoRoot)
-        const parts = this.getParts(repoRoot, selectedFolder)
+        const basePath = uri.type === URIType.Local ? path.dirname(uri.repoRoot) : undefined
+        const parts = this.getParts()
 
         return (
             <Typography className={classes.root}>
                 <span>Location: </span>
-                {basePath !== "." &&
+                {basePath && basePath !== '.' &&
                     <React.Fragment>
                         {!this.state.showBasePath &&
                             <span className={classes.crumb} onClick={this.showBasePath}>...</span>
@@ -85,10 +93,10 @@ class Breadcrumbs extends React.Component<Props>
     }
 }
 
-interface Props {
-    repoRoot: string
-    selectedFolder: string | undefined
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
+    uri: URI
     classes: any
 }
 
@@ -101,5 +109,5 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(Breadcrumbs)
+export default withStyles(styles)(withRouter(Breadcrumbs))
 

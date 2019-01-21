@@ -88,7 +88,6 @@ class RepoDiscussionPage extends React.Component<Props>
                             files={repo.files || {}}
                             discussions={discussions}
                             createDiscussion={this.props.createDiscussion}
-                            selectUser={this.props.selectUser}
                         />
                     </div>
                 }
@@ -132,7 +131,7 @@ interface Props {
 
     getDiscussions: (payload: { repoID: string }) => void
     getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+    selectFile: (payload: { commit?: string, filename: string | undefined, mode: FileMode }) => void
     selectDiscussion: (payload: { discussionID: string | undefined }) => void
     createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
     createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void

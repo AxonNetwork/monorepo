@@ -193,10 +193,10 @@ const ServerRelay = {
         return response.data
     },
 
-    async getFileContents(repoID: string, filename: string) {
+    async getFileContents(repoID: string, commit: string, filename: string) {
         let file
         try {
-            file = await axios.get<any>(API_URL + '/repo/' + repoID + '/file/' + filename)
+            file = await axios.get<any>(API_URL + '/repo/' + repoID + '/' + commit + '/file/' + filename)
         } catch (err) {
             // file does not exist
             if (err.response.status === 404) {
