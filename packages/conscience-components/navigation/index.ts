@@ -40,13 +40,13 @@ export function selectDiscussion(history: History, uri: URI, discussionID: strin
 export function selectCommit(history: History, uri: URI) {
     if (uri.type === URIType.Local) {
         if (uri.commit === undefined) {
-            history.push(`/local-repo/${getHash(uri.repoRoot)}`)
+            history.push(`/local-repo/${getHash(uri.repoRoot)}/history`)
         } else {
             history.push(`/local-repo/${getHash(uri.repoRoot)}/history/${uri.commit}`)
         }
     } else {
         if (uri.commit === undefined) {
-            history.push(`/repo/${uri.repoID}`)
+            history.push(`/repo/${uri.repoID}/history`)
         } else {
             history.push(`/repo/${uri.repoID}/history/${uri.commit}`)
         }

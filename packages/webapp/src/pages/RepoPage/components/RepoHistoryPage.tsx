@@ -9,8 +9,9 @@ import CreateDiscussion from './connected/CreateDiscussion'
 import CommitView from 'conscience-components/CommitView'
 import { H5 } from 'conscience-components/Typography/Headers'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
+import { getRepo } from 'conscience-components/env-specific'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser } from 'conscience-lib/common'
+import { URIType, IRepo, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -27,32 +28,22 @@ class RepoHistoryPage extends React.Component<Props>
                 </div>
             )
         }
-        const selectedCommit = this.props.match.params.commit
-        if (selectedCommit === undefined) {
+        const { repoID, commit } = this.props.match.params
+        if (commit === undefined) {
             return (
-                <Timeline
-                    repoID={repo.repoID}
-                    history={this.props.history}
-                />
+                <Timeline repoID={repo.repoID} history={this.props.history} />
             )
         } else {
             return (
                 <div className={classes.main}>
-                    <CommitView
-                        repo={repo}
-                        user={this.props.user}
-                        commit={commits[selectedCommit]}
-                        codeColorScheme={this.props.codeColorScheme}
-                        getDiff={this.getDiff}
-                        selectCommit={this.selectCommit}
-                        selectUser={this.selectUser}
-                    />
+                    <CommitView uri={{ type: URIType.Network, repoID, commit }} />
+
                     <div className={classes.createDiscussionContainer}>
                         <H5>Start a discussion on this commit:</H5>
                         <div className={classes.createDiscussion}>
                             <CreateDiscussion
                                 repoID={repo.repoID}
-                                attachedTo={selectedCommit}
+                                attachedTo={commit}
                                 history={this.props.history}
                             />
                         </div>
@@ -61,43 +52,19 @@ class RepoHistoryPage extends React.Component<Props>
             )
         }
     }
-
-    selectCommit(payload: { selectedCommit: string | undefined }) {
-        const repoID = this.props.match.params.repoID
-        const commit = payload.selectedCommit
-        if (commit === undefined) {
-            this.props.history.push(`/repo/${repoID}/history`)
-        } else {
-            this.props.history.push(`/repo/${repoID}/history/${commit}`)
-        }
-    }
-
-    selectUser(payload: { username: string | undefined }) {
-        const username = payload.username
-        if (username === undefined) {
-            return
-        }
-        this.props.history.push(`/user/${username}`)
-    }
-
-    getDiff(payload: { repoID: string, repoRoot: string | undefined, commit: string }) {
-        const { repoID, commit } = payload
-        this.props.getDiff({ repoID, commit })
-    }
 }
+
+type Props = OwnProps & RouteComponentProps<MatchParams> & { classes: any }
 
 interface MatchParams {
     commit: string | undefined
     repoID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams> {
+interface OwnProps {
     repo: IRepo
     user: IUser
-    codeColorScheme: string | undefined
     getDiff: (payload: { repoID: string, commit: string }) => void
-    history: History
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -119,8 +86,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
-    const repoID = props.match.params.repoID
-    const repo = state.repo.repos[repoID]
+    const uri = { type: URIType.Network, repoID: props.match.params.repoID }
+    const repo = getRepo(uri, state)
     const user = state.user.users[state.user.currentUser || ''] || {}
     const codeColorScheme = (state.user.userSettings || {}).codeColorScheme
     return {

@@ -6,8 +6,7 @@ import { autobind } from 'conscience-lib/utils'
 import CommentWrapper from '../CommentWrapper'
 import RenderMarkdown from '../RenderMarkdown'
 import { IComment, IUser, URI } from 'conscience-lib/common'
-import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
-import { IUserState } from 'conscience-components/redux/user/userReducer'
+import { IGlobalState } from 'conscience-components/redux'
 
 @autobind
 class CommentLink extends React.Component<Props, State>
@@ -114,7 +113,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: { discussion: IDiscussionState, user: IUserState }, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const comment = state.discussion.comments[ownProps.commentID]
     const user = comment ? state.user.users[comment.userID || ''] : undefined
     return {

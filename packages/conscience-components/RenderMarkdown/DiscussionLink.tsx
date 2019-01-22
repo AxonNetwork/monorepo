@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
 import { URI } from 'conscience-lib/common'
-import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+import { IGlobalState } from 'conscience-components/redux'
 import { selectDiscussion } from 'conscience-components/navigation'
 
 
@@ -45,7 +45,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: { discussion: IDiscussionState }, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         discussionSubject: (state.discussion.discussions[ownProps.discussionID] || {}).subject,
     }

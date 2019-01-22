@@ -17,6 +17,7 @@ import 'typeface-roboto'
 
 import * as envSpecific from 'conscience-components/env-specific'
 import { URI, URIType } from 'conscience-lib/common'
+import { IGlobalState } from 'conscience-components/redux'
 import { getHash } from 'conscience-lib/utils'
 
 console.log('app version ~>', process.env.APP_VERSION)
@@ -59,8 +60,8 @@ envSpecific.init({
         const repoHash = getHash(repoRoot)
         return `${API_URL}/repo/${repoHash}/file/${commit}`
     },
-    getRepo(uri: URI) {
-        const state = store.getState()
+    getRepo(uri: URI, state?: IGlobalState) {
+        state = state || store.getState()
         if (uri.type === URIType.Local) {
             const repoID = state.repo.reposByHash[getHash(uri.repoRoot)]
             return state.repo.repos[repoID]

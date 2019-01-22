@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import moment from 'moment'
 import { RouteComponentProps } from 'react-router'
 import { withRouter } from 'react-router-dom'
@@ -8,8 +9,12 @@ import LinkIcon from '@material-ui/icons/Link'
 import DiffViewer from '../DiffViewer'
 import UserAvatar from '../UserAvatar'
 import SecuredText from '../SecuredText'
-import { IRepo, ITimelineEvent, IUser } from 'conscience-lib/common'
+import { URI, IRepo, ITimelineEvent, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { selectCommit } from 'conscience-components/navigation'
+import { IGlobalState } from 'conscience-components/redux'
+import { getRepo } from 'conscience-components/env-specific'
+
 
 @autobind
 class CommitView extends React.Component<Props>
@@ -35,12 +40,11 @@ class CommitView extends React.Component<Props>
     }
 
     onClickBack() {
-        this.props.selectCommit({ selectedCommit: undefined })
+        selectCommit(this.props.history, { ...this.props.uri, commit: undefined })
     }
 
     render() {
-        const { repo, classes } = this.props
-        const commit = this.props.commit || {} as ITimelineEvent
+        const { repo, commit, classes } = this.props
         const diffs = commit.diffs || {}
         return (
             <div className={classes.root}>
@@ -79,9 +83,8 @@ class CommitView extends React.Component<Props>
                 {Object.keys(diffs).map(filename => (
                     <DiffViewer
                         key={filename}
+                        uri={{ ...this.props.uri, filename }}
                         diff={diffs[filename]}
-                        type="text"
-                        codeColorScheme={this.props.codeColorScheme}
                     />
                 ))}
             </div>
@@ -89,14 +92,16 @@ class CommitView extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps & StateProps & RouteComponentProps<{}> & { classes: any }
 
 interface OwnProps {
+    uri: URI
+}
+
+interface StateProps {
     repo: IRepo
     user: IUser
-    commit: ITimelineEvent | undefined
-    getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string }) => void
-    classes: any
+    commit: ITimelineEvent
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -167,4 +172,15 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(CommitView))
+const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
+    const repo = getRepo(props.uri) || {}
+    const commit = (repo.commits || {})[props.uri.commit || ''] || {}
+    const user = state.user.users[commit.user || ''] || {}
+    return {
+        repo,
+        commit,
+        user,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(withRouter(CommitView)))
