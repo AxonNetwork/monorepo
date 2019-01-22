@@ -1,1 +1,1 @@
-export {default} from './DiscussionsPane'
+export { default } from './DiscussionPane'

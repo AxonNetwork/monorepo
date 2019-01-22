@@ -33,7 +33,7 @@ import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
-import { spawnCmd } from 'conscience-lib/utils'
+import spawnCmd from 'utils/spawnCmd'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
