@@ -64,7 +64,7 @@ class RenderMarkdown extends React.Component<Props>
                 )
             case 'discussion':
                 return (
-                    <DiscussionLink repoID={this.props.repoID} discussionID={contents} />
+                    <DiscussionLink uri={this.props.uri} discussionID={contents} />
                 )
             case 'comment':
                 return (

@@ -59,12 +59,7 @@ class RepoFilesPage extends React.Component<Props>
                 <div className={classes.fileViewerContainer}>
                     <div className={classes.fileViewer}>
                         <FileViewer
-                            uri={{
-                                type: URIType.Network,
-                                repoID: repo.repoID,
-                                commit: commit,
-                                filename: filename,
-                            }}
+                            uri={{ type: URIType.Network, repoID, commit, filename }}
                             showViewerPicker={true}
                         />
                     </div>

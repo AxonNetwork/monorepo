@@ -4,7 +4,9 @@ import { RouteComponentProps } from 'react-router'
 import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
+import { URI } from 'conscience-lib/common'
 import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+import { selectDiscussion } from '../env-specific'
 
 
 @autobind
@@ -20,15 +22,14 @@ class DiscussionLink extends React.Component<Props>
     }
 
     onClick() {
-        const { repoID, discussionID } = this.props
-        this.props.history.push(`/repo/${repoID}/discussion/${discussionID}`)
+        selectDiscussion(this.props.history, this.props.uri, this.props.discussionID)
     }
 }
 
 type Props = OwnProps & StateProps & RouteComponentProps<{}> & { classes: any }
 
 interface OwnProps {
-    repoID: string
+    uri: URI
     discussionID: string
 }
 
