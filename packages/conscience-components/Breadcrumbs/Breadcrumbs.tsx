@@ -1,7 +1,5 @@
 import path from 'path'
 import React from 'react'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -37,7 +35,7 @@ class Breadcrumbs extends React.Component<Props>
             filename = this.getParts().slice(1, index + 1).join('/')
         }
 
-        selectFile(this.props.history, { ...this.props.uri, filename }, FileMode.View)
+        selectFile({ ...this.props.uri, filename }, FileMode.View)
     }
 
     getParts() {
@@ -93,7 +91,7 @@ class Breadcrumbs extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps
 
 interface OwnProps {
     uri: URI
@@ -109,5 +107,5 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(Breadcrumbs))
+export default withStyles(styles)(Breadcrumbs)
 

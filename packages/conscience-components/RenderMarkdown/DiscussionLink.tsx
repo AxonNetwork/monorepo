@@ -1,7 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
 import { URI } from 'conscience-lib/common'
@@ -22,11 +20,11 @@ class DiscussionLink extends React.Component<Props>
     }
 
     onClick() {
-        selectDiscussion(this.props.history, this.props.uri, this.props.discussionID)
+        selectDiscussion(this.props.uri, this.props.discussionID)
     }
 }
 
-type Props = OwnProps & StateProps & RouteComponentProps<{}> & { classes: any }
+type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -51,4 +49,4 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-export default connect(mapStateToProps, null)(withStyles(styles)(withRouter(DiscussionLink)))
+export default connect(mapStateToProps, null)(withStyles(styles)(DiscussionLink))

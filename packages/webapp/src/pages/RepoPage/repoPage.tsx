@@ -10,7 +10,7 @@ import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import { getRepo } from 'redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepo, RepoPage } from 'conscience-lib/common'
 import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
 

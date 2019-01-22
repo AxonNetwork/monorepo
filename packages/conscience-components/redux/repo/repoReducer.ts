@@ -1,3 +1,4 @@
+import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepo, IRepoPermissions } from 'conscience-lib/common'
 
@@ -5,12 +6,14 @@ export const initialState = {
     repos: {},
     repoListByUser: {},
     repoPermissions: {},
+    diffsByCommitHash: {},
 }
 
 export interface IRepoState {
     repos: { [repoID: string]: IRepo }
     repoListByUser: { [username: string]: string[] }
     repoPermissions: { [repoID: string]: IRepoPermissions }
+    diffsByCommitHash: { [commit: string]: parseDiff.File[] }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {

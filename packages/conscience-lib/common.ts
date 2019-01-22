@@ -77,7 +77,6 @@ export interface ITimelineEvent {
     message: string
     files: string[]
     verified?: Date
-    diffs?: { [filename: string]: string }
     repoID?: string
 }
 

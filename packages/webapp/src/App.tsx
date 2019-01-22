@@ -3,7 +3,7 @@ import { ConnectedRouter } from 'connected-react-router'
 import { History } from 'history'
 import { Provider } from 'react-redux'
 import { Store } from 'redux'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import Routes from 'Routes'
 
 import Typography from '@material-ui/core/Typography'

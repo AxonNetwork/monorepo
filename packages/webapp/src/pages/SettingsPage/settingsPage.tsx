@@ -18,7 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import CodeViewer from 'conscience-components/CodeViewer/CodeViewer'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { updateUserSettings, uploadUserPicture, modifyUserEmail } from 'conscience-components/redux/user/userActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IUser, IUserSettings } from 'conscience-lib/common'
 import { autobind, schemes } from 'conscience-lib/utils'
 

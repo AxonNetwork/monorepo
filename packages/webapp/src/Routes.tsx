@@ -9,7 +9,7 @@ import UserPage from 'pages/UserPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 
 
 function Routes({ loginState, username, history }: Props) {

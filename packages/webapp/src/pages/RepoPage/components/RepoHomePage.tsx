@@ -7,15 +7,16 @@ import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import { IRepo, IUser, URIType } from 'conscience-lib/common'
+import { IRepo, IUser, URI, URIType, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import FileViewer from 'conscience-components/FileViewer'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import SecuredText from 'conscience-components/SecuredText'
 import DiscussionList from 'conscience-components/DiscussionList'
-import Timeline from './connected/Timeline'
-import { IGlobalState } from 'redux/store'
+import Timeline from 'conscience-components/Timeline'
+import { IGlobalState } from 'conscience-components/redux'
+import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind
@@ -32,12 +33,7 @@ class RepoHomePage extends React.Component<Props>
                 <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readme })}>
                     {readme &&
                         <FileViewer
-                            blobIdentifier={{
-                                repoID: repo.repoID,
-                                commit: 'HEAD',
-                                filename: 'README.md',
-                            }}
-                            filename={'README.md'}
+                            uri={{ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }}
                             showViewerPicker={false}
                         />
                     }
@@ -55,7 +51,7 @@ class RepoHomePage extends React.Component<Props>
                     {(repo.commitList || []).length > 0 &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
-                                <SecuredText uri={{ type: URIType.Network, repoID }} />
+                                <SecuredText uri={this.props.uri} />
                             </CardContent>
                         </Card>
                     }
@@ -65,11 +61,9 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Team</H6>
 
                             <div className={classes.sharedUsersRow}>
-                                {sharedUsers.map((user: IUser | undefined) => {
+                                {sharedUsers.map(user => {
                                     if (user !== undefined) {
-                                        return (
-                                            <UserAvatar user={user} selectUser={this.navigateUserPage} />
-                                        )
+                                        return <UserAvatar user={user} />
                                     } else {
                                         return null
                                     }
@@ -93,8 +87,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Commits</H6>
 
                             <Timeline
-                                repoID={repo.repoID}
-                                history={this.props.history}
+                                uri={this.props.uri}
                                 defaultRowsPerPage={2}
                                 hidePagination
                             />
@@ -105,25 +98,21 @@ class RepoHomePage extends React.Component<Props>
         )
     }
 
-    navigateUserPage(payload: { username: string }) {
-        const username = payload.username
-        this.props.history.push(`/user/${username}`)
-    }
-
     onClickEditReadme() {
-        const repoID = this.props.match.params.repoID
-        this.props.history.push(`/repo/${repoID}/edit/README.md`)
+        selectFile({ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }, FileMode.Edit)
     }
 }
+
+type Props = StateProps & RouteComponentProps<MatchParams> & { classes: any }
 
 interface MatchParams {
     repoID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams> {
+interface StateProps {
+    uri: URI
     repo: IRepo
     sharedUsers: IUser[]
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -181,12 +170,14 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoID = ownProps.match.params.repoID
+    const uri = { type: URIType.Network, repoID } as URI
     const repo = state.repo.repos[repoID]
     const { admins = [], pushers = [], pullers = [] } = state.repo.repoPermissions[repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
     return {
+        uri,
         repo,
         sharedUsers,
     }

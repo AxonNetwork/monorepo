@@ -1,6 +1,4 @@
 import React from 'react'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import FileViewer from '../FileViewer'
@@ -56,7 +54,7 @@ class FileLink extends React.Component<Props, State>
     }
 
     goToFile() {
-        selectFile(this.props.history, this.props.uri, FileMode.View)
+        selectFile(this.props.uri, FileMode.View)
     }
 
     showPopper() {
@@ -68,11 +66,10 @@ class FileLink extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    classes: any
 }
 
 interface State {
@@ -100,4 +97,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(FileLink))
+export default withStyles(styles)(FileLink)

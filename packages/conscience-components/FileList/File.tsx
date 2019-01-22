@@ -1,7 +1,5 @@
 import React from 'react'
 import classnames from 'classnames'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
@@ -29,9 +27,9 @@ class File extends React.Component<Props>
     selectFile() {
         const { file } = this.props
         if (file.mergeConflict) {
-            selectFile(this.props.history, this.props.uri, FileMode.ResolveConflict)
+            selectFile(this.props.uri, FileMode.ResolveConflict)
         } else {
-            selectFile(this.props.history, this.props.uri, FileMode.View)
+            selectFile(this.props.uri, FileMode.View)
         }
     }
 
@@ -47,7 +45,7 @@ class File extends React.Component<Props>
 
     openEditor(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        selectFile(this.props.history, this.props.uri, FileMode.Edit)
+        selectFile(this.props.uri, FileMode.Edit)
     }
 
     canQuickEdit() {
@@ -119,7 +117,7 @@ class File extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -127,7 +125,6 @@ interface OwnProps {
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
-    classes: any
 }
 
 const styles = createStyles({
@@ -178,4 +175,4 @@ const styles = createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(File))
+export default withStyles(styles)(File)

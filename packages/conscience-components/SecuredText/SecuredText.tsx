@@ -1,5 +1,4 @@
 import React from 'react'
-import { withRouter, RouteComponentProps } from 'react-router'
 import classnames from 'classnames'
 import { Theme, createStyles, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -54,11 +53,7 @@ class SecuredText extends React.Component<Props, State>
     }
 
     selectCommit(commit: string) {
-        const uri = {
-            ...this.props.uri,
-            commit
-        }
-        selectCommit(this.props.history, uri)
+        selectCommit({ ...this.props.uri, commit })
     }
 
     render() {
@@ -110,13 +105,15 @@ class SecuredText extends React.Component<Props, State>
     }
 }
 
+type Props = OwnProps & { classes: any }
+
 interface State {
     lastVerified: ITimelineEvent | undefined
     firstVerified: ITimelineEvent | undefined
     lastUpdated: ITimelineEvent | undefined
 }
 
-interface Props extends RouteComponentProps<{}> {
+interface OwnProps {
     uri: URI
     classes: any
 }
@@ -140,4 +137,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(SecuredText))
+export default withStyles(styles)(SecuredText)

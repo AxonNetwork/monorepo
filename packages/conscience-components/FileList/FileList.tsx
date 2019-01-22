@@ -1,7 +1,5 @@
 import path from 'path'
 import React from 'react'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -116,7 +114,7 @@ class FileList extends React.Component<Props, State>
         const basepath = this.props.uri.filename || '.'
         const fullpath = path.join(basepath, filename)
 
-        selectFile(this.props.history, { ...this.props.uri, filename: fullpath }, FileMode.Edit)
+        selectFile({ ...this.props.uri, filename: fullpath }, FileMode.Edit)
     }
 
     onClickCancelNewFile() {
@@ -127,18 +125,14 @@ class FileList extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    // repoRoot: string
     files: { [name: string]: IRepoFile }
-    // selectedFolder: string | undefined
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
-
-    classes: any
 }
 
 interface State {
@@ -194,4 +188,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(FileList))
+export default withStyles(styles)(FileList)

@@ -1,13 +1,14 @@
-import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import green from '@material-ui/core/colors/green'
+import red from '@material-ui/core/colors/red'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import parse from 'parse-diff'
 import { IGlobalState } from 'conscience-components/redux'
 
@@ -29,22 +30,31 @@ class TextDiff extends React.Component<Props, State>
     }
 
     render() {
-        const { filename, chunks, classes } = this.props
-        const language = filetypes.getLanguage(filename)
-        const type = filetypes.getType(filename)
-        // const changes = chunk.changes.reduce((acc:any, curr:parse.NormalChange|parse.AddChange|parse.DeleteChange) => {
-        //     if (curr.content[0] === '+') { acc.add++ }
-        //     if (curr.content[0] === '-') { acc.del++ }
-        //     return acc
-        // }, {add: 0, del: 0})
+        const { fileDiff, classes } = this.props
+        const language = fileDiff.to ? filetypes.getLanguage(fileDiff.to) : undefined
+        const type = fileDiff.to ? filetypes.getType(fileDiff.to) : undefined
+
+        let panelTitle: JSX.Element | null = null
+        if (fileDiff.from && fileDiff.to) {
+            if (fileDiff.new || fileDiff.from === '/dev/null') {
+                panelTitle = <div><span className={classes.labelNew}>(new)</span> {fileDiff.to}</div>
+            } else if (fileDiff.deleted || fileDiff.to === '/dev/null') {
+                panelTitle = <div><span className={classes.labelDeleted}>(deleted)</span> {fileDiff.from}</div>
+            } else if (fileDiff.from === fileDiff.to) {
+                panelTitle = <div>{fileDiff.to}</div>
+            } else {
+                panelTitle = <div>{fileDiff.from} <ArrowRightAltIcon className={classes.renameArrow} /> {fileDiff.to}</div>
+            }
+        }
+
         return (
             <ExpansionPanel className={classnames(classes.panel, { [classes.panelOpen]: this.state.expanded })} onChange={this.handleChange}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} classes={{ root: classes.summaryRoot }}>
-                    <Typography className={classes.filename}>{filename /*+ ': Added ' + changes.add + ' and deleted ' + changes.del + ' around line ' + chunk.newStart*/}</Typography>
+                    <div className={classes.filename}>{panelTitle}</div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{ root: classes.detailsRoot }}>
                     {this.state.expanded &&
-                        chunks.map((chunk, i) => (
+                        fileDiff.chunks.map((chunk, i) => (
                             <React.Fragment>
                                 <div className={classes.line}>
                                     {type === 'text' &&
@@ -54,7 +64,7 @@ class TextDiff extends React.Component<Props, State>
                                         <SheetChunkContent chunk={chunk} />
                                     }
                                 </div>
-                                {i < chunks.length - 1 &&
+                                {i < fileDiff.chunks.length - 1 &&
                                     <div className={classes.diffBreakMarker}>...</div>
                                 }
                             </React.Fragment>
@@ -69,8 +79,7 @@ class TextDiff extends React.Component<Props, State>
 type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
-    filename: string
-    chunks: parse.Chunk[]
+    fileDiff: parse.File
 }
 
 interface StateProps {
@@ -110,6 +119,13 @@ const styles = (theme: Theme) => createStyles({
     },
     filename: {
         fontFamily: 'Consolas, Menlo, "Courier New", Courier, monospace',
+        fontWeight: 400,
+    },
+    labelNew: {
+        color: green[500],
+    },
+    labelDeleted: {
+        color: red[500],
     },
     detailsRoot: {
         padding: 0,
@@ -122,6 +138,9 @@ const styles = (theme: Theme) => createStyles({
     },
     button: {
         textTransform: 'none',
+    },
+    renameArrow: {
+        verticalAlign: 'middle',
     },
 })
 

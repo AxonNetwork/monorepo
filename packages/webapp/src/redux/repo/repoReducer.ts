@@ -33,27 +33,35 @@ const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState =
         }
 
         case RepoActionType.GET_DIFF_SUCCESS: {
-            const { repoID, commit, diffs } = action.payload
-            if (!repoID) {
-                throw new Error('conscience-components repoReducer GET_DIFF_SUCCESS: repoID must be specified')
-            }
+            const { commit, diff } = action.payload
             return {
                 ...state,
-                repos: {
-                    ...state.repos,
-                    [repoID]: {
-                        ...(state.repos[repoID] || {}),
-                        path: repoID,
-                        commits: {
-                            ...((state.repos[repoID] || {}).commits || {}),
-                            [commit]: {
-                                ...(((state.repos[repoID] || {}).commits || {})[commit] || {}),
-                                diffs,
-                            },
-                        },
-                    },
-                },
+                diffsByCommitHash: {
+                    ...state.diffsByCommitHash,
+                    [commit]: diff,
+                }
             }
+            // const { repoID, commit, diffs } = action.payload
+            // if (!repoID) {
+            //     throw new Error('conscience-components repoReducer GET_DIFF_SUCCESS: repoID must be specified')
+            // }
+            // return {
+            //     ...state,
+            //     repos: {
+            //         ...state.repos,
+            //         [repoID]: {
+            //             ...(state.repos[repoID] || {}),
+            //             path: repoID,
+            //             commits: {
+            //                 ...((state.repos[repoID] || {}).commits || {}),
+            //                 [commit]: {
+            //                     ...(((state.repos[repoID] || {}).commits || {})[commit] || {}),
+            //                     diffs,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // }
         }
 
         default:

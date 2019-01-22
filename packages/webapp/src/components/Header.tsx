@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
@@ -9,7 +8,8 @@ import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { logout } from 'conscience-components/redux/user/userActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
+import { selectUser, selectSettings } from 'conscience-components/navigation'
 import { IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -61,10 +61,10 @@ class Header extends React.Component<Props, State>
         this.handleClose()
         switch (selection) {
             case 'profile':
-                this.props.history.push(`/user/${username}`)
+                selectUser(username)
                 return
             case 'settings':
-                this.props.history.push('/settings')
+                selectSettings()
                 return
             case 'logout':
                 this.props.logout()
@@ -77,7 +77,7 @@ class Header extends React.Component<Props, State>
     }
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
     user: IUser | undefined
     logout: typeof logout
     classes: any
@@ -127,4 +127,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(withRouter(Header)))
+)(withStyles(styles)(Header))

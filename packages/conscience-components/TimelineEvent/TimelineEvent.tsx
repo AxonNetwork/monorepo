@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import moment from 'moment'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -6,18 +7,25 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LinkIcon from '@material-ui/icons/Link'
 
 import UserAvatar from '../UserAvatar'
-import { IUser, ITimelineEvent } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { URI, IUser, ITimelineEvent } from 'conscience-lib/common'
+import { autobind, extractEmail } from 'conscience-lib/utils'
+import { getRepo } from 'conscience-components/env-specific'
+import { selectCommit } from 'conscience-components/navigation'
+import { IGlobalState } from 'conscience-components/redux'
 
 @autobind
 class TimelineEvent extends React.Component<Props>
 {
     render() {
         const { event, classes } = this.props
+        if (!event) {
+            return null
+        }
+
         return (
             <div
                 className={classes.event}
-                onClick={() => this.props.selectCommit(event.commit, event.repoID)}
+                onClick={this.selectCommit}
             >
                 <div className={classes.topline}></div>
                 {event.verified !== undefined &&
@@ -31,7 +39,6 @@ class TimelineEvent extends React.Component<Props>
                     <UserAvatar
                         user={this.props.user}
                         seedText={this.props.userEmail}
-                        selectUser={this.props.selectUser}
                         className={classes.avatar}
                     />
                 </div>
@@ -46,15 +53,22 @@ class TimelineEvent extends React.Component<Props>
             </div>
         )
     }
+
+    selectCommit() {
+        selectCommit(this.props.uri)
+    }
 }
 
-interface Props {
-    event: ITimelineEvent
-    user?: IUser | undefined
-    userEmail: string
-    selectCommit: (commit: string, repoID: string | undefined) => void
-    selectUser?: (payload: { username: string }) => void
-    classes: any
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
+}
+
+interface StateProps {
+    event: ITimelineEvent | undefined
+    user: IUser | undefined
+    userEmail: string | undefined
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -132,4 +146,16 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(TimelineEvent)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repo = getRepo(ownProps.uri, state)
+    const event = ((repo || {}).commits || {})[ownProps.uri.commit || '']
+    const userEmail = event ? extractEmail(event.user) : undefined
+    const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
+    return {
+        event,
+        user,
+        userEmail,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(TimelineEvent))

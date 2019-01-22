@@ -1,6 +1,6 @@
+import moment from 'moment'
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import List from '@material-ui/core/List'
@@ -9,13 +9,15 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Badge from '@material-ui/core/Badge'
-import UserAvatar from '../UserAvatar'
-import { selectDiscussion } from '../navigation'
-import { getRepo } from '../env-specific'
-import { IGlobalState } from '../redux'
+import UserAvatar from 'conscience-components/UserAvatar'
+import { selectDiscussion } from 'conscience-components/navigation'
+import { getRepo } from 'conscience-components/env-specific'
+import { IGlobalState } from 'conscience-components/redux'
 import { IDiscussion, IUser, URI } from 'conscience-lib/common'
-import moment from 'moment'
+import { autobind } from 'conscience-lib/utils'
 
+
+@autobind
 class DiscussionList extends React.Component<Props>
 {
     render() {
@@ -71,13 +73,13 @@ class DiscussionList extends React.Component<Props>
     }
 
     selectDiscussion(discussionID: string | undefined) {
-        selectDiscussion(this.props.history, this.props.uri, discussionID)
+        selectDiscussion(this.props.uri, discussionID)
     }
 }
 
 type Props = OwnProps & StateProps & { classes: any }
 
-interface OwnProps extends RouteComponentProps<{}> {
+interface OwnProps {
     uri: URI
     order?: string[]
     maxLength?: number
@@ -150,7 +152,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repo = getRepo(ownProps.uri)
-    const repoID = (repo || { repoID: '' }).repoID || ''
+    const repoID = (repo || {}).repoID || ''
 
     return {
         users: state.user.users,
@@ -162,7 +164,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {}
 
-export default withRouter(connect<StateProps, {}, OwnProps, IGlobalState>(
+export default connect<StateProps, {}, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(DiscussionList)))
+)(withStyles(styles)(DiscussionList))

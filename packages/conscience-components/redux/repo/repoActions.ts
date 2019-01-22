@@ -1,3 +1,4 @@
+import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
 
 export enum RepoActionType {
@@ -48,7 +49,8 @@ export interface IGetDiffSuccessAction {
         repoID?: string
         repoRoot?: string
         commit: string
-        diffs: { [filename: string]: string }
+        // diffs: { [filename: string]: string }
+        diff: parseDiff.File[]
     }
 }
 

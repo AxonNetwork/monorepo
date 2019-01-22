@@ -6,7 +6,7 @@ import discussionReducer from 'conscience-components/redux/discussion/discussion
 import orgReducer from 'conscience-components/redux/org/orgReducer'
 import uiReducer from './ui/uiReducer'
 
-import { IGlobalState } from './store'
+import { IGlobalState } from 'conscience-components/redux'
 
 const appReducer = combineReducers({
     user: userReducer,

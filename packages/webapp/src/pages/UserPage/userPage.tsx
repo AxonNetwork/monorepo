@@ -12,7 +12,7 @@ import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
 import { updateUserProfile } from 'conscience-components/redux/user/userActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepo, IUser, IOrganization, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

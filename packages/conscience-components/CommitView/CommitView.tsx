@@ -1,8 +1,7 @@
+import * as parseDiff from 'parse-diff'
 import React from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
@@ -14,13 +13,17 @@ import { autobind } from 'conscience-lib/utils'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
 import { getRepo } from 'conscience-components/env-specific'
+import { getDiff } from 'conscience-components/redux/repo/repoActions'
 
 
 @autobind
 class CommitView extends React.Component<Props>
 {
+    _didFetchDiff = false
+
     componentDidMount() {
-        if (this.props.commit && this.props.commit.diffs === undefined) {
+        if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
+            this._didFetchDiff = true
             this.props.getDiff({
                 repoRoot: this.props.repo.path,
                 repoID: this.props.repo.repoID,
@@ -30,7 +33,8 @@ class CommitView extends React.Component<Props>
     }
 
     componentDidUpdate(_: Props) {
-        if (this.props.commit && this.props.commit.diffs === undefined) {
+        if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
+            this._didFetchDiff = true
             this.props.getDiff({
                 repoRoot: this.props.repo.path,
                 repoID: this.props.repo.repoID,
@@ -40,12 +44,11 @@ class CommitView extends React.Component<Props>
     }
 
     onClickBack() {
-        selectCommit(this.props.history, { ...this.props.uri, commit: undefined })
+        selectCommit({ ...this.props.uri, commit: undefined })
     }
 
     render() {
-        const { repo, commit, classes } = this.props
-        const diffs = commit.diffs || {}
+        const { commit, classes } = this.props
         return (
             <div className={classes.root}>
                 <div className={classes.commitHeader}>
@@ -71,20 +74,15 @@ class CommitView extends React.Component<Props>
                         </div>
                     </div>
                     <div>
-                        <SecuredText
-                            commits={repo.commits || {}}
-                            commitList={repo.commitList || []}
-                            commit={commit.commit}
-                            classes={{ root: classes.securedText }}
-                        />
+                        <SecuredText uri={this.props.uri} />
                     </div>
                 </div>
 
-                {Object.keys(diffs).map(filename => (
+                {(this.props.fileDiffs || []).map(fileDiff => (
                     <DiffViewer
-                        key={filename}
-                        uri={{ ...this.props.uri, filename }}
-                        diff={diffs[filename]}
+                        key={(fileDiff.from || '') + (fileDiff.to || '')}
+                        uri={{ ...this.props.uri, filename: fileDiff.to }}
+                        fileDiff={fileDiff}
                     />
                 ))}
             </div>
@@ -92,7 +90,7 @@ class CommitView extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & RouteComponentProps<{}> & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -102,6 +100,11 @@ interface StateProps {
     repo: IRepo
     user: IUser
     commit: ITimelineEvent
+    fileDiffs: parseDiff.File[]
+}
+
+interface DispatchProps {
+    getDiff: typeof getDiff
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -176,11 +179,17 @@ const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
     const repo = getRepo(props.uri) || {}
     const commit = (repo.commits || {})[props.uri.commit || ''] || {}
     const user = state.user.users[commit.user || ''] || {}
+    const fileDiffs = state.repo.diffsByCommitHash[props.uri.commit || '']
     return {
         repo,
         commit,
         user,
+        fileDiffs,
     }
 }
 
-export default connect(mapStateToProps, null)(withStyles(styles)(withRouter(CommitView)))
+const mapDispatchToProps = {
+    getDiff,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(CommitView))

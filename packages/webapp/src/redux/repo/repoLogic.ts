@@ -1,4 +1,5 @@
 import union from 'lodash/union'
+import parseDiff from 'parse-diff'
 import {
     RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
@@ -45,9 +46,11 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         if (!repoID) {
             throw new Error('repoLogic.getDiffLogic: repoID must be specified')
         }
-        const resp = await ServerRelay.getDiff(repoID, commit)
-        const diffs = resp.diffs
-        return { repoID, commit, diffs }
+        const { diff } = await ServerRelay.getDiff(repoID, commit)
+        const parsed = parseDiff(diff)
+
+        // const diffs = resp.diffs
+        return { repoID, commit, diff: parsed }
     }
 })
 

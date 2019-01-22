@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
@@ -61,13 +60,13 @@ class DiscussionPane extends React.Component<Props>
     }
 
     selectDiscussion(discussionID: string | undefined) {
-        selectDiscussion(this.props.history, this.props.uri, discussionID)
+        selectDiscussion(this.props.uri, discussionID)
     }
 }
 
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
-interface OwnProps extends RouteComponentProps<{}> {
+interface OwnProps {
     uri: URI
     selectedID: string | undefined
 }
@@ -165,10 +164,10 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 }
 
 const mapDispatchToProps = {
-    getDiscussions
+    getDiscussions,
 }
 
-export default withRouter(connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
+export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(DiscussionPane)))
+)(withStyles(styles)(DiscussionPane))

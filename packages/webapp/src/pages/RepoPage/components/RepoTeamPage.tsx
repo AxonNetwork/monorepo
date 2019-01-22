@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import SharedUsers from 'conscience-components/SharedUsers'
 import { updateUserPermissions } from 'conscience-components/redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepoPermissions, IUser } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

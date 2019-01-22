@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import OrgBlog from 'conscience-components/OrgBlog/OrgBlog'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IOrgBlog } from 'conscience-lib/common'
 import { fetchOrgBlogs } from 'conscience-components/redux/org/orgActions'
 

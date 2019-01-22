@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import autobind from 'conscience-lib/utils/autobind'
 
 

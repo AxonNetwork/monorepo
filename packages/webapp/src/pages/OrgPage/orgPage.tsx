@@ -8,7 +8,7 @@ import OrgInfo from 'conscience-components/OrgPage/OrgInfo'
 import OrgEditorPage from 'conscience-components/OrgPage/OrgEditorPage'
 import OrgSettingsPage from 'conscience-components/OrgPage/OrgSettingsPage'
 import { fetchOrgInfo } from 'conscience-components/redux/org/orgActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, OrgPage } from 'conscience-lib/common'
 import { autobind, orgPageToString, stringToOrgPage } from 'conscience-lib/utils'
 

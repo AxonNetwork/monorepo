@@ -1,6 +1,7 @@
-import { History } from 'history'
 import { FileMode, URI, URIType } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
+import history from '../redux/history'
+
 
 export function getFileURL(uri: URI, mode: FileMode) {
     if (uri.type === URIType.Local) {
@@ -29,7 +30,7 @@ export function getFileURL(uri: URI, mode: FileMode) {
     }
 }
 
-export function selectFile(history: History, uri: URI, mode: FileMode) {
+export function selectFile(uri: URI, mode: FileMode) {
     history.push(getFileURL(uri, mode))
 }
 
@@ -49,7 +50,7 @@ export function getDiscussionURL(uri: URI, discussionID: string | undefined) {
     }
 }
 
-export function selectDiscussion(history: History, uri: URI, discussionID: string | undefined) {
+export function selectDiscussion(uri: URI, discussionID: string | undefined) {
     history.push(getDiscussionURL(uri, discussionID))
 }
 
@@ -69,13 +70,17 @@ export function getCommitURL(uri: URI) {
     }
 }
 
-export function selectCommit(history: History, uri: URI) {
+export function selectCommit(uri: URI) {
     history.push(getCommitURL(uri))
 }
 
-export function selectUser(history: History, username: string) {
+export function selectUser(username: string) {
     if (username === undefined) {
         return
     }
     history.push(`/user/${username}`)
+}
+
+export function selectSettings() {
+    history.push('/settings')
 }

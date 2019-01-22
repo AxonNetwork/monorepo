@@ -9,7 +9,7 @@ import Members from 'conscience-components/OrgPage/ConnectedMembers'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { fetchOrgInfo, addRepoToOrg } from 'conscience-components/redux/org/orgActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

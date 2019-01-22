@@ -1,6 +1,4 @@
 import React from 'react'
-import { RouteComponentProps } from 'react-router'
-import { withRouter } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
@@ -66,12 +64,12 @@ class UserAvatar extends React.Component<Props>
     selectUser() {
         const user = this.props.user
         if (user && user.username) {
-            selectUser(this.props.history, user.username)
+            selectUser(user.username)
         }
     }
 }
 
-type Props = OwnProps & RouteComponentProps<{}>
+type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     user?: IUser
@@ -89,11 +87,11 @@ const styles = () => createStyles({
     },
     identicon: {
         paddingTop: 5,
-        "& svg": {
+        '& svg': {
             width: '100%',
             height: '100%',
         }
     }
 })
 
-export default withStyles(styles)(withRouter(UserAvatar))
+export default withStyles(styles)(UserAvatar)

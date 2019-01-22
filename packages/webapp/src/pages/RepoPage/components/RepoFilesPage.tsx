@@ -9,7 +9,7 @@ import { H5 } from 'conscience-components/Typography/Headers'
 import FileList from 'conscience-components/FileList'
 import SecuredText from 'conscience-components/SecuredText'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepo, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

@@ -40,7 +40,7 @@ class Members extends React.Component<Props, State>
                             return (
                                 <div className={classes.user}>
                                     <div className={classes.userAvatar}>
-                                        <UserAvatar user={user} selectUser={this.props.selectUser} />
+                                        <UserAvatar user={user} />
                                     </div>
                                     <div className={classes.userInfo}>
                                         <Typography><strong>{user.name}</strong></Typography>
@@ -118,7 +118,6 @@ interface Props {
     currentUser: string
     addMember: (payload: { email: string }) => void
     removeMember: (payload: { userID: string }) => void
-    selectUser: (payload: { username: string }) => void
     classes: any
 }
 

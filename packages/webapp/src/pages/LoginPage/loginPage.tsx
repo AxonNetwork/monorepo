@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { login } from 'conscience-components/redux/user/userActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import autobind from 'conscience-lib/utils/autobind'
 const logo = require('../../assets/logo-invert.png')
 
