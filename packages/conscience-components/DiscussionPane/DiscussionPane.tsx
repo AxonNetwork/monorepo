@@ -10,8 +10,8 @@ import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
 import DiscussionList from '../DiscussionList'
 import { selectDiscussion } from '../navigation'
-import { IDiscussionState } from '../redux/discussion/discussionReducer'
 import { getDiscussions } from '../redux/discussion/discussionActions'
+import { IGlobalState } from '../redux'
 import { getRepo } from '../env-specific'
 
 import { URI } from 'conscience-lib/common'
@@ -19,7 +19,7 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class DiscussionsPane extends React.Component<Props>
+class DiscussionPane extends React.Component<Props>
 {
     render() {
         const { selectedID, classes } = this.props
@@ -77,7 +77,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    getDiscussions: (payload: { uri: URI }) => void
+    getDiscussions: typeof getDiscussions
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -155,12 +155,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-
-type IPartialState = {
-    discussion: IDiscussionState
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repo = getRepo(ownProps.uri)
     const repoID = (repo || { repoID: '' }).repoID || ''
 
@@ -173,7 +168,7 @@ const mapDispatchToProps = {
     getDiscussions
 }
 
-export default withRouter(connect<StateProps, DispatchProps, OwnProps, IPartialState>(
+export default withRouter(connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(DiscussionsPane)))
+)(withStyles(styles)(DiscussionPane)))

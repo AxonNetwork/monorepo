@@ -7,11 +7,9 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
-import { IRepoState } from '../redux/repo/repoReducer'
-import { IUserState } from '../redux/user/userReducer'
-import { IDiscussionState } from '../redux/discussion/discussionReducer'
 import { createComment } from '../redux/discussion/discussionActions'
 import { sawComment } from '../redux/user/userActions'
+import { IGlobalState } from '../redux'
 import { getRepo } from '../env-specific'
 import { IUser, IComment, IDiscussion, URI } from 'conscience-lib/common'
 import { autobind, checkVisible } from 'conscience-lib/utils'
@@ -232,13 +230,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-interface IPartialState {
-    repo: IRepoState
-    user: IUserState
-    discussion: IDiscussionState
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = (getRepo(ownProps.uri) || {}).repoID || ''
 
     return {

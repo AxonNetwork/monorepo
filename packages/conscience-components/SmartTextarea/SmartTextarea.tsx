@@ -5,8 +5,7 @@ import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormattingHelp from '../FormattingHelp'
-import { IRepoState } from '../redux/repo/repoReducer'
-import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { IGlobalState } from '../redux'
 import { IDiscussion, IRepo, IRepoFile, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
@@ -201,12 +200,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-interface IPartialState {
-    discussion: IDiscussionState
-    repo: IRepoState
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     let repo = undefined as IRepo | undefined
     if (ownProps.uri.type === URIType.Local) {
         repo = state.repo.repos[ownProps.uri.repoRoot]
@@ -222,7 +216,7 @@ const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {}
 
-export default connect<StateProps, {}, OwnProps, IPartialState>(
+export default connect<StateProps, {}, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(SmartTextarea))

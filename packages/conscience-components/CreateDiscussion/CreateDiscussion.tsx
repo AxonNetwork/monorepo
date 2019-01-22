@@ -7,8 +7,8 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { autobind } from 'conscience-lib/utils'
 import CommentWrapper from '../CommentWrapper'
 import SmartTextarea from '../SmartTextarea'
-import { IUserState } from '../redux/user/userReducer'
 import { createDiscussion } from '../redux/discussion/discussionActions'
+import { IGlobalState } from '../redux'
 import { IUser, URI } from 'conscience-lib/common'
 
 
@@ -91,7 +91,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    createDiscussion: (payload: { uri: URI, subject: string, commentText: string }) => void
+    createDiscussion: typeof createDiscussion
 }
 
 const styles = () => createStyles({
@@ -102,11 +102,7 @@ const styles = () => createStyles({
     },
 })
 
-interface IPartialState {
-    user: IUserState
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         user: state.user.users[state.user.currentUser || ''],
     }
@@ -116,7 +112,7 @@ const mapDispatchToProps = {
     createDiscussion
 }
 
-export default connect<StateProps, DispatchProps, OwnProps, IPartialState>(
+export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(CreateDiscussion))

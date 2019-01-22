@@ -12,8 +12,7 @@ import Badge from '@material-ui/core/Badge'
 import UserAvatar from '../UserAvatar'
 import { selectDiscussion } from '../navigation'
 import { getRepo } from '../env-specific'
-import { IUserState } from '../redux/user/userReducer'
-import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { IGlobalState } from '../redux'
 import { IDiscussion, IUser, URI } from 'conscience-lib/common'
 import moment from 'moment'
 
@@ -149,12 +148,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-type IPartialState = {
-    user: IUserState
-    discussion: IDiscussionState
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repo = getRepo(ownProps.uri)
     const repoID = (repo || { repoID: '' }).repoID || ''
 
@@ -168,7 +162,7 @@ const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {}
 
-export default withRouter(connect<StateProps, {}, OwnProps, IPartialState>(
+export default withRouter(connect<StateProps, {}, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(DiscussionList)))
