@@ -55,15 +55,15 @@ export type URI = LocalURI | NetworkURI
 export interface LocalURI {
     type: URIType.Local
     repoRoot: string
-    commit: string
-    filename: string | undefined
+    commit?: string | undefined
+    filename?: string | undefined
 }
 
 export interface NetworkURI {
     type: URIType.Network
     repoID: string
-    commit: string
-    filename: string | undefined
+    commit?: string | undefined
+    filename?: string | undefined
 }
 
 

@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Members from '../Members'
 import { addMemberToOrg, removeMemberFromOrg } from 'conscience-components/redux/org/orgActions'
+import { IUserState } from 'conscience-components/redux/user/userReducer'
+import { IOrgState } from 'conscience-components/redux/org/orgReducer'
 import { IUser, IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -25,7 +27,6 @@ class ConnectedMembers extends React.Component<Props>
             />
         )
     }
-
 
     addMember(payload: { email: string }) {
         const email = payload.email
@@ -60,17 +61,7 @@ interface DispatchProps {
 
 const styles = (theme: Theme) => createStyles({})
 
-interface IPartialState {
-    org: {
-        orgs: { [orgID: string]: IOrganization }
-    },
-    user: {
-        users: { [userID: string]: IUser }
-        currentUser: string
-    }
-}
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+const mapStateToProps = (state: { user: IUserState, org: IOrgState }, ownProps: OwnProps) => {
     return {
         org: state.org.orgs[ownProps.orgID],
         users: state.user.users,
@@ -83,7 +74,7 @@ const mapDispatchToProps = {
     removeMemberFromOrg
 }
 
-export default connect<StateProps, DispatchProps, OwnProps, IPartialState>(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(ConnectedMembers))

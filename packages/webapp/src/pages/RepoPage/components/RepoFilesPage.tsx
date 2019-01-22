@@ -7,7 +7,7 @@ import FileViewer from 'conscience-components/FileViewer'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import { H5 } from 'conscience-components/Typography/Headers'
 import FileList from 'conscience-components/FileList'
-import SecuredText from './connected/SecuredText'
+import SecuredText from 'conscience-components/SecuredText'
 import CreateDiscussion from './connected/CreateDiscussion'
 import { IGlobalState } from 'redux/store'
 import { IRepo, URIType } from 'conscience-lib/common'
@@ -49,12 +49,7 @@ class RepoFilesPage extends React.Component<Props>
                         uri={{ type: URIType.Network, repoID, commit, filename }}
                         classes={{ root: classes.breadcrumbs }}
                     />
-                    <SecuredText
-                        repoID={repo.repoID}
-                        history={this.props.history}
-                        lastUpdated={file.modified}
-                        filename={file.name}
-                    />
+                    <SecuredText uri={{ type: URIType.Network, repoID, commit, filename }} />
                 </div>
                 <div className={classes.fileViewerContainer}>
                     <div className={classes.fileViewer}>

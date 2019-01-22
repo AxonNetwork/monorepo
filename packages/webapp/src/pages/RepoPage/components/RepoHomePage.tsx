@@ -7,12 +7,12 @@ import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import { IRepo, IUser } from 'conscience-lib/common'
+import { IRepo, IUser, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import FileViewer from 'conscience-components/FileViewer'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
-import SecuredText from './connected/SecuredText'
+import SecuredText from 'conscience-components/SecuredText'
 import Timeline from './connected/Timeline'
 import DiscussionList from './connected/DiscussionList'
 import { IGlobalState } from 'redux/store'
@@ -23,6 +23,7 @@ class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { repo, sharedUsers, classes } = this.props
+        const { repoID } = repo
 
         const readme = (repo.files || {})['README.md']
 
@@ -54,10 +55,7 @@ class RepoHomePage extends React.Component<Props>
                     {(repo.commitList || []).length > 0 &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
-                                <SecuredText
-                                    repoID={repo.repoID}
-                                    history={this.props.history}
-                                />
+                                <SecuredText uri={{ type: URIType.Network, repoID }} />
                             </CardContent>
                         </Card>
                     }
