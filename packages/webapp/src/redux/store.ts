@@ -4,13 +4,14 @@ import { createStore, applyMiddleware, compose, Store } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
 import logic from './logic'
 import reducer from './reducer'
-import { IUserState } from 'conscience-components/redux/user/userReducer'
-import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
-import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
-import { IOrgState } from 'conscience-components/redux/org/orgReducer'
+// import { IUserState } from 'conscience-components/redux/user/userReducer'
+// import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
+// import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
+// import { IOrgState } from 'conscience-components/redux/org/orgReducer'
+import { IGlobalState } from 'conscience-components/redux'
 import { IUIState } from './ui/uiReducer'
 
-export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
+export default (initialState: IGlobalState | {}, history: History): Store<IGlobalState> => {
 
     // Redux DevTools
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -24,7 +25,7 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
 
     const store = createStore(
         connectRouter(history)(reducer),
-        initialState,
+        initialState as any,
         enhancer
     )
 
@@ -39,11 +40,9 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
     return store
 }
 
-export interface IGlobalState {
-    user: IUserState
-    repo: IRepoState
-    discussion: IDiscussionState
-    org: IOrgState
-    ui: IUIState
-    router?: RouterState
+declare module 'conscience-components/redux' {
+    export interface IGlobalState {
+        ui: IUIState
+        router?: RouterState
+    }
 }

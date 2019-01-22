@@ -56,13 +56,13 @@ export function selectDiscussion(history: History, uri: URI, discussionID: strin
 export function getCommitURL(uri: URI) {
     if (uri.type === URIType.Local) {
         if (uri.commit === undefined) {
-            return `/local-repo/${getHash(uri.repoRoot)}`
+            return `/local-repo/${getHash(uri.repoRoot)}/history`
         } else {
             return `/local-repo/${getHash(uri.repoRoot)}/history/${uri.commit}`
         }
     } else {
         if (uri.commit === undefined) {
-            return `/repo/${uri.repoID}`
+            return `/repo/${uri.repoID}/history`
         } else {
             return `/repo/${uri.repoID}/history/${uri.commit}`
         }
@@ -79,5 +79,3 @@ export function selectUser(history: History, username: string) {
     }
     history.push(`/user/${username}`)
 }
-
-

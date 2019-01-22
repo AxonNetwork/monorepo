@@ -7,6 +7,7 @@ import { AppContainer } from 'react-hot-loader'
 import App from 'App'
 import history from 'redux/history'
 import createStore from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { whoami } from 'conscience-components/redux/user/userActions'
 import { isProduction } from 'utils'
 
@@ -49,11 +50,11 @@ envSpecific.init({
         const { repoID, commit } = uri
         return `${API_URL}/repo/${repoID}/file/${commit}`
     },
-    getRepo(uri: URI) {
+    getRepo(uri: URI, state?: IGlobalState) {
         if (uri.type === URIType.Local) {
             throw new Error('web platform cannot getRepo with a local URI')
         }
-        const state = store.getState()
+        state = state || store.getState()
         return state.repo.repos[uri.repoID]
     },
 })

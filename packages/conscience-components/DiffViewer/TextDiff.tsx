@@ -1,5 +1,6 @@
 import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -8,10 +9,12 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import parse from 'parse-diff'
+import { IGlobalState } from 'conscience-components/redux'
 
 import LineChunkContent from './LineChunkContent'
 import SheetChunkContent from './SheetChunkContent'
-import { autobind, getLanguage } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 @autobind
 class TextDiff extends React.Component<Props, State>
@@ -26,8 +29,9 @@ class TextDiff extends React.Component<Props, State>
     }
 
     render() {
-        const { filename, type, chunks, classes } = this.props
-        const language = getLanguage(path.extname(filename).toLowerCase().substring(1))
+        const { filename, chunks, classes } = this.props
+        const language = filetypes.getLanguage(filename)
+        const type = filetypes.getType(filename)
         // const changes = chunk.changes.reduce((acc:any, curr:parse.NormalChange|parse.AddChange|parse.DeleteChange) => {
         //     if (curr.content[0] === '+') { acc.add++ }
         //     if (curr.content[0] === '-') { acc.del++ }
@@ -62,12 +66,15 @@ class TextDiff extends React.Component<Props, State>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
     filename: string
-    type: string
     chunks: parse.Chunk[]
+}
+
+interface StateProps {
     codeColorScheme?: string | undefined
-    classes: any
 }
 
 interface State {
@@ -118,4 +125,10 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(TextDiff)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        codeColorScheme: state.user.userSettings.codeColorScheme,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(TextDiff))

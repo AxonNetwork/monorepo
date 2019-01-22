@@ -6,12 +6,8 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import parse from 'parse-diff'
 
-export interface BinaryChunkContentProps {
-    file: parse.File
-    classes: any
-}
 
-class BinaryChunkContent extends React.Component<BinaryChunkContentProps>
+class BinaryDiff extends React.Component<Props>
 {
     render() {
         const { classes, file } = this.props
@@ -54,6 +50,11 @@ class BinaryChunkContent extends React.Component<BinaryChunkContentProps>
     }
 }
 
+interface Props {
+    file: parse.File
+    classes: any
+}
+
 const styles = (theme: Theme) => createStyles({
     chunk: {
         width: 16,
@@ -78,4 +79,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(BinaryChunkContent)
+export default withStyles(styles)(BinaryDiff)

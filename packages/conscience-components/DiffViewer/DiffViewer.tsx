@@ -1,8 +1,12 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
+import { URI } from 'conscience-lib/common'
+import { IGlobalState } from '../redux'
 import TextDiff from './TextDiff'
 import BinaryDiff from './BinaryDiff'
+import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 import parse from 'parse-diff'
 
@@ -40,43 +44,40 @@ class DiffViewer extends React.Component<Props, State>
             return null
         }
 
-        const type = this.props.type || 'text'
-        switch (type) {
-            case 'image':
-            case 'binary':
-                return (
-                    <React.Fragment>
-                        {files.map((file: any) => (
-                            <BinaryDiff key={file.name} file={file} />
-                        ))}
-                    </React.Fragment>
-                )
-
-            case 'data':
-            case 'text':
-            default:
-                return (
-                    <React.Fragment>
-                        {files.map((file: any) => (
-                            <TextDiff
-                                key={file.to}
-                                filename={file.to}
-                                type={type}
-                                chunks={file.chunks}
-                                codeColorScheme={this.props.codeColorScheme}
-                            />
-                        ))}
-                    </React.Fragment>
-                )
+        const isTextFile = this.props.uri.filename ? filetypes.isTextFile(this.props.uri.filename) : false
+        if (isTextFile) {
+            return (
+                <React.Fragment>
+                    {files.map(file => (
+                        <TextDiff
+                            key={file.to}
+                            filename={file.to || ''}
+                            chunks={file.chunks}
+                        />
+                    ))}
+                </React.Fragment>
+            )
+        } else {
+            return (
+                <React.Fragment>
+                    {files.map(file => (
+                        <BinaryDiff key={file.name} file={file} />
+                    ))}
+                </React.Fragment>
+            )
         }
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
     diff: string
-    type: string
+}
+
+interface StateProps {
     codeColorScheme?: string | undefined
-    classes: any
 }
 
 interface State {
@@ -88,4 +89,11 @@ const styles = createStyles({
     root: {},
 })
 
-export default withStyles(styles)(DiffViewer)
+const mapStateToProps = (state: IGlobalState) => {
+    const { codeColorScheme } = state.user.userSettings
+    return {
+        codeColorScheme,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(DiffViewer))
