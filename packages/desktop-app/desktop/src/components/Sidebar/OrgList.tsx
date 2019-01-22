@@ -11,8 +11,8 @@ import DialogActions from '@material-ui/core/DialogActions'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import { IOrganization } from 'common'
-import autobind from 'utils/autobind'
+import { IOrganization } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind

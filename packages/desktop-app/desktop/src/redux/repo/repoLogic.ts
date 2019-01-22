@@ -1,11 +1,15 @@
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { ILocalRepo, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { ILocalRepo, IRepoFile, ITimelineEvent, URI, URIType } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+    ICheckpointRepoAction, ICheckpointRepoSuccessAction,
+    ICloneRepoAction,
+    IPullRepoAction,
+    cloneRepoProgress, pullRepoProgress, pullRepoSuccess
 } from 'conscience-components/redux/repo/repoActions'
 import {
     DesktopRepoActionType,
@@ -18,17 +22,15 @@ import {
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     ISelectRepoAction, ISelectRepoSuccessAction,
-    ICheckpointRepoAction, ICheckpointRepoSuccessAction,
-    ICloneRepoAction,
-    IPullRepoAction,
+
     IWatchRepoAction,
     selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
-    fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote, cloneRepoProgress,
-    pullRepoProgress, pullRepoSuccess
+    fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote
 } from './repoActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
+import { getRepo } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
@@ -117,10 +119,11 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
     type: DesktopRepoActionType.FETCH_FULL_REPO,
     async process({ action }, dispatch) {
         const { path, repoID } = action.payload
+        const uri = { type: URIType.Local, repoRoot: path } as URI
 
         dispatch(fetchRepoFiles({ path, repoID }))
         dispatch(fetchRepoTimeline({ path, repoID }))
-        dispatch(getDiscussions({ repoID }))
+        dispatch(getDiscussions({ uri }))
         dispatch(fetchRepoUsersPermissions({ repoID }))
         dispatch(fetchLocalRefs({ path, repoID }))
         dispatch(fetchRemoteRefs({ repoID }))
@@ -223,11 +226,12 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
 })
 
 const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSuccessAction>({
-    type: DesktopRepoActionType.CHECKPOINT_REPO,
+    type: RepoActionType.CHECKPOINT_REPO,
     async process({ action }, dispatch) {
-        const { repoID, folderPath, message } = action.payload
-        await rpc.client.checkpointRepoAsync({ path: folderPath, message: message })
-        await dispatch(fetchFullRepo({ repoID, path: folderPath }))
+        const { uri, message } = action.payload
+        const repo = getRepo(uri)
+        await rpc.client.checkpointRepoAsync({ path: repo.path || '', message: message })
+        await dispatch(fetchFullRepo({ repoID: repo.repoID, path: repo.path || '' }))
         return {}
     },
 })
@@ -287,7 +291,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 // })
 
 const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
-    type: DesktopRepoActionType.CLONE_REPO,
+    type: RepoActionType.CLONE_REPO,
     async process({ action, getState }, dispatch, done) {
         const { repoID } = action.payload
         const state = getState()
@@ -326,9 +330,11 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
 })
 
 const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
-    type: DesktopRepoActionType.PULL_REPO,
+    type: RepoActionType.PULL_REPO,
     async process({ action }, dispatch, done) {
-        const { folderPath, repoID } = action.payload
+        const { uri } = action.payload
+        const repo = getRepo(uri)
+        const folderPath = repo.path || ''
         const stream = rpc.client.pullRepo({ path: folderPath })
         dispatch(pullRepoProgress({ folderPath, fetched: 0, toFetch: 0 }))
         stream.on('data', async (data: any) => {
@@ -338,7 +344,7 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
             await dispatch(pullRepoProgress({ folderPath, fetched, toFetch }))
         })
         stream.on('end', async () => {
-            await dispatch(fetchFullRepo({ path: folderPath, repoID }))
+            await dispatch(fetchFullRepo({ path: folderPath, repoID: repo.repoID }))
             await dispatch(pullRepoSuccess({ folderPath }))
             done()
         })

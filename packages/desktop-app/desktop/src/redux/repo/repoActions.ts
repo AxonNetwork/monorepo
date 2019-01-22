@@ -1,4 +1,4 @@
-import { IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { IRepoFile, ITimelineEvent, RepoPage } from 'conscience-lib/common'
 import { FailedAction } from 'conscience-components/redux/reduxUtils'
 import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
 
@@ -43,20 +43,6 @@ export enum DesktopRepoActionType {
 
     SELECT_FILE = 'SELECT_FILE',
     SELECT_COMMIT = 'SELECT_COMMIT',
-
-    CHECKPOINT_REPO = 'CHECKPOINT_REPO',
-    CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
-    CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
-
-    CLONE_REPO = 'CLONE_REPO',
-    CLONE_REPO_PROGRESS = 'CLONE_REPO_PROGRESS',
-    CLONE_REPO_SUCCESS = 'CLONE_REPO_SUCCESS',
-    CLONE_REPO_FAILED = 'CLONE_REPO_FAILED',
-
-    PULL_REPO = 'PULL_REPO',
-    PULL_REPO_PROGRESS = 'PULL_REPO_PROGRESS',
-    PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
-    PULL_REPO_FAILED = 'PULL_REPO_FAILED',
 
     NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
 
@@ -257,71 +243,6 @@ export interface INavigateRepoPageAction {
     }
 }
 
-export interface ICheckpointRepoAction {
-    type: DesktopRepoActionType.CHECKPOINT_REPO
-    payload: {
-        folderPath: string
-        repoID: string
-        message: string,
-    }
-}
-
-export interface ICheckpointRepoSuccessAction {
-    type: DesktopRepoActionType.CHECKPOINT_REPO_SUCCESS
-    payload: {}
-}
-
-export type ICheckpointRepoFailedAction = FailedAction<DesktopRepoActionType.CHECKPOINT_REPO_FAILED>
-
-export interface ICloneRepoAction {
-    type: DesktopRepoActionType.CLONE_REPO
-    payload: {
-        repoID: string,
-    }
-}
-
-export interface ICloneRepoProgressAction {
-    type: DesktopRepoActionType.CLONE_REPO_PROGRESS
-    payload: {
-        repoID: string,
-        toFetch: number,
-        fetched: number,
-    }
-}
-
-export interface ICloneRepoSuccessAction {
-    type: DesktopRepoActionType.CLONE_REPO_SUCCESS
-    payload: {}
-}
-
-export type ICloneRepoFailedAction = FailedAction<DesktopRepoActionType.CLONE_REPO_FAILED>
-
-export interface IPullRepoAction {
-    type: DesktopRepoActionType.PULL_REPO
-    payload: {
-        folderPath: string
-        repoID: string,
-    }
-}
-
-export interface IPullRepoProgressAction {
-    type: DesktopRepoActionType.PULL_REPO_PROGRESS
-    payload: {
-        folderPath: string
-        toFetch: number
-        fetched: number
-    }
-}
-
-export interface IPullRepoSuccessAction {
-    type: DesktopRepoActionType.PULL_REPO_SUCCESS
-    payload: {
-        folderPath: string,
-    }
-}
-
-export type IPullRepoFailedAction = FailedAction<DesktopRepoActionType.PULL_REPO_FAILED>
-
 export interface ISelectFileAction {
     type: DesktopRepoActionType.SELECT_FILE
     payload: {
@@ -413,20 +334,6 @@ export type IDesktopRepoAction =
 
     INavigateRepoPageAction |
 
-    ICheckpointRepoAction |
-    ICheckpointRepoSuccessAction |
-    ICheckpointRepoFailedAction |
-
-    ICloneRepoAction |
-    ICloneRepoProgressAction |
-    ICloneRepoSuccessAction |
-    ICloneRepoFailedAction |
-
-    IPullRepoAction |
-    IPullRepoProgressAction |
-    IPullRepoSuccessAction |
-    IPullRepoFailedAction |
-
     IRevertFilesAction |
     IRevertFilesSuccessAction |
 
@@ -448,12 +355,7 @@ export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAc
 export const selectCommit = (payload: ISelectCommitAction['payload']): ISelectCommitAction => ({ type: DesktopRepoActionType.SELECT_COMMIT, payload })
 export const navigateRepoPage = (payload: INavigateRepoPageAction['payload']): INavigateRepoPageAction => ({ type: DesktopRepoActionType.NAVIGATE_REPO_PAGE, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: DesktopRepoActionType.WATCH_REPO, payload })
-export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: DesktopRepoActionType.CHECKPOINT_REPO, payload })
-export const cloneRepo = (payload: ICloneRepoAction['payload']): ICloneRepoAction => ({ type: DesktopRepoActionType.CLONE_REPO, payload })
-export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']): ICloneRepoProgressAction => ({ type: DesktopRepoActionType.CLONE_REPO_PROGRESS, payload })
-export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: DesktopRepoActionType.PULL_REPO, payload })
-export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): IPullRepoProgressAction => ({ type: DesktopRepoActionType.PULL_REPO_PROGRESS, payload })
-export const pullRepoSuccess = (payload: IPullRepoSuccessAction['payload']): IPullRepoSuccessAction => ({ type: DesktopRepoActionType.PULL_REPO_SUCCESS, payload })
+
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: DesktopRepoActionType.REVERT_FILES, payload })
 export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: DesktopRepoActionType.BEHIND_REMOTE, payload })
 export const changeTimelinePage = (payload: IChangeTimelinePageAction['payload']): IChangeTimelinePageAction => ({ type: DesktopRepoActionType.CHANGE_TIMELINE_PAGE, payload })

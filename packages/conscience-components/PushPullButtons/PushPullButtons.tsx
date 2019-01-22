@@ -1,4 +1,5 @@
 import React from 'react'
+import { withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -16,7 +17,9 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { IRepo, FileMode } from 'conscience-lib/common'
+import { selectFile } from 'conscience-components/navigation'
+import { getRepo } from 'conscience-components/env-specific'
+import { FileMode, URI, URIType } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
 
 
@@ -31,7 +34,8 @@ class PushPullButtons extends React.Component<Props, State>
     _inputCommitMessage: HTMLInputElement | null = null
 
     render() {
-        const { repo, pullProgress, checkpointLoading, classes } = this.props
+        const { uri, pullProgress, checkpointLoading, classes } = this.props
+        const repo = getRepo(uri)
 
         let pullLoading = pullProgress !== undefined
         let percentPulled
@@ -144,11 +148,12 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickPull() {
-        this.props.pullRepo({ folderPath: this.props.repo.path, repoID: this.props.repo.repoID })
+        this.props.pullRepo({ uri: this.props.uri })
     }
 
     onClickOpenPushDialog() {
-        const files = this.props.repo.files || {}
+        const repo = getRepo(this.props.uri) || {}
+        const files = repo.files || {}
         const mergeConflict = Object.keys(files).some((name => files[name].mergeConflict))
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
@@ -167,8 +172,12 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickOpenMergeConflict(file: string) {
+        const uri = {
+            ...this.props.uri,
+            filename: file
+        }
         this.setState({ mergeConflictDialogOpen: false })
-        this.props.selectFile({ selectedFile: { file, isFolder: false, mode: FileMode.ResolveConflict } })
+        selectFile(this.props.history, uri, FileMode.ResolveConflict)
     }
 
     onClickPush() {
@@ -176,23 +185,23 @@ class PushPullButtons extends React.Component<Props, State>
             return
         }
         const message = this._inputCommitMessage.value
-        this.props.checkpointRepo({ folderPath: this.props.repo.path, repoID: this.props.repo.repoID, message })
+        this.props.checkpointRepo({ uri: this.props.uri, message })
         this.setState({ pushDialogOpen: false })
     }
 
     onClickOpenFolder() {
-        const shell = (window as any).require('electron').shell
-        shell.openItem(this.props.repo.path)
+        if (this.props.uri.type === URIType.Local) {
+            const shell = (window as any).require('electron').shell
+            shell.openItem(this.props.uri.repoRoot)
+        }
     }
 }
 
 
-interface Props {
-    pullRepo: Function
-    checkpointRepo: Function
-    selectFile: Function
-
-    repo: IRepo
+interface Props extends RouteComponentProps<{}> {
+    uri: URI
+    pullRepo: (payload: { uri: URI }) => void
+    checkpointRepo: (payload: { uri: URI, message: string }) => void
 
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
@@ -223,5 +232,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(PushPullButtons)
-
+export default withStyles(styles)(withRouter(PushPullButtons))

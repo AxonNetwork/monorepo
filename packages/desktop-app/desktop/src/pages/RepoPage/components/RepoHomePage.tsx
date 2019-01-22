@@ -10,14 +10,14 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import SecuredText from './connected/SecuredText'
-import FileViewer from './connected/FileViewer'
-import Timeline from './connected/Timeline'
-import DiscussionList from './connected/DiscussionList'
+import SecuredText from 'conscience-components/SecuredText'
+import FileViewer from 'conscience-components/FileViewer'
+import DiscussionList from 'conscience-components/DiscussionList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
+import Timeline from './connected/Timeline'
 import { IGlobalState } from 'redux/store'
-import { IRepo, IUser } from 'conscience-lib/common'
+import { IRepo, IUser, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -29,6 +29,7 @@ class RepoHomePage extends React.Component<Props>
         const repoHash = this.props.match.params.repoHash
 
         const readme = (repo.files || {})['README.md']
+        const repoURI = { type: URIType.Local, repoRoot: repo.path, commit: "HEAD" } as URI
 
         return (
             <div className={classes.main}>
@@ -36,9 +37,10 @@ class RepoHomePage extends React.Component<Props>
                     {readme &&
                         <div>
                             <FileViewer
-                                repoHash={repoHash}
-                                filename={'README.md'}
-                                objectID={readme.hash}
+                                uri={{
+                                    ...repoURI,
+                                    filename: 'README.md'
+                                }}
                                 showViewerPicker={false}
                             />
                             <IconButton
@@ -63,10 +65,7 @@ class RepoHomePage extends React.Component<Props>
                     {(repo.commitList || []).length > 0 &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
-                                <SecuredText
-                                    repoHash={repoHash}
-                                    history={this.props.history}
-                                />
+                                <SecuredText uri={repoURI} />
                             </CardContent>
                         </Card>
                     }
@@ -79,7 +78,7 @@ class RepoHomePage extends React.Component<Props>
                                 {sharedUsers.map((user: IUser | undefined) => {
                                     if (user !== undefined) {
                                         return (
-                                            <UserAvatar user={user} selectUser={this.navigateUserPage} />
+                                            <UserAvatar user={user} />
                                         )
                                     } else {
                                         return null
@@ -94,9 +93,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Discussions</H6>
 
                             <DiscussionList
-                                repoHash={repoHash}
-                                repoID={repo.repoID}
-                                history={this.props.history}
+                                uri={repoURI}
                                 maxLength={2}
                             />
                         </CardContent>

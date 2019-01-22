@@ -11,7 +11,7 @@ import history from './redux/history'
 import createStore from './redux/store'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
 import * as rpc from 'conscience-lib/rpc'
-import { isProduction } from 'utils'
+import { isProduction } from 'conscience-lib/utils'
 
 import 'typeface-roboto'
 

@@ -24,7 +24,7 @@ class MarkdownViewerPlugin extends React.Component<Props, State>
                     <RenderMarkdown
                         uri={this.props.uri}
                         text={fileContents || ''}
-                        dirname={path.dirname(this.props.filename)}
+                        dirname={path.dirname(this.props.uri.filename || '')}
                     />
                 </CardContent>
             </Card>
@@ -40,7 +40,6 @@ type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    filename: string
     fileContents?: string
 }
 

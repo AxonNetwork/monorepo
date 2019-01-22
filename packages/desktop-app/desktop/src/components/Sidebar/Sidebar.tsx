@@ -56,7 +56,6 @@ class Sidebar extends React.Component<Props, State>
                     <UserAvatar
                         user={user}
                         noTooltip
-                        selectUser={this.navigateSettings}
                     />
                     <Typography className={classes.avatarName} classes={{ root: classes.sidebarItemText }}>{this.props.user.name}</Typography>
                 </div>

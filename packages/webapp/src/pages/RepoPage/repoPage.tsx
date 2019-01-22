@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import RepoInfo from './components/RepoInfo'
+import RepoInfo from 'conscience-components/RepoInfo'
 import RepoHomePage from './components/RepoHomePage'
 import RepoFilesPage from './components/RepoFilesPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
@@ -11,7 +11,7 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, RepoPage } from 'conscience-lib/common'
+import { IRepo, RepoPage, URI, URIType } from 'conscience-lib/common'
 import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
 
 
@@ -51,9 +51,8 @@ class RepoPageRoutes extends React.Component<Props>
                 <main className={classes.main}>
                     <div className={classes.repository}>
                         <RepoInfo
-                            repo={repo}
+                            uri={{ type: URIType.Network, repoID: repo.repoID, commit: "HEAD" } as URI}
                             repoPage={repoPage}
-                            menuLabelsHidden={this.props.menuLabelsHidden}
                             navigateRepoPage={this.navigateRepoPage}
                         />
                         <div>
