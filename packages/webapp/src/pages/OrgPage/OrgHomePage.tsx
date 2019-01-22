@@ -88,7 +88,6 @@ class OrgHomePage extends React.Component<Props>
     }
 
     selectUser(payload: { username: string }) {
-        console.log(payload)
         const username = payload.username
         if (username === undefined) {
             return
