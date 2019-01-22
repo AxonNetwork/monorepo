@@ -1,3 +1,4 @@
+import path from 'path'
 import urljoin from 'url-join'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -46,7 +47,12 @@ class RenderMarkdown extends React.Component<Props>
             return <img src={node.src} />
         } else {
             // images with local relative paths
-            return <img src={urljoin(directEmbedPrefix(this.props.uri), this.props.dirname || '', node.src)} />
+            let dirname = path.dirname(this.props.uri.filename)
+            if (dirname === '.') {
+                return <img src={urljoin(directEmbedPrefix(this.props.uri), node.src)} />
+            } else {
+                return <img src={urljoin(directEmbedPrefix(this.props.uri), dirname, node.src)} />
+            }
         }
     }
 
