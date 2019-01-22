@@ -1,5 +1,7 @@
 import React from 'react'
 import moment from 'moment'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
@@ -57,11 +59,7 @@ class CommitView extends React.Component<Props>
                                     <LinkIcon classes={{ root: classes.linkIcon }} />
                                 </div>
                             }
-                            <UserAvatar
-                                user={this.props.user}
-                                selectUser={this.props.selectUser}
-                                className={classes.userAvatar}
-                            />
+                            <UserAvatar user={this.props.user} className={classes.userAvatar} />
                             <div>
                                 <Typography>{commit.user}</Typography>
                                 <Typography>{moment(commit.time).calendar()}</Typography>
@@ -73,7 +71,6 @@ class CommitView extends React.Component<Props>
                             commits={repo.commits || {}}
                             commitList={repo.commitList || []}
                             commit={commit.commit}
-                            selectCommit={this.props.selectCommit}
                             classes={{ root: classes.securedText }}
                         />
                     </div>
@@ -92,14 +89,13 @@ class CommitView extends React.Component<Props>
     }
 }
 
-interface Props {
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
     repo: IRepo
     user: IUser
     commit: ITimelineEvent | undefined
-    codeColorScheme?: string | undefined
     getDiff: (payload: { repoID: string, repoRoot: string | undefined, commit: string }) => void
-    selectCommit: (payload: { selectedCommit: string | undefined }) => void
-    selectUser: (payload: { username: string }) => void
     classes: any
 }
 
@@ -171,4 +167,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(CommitView)
+export default withStyles(styles)(withRouter(CommitView))

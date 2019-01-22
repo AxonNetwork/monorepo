@@ -1,4 +1,6 @@
 import React from 'react'
+import { RouteComponentProps } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
@@ -6,13 +8,14 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
 import { IUser } from 'conscience-lib/common'
 import jdenticon from 'jdenticon'
+import { selectUser } from 'conscience-components/navigation'
 
 
 @autobind
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { user, userPictureSize, selectUser, noTooltip, classes } = this.props
+        const { user, userPictureSize, noTooltip, classes } = this.props
         let seedText = this.props.seedText || "unknown"
         if (user && user.userID) {
             seedText = user.userID
@@ -50,34 +53,31 @@ class UserAvatar extends React.Component<Props>
 
         }
 
-        if (selectUser === undefined) {
-            return avatar
-        } else {
-            return (
-                <IconButton
-                    onClick={this.selectUser}
-                    className={classes.iconButton}
-                >
-                    {avatar}
-                </IconButton>
-            )
-        }
+        return (
+            <IconButton
+                onClick={this.selectUser}
+                className={classes.iconButton}
+            >
+                {avatar}
+            </IconButton>
+        )
     }
 
     selectUser() {
         const user = this.props.user
-        if (user && user.username && this.props.selectUser) {
-            this.props.selectUser({ username: user.username })
+        if (user && user.username) {
+            selectUser(this.props.history, user.username)
         }
     }
 }
 
-interface Props {
+type Props = OwnProps & RouteComponentProps<{}>
+
+interface OwnProps {
     user?: IUser
     userPictureSize?: '512x512' | '256x256' | '128x128'
     seedText?: string
     noTooltip?: boolean
-    selectUser?: (payload: { username: string }) => void
     className?: string
     classes: any
 }
@@ -96,4 +96,4 @@ const styles = () => createStyles({
     }
 })
 
-export default withStyles(styles)(UserAvatar)
+export default withStyles(styles)(withRouter(UserAvatar))

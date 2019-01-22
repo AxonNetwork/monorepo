@@ -22,7 +22,7 @@ import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
 import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
-import { selectFile } from 'conscience-components/env-specific'
+import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind

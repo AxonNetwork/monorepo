@@ -20,7 +20,7 @@ import path from 'path'
 import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import { selectFile } from 'conscience-components/env-specific'
+import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind

@@ -6,7 +6,7 @@ import Popper from '@material-ui/core/Popper'
 import FileViewer from '../FileViewer'
 import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { selectFile } from '../env-specific'
+import { selectFile } from 'conscience-components/navigation'
 
 @autobind
 class FileLink extends React.Component<Props, State>

@@ -6,7 +6,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { autobind } from 'conscience-lib/utils'
 import { URI } from 'conscience-lib/common'
 import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
-import { selectDiscussion } from '../env-specific'
+import { selectDiscussion } from 'conscience-components/navigation'
 
 
 @autobind

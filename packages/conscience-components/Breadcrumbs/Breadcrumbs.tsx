@@ -7,7 +7,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { FileMode, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { selectFile } from 'conscience-components/env-specific'
+import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind

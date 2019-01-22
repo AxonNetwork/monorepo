@@ -13,9 +13,7 @@ import { isProduction } from 'utils'
 import 'typeface-roboto'
 
 import * as envSpecific from 'conscience-components/env-specific'
-import { History } from 'history'
-import { FileMode, URI, URIType } from 'conscience-lib/common'
-import { getHash } from 'conscience-lib/utils'
+import { URI, URIType } from 'conscience-lib/common'
 
 // Webpack offline plugin
 if (isProduction) {
@@ -33,29 +31,6 @@ const store = createStore(initialState, history)
 store.dispatch(whoami({}))
 
 envSpecific.init({
-    selectFile(history: History, uri: URI, mode: FileMode) {
-        if (uri.type === URIType.Local) {
-            throw new Error('web platform does not support URIType.Local')
-        }
-
-        const { repoID, commit, filename } = uri
-        if (filename === undefined) {
-            history.push(`/repo/${repoID}/files/${commit}`)
-        } else if (mode === FileMode.View) {
-            history.push(`/repo/${repoID}/files/${commit}/${filename}`)
-        } else if (mode === FileMode.Edit) {
-            history.push(`/repo/${repoID}/edit/${commit}/${filename}`)
-        } else {
-            throw new Error(`unknown FileMode: ${mode}`)
-        }
-    },
-    selectDiscussion(history: History, uri: URI, discussionID: string) {
-        if (uri.type === URIType.Network) {
-            history.push(`/repo/${uri.repoID}/discussion/${discussionID}`)
-        } else {
-            history.push(`/repo/${getHash(uri.repoRoot)}/discussion/${discussionID}`)
-        }
-    },
     async getFileContents(uri: URI) {
         if (uri.type === URIType.Local) {
             throw new Error('web platform cannot getFileContents with a local URI')

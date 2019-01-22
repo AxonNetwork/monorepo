@@ -16,8 +16,7 @@ import { isProduction } from 'utils'
 import 'typeface-roboto'
 
 import * as envSpecific from 'conscience-components/env-specific'
-import { History } from 'history'
-import { FileMode, URI, URIType } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
 
 console.log('app version ~>', process.env.APP_VERSION)
@@ -41,30 +40,6 @@ if (isProduction) {
 }
 
 envSpecific.init({
-    selectFile(history: History, uri: URI, mode: FileMode) {
-        if (uri.type === URIType.Network) {
-            throw new Error('desktop platform does not support URIType.Network (yet)')
-        }
-
-        const { repoRoot, commit, filename } = uri
-        const repoHash = getHash(repoRoot)
-        if (filename === undefined) {
-            history.push(`/repo/${repoHash}/files/${commit}`)
-        } else if (mode === FileMode.View) {
-            history.push(`/repo/${repoHash}/files/${commit}/${filename}`)
-        } else if (mode === FileMode.Edit) {
-            history.push(`/repo/${repoHash}/edit/${commit}/${filename}`)
-        } else {
-            throw new Error(`unknown FileMode: ${mode}`)
-        }
-    },
-    selectDiscussion(history: History, uri: URI, discussionID: string) {
-        if (uri.type === URIType.Network) {
-            history.push(`/repo/${uri.repoID}/discussion/${discussionID}`)
-        } else {
-            history.push(`/repo/${getHash(uri.repoRoot)}/discussion/${discussionID}`)
-        }
-    },
     async getFileContents(uri: URI) {
         if (uri.type === URIType.Network) {
             throw new Error('desktop platform cannot getFileContents with a network URI')
