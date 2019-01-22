@@ -1,4 +1,6 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import List from '@material-ui/core/List'
@@ -8,7 +10,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Badge from '@material-ui/core/Badge'
 import UserAvatar from '../UserAvatar'
-import { IDiscussion, IUser } from 'conscience-lib/common'
+import { selectDiscussion } from '../navigation'
+import { getRepo } from '../env-specific'
+import { IUserState } from '../redux/user/userReducer'
+import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { IDiscussion, IUser, URI } from 'conscience-lib/common'
 import moment from 'moment'
 
 class DiscussionList extends React.Component<Props>
@@ -35,7 +41,7 @@ class DiscussionList extends React.Component<Props>
                             button
                             className={classnames(classes.listItem, { [classes.listItemSelected]: isSelected })}
                             classes={{ button: classes.listItemHover }}
-                            onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
+                            onClick={() => this.selectDiscussion(d.discussionID)}
                         >
                             <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
                                 <React.Fragment>
@@ -55,7 +61,7 @@ class DiscussionList extends React.Component<Props>
                         </ListItem>
                     )
                 })}
-                <ListItem button className={classnames(classes.listItem, classes.listItemLast)} key={0} onClick={() => this.props.selectDiscussion({ discussionID: 'new' })}>
+                <ListItem button className={classnames(classes.listItem, classes.listItemLast)} key={0} onClick={() => this.selectDiscussion('new')}>
                     <ListItemText primary={'New Discussion'} />
                     <ListItemIcon>
                         <ControlPointIcon />
@@ -64,20 +70,26 @@ class DiscussionList extends React.Component<Props>
             </List>
         )
     }
+
+    selectDiscussion(discussionID: string | undefined) {
+        selectDiscussion(this.props.history, this.props.uri, discussionID)
+    }
 }
 
-interface Props {
-    discussions: { [discussionID: string]: IDiscussion }
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps extends RouteComponentProps<{}> {
+    uri: URI
     order?: string[]
     maxLength?: number
     selectedID?: string | undefined
+}
+
+interface StateProps {
+    discussions: { [discussionID: string]: IDiscussion }
     users: { [email: string]: IUser }
     newestViewedCommentTimestamp: { [discussionID: string]: number }
     newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
-
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -137,4 +149,26 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(DiscussionList)
+type IPartialState = {
+    user: IUserState
+    discussion: IDiscussionState
+}
+
+const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+    const repo = getRepo(ownProps.uri)
+    const repoID = (repo || { repoID: '' }).repoID || ''
+
+    return {
+        users: state.user.users,
+        discussions: state.discussion.discussions,
+        newestViewedCommentTimestamp: ((state.user.userSettings.newestViewedCommentTimestamp || {})[repoID] || {}),
+        newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
+    }
+}
+
+const mapDispatchToProps = {}
+
+export default withRouter(connect<StateProps, {}, OwnProps, IPartialState>(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(DiscussionList)))

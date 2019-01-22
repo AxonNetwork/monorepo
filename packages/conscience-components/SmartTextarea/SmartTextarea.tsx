@@ -1,10 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormattingHelp from '../FormattingHelp'
-import { IDiscussion, IRepoFile } from 'conscience-lib/common'
+import { IRepoState } from '../redux/repo/repoReducer'
+import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { IDiscussion, IRepo, IRepoFile, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
@@ -157,21 +160,27 @@ class SmartTextarea extends React.Component<Props, State>
     }
 }
 
-interface Props {
-    files: { [name: string]: IRepoFile } | undefined
-    discussions: { [discussionID: string]: IDiscussion }
-    onSubmit: () => void
-    classes: any
-    rows?: number
-    rowsMax?: number
-    placeholder?: string
-}
-
 interface State {
     comment: string
     anchorEl: any
     position: number
     embedType: string | null
+}
+
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
+    onSubmit: () => void
+
+    rows?: number
+    rowsMax?: number
+    placeholder?: string
+}
+
+interface StateProps {
+    files: { [name: string]: IRepoFile } | undefined
+    discussions: { [discussionID: string]: IDiscussion }
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -192,4 +201,28 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(SmartTextarea)
+interface IPartialState {
+    discussion: IDiscussionState
+    repo: IRepoState
+}
+
+const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+    let repo = undefined as IRepo | undefined
+    if (ownProps.uri.type === URIType.Local) {
+        repo = state.repo.repos[ownProps.uri.repoRoot]
+    } else if (ownProps.uri.type === URIType.Network) {
+        repo = state.repo.repos[ownProps.uri.repoID]
+    }
+
+    return {
+        files: (repo || { files: {} }).files || {},
+        discussions: state.discussion.discussions,
+    }
+}
+
+const mapDispatchToProps = {}
+
+export default connect<StateProps, {}, OwnProps, IPartialState>(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(SmartTextarea))

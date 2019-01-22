@@ -1,6 +1,7 @@
 import { bugsnagClient } from 'bugsnag'
 import keyBy from 'lodash/keyBy'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
+import { getRepo } from 'conscience-components/env-specific'
 import { ISharedRepoInfo } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
@@ -157,7 +158,8 @@ const getSharedReposLogic = makeLogic<IGetSharedReposAction, IGetSharedReposSucc
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
-        const { repoID, discussionID, commentTimestamp } = action.payload
+        const { uri, discussionID, commentTimestamp } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
 
         await UserData.setNewestViewedCommentTimestamp(repoID, discussionID, commentTimestamp)
         return { repoID, discussionID, commentTimestamp }

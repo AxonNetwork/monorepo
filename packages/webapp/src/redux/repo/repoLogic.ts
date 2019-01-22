@@ -10,6 +10,7 @@ import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
+import { URIType } from 'conscience-lib/common'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
@@ -31,7 +32,7 @@ const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
         }
         const { admins, pushers, pullers } = repo
         const usernames = union(admins, pushers, pullers)
-        dispatch(getDiscussions({ repoID }))
+        dispatch(getDiscussions({ uri: { type: URIType.Network, repoID } }))
         dispatch(fetchUserDataByUsername({ usernames }))
         return { repo }
     }

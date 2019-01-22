@@ -1,6 +1,7 @@
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import { fetchOrgInfo } from 'conscience-components/redux/org/orgActions'
+import { getRepo } from 'conscience-components/env-specific'
 import {
     UserActionType,
     IWhoAmIAction, IWhoAmISuccessAction,
@@ -77,7 +78,8 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
 const sawCommentLogic = makeLogic<ISawCommentAction, ISawCommentSuccessAction>({
     type: UserActionType.SAW_COMMENT,
     async process({ getState, action }) {
-        const { repoID, discussionID, commentTimestamp } = action.payload
+        const { uri, discussionID, commentTimestamp } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
         await ServerRelay.sawComment(repoID, discussionID, commentTimestamp)
         return { repoID, discussionID, commentTimestamp }
     },

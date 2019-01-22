@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IDiscussion, IComment } from 'conscience-lib/common'
+import { IDiscussion, IComment, URI } from 'conscience-lib/common'
 
 export enum DiscussionActionType {
     GET_DISCUSSIONS = 'GET_DISCUSSIONS',
@@ -22,7 +22,7 @@ export enum DiscussionActionType {
 export interface IGetDiscussionsAction {
     type: DiscussionActionType.GET_DISCUSSIONS
     payload: {
-        repoID: string,
+        uri: URI
     }
 }
 
@@ -30,7 +30,7 @@ export interface IGetDiscussionsSuccessAction {
     type: DiscussionActionType.GET_DISCUSSIONS_SUCCESS
     payload: {
         repoID: string
-        discussions: { [discussionID: string]: IDiscussion },
+        discussions: { [discussionID: string]: IDiscussion }
     }
 }
 
@@ -39,17 +39,17 @@ export type IGetDiscussionsFailedAction = FailedAction<DiscussionActionType.GET_
 export interface ICreateDiscussionAction {
     type: DiscussionActionType.CREATE_DISCUSSION
     payload: {
-        repoID: string
+        uri: URI
         subject: string
-        commentText: string,
+        commentText: string
     }
 }
 
 export interface ICreateDiscussionSuccessAction {
     type: DiscussionActionType.CREATE_DISCUSSION_SUCCESS
     payload: {
-        discussion: IDiscussion,
-        comment: IComment,
+        discussion: IDiscussion
+        comment: IComment
     }
 }
 
@@ -58,7 +58,7 @@ export type ICreateDiscussionFailedAction = FailedAction<DiscussionActionType.CR
 export interface IGetCommentsForDiscussionAction {
     type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION
     payload: {
-        discussionID: string,
+        discussionID: string
     }
 }
 
@@ -66,7 +66,7 @@ export interface IGetCommentsForDiscussionSuccessAction {
     type: DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS
     payload: {
         discussionID: string
-        comments: { [commentID: string]: IComment },
+        comments: { [commentID: string]: IComment }
     }
 }
 
@@ -75,10 +75,10 @@ export type IGetCommentsForDiscussionFailedAction = FailedAction<DiscussionActio
 export interface ICreateCommentAction {
     type: DiscussionActionType.CREATE_COMMENT
     payload: {
-        repoID: string
+        uri: URI
         discussionID: string
         text: string
-        callback: (error?: Error) => void,
+        callback: (error?: Error) => void
     }
 }
 

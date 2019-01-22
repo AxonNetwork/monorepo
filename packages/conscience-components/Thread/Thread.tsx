@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
@@ -6,7 +7,13 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
-import { IUser, IComment, IRepo, IDiscussion, FileMode } from 'conscience-lib/common'
+import { IRepoState } from '../redux/repo/repoReducer'
+import { IUserState } from '../redux/user/userReducer'
+import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { createComment } from '../redux/discussion/discussionActions'
+import { sawComment } from '../redux/user/userActions'
+import { getRepo } from '../env-specific'
+import { IUser, IComment, IDiscussion, URI } from 'conscience-lib/common'
 import { autobind, checkVisible } from 'conscience-lib/utils'
 import RenderMarkdown from '../RenderMarkdown'
 import SmartTextarea from '../SmartTextarea'
@@ -43,7 +50,7 @@ class Thread extends React.Component<Props, State>
                 }
             }
             if (this.props.newestViewedCommentTimestamp < mostRecentVisible.created) {
-                this.props.sawComment({ repoID: this.props.repo.repoID, discussionID: this.props.discussionID, commentTimestamp: mostRecentVisible.created })
+                this.props.sawComment({ uri: this.props.uri, discussionID: this.props.discussionID, commentTimestamp: mostRecentVisible.created })
             }
         }
         this._intervalID = setInterval(checkSeenComments, 5000)
@@ -63,7 +70,7 @@ class Thread extends React.Component<Props, State>
             return
         }
         await this.props.createComment({
-            repoID: this.props.repo.repoID,
+            uri: this.props.uri,
             discussionID: this.props.discussionID,
             text: comment,
             callback: (err?: Error) => {
@@ -78,7 +85,7 @@ class Thread extends React.Component<Props, State>
     }
 
     render() {
-        const { discussionID, discussions, user, users, repo, comments, classes } = this.props
+        const { discussionID, discussions, comments, users, currentUser, classes } = this.props
 
         const discussion = discussions[discussionID] || {}
         const commentsList = values(comments).filter(c => c.discussionID === this.props.discussionID)
@@ -100,7 +107,7 @@ class Thread extends React.Component<Props, State>
                             <div className={classes.comment}>No comments yet. Start the discussion!</div>
                         }
                         {commentsList.map(c => {
-                            const commentUser = this.props.users[c.userID]
+                            const commentUser = users[c.userID]
                             return (
                                 <CommentWrapper
                                     key={c.created}
@@ -108,20 +115,11 @@ class Thread extends React.Component<Props, State>
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                     onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
-                                    selectUser={this.props.selectUser}
                                 >
                                     <div ref={ref => this._commentRefs[c.created] = { ref, created: c.created }}></div>
                                     <RenderMarkdown
+                                        uri={this.props.uri}
                                         text={c.text}
-                                        repo={repo}
-                                        comments={comments}
-                                        users={users}
-                                        discussions={discussions}
-                                        directEmbedPrefix={this.props.directEmbedPrefix}
-                                        dirname=""
-                                        getFileContents={this.props.getFileContents}
-                                        selectFile={this.props.selectFile}
-                                        selectDiscussion={this.props.selectDiscussion}
                                     />
                                 </CommentWrapper>
                             )
@@ -129,19 +127,17 @@ class Thread extends React.Component<Props, State>
 
                         {/* Create comment form */}
                         <CommentWrapper
-                            user={user}
-                            created={new Date().getTime()}
-                            selectUser={this.props.selectUser}
+                            user={users[currentUser]}
+                            created={"right now"}
                         >
                             {this.state.createCommentError &&
                                 <FormHelperText error className={classes.createCommentError}>{this.state.createCommentError}</FormHelperText>
                             }
                             <SmartTextarea
+                                uri={this.props.uri}
                                 placeholder="Write your comment"
                                 rows={3}
                                 innerRef={(x: any) => this._inputComment = x}
-                                files={this.props.repo.files}
-                                discussions={this.props.discussions}
                                 onSubmit={this.onClickCreateComment}
                             />
                             <Button color="secondary" variant="contained" onClick={this.onClickCreateComment}>
@@ -172,29 +168,31 @@ class Thread extends React.Component<Props, State>
     }
 }
 
-interface Props {
-    repo: IRepo
-    user: IUser
-    discussionID: string
-    discussions: { [discussionID: string]: IDiscussion }
-    users: { [userID: string]: IUser }
-    comments: { [commentID: string]: IComment }
-    directEmbedPrefix: string
-    newestViewedCommentTimestamp: number
-
-    unselect: () => void
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { commit?: string, filename: string | undefined, mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
-    sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
-    selectUser: (payload: { username: string }) => void
-
-    classes: any
-}
 
 interface State {
     createCommentError: string | undefined
+}
+
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
+    discussionID: string
+    unselect?: () => void
+}
+
+interface StateProps {
+    repoID: string
+    currentUser: string
+    users: { [userID: string]: IUser }
+    discussions: { [discussionID: string]: IDiscussion }
+    comments: { [commentID: string]: IComment }
+    newestViewedCommentTimestamp: number
+}
+
+interface DispatchProps {
+    createComment: typeof createComment
+    sawComment: typeof sawComment
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -234,4 +232,31 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(Thread)
+interface IPartialState {
+    repo: IRepoState
+    user: IUserState
+    discussion: IDiscussionState
+}
+
+const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+    const repoID = (getRepo(ownProps.uri) || {}).repoID || ''
+
+    return {
+        repoID,
+        currentUser: state.user.currentUser || '',
+        users: state.user.users,
+        discussions: state.discussion.discussions,
+        comments: state.discussion.comments,
+        newestViewedCommentTimestamp: (((state.user.userSettings.newestViewedCommentTimestamp || {})[repoID] || {})[ownProps.discussionID]) || 0,
+    }
+}
+
+const mapDispatchToProps = {
+    createComment,
+    sawComment,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(Thread))

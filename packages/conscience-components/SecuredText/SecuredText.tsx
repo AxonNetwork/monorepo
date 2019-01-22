@@ -1,13 +1,12 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
 import classnames from 'classnames'
 import { Theme, createStyles, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
-import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
-import { selectCommit } from 'conscience-components/navigation'
-import { URI, URIType, IRepo, ITimelineEvent } from 'conscience-lib/common'
+import { selectCommit } from '../navigation'
+import { getRepo } from '../env-specific'
+import { URI, ITimelineEvent } from 'conscience-lib/common'
 import timelineUtils from 'conscience-lib/utils/timeline'
 import moment from 'moment'
 import isEqual from 'lodash/isEqual'
@@ -33,8 +32,10 @@ class SecuredText extends React.Component<Props, State>
     }
 
     parseCommits() {
-        const { uri, commitList, commits } = this.props
-        const { filename, commit } = uri
+        const repo = getRepo(this.props.uri)
+        const commits = (repo || { commits: {} }).commits || {}
+        const commitList = (repo || { commitList: [] }).commitList || []
+        const { filename, commit } = this.props.uri
         if (commit) {
             const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, commit)
             this.setState({ lastVerified })
@@ -115,15 +116,9 @@ interface State {
     lastUpdated: ITimelineEvent | undefined
 }
 
-type Props = OwnProps & StateProps & { classes: any }
-
-interface OwnProps extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps<{}> {
     uri: URI
-}
-
-interface StateProps {
-    commits: { [commitHash: string]: ITimelineEvent }
-    commitList: string[]
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -145,26 +140,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-type IPartialState = { repo: IRepoState }
-
-const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
-    let repo = undefined as IRepo | undefined
-    if (ownProps.uri.type === URIType.Local) {
-        repo = state.repo.repos[ownProps.uri.repoRoot]
-    } else if (ownProps.uri.type === URIType.Network) {
-        repo = state.repo.repos[ownProps.uri.repoID]
-    }
-
-    return {
-        commits: (repo || { commits: {} }).commits || {},
-        commitList: (repo || { commitList: [] }).commitList || [],
-    }
-}
-
-const mapDispatchToProps = {}
-
-export default withRouter(connect<StateProps, {}, OwnProps, IPartialState>(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(SecuredText)))
-
+export default withStyles(styles)(withRouter(SecuredText))

@@ -10,6 +10,8 @@ import {
 } from './discussionActions'
 import { push as pushToHistory } from 'connected-react-router'
 import { fetchUserData, sawComment } from '../user/userActions'
+import { getRepo } from '../../env-specific'
+import { getDiscussionURL } from '../../navigation'
 import { IDiscussion, IComment } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
@@ -17,8 +19,9 @@ import ServerRelay from 'conscience-lib/ServerRelay'
 const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSuccessAction>({
     type: DiscussionActionType.GET_DISCUSSIONS,
     async process({ action }, dispatch) {
-        const { repoID } = action.payload
-        const discussionsList = await ServerRelay.getDiscussionsForRepo(action.payload.repoID)
+        const { uri } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
+        const discussionsList = await ServerRelay.getDiscussionsForRepo(repoID)
         const discussions = keyBy(discussionsList, 'discussionID') as { [discussionID: string]: IDiscussion }
 
         // @@TODO: do this in the component or something
@@ -33,10 +36,12 @@ const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSucc
 const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussionSuccessAction>({
     type: DiscussionActionType.CREATE_DISCUSSION,
     async process({ action }, dispatch) {
-        const { repoID, subject, commentText } = action.payload
+        const { uri, subject, commentText } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
         const { comment, discussion } = await ServerRelay.createDiscussion(repoID, subject, commentText)
 
-        dispatch(pushToHistory(`/repo/${repoID}/discussion/${discussion.discussionID}`))
+        const url = getDiscussionURL(uri, discussion.discussionID)
+        dispatch(pushToHistory(url))
 
         return { comment, discussion }
     },
@@ -59,10 +64,11 @@ const getCommentsForDiscussionLogic = makeLogic<IGetCommentsForDiscussionAction,
 const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccessAction>({
     type: DiscussionActionType.CREATE_COMMENT,
     async process({ action }, dispatch) {
-        const { repoID, discussionID, text, callback } = action.payload
+        const { uri, discussionID, text, callback } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
         try {
             const comment = await ServerRelay.createComment(repoID, discussionID, text)
-            dispatch(sawComment({ repoID, discussionID, commentTimestamp: comment.created }))
+            dispatch(sawComment({ uri, discussionID, commentTimestamp: comment.created }))
             callback()
             return { comment }
         } catch (err) {

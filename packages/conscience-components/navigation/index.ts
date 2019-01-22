@@ -2,15 +2,15 @@ import { History } from 'history'
 import { FileMode, URI, URIType } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
 
-export function selectFile(history: History, uri: URI, mode: FileMode) {
+export function getFileURL(uri: URI, mode: FileMode) {
     if (uri.type === URIType.Local) {
         const { repoRoot, commit, filename } = uri
         if (filename === undefined) {
-            history.push(`/local-repo/${getHash(repoRoot)}/files/${commit}`)
+            return `/local-repo/${getHash(repoRoot)}/files/${commit}`
         } else if (mode === FileMode.View) {
-            history.push(`/local-repo/${getHash(repoRoot)}/files/${commit}/${filename}`)
+            return `/local-repo/${getHash(repoRoot)}/files/${commit}/${filename}`
         } else if (mode === FileMode.Edit) {
-            history.push(`/local-repo/${getHash(repoRoot)}/edit/${commit}/${filename}`)
+            return `/local-repo/${getHash(repoRoot)}/edit/${commit}/${filename}`
         } else {
             throw new Error(`unknown FileMode: ${mode}`)
         }
@@ -18,39 +18,59 @@ export function selectFile(history: History, uri: URI, mode: FileMode) {
     } else {
         const { repoID, commit, filename } = uri
         if (filename === undefined) {
-            history.push(`/repo/${repoID}/files/${commit}`)
+            return `/repo/${repoID}/files/${commit}`
         } else if (mode === FileMode.View) {
-            history.push(`/repo/${repoID}/files/${commit}/${filename}`)
+            return `/repo/${repoID}/files/${commit}/${filename}`
         } else if (mode === FileMode.Edit) {
-            history.push(`/repo/${repoID}/edit/${commit}/${filename}`)
+            return `/repo/${repoID}/edit/${commit}/${filename}`
         } else {
             throw new Error(`unknown FileMode: ${mode}`)
         }
     }
 }
 
-export function selectDiscussion(history: History, uri: URI, discussionID: string) {
+export function selectFile(history: History, uri: URI, mode: FileMode) {
+    history.push(getFileURL(uri, mode))
+}
+
+export function getDiscussionURL(uri: URI, discussionID: string | undefined) {
     if (uri.type === URIType.Local) {
-        history.push(`/local-repo/${getHash(uri.repoRoot)}/discussion/${discussionID}`)
+        if (discussionID !== undefined) {
+            return `/local-repo/${getHash(uri.repoRoot)}/discussion/${discussionID}`
+        } else {
+            return `/local-repo/${getHash(uri.repoRoot)}/discussion`
+        }
     } else {
-        history.push(`/repo/${uri.repoID}/discussion/${discussionID}`)
+        if (discussionID !== undefined) {
+            return `/repo/${uri.repoID}/discussion/${discussionID}`
+        } else {
+            return `/repo/${uri.repoID}/discussion`
+        }
+    }
+}
+
+export function selectDiscussion(history: History, uri: URI, discussionID: string | undefined) {
+    history.push(getDiscussionURL(uri, discussionID))
+}
+
+export function getCommitURL(uri: URI) {
+    if (uri.type === URIType.Local) {
+        if (uri.commit === undefined) {
+            return `/local-repo/${getHash(uri.repoRoot)}`
+        } else {
+            return `/local-repo/${getHash(uri.repoRoot)}/history/${uri.commit}`
+        }
+    } else {
+        if (uri.commit === undefined) {
+            return `/repo/${uri.repoID}`
+        } else {
+            return `/repo/${uri.repoID}/history/${uri.commit}`
+        }
     }
 }
 
 export function selectCommit(history: History, uri: URI) {
-    if (uri.type === URIType.Local) {
-        if (uri.commit === undefined) {
-            history.push(`/local-repo/${getHash(uri.repoRoot)}`)
-        } else {
-            history.push(`/local-repo/${getHash(uri.repoRoot)}/history/${uri.commit}`)
-        }
-    } else {
-        if (uri.commit === undefined) {
-            history.push(`/repo/${uri.repoID}`)
-        } else {
-            history.push(`/repo/${uri.repoID}/history/${uri.commit}`)
-        }
-    }
+    history.push(getCommitURL(uri))
 }
 
 export function selectUser(history: History, username: string) {

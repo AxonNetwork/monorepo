@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IUser, IUserSettings, IUserProfile, IUploadedPicture } from 'conscience-lib/common'
+import { IUser, IUserSettings, IUserProfile, IUploadedPicture, URI } from 'conscience-lib/common'
 
 export enum UserActionType {
     WHO_AM_I = 'WHO_AM_I',
@@ -193,7 +193,7 @@ export type IFetchUserDataByUsernameFailedAction = FailedAction<UserActionType.F
 export interface ISawCommentAction {
     type: UserActionType.SAW_COMMENT
     payload: {
-        repoID: string
+        uri: URI
         discussionID: string
         commentTimestamp: number,
     }

@@ -8,7 +8,7 @@ import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import { H5 } from 'conscience-components/Typography/Headers'
 import FileList from 'conscience-components/FileList'
 import SecuredText from 'conscience-components/SecuredText'
-import CreateDiscussion from './connected/CreateDiscussion'
+import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { IGlobalState } from 'redux/store'
 import { IRepo, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -62,9 +62,8 @@ class RepoFilesPage extends React.Component<Props>
                     <div className={classes.createDiscussion}>
                         <H5>Start a discussion on {filename}</H5>
                         <CreateDiscussion
-                            repoID={repo.repoID}
+                            uri={{ type: URIType.Network, repoID, commit, filename }}
                             attachedTo={filename}
-                            history={this.props.history}
                         />
                     </div>
                 </div>

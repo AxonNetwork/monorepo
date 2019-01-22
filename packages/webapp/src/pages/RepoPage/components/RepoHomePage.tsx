@@ -13,8 +13,8 @@ import FileViewer from 'conscience-components/FileViewer'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import SecuredText from 'conscience-components/SecuredText'
+import DiscussionList from 'conscience-components/DiscussionList'
 import Timeline from './connected/Timeline'
-import DiscussionList from './connected/DiscussionList'
 import { IGlobalState } from 'redux/store'
 
 
@@ -83,8 +83,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Discussions</H6>
 
                             <DiscussionList
-                                repoID={repo.repoID}
-                                history={this.props.history}
+                                uri={{ type: URIType.Network, repoID }}
                                 maxLength={2}
                             />
                         </CardContent>

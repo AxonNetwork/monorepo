@@ -57,6 +57,7 @@ export interface LocalURI {
     repoRoot: string
     commit?: string | undefined
     filename?: string | undefined
+    discussionID?: string | undefined
 }
 
 export interface NetworkURI {
@@ -64,6 +65,7 @@ export interface NetworkURI {
     repoID: string
     commit?: string | undefined
     filename?: string | undefined
+    discussionID?: string | undefined
 }
 
 

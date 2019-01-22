@@ -18,7 +18,7 @@ class CommentWrapper extends React.Component<Props>
         return (
             <div className={classes.comment} style={this.props.style}>
                 <div className={classes.commentAvatar}>
-                    <UserAvatar user={user} selectUser={this.props.selectUser} />
+                    <UserAvatar user={user} />
                 </div>
 
                 <div className={classes.commentBody}>
@@ -54,7 +54,6 @@ interface Props {
     created: number | string
     showBadge?: boolean
     onClickReplyLink?: () => void
-    selectUser?: (payload: { username: string }) => void
     style?: any
     classes: any
 }

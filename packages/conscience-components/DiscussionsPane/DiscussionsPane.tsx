@@ -1,144 +1,83 @@
 import React from 'react'
-import classnames from 'classnames'
-import moment from 'moment'
+import { connect } from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Typography from '@material-ui/core/Typography'
-import Badge from '@material-ui/core/Badge'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
 
 import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
-import UserAvatar from '../UserAvatar'
-import { IUser, IRepo, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
+import DiscussionList from '../DiscussionList'
+import { selectDiscussion } from '../navigation'
+import { IDiscussionState } from '../redux/discussion/discussionReducer'
+import { getDiscussions } from '../redux/discussion/discussionActions'
+import { getRepo } from '../env-specific'
+
+import { URI } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
-class RepoDiscussionPage extends React.Component<Props>
+@autobind
+class DiscussionsPane extends React.Component<Props>
 {
-    componentWillMount() {
-        // @@TODO: intelligent caching
-        const repoID = this.props.repo.repoID
-        this.props.getDiscussions({ repoID })
-    }
-
     render() {
-        const { repo, discussions, selectedID, user, users, comments, classes } = this.props
+        const { selectedID, classes } = this.props
 
         const newDiscussion = selectedID === 'new' // @@TODO: shitty
 
-        const newestComment = this.props.newestCommentTimestampPerDiscussion
-        const discussionsSorted = this.props.discussionIDsSortedByNewestComment.map(discussionID => discussions[discussionID] || { discussionID })
-
         return (
             <div className={classes.discussionPane}>
-                <List className={classes.list}>
-
-                    {discussionsSorted.map(d => {
-                        const isSelected = selectedID && d.discussionID === selectedID
-                        const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                        const user = this.props.users[d.userID]
-                        return (
-                            <ListItem
-                                button
-                                className={classnames(classes.listItem, { [classes.selectedDiscussion]: isSelected })}
-                                classes={{ button: classes.listItemHover }}
-                                onClick={() => this.props.selectDiscussion({ discussionID: d.discussionID })}
-                            >
-                                <ListItemText primary={d.subject} secondary={
-                                    <React.Fragment>
-                                        {showBadge &&
-                                            <Badge classes={{ badge: classes.discussionBadge }} className={classes.discussionBadgeWrapper} badgeContent="" color="secondary">{null}</Badge>
-                                        }
-                                        <div className={classes.sidebarListItemSubtext}>
-                                            <div className={classes.sidebarListItemModifiedDate}>
-                                                {moment(newestComment[d.discussionID]).fromNow()}
-                                            </div>
-                                            <div className={classes.sidebarListItemAvatar}>
-                                                <UserAvatar user={user} />
-                                            </div>
-                                        </div>
-                                    </React.Fragment>
-                                } />
-                            </ListItem>
-                        )
-                    })}
-
-                    <ListItem button className={classes.listItem} key={0} onClick={() => this.props.selectDiscussion({ discussionID: 'new' })}>
-                        <ListItemText primary={'New Discussion'} />
-                        <ListItemIcon>
-                            <ControlPointIcon />
-                        </ListItemIcon>
-                    </ListItem>
-                    {/* <Divider /> */}
-                </List>
+                <DiscussionList
+                    uri={this.props.uri}
+                    order={this.props.discussionIDsSortedByNewestComment}
+                    selectedID={selectedID}
+                />
                 {newDiscussion &&
                     <div className={classes.threadPane}>
-                        <IconButton onClick={() => this.props.selectDiscussion({ discussionID: undefined })} className={classes.closeNewDiscussionPanelButton}>
+                        <IconButton onClick={() => this.selectDiscussion(undefined)} className={classes.closeNewDiscussionPanelButton}>
                             <CancelIcon />
                         </IconButton>
                         <Typography variant="title" className={classes.startNewDiscussionPrompt}>Start a new discussion</Typography>
-                        <CreateDiscussion
-                            repoID={this.props.repo.repoID}
-                            user={user}
-                            files={repo.files || {}}
-                            discussions={discussions}
-                            createDiscussion={this.props.createDiscussion}
-                        />
+                        <CreateDiscussion uri={this.props.uri} />
                     </div>
                 }
                 {!newDiscussion && selectedID !== undefined &&
                     <div className={classes.threadPane}>
                         <Thread
-                            repo={this.props.repo}
-                            user={user}
+                            uri={this.props.uri}
                             discussionID={selectedID}
-                            discussions={discussions}
-                            users={users}
-                            comments={comments}
-                            directEmbedPrefix={this.props.directEmbedPrefix}
-                            newestViewedCommentTimestamp={this.props.newestViewedCommentTimestamp[selectedID] || 0}
-                            unselect={() => this.props.selectDiscussion({ discussionID: undefined })}
-                            getFileContents={this.props.getFileContents}
-                            selectFile={this.props.selectFile}
-                            selectDiscussion={this.props.selectDiscussion}
-                            createComment={this.props.createComment}
-                            sawComment={this.props.sawComment}
-                            selectUser={this.props.selectUser}
+                            unselect={() => this.selectDiscussion(undefined)}
                         />
                     </div>
                 }
             </div>
         )
     }
+
+    componentWillMount() {
+        // @@TODO: intelligent caching
+        this.props.getDiscussions({ uri: this.props.uri })
+    }
+
+    selectDiscussion(discussionID: string | undefined) {
+        selectDiscussion(this.props.history, this.props.uri, discussionID)
+    }
 }
 
-interface Props {
-    repo: IRepo
-    user: IUser
-    discussions: { [discussionID: string]: IDiscussion }
-    users: { [email: string]: IUser }
-    comments: { [commentID: string]: IComment }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps extends RouteComponentProps<{}> {
+    uri: URI
     selectedID: string | undefined
-    directEmbedPrefix: string
-    newestViewedCommentTimestamp: { [discussionID: string]: number }
-    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
+}
+
+interface StateProps {
     discussionIDsSortedByNewestComment: string[]
+}
 
-    getDiscussions: (payload: { repoID: string }) => void
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { commit?: string, filename: string | undefined, mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    createDiscussion: (payload: { repoID: string, subject: string, commentText: string }) => void
-    createComment: (payload: { repoID: string, discussionID: string, text: string, callback: (error?: Error) => void }) => void
-    sawComment: (payload: { repoID: string, discussionID: string, commentTimestamp: number }) => void
-    selectUser: (payload: { username: string }) => void
-
-    classes: any
+interface DispatchProps {
+    getDiscussions: (payload: { uri: URI }) => void
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -216,4 +155,25 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(RepoDiscussionPage)
+
+type IPartialState = {
+    discussion: IDiscussionState
+}
+
+const mapStateToProps = (state: IPartialState, ownProps: OwnProps) => {
+    const repo = getRepo(ownProps.uri)
+    const repoID = (repo || { repoID: '' }).repoID || ''
+
+    return {
+        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
+    }
+}
+
+const mapDispatchToProps = {
+    getDiscussions
+}
+
+export default withRouter(connect<StateProps, DispatchProps, OwnProps, IPartialState>(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(DiscussionsPane)))
