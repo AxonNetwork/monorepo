@@ -11,8 +11,8 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import { getRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, RepoPage, URI, URIType } from 'conscience-lib/common'
-import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
+import { IRepo, URI, URIType } from 'conscience-lib/common'
+import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 
 
 @autobind
@@ -23,16 +23,6 @@ class RepoPageRoutes extends React.Component<Props>
         if (this.props.repo === undefined) {
             this.props.getRepo({ repoID })
         }
-    }
-
-    navigateRepoPage(repoPage: RepoPage) {
-        const repoID = this.props.match.params.repoID
-        const page = repoPageToString(repoPage)
-        if (page === 'home') {
-            this.props.history.push(`/repo/${repoID}`)
-            return
-        }
-        this.props.history.push(`/repo/${repoID}/${page}`)
     }
 
     render() {
@@ -53,7 +43,6 @@ class RepoPageRoutes extends React.Component<Props>
                         <RepoInfo
                             uri={{ type: URIType.Network, repoID: repo.repoID, commit: "HEAD" } as URI}
                             repoPage={repoPage}
-                            navigateRepoPage={this.navigateRepoPage}
                         />
                         <div>
                             <Switch>

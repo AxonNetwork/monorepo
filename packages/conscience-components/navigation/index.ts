@@ -14,7 +14,11 @@ export function selectRepo(uri: URI, page: RepoPage) {
 
     switch (page) {
         case RepoPage.Files:
-            parts.push('files/HEAD')
+            if (uri.type === URIType.Local) {
+                parts.push('files/working')
+            } else {
+                parts.push('files/HEAD')
+            }
             break
         case RepoPage.History:
             parts.push('history')
@@ -34,7 +38,7 @@ export function selectRepo(uri: URI, page: RepoPage) {
             break
     }
 
-    const url = path.join(...parts)
+    const url = "/" + path.join(...parts)
     history.push(url)
 }
 
