@@ -34,7 +34,7 @@ class Header extends React.Component<Props, State>
                 {user !== undefined &&
                     <div className={classes.avatar}>
                         <IconButton onClick={this.openUserMenu} classes={{ root: classes.avatarButton }}>
-                            <UserAvatar user={user} />
+                            <UserAvatar disableClick user={user} />
                         </IconButton>
                         <Menu
                             classes={{ paper: classes.menuPaper }}
@@ -53,6 +53,7 @@ class Header extends React.Component<Props, State>
     }
 
     openUserMenu(event: React.MouseEvent<HTMLElement>) {
+        event.stopPropagation()
         this.setState({ anchorEl: event.currentTarget })
     }
 

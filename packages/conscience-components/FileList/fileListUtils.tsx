@@ -1,67 +1,59 @@
 import path from 'path'
 import { IRepoFile } from 'conscience-lib/common'
 
-export function filterSubfolder(files: { [name: string]: IRepoFile }, selectedFolder: string) {
-    const filtered = {} as { [name: string]: IRepoFile }
-
-    for (let filepath of Object.keys(files)) {
-        let file = files[filepath]
-
-        if (file.name.indexOf(selectedFolder) === 0) {
-            // const relPath = path.relative(selectedFolder, file.name)
-            filtered[filepath] = file
-        }
+// Tree format:
+// {
+//     files: {
+//         file1.go: IRepoFile
+//         file2.js: IRepoFile
+//         folder-a: {
+//             ...IRepoFile
+//             files: {
+//                 file3.png: IRepoFile
+//                 file4.gif: IRepoFile
+//             }
+//         }
+//     }
+// }
+export function makeTree(files: { [name: string]: IRepoFile }) {
+    const tree = {}
+    for (let key of Object.keys(files)) {
+        setPath(tree, key, files[key])
     }
-
-    return filtered
+    return tree
 }
 
-export function mergeFolders(files: { [name: string]: IRepoFile }, selectedFolder: string | undefined) {
-    const merged = {} as { [filepath: string]: IRepoFile }
-
-    for (let filepath of Object.keys(files)) {
-        const file = files[filepath]
-
-        const relpath = selectedFolder === undefined
-            ? file.name
-            : path.relative(selectedFolder, file.name)
-
-        const parts = relpath.split('/')
-
-        if (parts.length === 1) {
-            merged[file.name] = file
-        } else {
-            const folderName = parts[0]
-            if (!merged[folderName]) {
-                merged[folderName] = {
-                    name: selectedFolder === undefined ? folderName : path.join(selectedFolder, folderName),
-                    type: 'folder',
-                    status: '',
-                    size: 0,
-                    modified: new Date(0),
-                    diff: '',
-                    mergeConflict: false,
-                    mergeUnresolved: false,
-                }
+function setPath(obj, keypath, value) {
+    obj.files = obj.files || {}
+    const parts = keypath.split('/')
+    let basepath = null
+    for (let i = 0; i < parts.length; i++) {
+        const part = parts[i]
+        if (obj.files[part] === undefined && i < parts.length - 1) {
+            obj.files[part] = {
+                name: path.join(basepath || '', part),
+                type: 'folder',
+                status: '',
+                size: 0,
+                modified: new Date(0),
+                diff: '',
+                mergeConflict: false,
+                mergeUnresolved: false,
+                files: {},
             }
-
-            if (file.status === 'M' || file.status === '?') {
-                merged[folderName].status = 'M'
-            }
-            merged[folderName].size += file.size
-            const fileMTime = new Date(file.modified)
-            if (fileMTime > merged[folderName].modified) {
-                merged[folderName].modified = fileMTime
-            }
-            if (file.mergeConflict) {
-                merged[folderName].mergeConflict = true
-            }
+        } else if (i === parts.length - 1) {
+            obj.files[part] = value
+            return
         }
+        obj = obj.files[part]
+        basepath = basepath
+            ? basepath + '/' + part
+            : part
     }
-    return merged
 }
 
-export function sortFolders(files: { [name: string]: IRepoFile }) {
+// Sort folders above files.  Anything of the same type is sorted alphabetically.
+export function sortFiles(files: { [name: string]: IRepoFile }) {
     const names = Object.keys(files).sort((a, b) => {
         if (files[a].type === 'folder' && files[b].type !== 'folder') { return -1 }
         if (files[a].type !== 'folder' && files[b].type === 'folder') { return 1 }

@@ -45,6 +45,7 @@ class RepoPageRoutes extends React.Component<Props>
             )
         }
         const repoPage = stringToRepoPage(this.props.location.pathname)
+        console.log('repoPage', { path: this.props.location.pathname, repoPage })
 
         return (
             <div className={classes.container}>

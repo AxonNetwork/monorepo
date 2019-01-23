@@ -5,6 +5,7 @@ import history from '../redux/history'
 
 
 export function selectRepo(uri: URI, page: RepoPage) {
+    console.log('selectRepo', { uri, page })
     let parts: string[]
     if (uri.type === URIType.Local) {
         parts = ['local-repo', getHash(uri.repoRoot)]
@@ -34,8 +35,10 @@ export function selectRepo(uri: URI, page: RepoPage) {
             break
     }
 
+
     const url = path.join(...parts)
-    history.push(url)
+    console.log('selectRepo', url)
+    history.push('/' + url)
 }
 
 export function getFileURL(uri: URI, mode: FileMode) {
@@ -66,6 +69,7 @@ export function getFileURL(uri: URI, mode: FileMode) {
 }
 
 export function selectFile(uri: URI, mode: FileMode) {
+    console.log('selectFile', uri)
     history.push(getFileURL(uri, mode))
 }
 

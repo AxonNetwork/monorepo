@@ -177,7 +177,7 @@ class PushPullButtons extends React.Component<Props, State>
             filename: file
         }
         this.setState({ mergeConflictDialogOpen: false })
-        selectFile(this.props.history, uri, FileMode.ResolveConflict)
+        selectFile(uri, FileMode.ResolveConflict)
     }
 
     onClickPush() {

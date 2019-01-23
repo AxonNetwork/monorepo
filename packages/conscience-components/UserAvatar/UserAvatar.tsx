@@ -13,7 +13,7 @@ import { selectUser } from 'conscience-components/navigation'
 class UserAvatar extends React.Component<Props>
 {
     render() {
-        const { user, userPictureSize, noTooltip, classes } = this.props
+        const { user, userPictureSize, noTooltip, disableClick, classes } = this.props
         let seedText = this.props.seedText || "unknown"
         if (user && user.userID) {
             seedText = user.userID
@@ -53,7 +53,7 @@ class UserAvatar extends React.Component<Props>
 
         return (
             <IconButton
-                onClick={this.selectUser}
+                onClick={disableClick ? undefined : this.selectUser}
                 className={classes.iconButton}
             >
                 {avatar}
@@ -76,6 +76,7 @@ interface OwnProps {
     userPictureSize?: '512x512' | '256x256' | '128x128'
     seedText?: string
     noTooltip?: boolean
+    disableClick?: boolean
     className?: string
     classes: any
 }

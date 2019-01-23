@@ -15,28 +15,54 @@ import Button from '@material-ui/core/Button'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import BackupIcon from '@material-ui/icons/Backup'
 import FolderIcon from '@material-ui/icons/Folder'
-import { filterSubfolder, mergeFolders, sortFolders } from './fileListUtils'
+import { makeTree, sortFiles } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
 import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
 import { selectFile } from 'conscience-components/navigation'
+import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 
 
 @autobind
 class FileList extends React.Component<Props, State>
 {
-    state = { newFileDialogOpen: false }
+    state = {
+        newFileDialogOpen: false,
+        tree: null,
+    }
 
     _inputNewFileName: HTMLInputElement | null = null
 
-    render() {
-        let { classes, files } = this.props
-        if (this.props.uri.filename !== undefined) {
-            files = filterSubfolder(files, this.props.uri.filename)
+    componentDidMount() {
+        if (this.props.files) {
+            this.setState({ tree: makeTree(this.props.files) })
         }
-        files = mergeFolders(files, this.props.uri.filename)
-        const names = sortFolders(files)
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.files && this.props.files !== prevProps.files) {
+            this.setState({ tree: makeTree(this.props.files) })
+        }
+    }
+
+    render() {
+        let { classes } = this.props
+
+        if (!this.state.tree) {
+            return <LargeProgressSpinner />
+        }
+
+        let currentTree = this.state.tree as any
+        if (this.props.uri.filename) {
+            const parts = this.props.uri.filename.split('/')
+            for (let part of parts) {
+                currentTree = currentTree.files[part]
+            }
+        }
+
+        const entries = sortFiles(currentTree.files).map(key => currentTree.files[key])
+
         return (
             <React.Fragment>
                 <div className={classes.toolbar}>
@@ -49,23 +75,23 @@ class FileList extends React.Component<Props, State>
                     }
                 </div>
 
-                {names.length === 0 &&
+                {entries.length === 0 &&
                     <Typography className={classes.emptyRepoMessage}>
                         This is the file list view.  Right now, it's empty because nobody has committed any files to the repository.<br /><br />
                         Add some files and then commit them using the <BackupIcon /> button above.<br />
                         Open this folder on your computer by using the <FolderIcon /> button.
                     </Typography>
                 }
-                {names.length > 0 &&
+                {entries.length > 0 &&
                     <Card className={classes.fileListCard}>
                         <CardContent className={classes.fileListCardContent}>
                             <Table>
                                 <TableBody>
-                                    {names.map(filename => (
+                                    {entries.map(file => (
                                         <File
-                                            uri={{ ...this.props.uri, filename }}
-                                            file={files[filename]}
-                                            key={filename}
+                                            uri={{ ...this.props.uri, filename: file.name }}
+                                            file={file}
+                                            key={file.name}
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             openFileIcon={this.props.openFileIcon}
                                             canEditFiles={this.props.canEditFiles}
@@ -137,6 +163,7 @@ interface OwnProps {
 
 interface State {
     newFileDialogOpen: boolean
+    tree: any
 }
 
 const styles = (theme: Theme) => createStyles({
