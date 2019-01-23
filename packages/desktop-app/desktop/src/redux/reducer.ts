@@ -2,9 +2,9 @@ import { combineReducers } from 'redux'
 
 import discussionReducer from 'conscience-components/redux/discussion/discussionReducer'
 import orgReducer from 'conscience-components/redux/org/orgReducer'
+import uiReducer from 'conscience-components/redux/ui/uiReducer'
 import userReducer from './user/userReducer'
 import repoReducer from './repo/repoReducer'
-import uiReducer from './ui/uiReducer'
 
 import { IGlobalState } from './store'
 

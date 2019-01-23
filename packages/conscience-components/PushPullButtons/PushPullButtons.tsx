@@ -62,7 +62,7 @@ class PushPullButtons extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
-                <Tooltip title="Download the latest work from the group" open={pullEnabled ? undefined : false}>
+                <Tooltip title="Download the latest work from the group">
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
@@ -81,7 +81,7 @@ class PushPullButtons extends React.Component<Props, State>
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Send your latest work to the group" open={pushEnabled ? undefined : false}>
+                <Tooltip title="Send your latest work to the group">
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
@@ -139,8 +139,21 @@ class PushPullButtons extends React.Component<Props, State>
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.onClickPush} color="secondary">Commit</Button>
-                        <Button onClick={this.onClickCancelPushDialog} color="secondary" autoFocus>Cancel</Button>
+                        <Button
+                            onClick={this.onClickPush}
+                            color="secondary"
+                            variant="contained"
+                        >
+                            Commit
+                        </Button>
+                        <Button
+                            onClick={this.onClickCancelPushDialog}
+                            color="secondary"
+                            variant="outlined"
+                            autoFocus
+                        >
+                            Cancel
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>

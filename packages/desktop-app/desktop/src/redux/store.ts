@@ -8,7 +8,7 @@ import { IUserState } from 'conscience-components/redux/user/userReducer'
 import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
 import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
 import { IOrgState } from 'conscience-components/redux/org/orgReducer'
-import { IUIState } from './ui/uiReducer'
+import { IUIState } from 'conscience-components/redux/ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
