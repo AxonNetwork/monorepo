@@ -6,8 +6,9 @@ import CardContent from '@material-ui/core/CardContent'
 import CodeViewer from '../CodeViewer'
 import Conflict from './Conflict'
 import Breadcrumbs from '../Breadcrumbs'
+import { selectFile } from '../navigation'
 
-import { FileMode } from 'conscience-lib/common'
+import { FileMode, LocalURI } from 'conscience-lib/common'
 import { ChunkType, IChunk, IChunkConflict, IChunkNoConflict, parseMergeConflict, combineChunks } from 'conscience-lib/utils'
 import { autobind } from 'conscience-lib/utils'
 import fs from 'fs'
@@ -22,23 +23,21 @@ class MergeConflictResolver extends React.Component<Props, State>
     }
 
     componentDidMount() {
-        const { repoRoot, filename } = this.props
+        const { repoRoot = '', filename = '' } = this.props.uri
         const fileContents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
         const chunks = parseMergeConflict(fileContents)
         this.setState({ chunks })
     }
 
     render() {
-        const { filename, classes } = this.props
+        const { uri, classes } = this.props
         const { chunks } = this.state
-        const language = path.extname(filename).toLowerCase().substring(1)
+        const language = path.extname(uri.filename || '').toLowerCase().substring(1)
 
         return (
             <div>
                 <Breadcrumbs
-                    repoRoot={this.props.repoRoot}
-                    selectedFolder={filename}
-                    selectFile={this.props.selectFile}
+                    uri={this.props.uri}
                     classes={{ root: classes.breadcrumbs }}
                 />
                 <Typography variant="h6" className={classes.title}>
@@ -58,7 +57,6 @@ class MergeConflictResolver extends React.Component<Props, State>
                                         <CodeViewer
                                             language={language}
                                             fileContents={content}
-                                            codeColorScheme={this.props.codeColorScheme}
                                             classes={{ codeContainer: classes.codeContainer }}
                                         />
                                     </CardContent>
@@ -71,7 +69,6 @@ class MergeConflictResolver extends React.Component<Props, State>
                                     <Conflict
                                         language={language}
                                         chunk={ch as IChunkConflict}
-                                        codeColorScheme={this.props.codeColorScheme}
                                         onAccept={(content: string) => this.chunkContentAccepted(content, i)}
                                         classes={{ codeContainer: classes.codeContainer }}
                                     />
@@ -96,7 +93,8 @@ class MergeConflictResolver extends React.Component<Props, State>
         chunks.splice(index, 1, newChunk)
 
         const newContent = combineChunks(chunks)
-        const filepath = path.join(this.props.repoRoot, this.props.filename)
+        const { repoRoot = '', filename = '' } = this.props.uri
+        const filepath = path.join(repoRoot, filename)
         try {
             fs.writeFileSync(filepath, newContent, { encoding: 'utf8' })
         } catch (err) {
@@ -107,16 +105,13 @@ class MergeConflictResolver extends React.Component<Props, State>
 
         // if no more conflicts, switch to viewer
         if (reParsed.length === 1) {
-            this.props.selectFile({ filename: this.props.filename, mode: FileMode.View })
+            selectFile(this.props.uri, FileMode.View)
         }
     }
 }
 
 interface Props {
-    repoRoot: string
-    filename: string
-    codeColorScheme?: string | undefined
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
+    uri: LocalURI
     classes: any
 }
 

@@ -4,39 +4,20 @@ import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import MergeConflictResolver from 'conscience-components/MergeConflictResolver'
 import { IGlobalState } from 'redux/store'
-import { FileMode } from 'conscience-lib/common'
+import { LocalURI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class RepoEditorPage extends React.Component<Props>
+class RepoConflictPage extends React.Component<Props>
 {
     render() {
         const { classes } = this.props
         return (
             <div className={classes.page}>
-                <MergeConflictResolver
-                    repoRoot={this.props.repoRoot}
-                    filename={this.props.match.params.filename}
-                    codeColorScheme={this.props.codeColorScheme}
-                    selectFile={this.selectFile}
-                />
+                <MergeConflictResolver uri={this.props.uri} />
             </div>
         )
-    }
-
-    selectFile(payload: { filename: string | undefined, mode: FileMode }) {
-        const repoHash = this.props.match.params.repoHash
-        const { filename, mode } = payload
-        if (filename === undefined) {
-            this.props.history.push(`/repo/${repoHash}/files`)
-        } else if (mode === FileMode.Edit) {
-            this.props.history.push(`/repo/${repoHash}/edit/${filename}`)
-        } else if (mode === FileMode.ResolveConflict) {
-            this.props.history.push(`/repo/${repoHash}/conflict/${filename}`)
-        } else {
-            this.props.history.push(`/repo/${repoHash}/files/${filename}`)
-        }
     }
 }
 
@@ -46,8 +27,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    repoRoot: string
-    codeColorScheme?: string | undefined
+    uri: LocalURI
     classes: any
 }
 
@@ -59,9 +39,10 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
     const repoRoot = state.repo.reposByHash[props.match.params.repoHash]
+    const filename = props.match.params.filename
+    const uri = { type: URIType.Local, repoRoot, filename } as LocalURI
     return {
-        repoRoot,
-        codeColorScheme: state.user.userSettings.codeColorScheme,
+        uri
     }
 }
 
@@ -70,4 +51,4 @@ const mapDispatchToProps = {}
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoEditorPage))
+)(withStyles(styles)(RepoConflictPage))
