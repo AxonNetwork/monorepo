@@ -9,9 +9,12 @@ import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from '../RenderMarkdown'
 import Breadcrumbs from '../Breadcrumbs'
 import FormattingHelp from '../FormattingHelp'
-import { IRepo, IUser, IDiscussion, IComment, FileMode } from 'conscience-lib/common'
+import { selectFile } from '../navigation'
+import { getFileContents } from '../env-specific'
+import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
+import isEqual from 'lodash/isEqual'
 import path from 'path'
 
 
@@ -28,19 +31,13 @@ class MarkdownEditor extends React.Component<Props, State>
     _inputText: HTMLTextAreaElement | null = null
 
     render() {
-        const { filename, repo, classes } = this.props
+        const { uri, classes } = this.props
 
         const modified = this.state.contentsOnDisk !== this.state.fileContents
 
         return (
             <div className={classes.root}>
-                <Breadcrumbs
-                    repoRoot={repo.path || repo.repoID}
-                    selectedFolder={filename}
-                    selectFile={this.props.selectFile}
-                    classes={{ root: classes.breadcrumbs }}
-                />
-
+                <Breadcrumbs uri={uri} />
                 <div className={classes.toolbar}>
                     <IconButton
                         onClick={this.onClickSave}
@@ -71,17 +68,8 @@ class MarkdownEditor extends React.Component<Props, State>
                         <Card>
                             <CardContent>
                                 <RenderMarkdown
+                                    uri={this.props.uri}
                                     text={this.state.fileContents}
-                                    repo={this.props.repo}
-                                    comments={this.props.comments}
-                                    users={this.props.users}
-                                    discussions={this.props.discussions}
-                                    directEmbedPrefix={this.props.directEmbedPrefix}
-                                    dirname=""
-                                    codeColorScheme={this.props.codeColorScheme}
-                                    getFileContents={this.props.getFileContents}
-                                    selectFile={this.props.selectFile}
-                                    selectDiscussion={this.props.selectDiscussion}
                                 />
                             </CardContent>
                         </Card>
@@ -96,20 +84,20 @@ class MarkdownEditor extends React.Component<Props, State>
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (prevProps.filename !== this.props.filename || prevProps.repo.path !== this.props.repo.path) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
             this.updateFileContents()
         }
     }
 
     async updateFileContents() {
         // Don't handle binary files, only text
-        if (!filetypes.isTextFile(this.props.filename)) {
+        if (!filetypes.isTextFile(this.props.uri.filename || '')) {
             this.setState({ fileContents: '' })
             return
         }
 
         try {
-            const fileContents = await this.props.getFileContents(this.props.filename)
+            const fileContents = await getFileContents(this.props.uri)
             this.setState({
                 fileContents,
                 contentsOnDisk: fileContents,
@@ -122,11 +110,7 @@ class MarkdownEditor extends React.Component<Props, State>
 
     async onClickSave() {
         try {
-            this.props.saveFileContents({
-                contents: this.state.fileContents,
-                repoID: this.props.repo.repoID,
-                filename: this.props.filename,
-            })
+            this.props.saveFileContents(this.state.fileContents)
         } catch (error) {
             this.setState({ error })
             return
@@ -135,16 +119,22 @@ class MarkdownEditor extends React.Component<Props, State>
     }
 
     onClickClose() {
-        if (this.state.fileExistsOnDisk) {
-            this.props.selectFile({ filename: this.props.filename, mode: FileMode.View })
-        } else {
-            const dir = path.dirname(this.props.filename)
+        let uri = this.props.uri
+        if (!this.state.fileExistsOnDisk) {
+            const dir = path.dirname(this.props.uri.filename || '')
             if (dir === '.') {
-                this.props.selectFile({ filename: undefined, mode: FileMode.View })
+                uri = {
+                    ...this.props.uri,
+                    filename: undefined,
+                }
             } else {
-                this.props.selectFile({ filename: dir, mode: FileMode.View })
+                uri = {
+                    ...this.props.uri,
+                    filename: dir
+                }
             }
         }
+        selectFile(uri, FileMode.View)
     }
 
     onChangeText() {
@@ -156,21 +146,9 @@ class MarkdownEditor extends React.Component<Props, State>
 }
 
 interface Props {
-    repo: IRepo
-    filename: string
-    comments: { [commentID: string]: IComment }
-    users: { [userID: string]: IUser }
-    discussions: { [userID: string]: IDiscussion }
-    codeColorScheme?: string | undefined
+    uri: URI
     fileExistsOnDisk?: boolean
-    directEmbedPrefix: string
-
-    getFileContents: (filename: string) => Promise<string>
-    selectFile: (payload: { filename: string | undefined, mode: FileMode }) => void
-    selectDiscussion: (payload: { discussionID: string | undefined }) => void
-    saveFileContents: (payload: { contents: string, repoID: string, filename: string }) => Promise<{}>
-    // saveFileContents: (payload: { contents: string, repoID: string, filename: string, callback: (error?: Error) => void }) => void
-
+    saveFileContents: (contents: string) => Promise<{}>
     classes: any
 }
 

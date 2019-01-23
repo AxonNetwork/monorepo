@@ -19,6 +19,7 @@ import * as envSpecific from 'conscience-components/env-specific'
 import { URI, URIType } from 'conscience-lib/common'
 import { IGlobalState } from 'conscience-components/redux'
 import { getHash } from 'conscience-lib/utils'
+import fs from 'fs'
 import axios from 'axios'
 
 console.log('app version ~>', process.env.APP_VERSION)
@@ -46,15 +47,26 @@ envSpecific.init({
         if (uri.type === URIType.Network) {
             throw new Error('desktop platform cannot getFileContents with a network URI')
         }
-        const { repoRoot, commit = 'HEAD', filename } = uri
+        const { repoRoot, commit, filename } = uri
         if (!filename) {
             throw new Error('must include filename in uri')
         }
-        const repoHash = getHash(repoRoot)
-        const fileServer = process.env.STATIC_FILE_SERVER_URL
-        const fileURL = `${fileServer}/repo/${repoHash}/file/${commit}/${filename}`
-        const resp = await axios.get<string>(fileURL)
-        return resp.data
+        if (!commit) {
+            return new Promise<string>((resolve, reject) => {
+                fs.readFile(path.join(repoRoot, filename), 'utf8', (err: Error, contents: string) => {
+                    if (err) {
+                        reject(err)
+                    }
+                    resolve(contents)
+                })
+            })
+        } else {
+            const repoHash = getHash(repoRoot)
+            const fileServer = process.env.STATIC_FILE_SERVER_URL
+            const fileURL = `${fileServer}/repo/${repoHash}/file/${commit}/${filename}`
+            const resp = await axios.get<string>(fileURL)
+            return resp.data
+        }
     },
     directEmbedPrefix(uri: URI) {
         if (uri.type === URIType.Network) {
