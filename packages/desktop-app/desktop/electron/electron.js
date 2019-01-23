@@ -11,13 +11,13 @@ const shell = electron.shell
 const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
 const ipcMain = electron.ipcMain
-const createMenu = require('./menu')
 
 const fs = require('fs')
 const path = require('path')
 const url = require('url')
 const fork = require('child_process').fork
 const spawn = require('child_process').spawn
+const fileServer = require('./fileServer')
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -36,10 +36,10 @@ function createWindow() {
     const startUrl = process.env.ELECTRON_START_URL || url.format({
         pathname: path.join(__dirname, '../dist-bundle/prod/index.html'),
         protocol: 'file:',
-        slashes: true,
+        slashes:  true,
     })
 
-    mainWindow.loadURL(startUrl);
+    mainWindow.loadURL(startUrl)
 
     // mainWindow.webContents.openDevTools()
 
@@ -48,15 +48,14 @@ function createWindow() {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        mainWindow = null;
-    });
+        mainWindow = null
+    })
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-
     // function writeLog() {
     //     let str = Array.prototype.join.call(arguments, ' ')
     //     // fs.appendFileSync('/tmp/auto-update', str + '\n')
@@ -77,6 +76,7 @@ app.on('ready', () => {
 
 
     createWindow()
+    fileServer.start()
     // startNode()
     const app = require('electron').app
     const menu = createMenu(app, shell)
@@ -91,26 +91,25 @@ app.on('ready', () => {
         killNode(() => {
             mainWindow.webContents.send('node_killed')
         })
-
     })
-});
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-        app.quit();
+        app.quit()
     }
-});
+})
 
 app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
-        createWindow();
+        createWindow()
     }
-});
+})
 
 function getEnv() {
     const appPath = app.getAppPath()
@@ -120,20 +119,20 @@ function getEnv() {
         : path.join(appPath, '..', 'desktop', 'build-resources', 'binaries', getPlatformBinaryFolder())
 
     const env = Object.assign({}, process.env, {
-        CONSCIENCE_APP_PATH: appPath,
+        CONSCIENCE_APP_PATH:      appPath,
         CONSCIENCE_BINARIES_PATH: binariesPath,
-        PATH: [ binariesPath, process.env.PATH ].join(path.delimiter), // ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
-        BUGSNAG_ENABLED: '1',
-        RELEASE_STAGE: process.env.NODE_ENV === 'development' ? 'dev' : 'prod',
+        PATH:                     [ binariesPath, process.env.PATH ].join(path.delimiter), // ':/usr/local/bin:/usr/bin:/usr/sbin:/sbin',
+        BUGSNAG_ENABLED:          '1',
+        RELEASE_STAGE:            process.env.NODE_ENV === 'development' ? 'dev' : 'prod',
     })
     return env
 }
 
 let isKilled = false
-var nodeProc = null
+let nodeProc = null
 function startNode() {
     const env = getEnv()
-    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, 'conscience-node' + getPlatformBinaryExtension())
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `conscience-node${getPlatformBinaryExtension()}`)
 
     // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
     // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
@@ -145,31 +144,31 @@ function startNode() {
 }
 
 function killNode(cb) {
-    if(isKilled){
+    if (isKilled) {
         cb()
     }
     if (nodeProc) {
         psTree(nodeProc.pid, (err, children) => {
             if (err) { return console.log('err', err) }
-            children.map(c => parseInt(c.PID, 10)).forEach(pid => {
+            children.map(c => parseInt(c.PID, 10)).forEach((pid) => {
                 try {
                     process.kill(pid)
-                } catch(err) { console.log('err killing child', err) }
+                } catch (err) { console.log('err killing child', err) }
             })
             try {
                 process.kill(nodeProc.pid)
-            } catch(err) { console.log('err killing parent', err) }
-            isKilled=true
+            } catch (err) { console.log('err killing parent', err) }
+            isKilled = true
             cb()
         })
-    } else{
-        isKilled=true
+    } else {
+        isKilled = true
         cb()
     }
 }
 
 app.on('before-quit', (event) => {
-    if(!isKilled){
+    if (!isKilled) {
         event.preventDefault()
         killNode(() => {
             app.quit()
@@ -178,15 +177,16 @@ app.on('before-quit', (event) => {
 })
 
 // Add React Dev Tools
-const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
+const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
+const createMenu = require('./menu')
 
 app.on('ready', () => {
-    [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach((extension) => {
+    [ REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS ].forEach((extension) => {
         installExtension(extension)
             .then(name => console.log(`Added Extension: ${name}`))
-            .catch(err => console.log('An error occurred: ', err));
-    });
-});
+            .catch(err => console.log('An error occurred: ', err))
+    })
+})
 
 function getPlatformBinaryFolder() {
     switch (process.platform) {

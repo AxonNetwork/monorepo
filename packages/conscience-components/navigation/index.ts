@@ -15,7 +15,11 @@ export function selectRepo(uri: URI, page: RepoPage) {
 
     switch (page) {
         case RepoPage.Files:
-            parts.push('files/HEAD')
+            if (uri.type === URIType.Local) {
+                parts.push('files/working')
+            } else {
+                parts.push('files/HEAD')
+            }
             break
         case RepoPage.History:
             parts.push('history')
@@ -35,21 +39,21 @@ export function selectRepo(uri: URI, page: RepoPage) {
             break
     }
 
-
     const url = path.join(...parts)
-    console.log('selectRepo', url)
     history.push('/' + url)
 }
 
 export function getFileURL(uri: URI, mode: FileMode) {
     if (uri.type === URIType.Local) {
-        const { repoRoot, commit, filename } = uri
+        const { repoRoot, commit = 'working', filename } = uri
         if (filename === undefined) {
             return `/local-repo/${getHash(repoRoot)}/files/${commit}`
         } else if (mode === FileMode.View) {
             return `/local-repo/${getHash(repoRoot)}/files/${commit}/${filename}`
         } else if (mode === FileMode.Edit) {
-            return `/local-repo/${getHash(repoRoot)}/edit/${commit}/${filename}`
+            return `/local-repo/${getHash(repoRoot)}/edit/${filename}`
+        } else if (mode === FileMode.ResolveConflict) {
+            return `/local-repo/${getHash(repoRoot)}/conflict/${filename}`
         } else {
             throw new Error(`unknown FileMode: ${mode}`)
         }
@@ -61,7 +65,9 @@ export function getFileURL(uri: URI, mode: FileMode) {
         } else if (mode === FileMode.View) {
             return `/repo/${repoID}/files/${commit}/${filename}`
         } else if (mode === FileMode.Edit) {
-            return `/repo/${repoID}/edit/${commit}/${filename}`
+            return `/repo/${repoID}/edit/${filename}`
+        } else if (mode === FileMode.ResolveConflict) {
+            return `/repo/${repoID}/conflict/${filename}`
         } else {
             throw new Error(`unknown FileMode: ${mode}`)
         }

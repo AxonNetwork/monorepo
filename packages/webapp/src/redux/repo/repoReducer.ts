@@ -41,27 +41,6 @@ const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState =
                     [commit]: diff,
                 }
             }
-            // const { repoID, commit, diffs } = action.payload
-            // if (!repoID) {
-            //     throw new Error('conscience-components repoReducer GET_DIFF_SUCCESS: repoID must be specified')
-            // }
-            // return {
-            //     ...state,
-            //     repos: {
-            //         ...state.repos,
-            //         [repoID]: {
-            //             ...(state.repos[repoID] || {}),
-            //             path: repoID,
-            //             commits: {
-            //                 ...((state.repos[repoID] || {}).commits || {}),
-            //                 [commit]: {
-            //                     ...(((state.repos[repoID] || {}).commits || {})[commit] || {}),
-            //                     diffs,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // }
         }
 
         default:

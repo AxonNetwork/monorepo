@@ -52,7 +52,7 @@ declare module 'conscience-lib/rpc' {
         }
     }
 
-    export var client: IRPCClient;
+    export function getClient(): IRPCClient;
 
     export function initClient(protoPath: string): void;
 }

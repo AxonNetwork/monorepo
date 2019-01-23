@@ -25,8 +25,7 @@ class CommitView extends React.Component<Props>
         if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
             this.props.getDiff({
-                repoRoot: this.props.repo.path,
-                repoID: this.props.repo.repoID,
+                uri: this.props.uri,
                 commit: this.props.commit.commit,
             })
         }
@@ -36,8 +35,7 @@ class CommitView extends React.Component<Props>
         if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
             this.props.getDiff({
-                repoRoot: this.props.repo.path,
-                repoID: this.props.repo.repoID,
+                uri: this.props.uri,
                 commit: this.props.commit.commit,
             })
         }

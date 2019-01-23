@@ -59,7 +59,6 @@ class Conflict extends React.Component<Props, State>
                                     <CodeViewer
                                         language={language}
                                         fileContents={upstreamContent}
-                                        codeColorScheme={this.props.codeColorScheme}
                                         classes={{ codeContainer: classes.codeContainer }}
                                     />
                                 </div>
@@ -68,7 +67,6 @@ class Conflict extends React.Component<Props, State>
                                     <CodeViewer
                                         language={language}
                                         fileContents={localContent}
-                                        codeColorScheme={this.props.codeColorScheme}
                                         classes={{ codeContainer: classes.codeContainer }}
                                     />
                                 </div>
@@ -136,7 +134,6 @@ class Conflict extends React.Component<Props, State>
 interface Props {
     language: string
     chunk: IChunkConflict
-    codeColorScheme?: string | undefined
     onAccept: (content: string) => void
     classes: any
 }

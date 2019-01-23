@@ -6,6 +6,7 @@ import PushPullButtons from 'conscience-components/PushPullButtons'
 import Tabs from 'conscience-components/Tabs'
 import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
+import { selectRepo } from '../navigation'
 import { getRepo } from '../env-specific'
 import { RepoPage, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -50,11 +51,15 @@ class RepoInfo extends React.Component<Props>
                         [RepoPage.Team, 'Team'],
                     ]}
                     activePage={this.props.repoPage}
-                    onTabSelect={this.props.navigateRepoPage}
+                    onTabSelect={this.navigateRepoPage}
                     menuLabelsHidden={this.props.menuLabelsHidden}
                 />
             </div >
         )
+    }
+
+    navigateRepoPage(repoPage: RepoPage) {
+        selectRepo(this.props.uri, repoPage)
     }
 }
 
@@ -64,7 +69,6 @@ interface OwnProps {
     uri: URI
     showPushPullButtons?: boolean
     repoPage: RepoPage
-    navigateRepoPage: (repoPage: RepoPage) => void
 }
 
 interface StateProps {

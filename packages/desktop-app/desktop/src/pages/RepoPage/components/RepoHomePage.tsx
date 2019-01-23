@@ -118,7 +118,7 @@ class RepoHomePage extends React.Component<Props>
 
     onClickEditReadme() {
         const repoHash = this.props.match.params.repoHash
-        this.props.history.push(`/repo/${repoHash}/edit/README.md`)
+        this.props.history.push(`/local-repo/${repoHash}/edit/README.md`)
     }
 }
 

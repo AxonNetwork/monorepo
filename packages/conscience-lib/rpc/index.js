@@ -2,10 +2,13 @@ const _Promise = require('bluebird')
 const protoLoader = typeof window !== 'undefined' ? window.require('@grpc/proto-loader') : require('@grpc/proto-loader')
 const grpcLibrary = typeof window !== 'undefined' ? window.require('grpc') : require('grpc')
 
+let client
 
-export var client
+function getClient() {
+    return client
+}
 
-export function initClient(protoPath) {
+function initClient(protoPath) {
     console.log('rpc proto path:', protoPath)
     const packageDefinition = protoLoader.loadSync(protoPath, {})
     const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition)
@@ -65,4 +68,9 @@ export function initClient(protoPath) {
         }
         return users
     }
+}
+
+module.exports = {
+    initClient,
+    getClient,
 }

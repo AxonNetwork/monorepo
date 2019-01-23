@@ -13,13 +13,17 @@ import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
-import { IRepo, RepoPage, URI, URIType } from 'conscience-lib/common'
-import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/utils'
+import { IRepo, URI, URIType } from 'conscience-lib/common'
+import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoPageRoutes extends React.Component<Props>
 {
+    constructor(props: Props) {
+        super(props)
+        this.fetchFullRepo()
+    }
 
     render() {
         const { repo, classes } = this.props
@@ -35,10 +39,9 @@ class RepoPageRoutes extends React.Component<Props>
         return (
             <main className={classes.main}>
                 <RepoInfo
-                    uri={{ type: URIType.Local, repoRoot: repo.path, commit: "HEAD" } as URI}
+                    uri={{ type: URIType.Local, repoRoot: repo.path } as URI}
                     showPushPullButtons
                     repoPage={repoPage}
-                    navigateRepoPage={this.navigateRepoPage}
                 />
                 <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
                     <div className={classes.repoPageInner}>
@@ -63,21 +66,15 @@ class RepoPageRoutes extends React.Component<Props>
 
     componentDidUpdate(prevProps: Props) {
         if ((prevProps.repo || {}).path !== (this.props.repo || {}).path) {
-            const { repoID, path } = this.props.repo || { repoID: undefined, path: undefined }
-            if (repoID && path) {
-                this.props.fetchFullRepo({ repoID, path })
-            }
+            this.fetchFullRepo()
         }
     }
 
-    navigateRepoPage(repoPage: RepoPage) {
-        const repoHash = this.props.match.params.repoHash
-        const page = repoPageToString(repoPage)
-        if (page === 'home') {
-            this.props.history.push(`/local-repo/${repoHash}`)
-            return
+    fetchFullRepo() {
+        const { repoID, path } = this.props.repo || { repoID: undefined, path: undefined }
+        if (repoID && path) {
+            this.props.fetchFullRepo({ repoID, path })
         }
-        this.props.history.push(`/local-repo/${repoHash}/${page}`)
     }
 }
 

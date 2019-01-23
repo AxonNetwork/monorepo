@@ -40,7 +40,7 @@ import ElectronRelay from '../../lib/ElectronRelay'
 const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccessAction>({
     type: DesktopUserActionType.CHECK_NODE_USER,
     async process(_, dispatch) {
-        const rpcResp = await rpc.client.getUsernameAsync({})
+        const rpcResp = await rpc.getClient().getUsernameAsync({})
 
         if (!rpcResp.username || rpcResp.username === '') {
             return new Error('No node user')
@@ -68,7 +68,7 @@ const checkNodeUserLogic = makeLogic<ICheckNodeUserAction, ICheckNodeUserSuccess
 const checkBalanceAndHitFaucetLogic = makeLogic<ICheckBalanceAndHitFaucetAction, ICheckBalanceAndHitFaucetSuccessAction>({
     type: DesktopUserActionType.CHECK_BALANCE_AND_HIT_FAUCET,
     async process(_, dispatch) {
-        const { address } = await rpc.client.ethAddressAsync({})
+        const { address } = await rpc.getClient().ethAddressAsync({})
         let balance = await ServerRelay.getEthBalance(address)
         if (balance < 1) {
             await ServerRelay.hitEthFaucet(address)
@@ -108,7 +108,7 @@ const signupLogic = makeLogic<ISignupAction, ISignupSuccessAction>({
     type: UserActionType.SIGNUP,
     async process({ action }, dispatch) {
         const { payload } = action
-        const { signature } = await rpc.client.setUsernameAsync({ username: payload.username })
+        const { signature } = await rpc.getClient().setUsernameAsync({ username: payload.username })
         const hexSignature = signature.toString('hex')
 
         const mnemonic = await UserData.getMnemonic()

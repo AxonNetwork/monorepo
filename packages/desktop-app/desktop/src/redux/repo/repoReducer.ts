@@ -135,30 +135,6 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case RepoActionType.GET_DIFF_SUCCESS: {
-            const { commit, diffs, repoRoot } = action.payload
-            if (!repoRoot) {
-                throw new Error('repoReducer GET_DIFF_SUCCESS: repoRoot can never be null')
-            }
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [repoRoot]: {
-                        ...(state.repos[repoRoot] || {}),
-                        path: repoRoot,
-                        commits: {
-                            ...((state.repos[repoRoot] || {}).commits || {}),
-                            [commit]: {
-                                ...(((state.repos[repoRoot] || {}).commits || {})[commit] || {}),
-                                diffs,
-                            },
-                        },
-                    },
-                },
-            }
-        }
-
         case DesktopRepoActionType.CHECKPOINT_REPO: {
             return {
                 ...state,
