@@ -8,9 +8,10 @@ import OrgReadme from 'conscience-components/OrgPage/OrgReadme'
 import Members from 'conscience-components/OrgPage/ConnectedMembers'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H6 } from 'conscience-components/Typography/Headers'
-import { fetchOrgInfo, addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
+import { selectOrgShowcase, selectUser } from 'conscience-components/navigation'
+import { IOrganization } from 'conscience-lib/common'
+import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -23,9 +24,6 @@ class OrgHomePage extends React.Component<Props>
             return <LargeProgressSpinner />
         }
 
-        const repos = this.props.repos
-        const repoList = this.props.org.repos.filter(repoID => repos[repoID] !== undefined)
-
         return (
             <div className={classes.page}>
                 <div className={classes.main}>
@@ -33,21 +31,15 @@ class OrgHomePage extends React.Component<Props>
                         readme={org.readme}
                         onClickEditReadme={this.onClickEditReadme}
                     />
+
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
-                        repoList={repoList}
-                        repos={repos}
-                        discussions={this.props.discussions}
-                        discussionsByRepo={this.props.discussionsByRepo}
+                        repoList={this.props.org.repos}
                         addRepo={this.addRepo}
-                        selectRepoAndPage={this.selectRepoAndPage}
                     />
                 </div>
                 <div className={classes.sidebar}>
-                    <Members
-                        orgID={org.orgID}
-                        selectUser={this.selectUser}
-                    />
+                    <Members orgID={org.orgID} />
                     <Button
                         className={classes.seeShowcaseButton}
                         color="secondary"
@@ -72,47 +64,28 @@ class OrgHomePage extends React.Component<Props>
         this.props.addRepoToOrg({ repoID, orgID })
     }
 
-    selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) {
-        const repoID = payload.repoID
-        switch (payload.repoPage) {
-            case RepoPage.Home:
-                this.props.history.push(`/repo/${repoID}`)
-                return
-            case RepoPage.Files:
-                this.props.history.push(`/repo/${repoID}/files`)
-                return
-            case RepoPage.Discussion:
-                this.props.history.push(`/repo/${repoID}/discussion`)
-                return
-        }
-    }
-
     selectUser(payload: { username: string }) {
-        const username = payload.username
-        if (username === undefined) {
-            return
-        }
-        this.props.history.push(`/user/${username}`)
+        selectUser(payload.username)
     }
 
     navigateShowcasePage() {
-        const orgID = this.props.match.params.orgID
-        this.props.history.push(`/showcase/${orgID}`)
+        const { orgID } = this.props.match.params
+        selectOrgShowcase(orgID)
     }
 }
+
+type Props = StateProps & DispatchProps & RouteComponentProps<MatchParams> & { classes: any }
 
 interface MatchParams {
     orgID: string
 }
 
-interface Props extends RouteComponentProps<MatchParams> {
+interface StateProps {
     org: IOrganization
-    repos: { [repoID: string]: IRepo }
-    discussions: { [discussionID: string]: IDiscussion }
-    discussionsByRepo: { [repoID: string]: string[] }
-    fetchOrgInfo: typeof fetchOrgInfo
+}
+
+interface DispatchProps {
     addRepoToOrg: typeof addRepoToOrg
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -144,14 +117,10 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
     const orgID = props.match.params.orgID
     return {
         org: state.org.orgs[orgID],
-        repos: state.repo.repos,
-        discussions: state.discussion.discussions,
-        discussionsByRepo: state.discussion.discussionsByRepo,
     }
 }
 
 const mapDispatchToProps = {
-    fetchOrgInfo,
     addRepoToOrg,
 }
 

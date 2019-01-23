@@ -141,6 +141,7 @@ const styles = (theme: Theme) => createStyles({
     },
     renameArrow: {
         verticalAlign: 'middle',
+        fill: '#cecece',
     },
 })
 

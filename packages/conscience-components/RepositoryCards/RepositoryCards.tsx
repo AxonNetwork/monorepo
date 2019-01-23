@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Theme, createStyles, withStyles } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import Button from '@material-ui/core/Button'
@@ -12,7 +13,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
 import RepoCardLoader from '../ContentLoaders/RepoCardLoader'
-import { IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
+import { URIType, IRepo, IDiscussion } from 'conscience-lib/common'
+import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -24,11 +26,11 @@ class Repositories extends React.Component<Props, State>
     }
 
     render() {
-        const { repos, repoList, discussionsByRepo, classes } = this.props
-        const loading = repoList === undefined || repoList.some(id => (repos[id] || {}).files === undefined)
+        const { repos, classes } = this.props
+        const loading = this.props.repoList === undefined || this.props.repoList.some(repoID => (repos[repoID] || {}).files === undefined)
 
         if (loading) {
-            const loaderLength = repoList !== undefined ? repoList.length : 4
+            const loaderLength = this.props.repoList !== undefined ? this.props.repoList.length : 4
             return (
                 <div className={classes.root}>
                     {Array(loaderLength).fill(0).map(i => (
@@ -40,25 +42,24 @@ class Repositories extends React.Component<Props, State>
             )
         }
 
+        const repoList = (this.props.repoList || []).filter(repoID => repos[repoID] !== undefined)
+
         let reposToAdd = [] as string[]
         if (this.state.dialogOpen) {
             reposToAdd = Object.keys(repos)
                 // repo is not already part of org
-                .filter((key: string) => (repoList || []).indexOf(repos[key].repoID) < 0)
-                .map((key: string) => repos[key].repoID)
+                .filter(key => (repoList || []).indexOf(repos[key].repoID) < 0)
+                .map(key => repos[key].repoID)
         }
 
         return (
             <React.Fragment>
                 <div className={classes.root}>
-                    {(repoList || []).map(id =>
-                        <RepositoryCard
-                            repo={repos[id]}
-                            numDiscussions={(discussionsByRepo[id] || []).length}
-                            selectRepoAndPage={this.props.selectRepoAndPage}
-                            key={id}
-                        />,
+                    {(repoList || []).map(repoID =>
+                        <RepositoryCard key={repoID} uri={{ type: URIType.Network, repoID }} />
                     )}
+
+                    {/* Add repo button */}
                     {this.props.addRepo !== undefined &&
                         <Card className={classes.newRepoCard}>
                             <Button
@@ -71,6 +72,8 @@ class Repositories extends React.Component<Props, State>
                         </Card>
                     }
                 </div>
+
+                {/* Add repo modal */}
                 {this.props.addRepo !== undefined &&
                     <Dialog
                         open={this.state.dialogOpen}
@@ -79,16 +82,11 @@ class Repositories extends React.Component<Props, State>
                         <DialogTitle>Add Repo To Organization</DialogTitle>
                         <DialogContent>
                             <List>
-                                {reposToAdd.map((repoID: string) => {
-                                    return (
-                                        <ListItem
-                                            button
-                                            onClick={() => this.onClickAddRepo(repoID)}
-                                        >
-                                            <ListItemText primary={repoID} />
-                                        </ListItem>
-                                    )
-                                })}
+                                {reposToAdd.map(repoID => (
+                                    <ListItem button onClick={() => this.onClickAddRepo(repoID)}>
+                                        <ListItemText primary={repoID} />
+                                    </ListItem>
+                                ))}
                                 <ListItem
                                     button
                                     onClick={this.onClickNewRepo}
@@ -114,7 +112,8 @@ class Repositories extends React.Component<Props, State>
     }
 
     onClickNewRepo() {
-        this.props.selectRepoAndPage({ repoPage: RepoPage.New })
+        // @@TODO: navigate to /new-repo/:orgID
+        throw new Error('@@TODO: navigate to /new-repo/:orgID')
     }
 
     onClickOpenDialog() {
@@ -126,14 +125,17 @@ class Repositories extends React.Component<Props, State>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
     repoList: string[] | undefined
+    addRepo: (payload: { repoID: string }) => void
+}
+
+interface StateProps {
     repos: { [repoID: string]: IRepo }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
-    selectRepoAndPage: (payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) => void
-    addRepo?: (payload: { repoID: string }) => void
-    classes: any
 }
 
 interface State {
@@ -174,4 +176,12 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-export default withStyles(styles)(Repositories)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        repos: state.repo.repos,
+        discussions: state.discussion.discussions,
+        discussionsByRepo: state.discussion.discussionsByRepo,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(Repositories))
