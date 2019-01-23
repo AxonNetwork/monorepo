@@ -20,6 +20,10 @@ import { autobind, repoPageToString, stringToRepoPage } from 'conscience-lib/uti
 @autobind
 class RepoPageRoutes extends React.Component<Props>
 {
+    constructor(props: Props) {
+        super(props)
+        this.fetchFullRepo()
+    }
 
     render() {
         const { repo, classes } = this.props
@@ -63,10 +67,14 @@ class RepoPageRoutes extends React.Component<Props>
 
     componentDidUpdate(prevProps: Props) {
         if ((prevProps.repo || {}).path !== (this.props.repo || {}).path) {
-            const { repoID, path } = this.props.repo || { repoID: undefined, path: undefined }
-            if (repoID && path) {
-                this.props.fetchFullRepo({ repoID, path })
-            }
+            this.fetchFullRepo()
+        }
+    }
+
+    fetchFullRepo() {
+        const { repoID, path } = this.props.repo || { repoID: undefined, path: undefined }
+        if (repoID && path) {
+            this.props.fetchFullRepo({ repoID, path })
         }
     }
 
