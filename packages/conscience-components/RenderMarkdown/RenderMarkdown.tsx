@@ -47,7 +47,7 @@ class RenderMarkdown extends React.Component<Props>
             return <img src={node.src} />
         } else {
             // images with local relative paths
-            let dirname = path.dirname(this.props.uri.filename)
+            let dirname = path.dirname(this.props.uri.filename || '')
             if (dirname === '.') {
                 return <img src={urljoin(directEmbedPrefix(this.props.uri), node.src)} />
             } else {

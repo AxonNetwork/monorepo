@@ -45,7 +45,7 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
-        const { path } = await rpc.client.initRepoAsync({
+        const { path } = await rpc.getClient().initRepoAsync({
             repoID: repoID,
             name: name,
             email: emails[0],
@@ -68,7 +68,7 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
             let repeat = 10
             const attempt = async function() {
                 try {
-                    const result = await rpc.client.getLocalReposAsync()
+                    const result = await rpc.getClient().getLocalReposAsync()
                     resolve(result)
                 } catch (err) {
                     repeat -= 1
@@ -136,7 +136,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
     async process({ action }) {
         const { path, repoID } = action.payload
 
-        const filesListRaw = (await rpc.client.getRepoFilesAsync({ path, repoID })).files
+        const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files
         const filesList = filesListRaw.map(file => ({
             name: file.name,
             size: file.size ? file.size.toNumber() : 0,
@@ -157,7 +157,7 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     async process({ action }) {
         const { path, repoID } = action.payload
 
-        const history = (await rpc.client.getRepoHistoryAsync({ path, repoID, page: 0 }))
+        const history = (await rpc.getClient().getRepoHistoryAsync({ path, repoID, page: 0 }))
         const timeline = history.commits.map(event => ({
             version: 0,
             commit: event.commitHash,
@@ -176,10 +176,11 @@ const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsActio
     type: DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS,
     async process({ action }, dispatch) {
         const { repoID } = action.payload
+        const rpcClient = rpc.getClient()
         const [admins, pushers, pullers] = await Promise.all([
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.ADMIN }),
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.PUSHER }),
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.PULLER })
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
         ])
 
         const usernames = union(admins, pushers, pullers)
@@ -194,11 +195,12 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
     async process({ action }, dispatch) {
         const { uri, username, admin, pusher, puller } = action.payload
         const repoID = (getRepo(uri) || {}).repoID
-        await rpc.client.setUserPermissionsAsync({ repoID, username, puller, pusher, admin })
+        const rpcClient = rpc.getClient()
+        await rpcClient.setUserPermissionsAsync({ repoID, username, puller, pusher, admin })
         const [admins, pushers, pullers] = await Promise.all([
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.ADMIN }),
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.PUSHER }),
-            rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.PULLER })
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
         ])
         return { repoID, admins, pushers, pullers }
     },
@@ -208,7 +210,7 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
     type: DesktopRepoActionType.FETCH_LOCAL_REFS,
     async process({ action }) {
         const { repoID, path } = action.payload
-        const resp = await rpc.client.getLocalRefsAsync({ repoID, path })
+        const resp = await rpc.getClient().getLocalRefsAsync({ repoID, path })
         const localRefs = {} as { [refName: string]: string }
         for (let ref of resp.refs) {
             localRefs[ref.refName] = ref.commitHash
@@ -221,7 +223,7 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
     type: DesktopRepoActionType.FETCH_REMOTE_REFS,
     async process({ action }) {
         const { repoID } = action.payload
-        const remoteRefs = await rpc.client.getAllRemoteRefsAsync(repoID)
+        const remoteRefs = await rpc.getClient().getAllRemoteRefsAsync(repoID)
         return { repoID, remoteRefs }
     },
 })
@@ -231,7 +233,7 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
     async process({ action }, dispatch) {
         const { uri, message } = action.payload
         const repo = getRepo(uri)
-        await rpc.client.checkpointRepoAsync({ path: repo.path || '', message: message })
+        await rpc.getClient().checkpointRepoAsync({ path: repo.path || '', message: message })
         await dispatch(fetchFullRepo({ repoID: repo.repoID, path: repo.path || '' }))
         return {}
     },
@@ -298,7 +300,7 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
-        const stream = rpc.client.cloneRepo({
+        const stream = rpc.getClient().cloneRepo({
             repoID: repoID,
             name: name,
             email: emails[0],
@@ -336,7 +338,7 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
         const { uri } = action.payload
         const repo = getRepo(uri)
         const folderPath = repo.path || ''
-        const stream = rpc.client.pullRepo({ path: folderPath })
+        const stream = rpc.getClient().pullRepo({ path: folderPath })
         dispatch(pullRepoProgress({ folderPath, fetched: 0, toFetch: 0 }))
         stream.on('data', async (data: any) => {
             console.log("PULL", data)
