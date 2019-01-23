@@ -129,7 +129,7 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     repoList: string[] | undefined
-    addRepo: (payload: { repoID: string }) => void
+    addRepo?: (payload: { repoID: string }) => void
 }
 
 interface StateProps {

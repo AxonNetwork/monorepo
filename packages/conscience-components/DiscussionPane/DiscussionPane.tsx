@@ -91,7 +91,7 @@ const styles = (theme: Theme) => createStyles({
         overflow: 'auto',
         flexGrow: 1,
         width: 400,
-        borderTop: '1px solid #e0e0e0',
+        border: '1px solid #e0e0e0',
     },
     threadPane: {
         position: 'relative',

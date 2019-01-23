@@ -1,8 +1,8 @@
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import TimelineEvent from 'conscience-components/TimelineEvent'
-import { IOrganization, IRepo, IUser, } from 'conscience-lib/common'
-import { collateTimelines, extractEmail } from 'conscience-lib/utils'
+import { IOrganization, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
+import { collateTimelines } from 'conscience-lib/utils'
 
 
 class ShowcaseTimeline extends React.Component<Props>
@@ -18,16 +18,9 @@ class ShowcaseTimeline extends React.Component<Props>
             <div>
                 {commitList.map(hash => {
                     const event = commits[hash]
-                    const email = extractEmail(event.user) || ''
-                    const user = this.props.users[this.props.usersByEmail[email] || '']
+                    const uri = { type: URIType.Network, repoID: event.repoID || '', commit: event.commit } as URI
                     return (
-                        <TimelineEvent
-                            key={event.commit}
-                            event={event}
-                            user={user}
-                            userEmail={email}
-                            selectCommit={this.props.selectCommit}
-                        />
+                        <TimelineEvent uri={uri} />
                     )
                 })}
             </div>

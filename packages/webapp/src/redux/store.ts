@@ -5,7 +5,6 @@ import { createLogicMiddleware } from 'redux-logic'
 import logic from './logic'
 import reducer from './reducer'
 import { IGlobalState } from 'conscience-components/redux'
-import { IUIState } from './ui/uiReducer'
 
 export default (initialState: IGlobalState | {}, history: History): Store<IGlobalState> => {
 
@@ -38,7 +37,6 @@ export default (initialState: IGlobalState | {}, history: History): Store<IGloba
 
 declare module 'conscience-components/redux' {
     export interface IGlobalState {
-        ui: IUIState
         router?: RouterState
     }
 }
