@@ -36,6 +36,7 @@ import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
+import parseDiff from 'parse-diff'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
@@ -242,10 +243,10 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action }) {
-        const { repoRoot, commit } = action.payload
-
+        const { uri, commit } = action.payload
+        const repoRoot = (getRepo(uri) || {}).path || ''
         if (repoRoot === undefined) {
-            throw new Error('repoRoot should never be undefined in getDiffLogic')
+            throw new Error("could not find repo at ${repoRoot}")
         }
 
         let diffBlob: string
@@ -256,31 +257,9 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
             throw err
         }
 
-        const lines = diffBlob.split('\n')
-        let filename = ''
-        let skipLines = 0
-        let pastHeader = false
-        let diffs = {} as { [filename: string]: string }
-        for (let line of lines) {
-            if (line.indexOf('diff ') === 0) {
-                const parts = line.split(' ')
-                filename = parts[2].replace('a/', '')
-                skipLines = 3
-                pastHeader = true
-            }
-            if (skipLines > 0) {
-                skipLines--
-                continue
-            }
-            if (!pastHeader) {
-                continue
-            }
-            diffs[filename] = (diffs[filename] || '') + line + '\n'
-        }
+        const diff = parseDiff(diffBlob)
 
-        console.log('diffs ~>', diffs)
-
-        return { diffs, repoRoot, filename, commit }
+        return { commit, diff }
     },
 })
 

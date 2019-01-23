@@ -50,9 +50,7 @@ export type IGetRepoListFailedAction = FailedAction<RepoActionType.GET_REPO_LIST
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
     payload: {
-        // @@TODO: implement repoURI
-        repoID?: string
-        repoRoot?: string
+        uri: URI
         commit: string
     }
 }
@@ -60,11 +58,7 @@ export interface IGetDiffAction {
 export interface IGetDiffSuccessAction {
     type: RepoActionType.GET_DIFF_SUCCESS
     payload: {
-        // @@TODO: implement repoURI
-        repoID?: string
-        repoRoot?: string
         commit: string
-        // diffs: { [filename: string]: string }
         diff: parseDiff.File[]
     }
 }

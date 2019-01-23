@@ -56,6 +56,17 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.GET_DIFF_SUCCESS: {
+            const { commit, diff } = action.payload
+            return {
+                ...state,
+                diffsByCommitHash: {
+                    ...state.diffsByCommitHash,
+                    [commit]: diff,
+                }
+            }
+        }
+
         default:
             return state
     }
