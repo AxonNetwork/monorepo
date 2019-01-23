@@ -51,7 +51,7 @@ envSpecific.init({
         if (!filename) {
             throw new Error('must include filename in uri')
         }
-        if (!commit) {
+        if (commit === undefined || commit === 'working') {
             return new Promise<string>((resolve, reject) => {
                 fs.readFile(path.join(repoRoot, filename), 'utf8', (err: Error, contents: string) => {
                     if (err) {
@@ -73,7 +73,10 @@ envSpecific.init({
             throw new Error('desktop platform cannot directEmbedPrefix with a network URI')
         }
         const fileServer = process.env.STATIC_FILE_SERVER_URL
-        const { repoRoot, commit = 'HEAD' } = uri
+        const { repoRoot, commit } = uri
+        if (commit === undefined || commit === 'working') {
+            return `file://${repoRoot}`
+        }
         const repoHash = getHash(repoRoot)
         return `${fileServer}/repo/${repoHash}/file/${commit}`
     },

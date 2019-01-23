@@ -40,7 +40,7 @@ export function selectRepo(uri: URI, page: RepoPage) {
 
 export function getFileURL(uri: URI, mode: FileMode) {
     if (uri.type === URIType.Local) {
-        const { repoRoot, commit, filename } = uri
+        const { repoRoot, commit = 'working', filename } = uri
         if (filename === undefined) {
             return `/local-repo/${getHash(repoRoot)}/files/${commit}`
         } else if (mode === FileMode.View) {
