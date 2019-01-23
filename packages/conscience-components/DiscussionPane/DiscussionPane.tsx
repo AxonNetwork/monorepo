@@ -31,6 +31,7 @@ class DiscussionPane extends React.Component<Props>
                     uri={this.props.uri}
                     order={this.props.discussionIDsSortedByNewestComment}
                     selectedID={selectedID}
+                    classes={{ list: classes.discussionList }}
                 />
                 {newDiscussion &&
                     <div className={classes.threadPane}>
@@ -84,27 +85,13 @@ const styles = (theme: Theme) => createStyles({
         height: 'calc(100% - 80px)',
         display: 'flex',
     },
-    list: {
+    discussionList: {
         height: '100%',
         padding: 0,
         overflow: 'auto',
         flexGrow: 1,
-        width: 350,
+        width: 400,
         borderTop: '1px solid #e0e0e0',
-    },
-    listItem: {
-        background: 'white',
-        borderTop: 0,
-        border: '1px solid #e0e0e0',
-    },
-    listItemHover: {
-        '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        },
-    },
-    title: {
-        marginTop: theme.spacing.unit * 2,
-        marginBottom: theme.spacing.unit,
     },
     threadPane: {
         position: 'relative',
@@ -112,9 +99,6 @@ const styles = (theme: Theme) => createStyles({
         height: '100%',
         width: '100%',
         flexGrow: 5,
-    },
-    selectedDiscussion: {
-        backgroundColor: '#cee2f1',
     },
     closeNewDiscussionPanelButton: {
         position: 'absolute',
@@ -125,32 +109,6 @@ const styles = (theme: Theme) => createStyles({
     startNewDiscussionPrompt: {
         fontSize: '1.8rem',
         padding: theme.spacing.unit,
-    },
-    sidebarListItemSubtext: {
-        display: 'flex',
-    },
-    sidebarListItemModifiedDate: {
-        flexGrow: 1,
-    },
-    sidebarListItemAvatar: {
-        padding: 3,
-
-        '& > div': {
-            width: 22,
-            height: 22,
-            fontSize: '0.8rem',
-        },
-    },
-    discussionBadge: {
-        width: 9,
-        height: 9,
-        right: 'auto',
-        top: -17,
-        left: -15,
-    },
-    discussionBadgeWrapper: {
-        display: 'block',
-        height: 0,
     },
 })
 
