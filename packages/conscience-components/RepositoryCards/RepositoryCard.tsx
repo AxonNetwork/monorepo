@@ -1,56 +1,46 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Theme, createStyles, withStyles } from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import CommentIcon from '@material-ui/icons/Comment'
-import { IRepo, RepoPage } from 'conscience-lib/common'
+import { URI, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import moment from 'moment'
+import { H6 } from 'conscience-components/Typography/Headers'
+import { selectRepo } from 'conscience-components/navigation'
+import { IGlobalState } from 'conscience-components/redux'
+import { getRepo } from 'conscience-components/env-specific'
 
 
 @autobind
 class RepositoryCard extends React.Component<Props>
 {
     render() {
-        const { repo, numDiscussions, classes } = this.props
-        if (!repo) {
-            return null
-        }
-        const numFiles = Object.keys(repo.files || {}).length
-        const lastCommitHash = repo.commitList ? repo.commitList[0] : ''
-        const lastCommit = (repo.commits || {})[lastCommitHash || ''] || {}
-        const lastUpdated = lastCommit.time
+        const { repoID, lastUpdated, numFiles, numDiscussions, classes } = this.props
 
         return (
-            <Card
-                className={classes.root}
-                onClick={this.onClickNavigateRepoHome}
-            >
+            <Card className={classes.root} onClick={this.onClickNavigateRepoHome}>
                 <CardContent>
-                    <Typography variant="h6">{repo.repoID}</Typography>
+                    <H6>{repoID}</H6>
                     {lastUpdated &&
-                        <Typography className={classes.lastUpdated}>
+                        <div className={classes.lastUpdated}>
                             {'Last updated ' + moment(lastUpdated).fromNow()}
-                        </Typography>
+                        </div>
                     }
                     {!lastUpdated &&
-                        <Typography className={classes.lastUpdated}>
+                        <div className={classes.lastUpdated}>
                             No commits yet
-                        </Typography>
+                        </div>
                     }
                     <div className={classes.statButtons}>
-                        <Button
-                            onClick={this.onClickNavigateRepoFiles}
-                        >
+                        <Button onClick={this.onClickNavigateRepoFiles}>
                             <FolderOpenIcon fontSize="small" />
                             {numFiles}
                         </Button>
-                        <Button
-                            onClick={this.onClickNavigateRepoDiscussions}
-                        >
+                        <Button onClick={this.onClickNavigateRepoDiscussions}>
                             <CommentIcon fontSize="small" />
                             {numDiscussions}
                         </Button>
@@ -62,30 +52,30 @@ class RepositoryCard extends React.Component<Props>
 
     onClickNavigateRepoFiles(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        this.selectRepoAndPage(RepoPage.Files)
+        selectRepo(this.props.uri, RepoPage.Files)
     }
 
     onClickNavigateRepoDiscussions(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation()
-        this.selectRepoAndPage(RepoPage.Discussion)
+        selectRepo(this.props.uri, RepoPage.Discussion)
     }
 
     onClickNavigateRepoHome() {
-        this.selectRepoAndPage(RepoPage.Home)
-    }
-
-    selectRepoAndPage(repoPage: RepoPage) {
-        const repoID = this.props.repo.repoID
-        const repoRoot = this.props.repo.path
-        this.props.selectRepoAndPage({ repoID, repoRoot, repoPage })
+        selectRepo(this.props.uri, RepoPage.Home)
     }
 }
 
-interface Props {
-    repo: IRepo
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
+}
+
+interface StateProps {
+    repoID: string
+    numFiles: number
+    lastUpdated: number
     numDiscussions: number
-    selectRepoAndPage: (payload: { repoID: string, repoRoot?: string | undefined, repoPage: RepoPage }) => void
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -118,4 +108,20 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(RepositoryCard)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repo = getRepo(ownProps.uri) || {}
+    const repoID = repo.repoID
+    const numFiles = Object.keys(repo.files || {}).length
+    const lastCommitHash = repo.commitList ? repo.commitList[0] : ''
+    const lastCommit = (repo.commits || {})[lastCommitHash || ''] || {}
+    const lastUpdated = lastCommit.time
+    const numDiscussions = (state.discussion.discussionsByRepo[repo.repoID] || {}).length
+    return {
+        repoID,
+        numFiles,
+        lastUpdated,
+        numDiscussions,
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(RepositoryCard))

@@ -1,7 +1,42 @@
-import { FileMode, URI, URIType } from 'conscience-lib/common'
+import path from 'path'
+import { FileMode, URI, URIType, RepoPage } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
 import history from '../redux/history'
 
+
+export function selectRepo(uri: URI, page: RepoPage) {
+    let parts: string[]
+    if (uri.type === URIType.Local) {
+        parts = ['local-repo', getHash(uri.repoRoot)]
+    } else {
+        parts = ['repo', uri.repoID]
+    }
+
+    switch (page) {
+        case RepoPage.Files:
+            parts.push('files/HEAD')
+            break
+        case RepoPage.History:
+            parts.push('history')
+            break
+        case RepoPage.Discussion:
+            parts.push('discussion')
+            break
+        case RepoPage.Team:
+            parts.push('team')
+            break
+        case RepoPage.Settings:
+            parts.push('settings')
+            break
+        case RepoPage.Home:
+        default:
+            parts.push('home')
+            break
+    }
+
+    const url = path.join(...parts)
+    history.push(url)
+}
 
 export function getFileURL(uri: URI, mode: FileMode) {
     if (uri.type === URIType.Local) {
@@ -79,6 +114,10 @@ export function selectUser(username: string) {
         return
     }
     history.push(`/user/${username}`)
+}
+
+export function selectOrgShowcase(orgID: string) {
+    history.push(`/showcase/${orgID}`)
 }
 
 export function selectSettings() {

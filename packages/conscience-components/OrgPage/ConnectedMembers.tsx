@@ -23,7 +23,6 @@ class ConnectedMembers extends React.Component<Props>
                 currentUser={this.props.currentUser}
                 addMember={this.addMember}
                 removeMember={this.removeMember}
-                selectUser={this.props.selectUser}
             />
         )
     }
@@ -45,7 +44,6 @@ type Props = OwnProps & StateProps & DispatchProps
 
 interface OwnProps {
     orgID: string
-    selectUser: (payload: { username: string }) => void
 }
 
 interface StateProps {
