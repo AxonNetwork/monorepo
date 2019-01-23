@@ -10,6 +10,7 @@ import { WebRepoActionType, IGetRepoAction, IGetRepoSuccessAction, getRepo } fro
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
+import { getRepo as getRepoFromURI } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import { URIType } from 'conscience-lib/common'
 
@@ -63,7 +64,8 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
     async process({ action }, dispatch) {
-        const { repoID, username, admin, pusher, puller } = action.payload
+        const { uri, username, admin, pusher, puller } = action.payload
+        const repoID = (getRepoFromURI(uri) || {}).repoID
         const { admins, pushers, pullers } = await ServerRelay.updateUserPermissions(repoID, username, admin, pusher, puller)
         return { repoID, admins, pushers, pullers }
     }

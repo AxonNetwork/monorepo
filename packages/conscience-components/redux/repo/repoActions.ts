@@ -74,7 +74,7 @@ export type IGetDiffFailedAction = FailedAction<RepoActionType.GET_DIFF_FAILED>
 export interface IUpdateUserPermissionsAction {
     type: RepoActionType.UPDATE_USER_PERMISSIONS
     payload: {
-        repoID: string
+        uri: URI
         username: string
         admin: boolean
         pusher: boolean

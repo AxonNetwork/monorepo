@@ -10,7 +10,7 @@ function Routes(props: Props) {
     console.log(props.history.location.pathname)
     return (
         <Switch>
-            <Route path="/repo/:repoHash" component={RepoPage} />
+            <Route path="/local-repo/:repoHash" component={RepoPage} />
             <Route path="/new-repo" component={NewRepoPage} />
             <Route path="/new-repo/:orgID" component={NewRepoPage} />
             <Route path="/org/:orgID" component={OrgPage} />

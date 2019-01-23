@@ -60,7 +60,7 @@ interface StateProps {
     uri: URI
     repo: IRepo
     user: IUser
-    getDiff: (payload: { repoID: string, commit: string }) => void
+    getDiff: typeof getDiff
 }
 
 const styles = (theme: Theme) => createStyles({

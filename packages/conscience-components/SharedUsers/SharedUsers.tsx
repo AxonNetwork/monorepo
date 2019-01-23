@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
@@ -25,9 +26,12 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
-import { IRepoPermissions, IUser } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
 import { H6 } from '../Typography/Headers'
+import { updateUserPermissions } from '../redux/repo/repoActions'
+import { IGlobalState } from '../redux'
+import { getRepo } from '../env-specific'
+import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 import { union } from 'lodash'
 
 
@@ -225,9 +229,9 @@ class SharedUsers extends React.Component<Props, State>
                 return
             }
         }
-        const repoID = this.props.repoID
+        const uri = this.props.uri
         this.props.updateUserPermissions({
-            repoID,
+            uri,
             username,
             admin: adminChecked,
             pusher: writeChecked,
@@ -249,15 +253,22 @@ class SharedUsers extends React.Component<Props, State>
     }
 }
 
-interface Props {
-    repoID: string
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
+    uri: URI
+}
+
+interface StateProps {
     permissions: IRepoPermissions
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
     currentUser: string
     updatingUserPermissions: string | undefined
-    updateUserPermissions: (payload: { repoID: string, username: string, admin: boolean, pusher: boolean, puller: boolean }) => void
-    classes: any
+}
+
+interface DispatchProps {
+    updateUserPermissions: typeof updateUserPermissions
 }
 
 interface State {
@@ -318,4 +329,22 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(SharedUsers)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repoID = (getRepo(ownProps.uri) || {}).repoID || ''
+    return {
+        permissions: state.repo.repoPermissions[repoID],
+        users: state.user.users,
+        usersByUsername: state.user.usersByUsername,
+        currentUser: state.user.currentUser || '',
+        updatingUserPermissions: state.ui.updatingUserPermissions,
+    }
+}
+
+const mapDispatchToProps = {
+    updateUserPermissions,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(SharedUsers))

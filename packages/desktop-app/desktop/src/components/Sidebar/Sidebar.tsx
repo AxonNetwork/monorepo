@@ -135,7 +135,7 @@ class Sidebar extends React.Component<Props, State>
             return
         }
         const repoHash = getHash(payload.repoRoot)
-        this.props.history.push(`/repo/${repoHash}`)
+        this.props.history.push(`/local-repo/${repoHash}`)
     }
 
     navigateNewRepo() {

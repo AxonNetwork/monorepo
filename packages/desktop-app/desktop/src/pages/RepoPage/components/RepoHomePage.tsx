@@ -15,7 +15,7 @@ import FileViewer from 'conscience-components/FileViewer'
 import DiscussionList from 'conscience-components/DiscussionList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
-import Timeline from './connected/Timeline'
+import Timeline from 'conscience-components/Timeline'
 import { IGlobalState } from 'redux/store'
 import { IRepo, IUser, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -26,10 +26,7 @@ class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { repo, sharedUsers, classes } = this.props
-        const repoHash = this.props.match.params.repoHash
-
         const readme = (repo.files || {})['README.md']
-        const repoURI = { type: URIType.Local, repoRoot: repo.path, commit: "HEAD" } as URI
 
         return (
             <div className={classes.main}>
@@ -38,7 +35,7 @@ class RepoHomePage extends React.Component<Props>
                         <div>
                             <FileViewer
                                 uri={{
-                                    ...repoURI,
+                                    ...this.props.uri,
                                     filename: 'README.md'
                                 }}
                                 showViewerPicker={false}
@@ -65,7 +62,7 @@ class RepoHomePage extends React.Component<Props>
                     {(repo.commitList || []).length > 0 &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
-                                <SecuredText uri={repoURI} />
+                                <SecuredText uri={this.props.uri} />
                             </CardContent>
                         </Card>
                     }
@@ -93,7 +90,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Discussions</H6>
 
                             <DiscussionList
-                                uri={repoURI}
+                                uri={this.props.uri}
                                 maxLength={2}
                             />
                         </CardContent>
@@ -103,8 +100,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Commits</H6>
 
                             <Timeline
-                                repoHash={repoHash}
-                                history={this.props.history}
+                                uri={this.props.uri}
                                 defaultRowsPerPage={2}
                                 hidePagination
                             />
@@ -131,6 +127,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
+    uri: URI
     repo: IRepo
     sharedUsers: IUser[]
     classes: any
@@ -207,12 +204,14 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
+    const uri = { type: URIType.Local, repoRoot } as URI
     const repo = state.repo.repos[repoRoot]
     const { admins = [], pushers = [], pullers = [] } = state.repo.repoPermissions[repo.repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
     return {
+        uri,
         repo,
         sharedUsers,
     }

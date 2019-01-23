@@ -55,6 +55,7 @@ class TimelineEvent extends React.Component<Props>
     }
 
     selectCommit() {
+        console.log(this.props.uri)
         selectCommit(this.props.uri)
     }
 }

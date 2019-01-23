@@ -43,16 +43,16 @@ class RepoPageRoutes extends React.Component<Props>
                 <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
                     <div className={classes.repoPageInner}>
                         <Switch>
-                            <Route path='/repo/:repoHash/files/:filename+' component={RepoFilesPage} />
-                            <Route path='/repo/:repoHash/files' component={RepoFilesPage} />
-                            <Route path='/repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
-                            <Route path='/repo/:repoHash/conflict/:filename+' component={RepoConflictPage} />
-                            <Route path='/repo/:repoHash/history/:commit' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoHash/history' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoHash/discussion' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoHash/team' component={RepoTeamPage} />
-                            <Route path='/repo/:repoHash' component={RepoHomePage} />
+                            <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />
+                            <Route path='/local-repo/:repoHash/files/:commit' component={RepoFilesPage} />
+                            <Route path='/local-repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
+                            <Route path='/local-repo/:repoHash/conflict/:filename+' component={RepoConflictPage} />
+                            <Route path='/local-repo/:repoHash/history/:commit' component={RepoHistoryPage} />
+                            <Route path='/local-repo/:repoHash/history' component={RepoHistoryPage} />
+                            <Route path='/local-repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
+                            <Route path='/local-repo/:repoHash/discussion' component={RepoDiscussionPage} />
+                            <Route path='/local-repo/:repoHash/team' component={RepoTeamPage} />
+                            <Route path='/local-repo/:repoHash' component={RepoHomePage} />
                             <Route render={() => null} />
                         </Switch>
                     </div>
@@ -74,10 +74,10 @@ class RepoPageRoutes extends React.Component<Props>
         const repoHash = this.props.match.params.repoHash
         const page = repoPageToString(repoPage)
         if (page === 'home') {
-            this.props.history.push(`/repo/${repoHash}`)
+            this.props.history.push(`/local-repo/${repoHash}`)
             return
         }
-        this.props.history.push(`/repo/${repoHash}/${page}`)
+        this.props.history.push(`/local-repo/${repoHash}/${page}`)
     }
 }
 

@@ -5,7 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import SharedUsers from 'conscience-components/SharedUsers'
 import { updateUserPermissions } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'redux/store'
-import { IRepoPermissions, IUser } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -17,26 +17,9 @@ class RepoTeamPage extends React.Component<Props>
 
         return (
             <div className={classes.page}>
-                <SharedUsers
-                    repoID={this.props.repoID}
-                    permissions={this.props.permissions}
-                    users={this.props.users}
-                    usersByUsername={this.props.usersByUsername}
-                    currentUser={this.props.currentUser}
-                    updatingUserPermissions={this.props.updatingUserPermissions}
-                    updateUserPermissions={this.props.updateUserPermissions}
-                    selectUser={this.selectUser}
-                />
+                <SharedUsers uri={this.props.uri} />
             </div>
         )
-    }
-
-    selectUser(payload: { username: string }) {
-        const username = payload.username
-        if (username === undefined) {
-            return
-        }
-        this.props.history.push(`/user/${username}`)
     }
 }
 
@@ -45,13 +28,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    repoID: string
-    permissions: IRepoPermissions
-    users: { [userID: string]: IUser }
-    usersByUsername: { [username: string]: string }
-    currentUser: string
-    updatingUserPermissions: string | undefined
-    updateUserPermissions: typeof updateUserPermissions
+    uri: URI
     classes: any
 }
 
@@ -62,17 +39,10 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
-    const repoRoot = state.repo.reposByHash[props.match.params.repoHash]
-    const repoID = (state.repo.repos[repoRoot] || {}).repoID || ''
-    const permissions = state.repo.repoPermissions[repoID]
-
+    const repoHash = props.match.params.repoHash
+    const repoRoot = state.repo.reposByHash[repoHash]
     return {
-        repoID: repoID,
-        permissions: permissions,
-        users: state.user.users,
-        usersByUsername: state.user.usersByUsername,
-        currentUser: state.user.currentUser || '',
-        updatingUserPermissions: state.ui.updatingUserPermissions,
+        uri: { type: URIType.Local, repoRoot } as URI
     }
 }
 

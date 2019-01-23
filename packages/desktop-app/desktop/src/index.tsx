@@ -7,8 +7,8 @@ import * as ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
-import history from './redux/history'
-import createStore from './redux/store'
+import history from 'conscience-components/redux/history'
+import createStore from 'redux/store'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
 import * as rpc from 'conscience-lib/rpc'
 import { isProduction } from 'conscience-lib/utils'
@@ -19,6 +19,7 @@ import * as envSpecific from 'conscience-components/env-specific'
 import { URI, URIType } from 'conscience-lib/common'
 import { IGlobalState } from 'conscience-components/redux'
 import { getHash } from 'conscience-lib/utils'
+import fs from 'fs'
 
 console.log('app version ~>', process.env.APP_VERSION)
 console.log('env ~>', process.env)
@@ -45,6 +46,18 @@ envSpecific.init({
         if (uri.type === URIType.Network) {
             throw new Error('desktop platform cannot getFileContents with a network URI')
         }
+        const { repoRoot, filename } = uri
+        if (!filename) {
+            throw new Error('must include filename in uri')
+        }
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(path.join(repoRoot, filename || ''), 'utf8', (err: Error, contents: string) => {
+                if (err) {
+                    reject(err)
+                }
+                resolve(contents)
+            })
+        })
 
         // @@TODO
         // @@TODO

@@ -192,7 +192,8 @@ const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsActio
 const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
     async process({ action }, dispatch) {
-        const { repoID, username, admin, pusher, puller } = action.payload
+        const { uri, username, admin, pusher, puller } = action.payload
+        const repoID = (getRepo(uri) || {}).repoID
         await rpc.client.setUserPermissionsAsync({ repoID, username, puller, pusher, admin })
         const [admins, pushers, pullers] = await Promise.all([
             rpc.client.getAllUsersOfTypeAsync({ repoID, type: rpc.client.UserType.ADMIN }),
