@@ -54,7 +54,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
             return
         }
 
-        const { diff } = await ServerRelay.getDiff(repoID, commit)
+        const diff = await ServerRelay.getDiff({ repoID, commit })
         const parsed = parseDiff(diff)
 
         return { uri, commit, diff: parsed }
