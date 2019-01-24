@@ -74,7 +74,7 @@ interface OwnProps {
 interface StateProps {
     repoID: string
     numFiles: number
-    lastUpdated: number
+    lastUpdated: Date
     numDiscussions: number
 }
 

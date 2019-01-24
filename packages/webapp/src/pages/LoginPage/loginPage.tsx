@@ -4,19 +4,19 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { login } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'conscience-components/redux'
+import { H3 } from 'conscience-components/Typography/Headers'
 import autobind from 'conscience-lib/utils/autobind'
 const logo = require('../../assets/logo-invert.png')
 
 
 @autobind
-class LoginPage extends React.Component<Props> {
-
+class LoginPage extends React.Component<Props>
+{
     _inputEmail: HTMLInputElement | null = null
     _inputPassword: HTMLInputElement | null = null
 
@@ -40,9 +40,7 @@ class LoginPage extends React.Component<Props> {
             <div className={classes.background}>
                 <main className={classes.main}>
                     <div className={classes.splash}>
-                        <Typography variant="h3" className={classes.splashText}>
-                            Welcome to Conscience
-						</Typography>
+                        <H3 className={classes.splashText}>Welcome to Conscience</H3>
                         <img src={logo} className={classes.logo} />
                     </div>
                     <Card className={classes.card}>

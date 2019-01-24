@@ -19,7 +19,7 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class Repositories extends React.Component<Props, State>
+class RepositoryCards extends React.Component<Props, State>
 {
     state = {
         dialogOpen: false,
@@ -184,4 +184,4 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
-export default connect(mapStateToProps, null)(withStyles(styles)(Repositories))
+export default connect(mapStateToProps, null)(withStyles(styles)(RepositoryCards))
