@@ -12,7 +12,7 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepo, URI, URIType } from 'conscience-lib/common'
 import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 

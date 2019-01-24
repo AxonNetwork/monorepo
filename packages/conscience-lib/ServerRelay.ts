@@ -154,6 +154,28 @@ const ServerRelay = {
         return response.data.sharedRepos
     },
 
+    async shareRepo(repoID: string, userID: string) {
+        interface IResponse {
+            message: string
+        }
+        await axios.post<IResponse>(API_URL + '/share-repo', {
+            repoID,
+            userID
+        })
+        return true
+    },
+
+    async unshareRepo(repoID: string, userID: string) {
+        interface IResponse {
+            message: string
+        }
+        await axios.post<IResponse>(API_URL + '/unshare-repo', {
+            repoID,
+            userID
+        })
+        return true
+    },
+
     async updateUserPermissions(repoID: string, username: string, admin: boolean, pusher: boolean, puller: boolean) {
         interface IResponse {
             repoID: string

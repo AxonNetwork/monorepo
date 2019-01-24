@@ -52,18 +52,18 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                 loginLoading: false
             }
 
-        // case DesktopRepoActionType.CREATE_REPO:
-        //     return {
-        //         ...state,
-        //         createRepoLoading: true
-        //     }
+        case RepoActionType.CREATE_REPO:
+            return {
+                ...state,
+                createRepoLoading: true
+            }
 
-        // case DesktopRepoActionType.CREATE_REPO_SUCCESS:
-        // case DesktopRepoActionType.CREATE_REPO_FAILED:
-        //     return {
-        //         ...state,
-        //         createRepoLoading: false
-        //     }
+        case RepoActionType.CREATE_REPO_SUCCESS:
+        case RepoActionType.CREATE_REPO_FAILED:
+            return {
+                ...state,
+                createRepoLoading: false
+            }
 
         case RepoActionType.CHECKPOINT_REPO:
             return {
@@ -125,6 +125,7 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             }
         }
 
+        case RepoActionType.UPDATE_USER_PERMISSIONS_FAILED:
         case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
             return {
                 ...state,

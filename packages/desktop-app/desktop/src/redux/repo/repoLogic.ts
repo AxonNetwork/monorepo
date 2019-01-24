@@ -1,11 +1,12 @@
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { ILocalRepo, IRepoFile, ITimelineEvent, URI, URIType } from 'conscience-lib/common'
+import { ILocalRepo, IRepoFile, ITimelineEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+    ICreateRepoAction, ICreateRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
@@ -13,7 +14,6 @@ import {
 } from 'conscience-components/redux/repo/repoActions'
 import {
     DesktopRepoActionType,
-    ICreateRepoAction, ICreateRepoSuccessAction,
     IGetLocalReposAction, IGetLocalReposSuccessAction,
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
@@ -24,13 +24,14 @@ import {
     ISelectRepoAction, ISelectRepoSuccessAction,
 
     IWatchRepoAction,
-    selectRepo, fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
+    fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
     fetchLocalRefs, fetchRemoteRefs, watchRepo, behindRemote
 } from './repoActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { getRepo } from 'conscience-components/env-specific'
+import { selectRepo } from 'conscience-components/navigation'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
@@ -40,7 +41,7 @@ import parseDiff from 'parse-diff'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
-    type: DesktopRepoActionType.CREATE_REPO,
+    type: RepoActionType.CREATE_REPO,
     async process({ action, getState }, dispatch) {
         const { repoID, orgID } = action.payload
         const state = getState()
@@ -51,11 +52,18 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
             name: name,
             email: emails[0],
         })
-        await ServerRelay.createRepo(repoID)
+        // @@TODO: UNCOMMENT THIS
+        // await ServerRelay.createRepo(repoID)
 
-        await dispatch(addRepoToOrg({ orgID, repoID }))
+        if (orgID && orgID.length > 0) {
+            await dispatch(addRepoToOrg({ orgID, repoID }))
+        }
+
         await dispatch(watchRepo({ repoID, path }))
-        await dispatch(selectRepo({ repoID, path }))
+        await dispatch(fetchFullRepo({ repoID, path }))
+        const uri = { type: URIType.Local, repoRoot: path } as URI
+        selectRepo(uri, RepoPage.Home)
+
         return { repoID, path, orgID }
     },
 })
@@ -94,8 +102,8 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
 
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         if (repoList.length > 0) {
-            const { repoID, path } = repoList[0]
-            dispatch(selectRepo({ repoID, path }))
+            const uri = { type: URIType.Local, repoRoot: repoList[0].path } as URI
+            selectRepo(uri, RepoPage.Home)
         }
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         // await dispatch({ type: FETCH_SHARED_REPOS })
@@ -137,7 +145,8 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
     async process({ action }) {
         const { path, repoID } = action.payload
 
-        const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files
+        const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
+
         const filesList = filesListRaw.map(file => ({
             name: file.name,
             size: file.size ? file.size.toNumber() : 0,
@@ -158,8 +167,9 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     async process({ action }) {
         const { path, repoID } = action.payload
 
-        const history = (await rpc.getClient().getRepoHistoryAsync({ path, repoID, page: 0 }))
-        const timeline = history.commits.map(event => ({
+        const history = (await rpc.getClient().getRepoHistoryAsync({ path, repoID, page: 0 })).commits || []
+
+        const timeline = history.map(event => ({
             version: 0,
             commit: event.commitHash,
             user: event.author,
@@ -193,15 +203,25 @@ const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsActio
 
 const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction>({
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
-    async process({ action }, dispatch) {
+    async process({ action, getState }, dispatch) {
         const { uri, username, admin, pusher, puller } = action.payload
         const repoID = (getRepo(uri) || {}).repoID
+        const userID = getState().user.usersByUsername[username]
         const rpcClient = rpc.getClient()
-        await rpcClient.setUserPermissionsAsync({ repoID, username, puller, pusher, admin })
+
+        let sharePromise = (admin || pusher || puller) ?
+            ServerRelay.shareRepo(repoID, userID) :
+            ServerRelay.unshareRepo(repoID, userID)
+
+        await Promise.all([
+            rpcClient.setUserPermissionsAsync({ repoID, username, puller, pusher, admin }),
+            sharePromise
+        ])
+
         const [admins, pushers, pullers] = await Promise.all([
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
-            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER }),
         ])
         return { repoID, admins, pushers, pullers }
     },
@@ -211,12 +231,13 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
     type: DesktopRepoActionType.FETCH_LOCAL_REFS,
     async process({ action }) {
         const { repoID, path } = action.payload
-        const resp = await rpc.getClient().getLocalRefsAsync({ repoID, path })
+        const refs = (await rpc.getClient().getLocalRefsAsync({ repoID, path })).refs || []
+
         const localRefs = {} as { [refName: string]: string }
-        for (let ref of resp.refs) {
+        for (let ref of refs) {
             localRefs[ref.refName] = ref.commitHash
         }
-        return { path: resp.path, localRefs }
+        return { path: path, localRefs }
     },
 })
 
@@ -284,14 +305,17 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
             name: name,
             email: emails[0],
         })
-        dispatch(cloneRepoProgress({ repoID, fetched: 1, toFetch: 10 }))
+        dispatch(cloneRepoProgress({ repoID, fetched: 1, toFetch: 20 }))
         var path = ""
         var success = false
         stream.on('data', async (data: any) => {
+            console.log('data: ', data)
             if (data.progress !== undefined) {
                 const fetched = data.progress.fetched !== undefined ? data.progress.fetched.toNumber() : 0
                 const toFetch = data.progress.toFetch !== undefined ? data.progress.toFetch.toNumber() : 0
-                await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
+                if (fetched / toFetch >= 0.05) {
+                    await dispatch(cloneRepoProgress({ repoID, fetched, toFetch }))
+                }
             }
             if (data.success !== undefined) {
                 path = data.success.path
@@ -301,7 +325,9 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         stream.on('end', async () => {
             if (success) {
                 await dispatch(watchRepo({ repoID, path }))
-                await dispatch(selectRepo({ repoID, path }))
+                await dispatch(fetchFullRepo({ repoID, path }))
+                const uri = { type: URIType.Local, repoRoot: path } as URI
+                selectRepo(uri, RepoPage.Home)
             }
             done()
         })

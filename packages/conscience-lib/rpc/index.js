@@ -41,7 +41,10 @@ function initClient(protoPath) {
         const refMap = {}
 
         while (true) {
-            const { total, refs } = await client.getRemoteRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
+            const { total = 0, refs = {} } = await client.getRemoteRefsAsync({ repoID, pageSize: REF_PAGE_SIZE, page })
+            if (Object.keys(refs).length === 0) {
+                break
+            }
             for (const ref of refs) {
                 refMap[ref.refName] = ref.commitHash
             }

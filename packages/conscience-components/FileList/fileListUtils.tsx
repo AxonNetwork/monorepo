@@ -16,7 +16,9 @@ import { IRepoFile } from 'conscience-lib/common'
 //     }
 // }
 export function makeTree(files: { [name: string]: IRepoFile }) {
-    const tree = {}
+    const tree = {
+        files: {}
+    }
     for (let key of Object.keys(files)) {
         setPath(tree, key, files[key])
     }

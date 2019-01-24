@@ -11,27 +11,9 @@ declare module 'conscience-lib/rpc' {
         cloneRepo: (params: { repoID: string, path?: string, name?: string, email?: string }) => any // emitter for progress stream
         getLocalRepos: any
         getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
-        getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise<{
-            files: {
-                name: string,
-                size: Long,
-                modified: number,
-                stagedStatus: string,
-                mergeConflict: boolean,
-                mergeUnresolved: boolean,
-            }[]
-        }>
-        getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{
-            commits: {
-                commitHash: string
-                author: string
-                message: string
-                timestamp: Long
-                files: string[]
-                verified?: Long,
-            }[]
-        }>
-        getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs: IRef[] }>
+        getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise<{ files: IRPCFile[] }>
+        getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: IRPCCommit[] }>
+        getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
         getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
         getAllRemoteRefsAsync: (repoID: string) => Promise<{ [refName: string]: string }>
         isBehindRemoteAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, isBehindRemote: boolean }>
@@ -50,6 +32,24 @@ declare module 'conscience-lib/rpc' {
             PULLER: 1,
             PUSHER: 2,
         }
+    }
+
+    export interface IRPCFile {
+        name: string,
+        size: Long,
+        modified: number,
+        stagedStatus: string,
+        mergeConflict: boolean,
+        mergeUnresolved: boolean,
+    }
+
+    export interface IRPCCommit {
+        commitHash: string
+        author: string
+        message: string
+        timestamp: Long
+        files: string[]
+        verified?: Long,
     }
 
     export function getClient(): IRPCClient;
