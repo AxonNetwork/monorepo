@@ -57,7 +57,7 @@ class DiscussionList extends React.Component<Props>
                                 </Typography>
                             </div>
                             <div className={classes.avatar}>
-                                <UserAvatar user={user} />
+                                <UserAvatar user={user} disableClick />
                             </div>
                             {/*           <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
                                 <React.Fragment>

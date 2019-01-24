@@ -40,6 +40,7 @@ class TimelineEvent extends React.Component<Props>
                         user={this.props.user}
                         seedText={this.props.userEmail}
                         className={classes.avatar}
+                        disableClick
                     />
                 </div>
                 <div className={classes.eventDescription}>
@@ -55,7 +56,6 @@ class TimelineEvent extends React.Component<Props>
     }
 
     selectCommit() {
-        console.log(this.props.uri)
         selectCommit(this.props.uri)
     }
 }
@@ -118,6 +118,8 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '11pt',
         color: 'rgba(0, 0, 0, 0.75)',
         fontWeight: 'bold',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     filename: {
         color: theme.palette.primary.main,
