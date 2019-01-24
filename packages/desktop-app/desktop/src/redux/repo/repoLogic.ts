@@ -52,8 +52,8 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
             name: name,
             email: emails[0],
         })
-        // @@TODO: UNCOMMENT THIS
-        // await ServerRelay.createRepo(repoID)
+
+        await ServerRelay.createRepo(repoID)
 
         if (orgID && orgID.length > 0) {
             await dispatch(addRepoToOrg({ orgID, repoID }))

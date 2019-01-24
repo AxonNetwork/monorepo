@@ -25,23 +25,33 @@ export function makeTree(files: { [name: string]: IRepoFile }) {
     return tree
 }
 
-function setPath(obj: any, keypath: string, value: any) {
+function setPath(obj: any, keypath: string, value: IRepoFile) {
     obj.files = obj.files || {}
     const parts = keypath.split('/')
     let basepath = null
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i]
-        if (obj.files[part] === undefined && i < parts.length - 1) {
-            obj.files[part] = {
-                name: path.join(basepath || '', part),
-                type: 'folder',
-                status: '',
-                size: 0,
-                modified: new Date(0),
-                diff: '',
-                mergeConflict: false,
-                mergeUnresolved: false,
-                files: {},
+        if (i < parts.length - 1) {
+            if (obj.files[part] === undefined) {
+                obj.files[part] = {
+                    name: path.join(basepath || '', part),
+                    type: 'folder',
+                    status: value.status,
+                    size: value.size,
+                    modified: new Date(value.modified),
+                    diff: '',
+                    mergeConflict: false,
+                    mergeUnresolved: false,
+                    files: {},
+                }
+            } else {
+                if (value.modified === 'M' || value.modified === '?' || value.modified === 'U') {
+                    obj.files[part].modified = 'M'
+                }
+                obj.files[part].size += value.size
+                if (value.modified > obj.files[part].modified) {
+                    obj.files[part].modified = new Date(value.modified)
+                }
             }
         } else if (i === parts.length - 1) {
             obj.files[part] = value
