@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Badge from '@material-ui/core/Badge'
+import Typography from '@material-ui/core/Typography'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { selectDiscussion } from 'conscience-components/navigation'
 import { getRepo } from 'conscience-components/env-specific'
@@ -44,11 +45,23 @@ class DiscussionList extends React.Component<Props>
                             classes={{ button: classes.listItemHover }}
                             onClick={() => this.selectDiscussion(d.discussionID)}
                         >
-                            <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
+                            {showBadge &&
+                                <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
+                            }
+                            <div className={classes.description}>
+                                <Typography className={classes.heading}>
+                                    {d.subject}
+                                </Typography>
+                                <Typography className={classes.subheading}>
+                                    {moment(newestComment[d.discussionID]).fromNow()}
+                                </Typography>
+                            </div>
+                            <div className={classes.avatar}>
+                                <UserAvatar user={user} />
+                            </div>
+                            {/*           <ListItemText primary={d.subject} primaryTypographyProps={{ variant: 'body1', classes: { body1: classes.heading } }} secondary={
                                 <React.Fragment>
-                                    {showBadge &&
-                                        <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
-                                    }
+
                                     <div className={classes.subheading}>
                                         <div className={classes.modifiedDate}>
                                             {moment(newestComment[d.discussionID]).fromNow()}
@@ -58,12 +71,12 @@ class DiscussionList extends React.Component<Props>
                                         </div>
                                     </div>
                                 </React.Fragment>
-                            } />
+                            } />*/}
                         </ListItem>
                     )
                 })}
                 <ListItem button className={classnames(classes.listItem, classes.listItemLast)} key={0} onClick={() => this.selectDiscussion('new')}>
-                    <ListItemText primary={'New Discussion'} />
+                    <ListItemText primary={'New Discussion'} className={classes.description} />
                     <ListItemIcon>
                         <ControlPointIcon />
                     </ListItemIcon>
@@ -102,11 +115,16 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
     },
     listItem: {
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         background: 'white',
         borderTop: 0,
         borderBottom: '1px solid #e0e0e0',
     },
     listItemLast: {
+        paddingLeft: 24,
         borderBottom: 'none',
     },
     listItemHover: {
@@ -121,23 +139,23 @@ const styles = (theme: Theme) => createStyles({
         width: 9,
         height: 9,
         right: 'auto',
-        top: -17,
-        left: -15,
     },
     badgeWrapper: {
+        position: 'absolute',
         display: 'block',
         height: 0,
+        left: 4,
+        top: '50%',
+    },
+    description: {
+        paddingLeft: 8
     },
     heading: {
-        // fontSize: '11pt',
         fontWeight: 'bold',
         color: 'rgba(0, 0, 0, 0.75)',
     },
     subheading: {
-        display: 'flex',
-    },
-    modifiedDate: {
-        flexGrow: 1,
+        color: 'rgba(0, 0, 0, 0.54)',
     },
     avatar: {
         padding: 3,

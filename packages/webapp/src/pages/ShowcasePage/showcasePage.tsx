@@ -144,7 +144,7 @@ class ShowcasePage extends React.Component<Props, State>
                                 <div className={classes.teamAvatarWrapper}>
                                     <UserAvatar
                                         user={user}
-                                        selectUser={this.selectUser}
+                                        noTooltip
                                         classes={{ root: classes.teamAvatar }}
                                     />
                                     <div>{user.name}</div>

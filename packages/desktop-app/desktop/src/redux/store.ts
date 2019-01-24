@@ -6,9 +6,6 @@ import logic from './logic'
 import reducer from './reducer'
 import { IUserState } from 'conscience-components/redux/user/userReducer'
 import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
-import { IDiscussionState } from 'conscience-components/redux/discussion/discussionReducer'
-import { IOrgState } from 'conscience-components/redux/org/orgReducer'
-import { IUIState } from './ui/uiReducer'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
@@ -41,9 +38,6 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
 
 export interface IGlobalState {
     repo: IRepoState
-    discussion: IDiscussionState
     user: IUserState
-    org: IOrgState
-    ui: IUIState
     rotuer?: RouterState
 }

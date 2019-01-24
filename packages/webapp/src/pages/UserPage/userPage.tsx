@@ -82,13 +82,7 @@ class UserPage extends React.Component<Props>
 
                             <Divider className={classes.repoDivider} />
 
-                            <RepositoryCards
-                                repoList={this.props.repoList}
-                                repos={this.props.repos}
-                                discussions={this.props.discussions}
-                                discussionsByRepo={this.props.discussionsByRepo}
-                                selectRepoAndPage={this.selectRepoAndPage}
-                            />
+                            <RepositoryCards repoList={this.props.repoList} />
                         </div>
                     </div>
                 </main>

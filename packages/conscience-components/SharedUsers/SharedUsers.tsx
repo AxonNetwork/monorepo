@@ -72,7 +72,6 @@ class SharedUsers extends React.Component<Props, State>
                         <H6>Access Controls</H6>
                         <Button
                             color="secondary"
-                            className={classes.button}
                             onClick={() => this.openDialog()}
                             disabled={updatingNew}
                         >
@@ -309,9 +308,6 @@ const styles = (theme: Theme) => createStyles({
     },
     userInfo: {
         flexGrow: 1,
-    },
-    button: {
-        textTransform: 'none',
     },
     buttonLoading: {
         color: theme.palette.secondary.main,
