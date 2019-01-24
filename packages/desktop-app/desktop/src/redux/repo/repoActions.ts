@@ -3,10 +3,6 @@ import { FailedAction } from 'conscience-components/redux/reduxUtils'
 import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
 
 export enum DesktopRepoActionType {
-    CREATE_REPO = 'CREATE_REPO',
-    CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
-    CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
-
     GET_LOCAL_REPOS = 'GET_LOCAL_REPOS',
     GET_LOCAL_REPOS_SUCCESS = 'GET_LOCAL_REPOS_SUCCESS',
     GET_LOCAL_REPOS_FAILED = 'GET_LOCAL_REPOS_FAILED',
@@ -58,25 +54,6 @@ export enum DesktopRepoActionType {
 
     BEHIND_REMOTE = 'BEHIND_REMOTE',
 }
-
-export interface ICreateRepoAction {
-    type: DesktopRepoActionType.CREATE_REPO
-    payload: {
-        repoID: string
-        orgID: string,
-    }
-}
-
-export interface ICreateRepoSuccessAction {
-    type: DesktopRepoActionType.CREATE_REPO_SUCCESS
-    payload: {
-        repoID: string
-        path: string
-        orgID: string,
-    }
-}
-
-export type ICreateRepoFailedAction = FailedAction<DesktopRepoActionType.CREATE_REPO_FAILED>
 
 export interface IGetLocalReposAction {
     type: DesktopRepoActionType.GET_LOCAL_REPOS
@@ -295,10 +272,6 @@ export interface IChangeTimelinePageAction {
 export type IDesktopRepoAction =
     IRepoAction |
 
-    ICreateRepoAction |
-    ICreateRepoSuccessAction |
-    ICreateRepoFailedAction |
-
     IGetLocalReposAction |
     IGetLocalReposSuccessAction |
     IGetLocalReposFailedAction |
@@ -341,7 +314,6 @@ export type IDesktopRepoAction =
 
     IBehindRemoteAction
 
-export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: DesktopRepoActionType.CREATE_REPO, payload })
 export const getLocalRepos = (payload: IGetLocalReposAction['payload'] = {}): IGetLocalReposAction => ({ type: DesktopRepoActionType.GET_LOCAL_REPOS, payload })
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: DesktopRepoActionType.FETCH_FULL_REPO, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: DesktopRepoActionType.FETCH_REPO_FILES, payload })

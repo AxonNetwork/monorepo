@@ -6,17 +6,17 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import IconButton from '@material-ui/core/IconButton'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import { H4 } from 'conscience-components/Typography/Headers'
 
 import { pickBy } from 'lodash'
-import { cloneRepo } from 'redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
+import { cloneRepo } from '../redux/repo/repoActions'
+import { IGlobalState } from '../redux'
 import { ISharedRepoInfo } from 'conscience-lib/common'
 
-class SharedRepos extends React.Component<Props>
+class SharedReposList extends React.Component<Props>
 {
     render() {
         const { sharedRepos, classes, cloneRepoProgress } = this.props
@@ -26,18 +26,18 @@ class SharedRepos extends React.Component<Props>
                 <List>
                     {
                         values(sharedRepos).map(repo => {
-                            const repoProgress = cloneRepoProgress[repo.repoID] || { fetched: 0, toFetch: 1 }
+                            const repoProgress = cloneRepoProgress[repo.repoID]
                             const isDownloading = repoProgress !== undefined
                             let percentDownloaded
                             if (isDownloading) {
-                                percentDownloaded = Math.floor(100 * (repoProgress.fetched) / (repoProgress.toFetch))
+                                percentDownloaded = Math.floor(100 * (repoProgress || { fetched: 0 }).fetched / (repoProgress || { toFetch: 1 }).toFetch)
                             }
                             return (
                                 <React.Fragment>
                                     <ListItem key={repo.repoID}>
                                         <ListItemText primary={repo.repoID} />
                                         <ListItemSecondaryAction>
-                                            <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })}>
+                                            <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })} >
                                                 <ControlPointIcon />
                                             </IconButton>
                                         </ListItemSecondaryAction>
@@ -108,4 +108,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(SharedRepos))
+)(withStyles(styles)(SharedReposList))

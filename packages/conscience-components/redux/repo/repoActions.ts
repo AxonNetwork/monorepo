@@ -15,6 +15,10 @@ export enum RepoActionType {
     UPDATE_USER_PERMISSIONS_SUCCESS = 'UPDATE_USER_PERMISSIONS_SUCCESS',
     UPDATE_USER_PERMISSIONS_FAILED = 'UPDATE_USER_PERMISSIONS_FAILED',
 
+    CREATE_REPO = 'CREATE_REPO',
+    CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
+    CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
+
     CHECKPOINT_REPO = 'CHECKPOINT_REPO',
     CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
     CHECKPOINT_REPO_FAILED = 'CHECKPOINT_REPO_FAILED',
@@ -86,6 +90,27 @@ export interface IUpdateUserPermissionsSuccessAction {
     }
 }
 
+export type IUpdateUserPermissionsFailedAction = FailedAction<RepoActionType.UPDATE_USER_PERMISSIONS_FAILED>
+
+export interface ICreateRepoAction {
+    type: RepoActionType.CREATE_REPO
+    payload: {
+        repoID: string
+        orgID: string,
+    }
+}
+
+export interface ICreateRepoSuccessAction {
+    type: RepoActionType.CREATE_REPO_SUCCESS
+    payload: {
+        repoID: string
+        path: string
+        orgID: string,
+    }
+}
+
+export type ICreateRepoFailedAction = FailedAction<RepoActionType.CREATE_REPO_FAILED>
+
 export interface ICheckpointRepoAction {
     type: RepoActionType.CHECKPOINT_REPO
     payload: {
@@ -149,8 +174,6 @@ export interface IPullRepoSuccessAction {
 
 export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED>
 
-export type IUpdateUserPermissionsFailedAction = FailedAction<RepoActionType.UPDATE_USER_PERMISSIONS_FAILED>
-
 export type IRepoAction =
     IGetRepoListAction |
     IGetRepoListSuccessAction |
@@ -163,6 +186,10 @@ export type IRepoAction =
     IUpdateUserPermissionsAction |
     IUpdateUserPermissionsSuccessAction |
     IUpdateUserPermissionsFailedAction |
+
+    ICreateRepoAction |
+    ICreateRepoSuccessAction |
+    ICreateRepoFailedAction |
 
     ICheckpointRepoAction |
     ICheckpointRepoSuccessAction |
@@ -182,6 +209,7 @@ export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoLis
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
 
+export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
 export const cloneRepo = (payload: ICloneRepoAction['payload']): ICloneRepoAction => ({ type: RepoActionType.CLONE_REPO, payload })
 export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']): ICloneRepoProgressAction => ({ type: RepoActionType.CLONE_REPO_PROGRESS, payload })

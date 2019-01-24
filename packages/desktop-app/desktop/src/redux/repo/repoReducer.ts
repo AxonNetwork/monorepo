@@ -36,7 +36,7 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRepoState => {
     switch (action.type) {
-        case DesktopRepoActionType.CREATE_REPO_SUCCESS: {
+        case RepoActionType.CREATE_REPO_SUCCESS: {
             const { repoID, path } = action.payload
             return {
                 ...state,
@@ -95,6 +95,10 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
                         hasBeenFetched: true,
                     },
                 },
+                reposByHash: {
+                    ...state.reposByHash,
+                    [getHash(path)]: path
+                }
             }
         }
 

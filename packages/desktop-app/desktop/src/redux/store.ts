@@ -4,8 +4,7 @@ import { createStore, applyMiddleware, compose, Store } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
 import logic from './logic'
 import reducer from './reducer'
-import { IUserState } from 'conscience-components/redux/user/userReducer'
-import { IRepoState } from 'conscience-components/redux/repo/repoReducer'
+import { IGlobalState } from 'conscience-components/redux'
 
 export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
 
@@ -21,7 +20,7 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
 
     const store = createStore(
         connectRouter(history)(reducer),
-        initialState,
+        initialState as any,
         enhancer
     )
 
@@ -36,8 +35,8 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
     return store
 }
 
-export interface IGlobalState {
-    repo: IRepoState
-    user: IUserState
-    rotuer?: RouterState
+declare module 'conscience-components/redux' {
+    export interface IGlobalState {
+        router?: RouterState
+    }
 }

@@ -11,9 +11,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { H4 } from 'conscience-components/Typography/Headers'
-import SharedRepos from './components/SharedRepos'
-import { IGlobalState } from 'redux/store'
-import { createRepo } from 'redux/repo/repoActions'
+import SharedReposList from 'conscience-components/SharedReposList'
+import { IGlobalState } from 'conscience-components/redux'
+import { createRepo } from 'conscience-components/redux/repo/repoActions'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -69,7 +69,7 @@ class NewRepositoryPage extends React.Component<Props, State>
                     </form>
                 </Grid>
                 <Grid item className={classes.column} xs={12} sm={6}>
-                    <SharedRepos />
+                    <SharedReposList />
                 </Grid>
             </Grid>
         )
@@ -89,6 +89,12 @@ class NewRepositoryPage extends React.Component<Props, State>
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
+        if (this._inputRepoID === null || this._inputRepoID.value === '') {
+            return
+        }
+        const repoID = this._inputRepoID.value
+        const orgID = this.state.orgID
+        this.props.createRepo({ repoID, orgID })
     }
 }
 

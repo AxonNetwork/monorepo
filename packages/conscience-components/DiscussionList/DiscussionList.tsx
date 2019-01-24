@@ -26,7 +26,7 @@ class DiscussionList extends React.Component<Props>
 
         const newestComment = this.props.newestCommentTimestampPerDiscussion
 
-        const order = this.props.order || Object.keys(discussions)
+        const order = this.props.order || this.props.discussionIDsSortedByNewestComment
         let discussionsSorted = order.map(id => discussions[id])
         if (this.props.maxLength !== undefined) {
             discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
@@ -104,6 +104,7 @@ interface StateProps {
     users: { [email: string]: IUser }
     newestViewedCommentTimestamp: { [discussionID: string]: number }
     newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
+    discussionIDsSortedByNewestComment: string[]
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -177,6 +178,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         discussions: state.discussion.discussions,
         newestViewedCommentTimestamp: ((state.user.userSettings.newestViewedCommentTimestamp || {})[repoID] || {}),
         newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
+        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
 }
 
