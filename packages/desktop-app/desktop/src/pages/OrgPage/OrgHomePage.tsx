@@ -1,3 +1,6 @@
+import keyBy from 'lodash/keyBy'
+import uniqBy from 'lodash/uniqBy'
+import values from 'lodash/values'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
@@ -9,10 +12,9 @@ import Members from 'conscience-components/OrgPage/ConnectedMembers'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { fetchOrgInfo, addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { fetchFullRepo } from 'redux/repo/repoActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
 import { autobind, getHash } from 'conscience-lib/utils'
-import { keyBy, uniqBy, values } from 'lodash'
 
 
 @autobind

@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router'
 import { History } from 'history'
 import { Provider } from 'react-redux'
 import { Store } from 'redux'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import MainUI from 'components/MainUI'
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'

@@ -125,6 +125,10 @@ export function selectUser(username: string) {
     history.push(`/user/${username}`)
 }
 
+export function selectOrg(orgID: string) {
+    history.push(`/org/${orgID}`)
+}
+
 export function selectOrgShowcase(orgID: string) {
     history.push(`/showcase/${orgID}`)
 }

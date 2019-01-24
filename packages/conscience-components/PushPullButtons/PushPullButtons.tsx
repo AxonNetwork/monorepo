@@ -51,14 +51,14 @@ class PushPullButtons extends React.Component<Props, State>
 
         const files = repo.files || {}
         // @@TODO: calculate this in the reducer, and only when `files` changes
-        const filesChanged = Object.keys(files).some((name) => {
+        const filesChanged = Object.keys(files).some(name => {
             const file = files[name]
             return (file.status === 'M' || file.status === '?' || file.status === 'U')
         })
 
-        const mergeConflicts = Object.keys(files).filter((name => files[name].mergeConflict))
-        const pullEnabled = !repo.behindRemote || pullLoading
-        const pushEnabled = !filesChanged || checkpointLoading
+        const mergeConflicts = Object.keys(files).filter(name => files[name].mergeConflict)
+        const pullDisabled = !repo.behindRemote || pullLoading
+        const pushDisabled = !filesChanged || checkpointLoading
 
         return (
             <div className={classes.root}>
@@ -66,7 +66,7 @@ class PushPullButtons extends React.Component<Props, State>
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
-                        disabled={pullEnabled}
+                        disabled={pullDisabled}
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
@@ -85,7 +85,7 @@ class PushPullButtons extends React.Component<Props, State>
                     <IconButton
                         color="secondary"
                         classes={{ root: classes.button }}
-                        disabled={pushEnabled}
+                        disabled={pushDisabled}
                         onClick={this.onClickOpenPushDialog}
                     >
                         {!checkpointLoading && <BackupIcon className={classes.icon} />}
@@ -111,13 +111,11 @@ class PushPullButtons extends React.Component<Props, State>
                             Looks like you have some merge conflicts in the following files. Click on the file to resolve the conflicts before committing your changes.
                         </DialogContentText>
                         <List>
-                            {
-                                mergeConflicts.map(file => (
-                                    <ListItem button onClick={() => this.onClickOpenMergeConflict(file)}>
-                                        <ListItemText primary={file} />
-                                    </ListItem>
-                                ))
-                            }
+                            {mergeConflicts.map(file => (
+                                <ListItem button onClick={() => this.onClickOpenMergeConflict(file)}>
+                                    <ListItemText primary={file} />
+                                </ListItem>
+                            ))}
                         </List>
                     </DialogContent>
                     <DialogActions>
@@ -167,7 +165,7 @@ class PushPullButtons extends React.Component<Props, State>
     onClickOpenPushDialog() {
         const repo = getRepo(this.props.uri) || {}
         const files = repo.files || {}
-        const mergeConflict = Object.keys(files).some((name => files[name].mergeConflict))
+        const mergeConflict = Object.keys(files).some(name => files[name].mergeConflict)
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
 
@@ -184,13 +182,9 @@ class PushPullButtons extends React.Component<Props, State>
         this.setState({ mergeConflictDialogOpen: false })
     }
 
-    onClickOpenMergeConflict(file: string) {
-        const uri = {
-            ...this.props.uri,
-            filename: file
-        }
+    onClickOpenMergeConflict(filename: string) {
         this.setState({ mergeConflictDialogOpen: false })
-        selectFile(uri, FileMode.ResolveConflict)
+        selectFile({ ...this.props.uri, filename }, FileMode.ResolveConflict)
     }
 
     onClickPush() {

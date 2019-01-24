@@ -6,8 +6,9 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Badge from '@material-ui/core/Badge'
 
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, URIType, RepoPage } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { selectRepo } from 'conscience-components/navigation'
 
 
 @autobind
@@ -34,7 +35,7 @@ class RepoList extends React.Component<Props>
                                     button
                                     dense
                                     className={classnames({ [classes.selected]: isSelected })}
-                                    onClick={() => this.props.selectRepo({ repoRoot: repo.path })}
+                                    onClick={() => selectRepo({ type: URIType.Local, repoRoot: repo.path! }, RepoPage.Home)}
                                 >
                                     {isChanged &&
                                         <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
@@ -55,9 +56,8 @@ class RepoList extends React.Component<Props>
 }
 
 interface Props {
-    repos: { [folderPath: string]: IRepo }
+    repos: { [repoRoot: string]: IRepo }
     selectedRepo?: string | undefined
-    selectRepo: (payload: { repoRoot: string | undefined }) => void
     classes: any
 }
 

@@ -32,8 +32,7 @@ function Routes({ loginState, username, history }: Props) {
                     } else {
                         return <Redirect to="/login" />
                     }
-                }}
-                />
+                }} />
             </Switch>
             <Footer />
         </div>
@@ -56,15 +55,10 @@ export function PrivateRoute({ component: Component, loginState, ...rest }: any)
         <Route {...rest} render={(props) => {
             if (loginState === LoginState.LoggedIn) {
                 return <Component {...props} />
+
             } else if (loginState === LoginState.NotLoggedIn) {
-                return (
-                    <Redirect
-                        to={{
-                            pathname: '/login',
-                            state: { from: props.location },
-                        }}
-                    />
-                )
+                return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+
             } else {
                 return null
             }

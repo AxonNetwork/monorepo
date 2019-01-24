@@ -16,7 +16,7 @@ import DiscussionList from 'conscience-components/DiscussionList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepo, IUser, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -34,10 +34,7 @@ class RepoHomePage extends React.Component<Props>
                     {readme &&
                         <div>
                             <FileViewer
-                                uri={{
-                                    ...this.props.uri,
-                                    filename: 'README.md'
-                                }}
+                                uri={{ ...this.props.uri, filename: 'README.md' }}
                                 showViewerPicker={false}
                             />
                             <IconButton

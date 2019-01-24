@@ -9,7 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import Sidebar from './Sidebar/Sidebar'
 import Routes from '../Routes'
 import Login from './Login/LoginPage'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
 
 @autobind

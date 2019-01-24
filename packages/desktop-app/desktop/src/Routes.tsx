@@ -5,6 +5,7 @@ import RepoPage from './pages/RepoPage'
 import NewRepoPage from './pages/NewRepoPage'
 import OrgPage from './pages/OrgPage'
 import SettingsPage from './pages/SettingsPage'
+import UserPage from 'conscience-components/UserPage'
 
 function Routes(props: Props) {
     console.log(props.history.location.pathname)
@@ -16,6 +17,7 @@ function Routes(props: Props) {
             <Route path="/org/:orgID" component={OrgPage} />
             <Route path="/welcome" component={WelcomePage} />
             <Route path="/settings" component={SettingsPage} />
+            <Route path="/user/:username" component={UserPage} />
             <Route render={() => (
                 <Redirect to="/welcome" />
             )} />

@@ -16,6 +16,7 @@ class BinaryDiff extends React.Component<Props>
 
         return (
             <div className={classes.root}>
+                <div className={classes.darkBar}></div>
                 <FileViewer
                     uri={{ ...this.props.uri, filename: fileDiff.to }}
                     showViewerPicker
@@ -74,6 +75,13 @@ interface Props {
 const styles = (theme: Theme) => createStyles({
     root: {
         backgroundColor: '#cecece',
+    },
+    darkBar: {
+        position: 'absolute',
+        opacity: 0.3,
+        backgroundColor: 'black',
+        width: '100%',
+        height: 32,
     },
     fileViewerRoot: {
         display: 'block',

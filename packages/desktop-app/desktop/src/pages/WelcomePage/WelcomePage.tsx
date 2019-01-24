@@ -5,7 +5,8 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { IGlobalState } from 'redux/store'
+import { H3 } from 'conscience-components/Typography/Headers'
+import { IGlobalState } from 'conscience-components/redux'
 import { createRepo } from 'redux/repo/repoActions'
 import { autobind } from 'conscience-lib/utils'
 import logo from '../../assets/img/logo.png'
@@ -21,9 +22,9 @@ class NewRepository extends React.Component<Props>
         return (
             <div className={classes.welcomePage}>
                 <img src={logo} alt="Conscience Logo" className={classes.logo} />
-                <Typography variant="h3">
-                    Welcome to Conscience
-                </Typography>
+
+                <H3>Welcome to Conscience</H3>
+
                 <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
                     <Typography variant="subtitle1">
                         Get started by creating your first repository:
@@ -105,7 +106,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     const createRepoLoading = state.ui.createRepoLoading
     return {
-        createRepoLoading
+        createRepoLoading,
     }
 }
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import MergeConflictResolver from 'conscience-components/MergeConflictResolver'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { LocalURI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

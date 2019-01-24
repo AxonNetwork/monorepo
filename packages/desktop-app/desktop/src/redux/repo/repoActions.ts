@@ -1,4 +1,4 @@
-import { IRepoFile, ITimelineEvent, RepoPage } from 'conscience-lib/common'
+import { IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 import { FailedAction } from 'conscience-components/redux/reduxUtils'
 import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
 
@@ -33,14 +33,6 @@ export enum DesktopRepoActionType {
 
     WATCH_REPO = 'WATCH_REPO',
     WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
-
-    SELECT_REPO = 'SELECT_REPO',
-    SELECT_REPO_SUCCESS = 'SELECT_REPO_SUCCESS',
-
-    SELECT_FILE = 'SELECT_FILE',
-    SELECT_COMMIT = 'SELECT_COMMIT',
-
-    NAVIGATE_REPO_PAGE = 'NAVIGATE_REPO_PAGE',
 
     FETCHED_REPO = 'FETCHED_REPO',
 
@@ -184,22 +176,6 @@ export interface IFetchRepoUsersPermissionsSuccessAction {
 
 export type IFetchRepoUsersPermissionsFailedAction = FailedAction<DesktopRepoActionType.FETCH_REPO_USERS_PERMISSIONS_FAILED>
 
-export interface ISelectRepoAction {
-    type: DesktopRepoActionType.SELECT_REPO
-    payload: {
-        repoID: string
-        path: string,
-    }
-}
-
-export interface ISelectRepoSuccessAction {
-    type: DesktopRepoActionType.SELECT_REPO_SUCCESS
-    payload: {
-        repoID: string
-        path: string,
-    }
-}
-
 export interface IWatchRepoAction {
     type: DesktopRepoActionType.WATCH_REPO
     payload: {
@@ -211,32 +187,6 @@ export interface IWatchRepoAction {
 export interface IWatchRepoSuccessAction {
     type: DesktopRepoActionType.WATCH_REPO_SUCCESS
     payload: {}
-}
-
-export interface INavigateRepoPageAction {
-    type: DesktopRepoActionType.NAVIGATE_REPO_PAGE,
-    payload: {
-        repoPage: RepoPage,
-    }
-}
-
-export interface ISelectFileAction {
-    type: DesktopRepoActionType.SELECT_FILE
-    payload: {
-        selectedFile: {
-            file: string
-            isFolder: boolean
-            mode: FileMode
-            defaultEditorContents?: string,
-        } | undefined,
-    }
-}
-
-export interface ISelectCommitAction {
-    type: DesktopRepoActionType.SELECT_COMMIT
-    payload: {
-        selectedCommit: string | undefined,
-    }
 }
 
 export interface IRevertFilesAction {
@@ -296,16 +246,8 @@ export type IDesktopRepoAction =
     IFetchRemoteRefsSuccessAction |
     IFetchRemoteRefsFailedAction |
 
-    ISelectRepoAction |
-    ISelectRepoSuccessAction |
-
     IWatchRepoAction |
     IWatchRepoSuccessAction |
-
-    ISelectFileAction |
-    ISelectCommitAction |
-
-    INavigateRepoPageAction |
 
     IRevertFilesAction |
     IRevertFilesSuccessAction |
@@ -322,10 +264,6 @@ export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAct
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: DesktopRepoActionType.FETCH_LOCAL_REFS, payload })
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: DesktopRepoActionType.FETCH_REMOTE_REFS, payload })
 
-export const selectRepo = (payload: ISelectRepoAction['payload']): ISelectRepoAction => ({ type: DesktopRepoActionType.SELECT_REPO, payload })
-export const selectFile = (payload: ISelectFileAction['payload']): ISelectFileAction => ({ type: DesktopRepoActionType.SELECT_FILE, payload })
-export const selectCommit = (payload: ISelectCommitAction['payload']): ISelectCommitAction => ({ type: DesktopRepoActionType.SELECT_COMMIT, payload })
-export const navigateRepoPage = (payload: INavigateRepoPageAction['payload']): INavigateRepoPageAction => ({ type: DesktopRepoActionType.NAVIGATE_REPO_PAGE, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: DesktopRepoActionType.WATCH_REPO, payload })
 
 export const revertFiles = (payload: IRevertFilesAction['payload']): IRevertFilesAction => ({ type: DesktopRepoActionType.REVERT_FILES, payload })

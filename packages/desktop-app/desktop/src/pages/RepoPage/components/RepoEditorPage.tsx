@@ -1,13 +1,13 @@
+import fs from 'fs'
+import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import MarkdownEditor from 'conscience-components/MarkdownEditor'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { LocalURI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import fs from 'fs'
-import path from 'path'
 
 
 @autobind

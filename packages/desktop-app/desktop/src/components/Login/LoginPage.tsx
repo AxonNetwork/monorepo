@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import logo from '../../assets/img/logo.png'
 
 import { login, signup } from 'conscience-components/redux/user/userActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
 
 

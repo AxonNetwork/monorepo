@@ -19,6 +19,8 @@ class FileLink extends React.Component<Props, State>
         const { classes } = this.props
         const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
 
+        console.log('props', this.props)
+
         return (
             <React.Fragment>
                 <a

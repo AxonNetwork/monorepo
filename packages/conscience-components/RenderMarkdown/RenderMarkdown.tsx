@@ -66,7 +66,7 @@ class RenderMarkdown extends React.Component<Props>
                 )
             case 'file':
                 return (
-                    <FileLink uri={this.props.uri} />
+                    <FileLink uri={{ ...this.props.uri, filename: contents }} />
                 )
             case 'discussion':
                 return (

@@ -10,6 +10,7 @@ const appPath = require('electron').app.getAppPath()
 
 const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
 rpc.initClient(protoPath)
+fs.writeFileSync('/tmp/zzz2', protoPath)
 
 const reposByHash = {}
 const crypto = require('crypto')
@@ -47,6 +48,7 @@ function start() {
         const repoHash = q.substring(repoIndex + 6, commitIndex)
         const commit = q.substring(commitIndex + 6, fileIndex)
         const filename = decodeURI(q.substring(fileIndex + 1))
+        fs.writeFileSync('/tmp/zzz', JSON.stringify({ repoIndex, commitIndex, fileIndex, repoHash, commit, filename }))
 
     	if (!repoHash || !commit || !filename) {
     		res.writeHead(400)
@@ -64,13 +66,13 @@ function start() {
                 res.writeHead(400)
                 return res.end('bad commit')
             }
-            stream = client.getObject({ repoRoot, commitHash: commit, filename, maxSize: 999999999999999 })
+            stream = client.getObject({ repoRoot, commitHash: Buffer.from(commit, 'hex'), filename, maxSize: 999999999999999 })
         }
 
         stream.on('error', (err) => {
             console.error(`error sending object ${filename}: ${err.toString()}`)
             res.writeHead(404)
-            return res.end()
+            return res.end(`error sending object ${repoRoot} : ${commit} : ${filename}`)
         })
 
         const contentType = mime.lookup(filename)

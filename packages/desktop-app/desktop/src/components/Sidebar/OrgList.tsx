@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { selectOrg } from 'conscience-components/navigation'
 
 
 @autobind
@@ -39,7 +40,7 @@ class OrgList extends React.Component<Props, State>
                                         button
                                         dense
                                         className={classnames({ [classes.selected]: isSelected })}
-                                        onClick={() => this.props.selectOrg({ orgID })}
+                                        onClick={() => selectOrg(orgID)}
                                     >
                                         <ListItemText primary={org.name} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                     </ListItem>
@@ -99,7 +100,6 @@ class OrgList extends React.Component<Props, State>
 interface Props {
     orgs: { [orgID: string]: IOrganization }
     selectedOrg?: string | null
-    selectOrg: (payload: { orgID: string }) => void
     createOrg: Function
     classes: any
 }

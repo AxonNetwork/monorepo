@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { History } from 'history'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { createDiscussion } from 'conscience-components/redux/discussion/discussionActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
 import { IRepoFile, IUser, IDiscussion } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 

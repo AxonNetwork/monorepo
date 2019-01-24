@@ -1,3 +1,4 @@
+import fromPairs from 'lodash/fromPairs'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -100,7 +101,7 @@ class SmartTextarea extends React.Component<Props, State>
         const ref = embedType + ':[' + refTarget + '] '
         const position = this.state.position
         let comment = this.state.comment
-        comment = comment.substring(0, position) + ref + comment.substring(position + 5)
+        comment = comment.substring(0, position) + ref + comment.substring(position + embedType.length)
         this.setState({ comment: comment })
     }
 
@@ -208,9 +209,12 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         repo = state.repo.repos[ownProps.uri.repoID]
     }
 
+    const discussionIDs = state.discussion.discussionsByRepo[repo.repoID]
+    const discussions = fromPairs(discussionIDs.map(discussionID => [discussionID, state.discussion.discussions[discussionID]]))
+
     return {
         files: (repo || { files: {} }).files || {},
-        discussions: state.discussion.discussions,
+        discussions,
     }
 }
 

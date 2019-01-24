@@ -1,3 +1,4 @@
+import keyBy from 'lodash/keyBy'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router'
@@ -21,10 +22,10 @@ import RepoList from './RepoList'
 import OrgList from './OrgList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { createOrg } from 'conscience-components/redux/org/orgActions'
-import { IGlobalState } from 'redux/store'
+import { IGlobalState } from 'conscience-components/redux'
+import { selectRepo, selectSettings } from 'conscience-components/navigation'
 import { IRepo, IUser, IOrganization } from 'conscience-lib/common'
 import { autobind, getHash } from 'conscience-lib/utils'
-import { keyBy } from 'lodash'
 
 
 @autobind
@@ -71,7 +72,6 @@ class Sidebar extends React.Component<Props, State>
                         <RepoList
                             repos={this.props.repos}
                             selectedRepo={this.props.selectedRepo}
-                            selectRepo={this.navigateRepo}
                         />
                     </Collapse>
 
@@ -82,7 +82,6 @@ class Sidebar extends React.Component<Props, State>
                     <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
                         <OrgList
                             orgs={this.props.orgs}
-                            selectOrg={this.navigateOrg}
                             createOrg={this.props.createOrg}
                         />
                     </Collapse>
@@ -93,12 +92,7 @@ class Sidebar extends React.Component<Props, State>
 
                 <Divider />
                 <List className={classes.sidebarDarkBG}>
-                    <ListItem
-                        button
-                        key="new"
-                        onClick={this.navigateNewRepo}
-                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'new' })}
-                    >
+                    <ListItem button key="new" onClick={this.navigateNewRepo} className={classes.sidebarItemIconWrapper}>
                         <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         <ListItemIcon>
                             <ControlPointIcon />
@@ -106,12 +100,7 @@ class Sidebar extends React.Component<Props, State>
                     </ListItem>
 
                     <Divider />
-                    <ListItem
-                        button
-                        key="settings"
-                        onClick={this.navigateSettings as (event: any) => void}
-                        className={classnames(classes.sidebarItemIconWrapper, { [classes.selected]: this.props.currentPage === 'settings' })}
-                    >
+                    <ListItem button key="settings" onClick={selectSettings} className={classes.sidebarItemIconWrapper}>
                         <ListItemText primary="Settings" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         <ListItemIcon>
                             <SettingsIcon />
@@ -130,24 +119,8 @@ class Sidebar extends React.Component<Props, State>
         this.setState({ orgOpen: !this.state.orgOpen })
     }
 
-    navigateRepo(payload: { repoRoot: string | undefined }) {
-        if (payload.repoRoot === undefined) {
-            return
-        }
-        const repoHash = getHash(payload.repoRoot)
-        this.props.history.push(`/local-repo/${repoHash}`)
-    }
-
     navigateNewRepo() {
         this.props.history.push(`/new-repo`)
-    }
-
-    navigateSettings() {
-        this.props.history.push('/settings')
-    }
-
-    navigateOrg(payload: { orgID: string }) {
-        this.props.history.push(`/org/${payload.orgID}`)
     }
 }
 
@@ -246,8 +219,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const user = state.user.users[currentUser] || {}
     const orgIDs = user.orgs || []
     const orgList = orgIDs
-        .filter((id: string) => state.org.orgs[id] !== undefined)
-        .map((id: string) => state.org.orgs[id] || {})
+        .filter(orgID => state.org.orgs[orgID] !== undefined)
+        .map(orgID => state.org.orgs[orgID] || {})
     const orgs = keyBy(orgList, 'orgID')
     const selectedRepo = state.repo.reposByHash[ownProps.match.params.repoHash || '']
     return {
