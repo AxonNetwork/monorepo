@@ -45,8 +45,8 @@ function setPath(obj: any, keypath: string, value: IRepoFile) {
                     files: {},
                 }
             } else {
-                if (value.modified === 'M' || value.modified === '?' || value.modified === 'U') {
-                    obj.files[part].modified = 'M'
+                if (value.status === 'M' || value.status === '?' || value.status === 'U') {
+                    obj.files[part].status = 'M'
                 }
                 obj.files[part].size += value.size
                 if (value.modified > obj.files[part].modified) {
