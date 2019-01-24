@@ -81,7 +81,7 @@ class DiffViewer extends React.Component<Props, State>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{ root: classes.detailsRoot }}>
                     {isTextFile && this.state.expanded &&
-                        <TextDiff fileDiff={fileDiff} />
+                        <TextDiff fileDiff={fileDiff} codeColorScheme={this.props.codeColorScheme} />
                     }
                     {!isTextFile && this.state.expanded &&
                         <BinaryDiff fileDiff={fileDiff} uri={this.props.uri} />
@@ -155,6 +155,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const { codeColorScheme } = state.user.userSettings
+    console.log("map state: ", codeColorScheme)
     return {
         codeColorScheme,
     }

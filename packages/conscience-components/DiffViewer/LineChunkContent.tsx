@@ -21,14 +21,18 @@ class LineChunkContent extends React.Component<Props>
         const scheme = (schemes as any)[this.props.codeColorScheme || 'pojoaque']
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = (schemeDefaults || {}).background || '#ffffff'
+        console.log('scheme: ', this.props.codeColorScheme || 'pojoaque')
 
         // @@TODO: cache these in State or maybe even map(schemes, () => add bgRed, bgGreen) -> memoize the schemes module
         let bgRed: string
         let bgGreen: string
+        console.log('bgcolor: ', backgroundColor)
         if (tinycolor(backgroundColor).isDark()) {
+            console.log('isDark')
             bgRed = tinycolor.mix('#ff0000', backgroundColor, 90).toHexString()
             bgGreen = tinycolor.mix('#00ff00', backgroundColor, 90).toHexString()
         } else {
+            console.log('isLight')
             bgRed = tinycolor.mix(red[100], backgroundColor, 50).toHexString()
             bgGreen = tinycolor.mix(green[100], backgroundColor, 50).toHexString()
         }
