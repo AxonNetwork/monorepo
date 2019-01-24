@@ -7,36 +7,16 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
-import SyntaxHighlighter from 'react-syntax-highlighter'
 import CodeViewer from 'conscience-components/CodeViewer'
 import parse from 'parse-diff'
 import tinycolor from 'tinycolor2'
 import { schemes } from 'conscience-lib/utils'
 
-const syntaxStyle = {
-    padding: 0,
-    margin: 0,
-    background: 'none',
-    textShadow: 'none',
-    border: 'none',
-    boxShadow: 'none',
-    // lineHeight: 'normal',
-    // height: '1rem',
-    tabSize: 4,
-}
-
-const codeTagProps = {
-    style: {
-        fontFamily: "Consolas, Menlo, Monaco, 'Courier New', sans-serif",
-        fontWeight: 500,
-        fontSize: '0.8rem',
-    },
-}
 
 class LineChunkContent extends React.Component<Props>
 {
     render() {
-        const { classes, language, chunk } = this.props
+        const { classes } = this.props
 
         const scheme = (schemes as any)[this.props.codeColorScheme || 'pojoaque']
         const schemeDefaults = scheme['pre[class*="language-"]']
@@ -56,7 +36,7 @@ class LineChunkContent extends React.Component<Props>
             <React.Fragment>
                 <Table>
                     <TableBody>
-                        {chunk.changes.map((change, i) => {
+                        {this.props.chunk.changes.map((change, i) => {
                             switch (change.type) {
                                 case 'add':
                                     return (

@@ -11,9 +11,8 @@ import UserImage from 'conscience-components/UserImage'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
-import { updateUserProfile } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, IUser, IOrganization, IDiscussion, RepoPage } from 'conscience-lib/common'
+import { IUser, IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -43,11 +42,7 @@ class UserPage extends React.Component<Props>
                             <H5 className={classes.userRealName}>{user.name}</H5>
                             <div className={classes.userUserName}>{user.username}</div>
                         </div>
-                        <UserProfile
-                            user={user}
-                            currentUser={this.props.currentUser}
-                            updateUserProfile={this.props.updateUserProfile}
-                        />
+                        <UserProfile user={user} />
 
                         <Divider />
 
@@ -105,21 +100,6 @@ class UserPage extends React.Component<Props>
     navigateOrgPage(orgID: string) {
         this.props.history.push(`/org/${orgID}`)
     }
-
-    selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) {
-        const repoID = payload.repoID
-        switch (payload.repoPage) {
-            case RepoPage.Home:
-                this.props.history.push(`/repo/${repoID}`)
-                return
-            case RepoPage.Files:
-                this.props.history.push(`/repo/${repoID}/files`)
-                return
-            case RepoPage.Discussion:
-                this.props.history.push(`/repo/${repoID}/discussion`)
-                return
-        }
-    }
 }
 
 interface MatchParams {
@@ -128,14 +108,9 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     repoList: string[] | undefined
-    repos: { [repoID: string]: IRepo }
     user: IUser
-    currentUser: string
     orgs: { [orgID: string]: IOrganization }
-    discussions: { [discussionID: string]: IDiscussion }
-    discussionsByRepo: { [repoID: string]: string[] }
     getRepoList: typeof getRepoList
-    updateUserProfile: typeof updateUserProfile
     classes: any
 }
 
@@ -197,18 +172,13 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
     const repoList = state.repo.repoListByUser[username]
     return {
         repoList: repoList,
-        repos: state.repo.repos,
         user,
-        currentUser: state.user.currentUser || '',
         orgs: state.org.orgs,
-        discussions: state.discussion.discussions,
-        discussionsByRepo: state.discussion.discussionsByRepo,
     }
 }
 
 const mapDispatchToProps = {
     getRepoList,
-    updateUserProfile,
 }
 
 export default connect(

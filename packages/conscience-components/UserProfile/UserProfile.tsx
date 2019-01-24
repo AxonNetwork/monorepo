@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
@@ -9,7 +10,9 @@ import IconButton from '@material-ui/core/IconButton'
 import LocationCityIcon from '@material-ui/icons/LocationCity'
 import SchoolIcon from '@material-ui/icons/School'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import { IUser, IUserProfile } from 'conscience-lib/common'
+import { IUser } from 'conscience-lib/common'
+import { IGlobalState } from 'conscience-components/redux'
+import { updateUserProfile } from 'conscience-components/redux/user/userActions'
 import { autobind } from 'conscience-lib/utils'
 
 const orcidLogo = require('../assets/orcid.png')
@@ -226,17 +229,24 @@ class UserProfile extends React.Component<Props, State>
     }
 }
 
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
+    user: IUser
+}
+
+interface StateProps {
+    currentUser: string | undefined
+}
+
+interface DispatchProps {
+    updateUserProfile: typeof updateUserProfile
+}
+
 interface State {
     editing: boolean
     showInterestForm: boolean
     interests: string[]
-}
-
-interface Props {
-    user: IUser
-    currentUser: string
-    updateUserProfile: (payload: { userID: string, profile: IUserProfile }) => void
-    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -283,5 +293,15 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(UserProfile)
+const mapStateToProps = (state: IGlobalState) => {
+    return {
+        currentUser: state.user.currentUser,
+    }
+}
+
+const mapDispatchToProps = {
+    updateUserProfile,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(UserProfile))
 

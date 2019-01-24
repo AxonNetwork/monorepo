@@ -42,13 +42,13 @@ export default (input: string) => {
     }
     function new_file() {
         restart()
-        file.new = true
-        file.from = '/dev/null'
+        file!.new = true
+        file!.from = '/dev/null'
     }
     function deleted_file() {
         restart()
-        file.deleted = true
-        file.to = '/dev/null'
+        file!.deleted = true
+        file!.to = '/dev/null'
     }
     function index(line: string) {
         restart()
@@ -84,7 +84,7 @@ export default (input: string) => {
             newStart,
             newLines
         }
-        file.chunks.push(current)
+        file!.chunks.push(current)
     }
     function del(line: string) {
         if (!current) {
@@ -96,7 +96,7 @@ export default (input: string) => {
             ln: ln_del++,
             content: line
         })
-        file.deletions++
+        file!.deletions++
     }
     function add(line: string) {
         if (!current) {
@@ -108,7 +108,7 @@ export default (input: string) => {
             ln: ln_add++,
             content: line
         })
-        file.additions++
+        file!.additions++
     }
     function normal(line: string) {
         if (!current) {
@@ -124,7 +124,7 @@ export default (input: string) => {
     }
     function eof(line: string) {
         let ref = current!.changes
-        let [recentChange] = [].slice.call(ref, -1)
+        let [recentChange] = [].slice.call(ref, -1) as any
         current!.changes.push({
             type: recentChange.type,
             [`${recentChange.type}`]: true,
@@ -132,10 +132,10 @@ export default (input: string) => {
             ln2: recentChange.ln2,
             ln: recentChange.ln,
             content: line
-        })
+        } as any)
     }
 
-    type HandlerFunc = (line: string, match?: RegExpMatchArray);
+    type HandlerFunc = (line: string, match?: RegExpMatchArray) => void;
     type SchemaEntry = [RegExp, HandlerFunc];
 
     const schema = [
@@ -180,7 +180,7 @@ function parseFile(s?: string) {
     if (fileNames) {
         return fileNames.map(fileName => fileName.slice(3, fileName.length - 1))
     } else {
-        return s.match(/a\/.*(?= b)|b\/.*$/g).map(fileName => fileName.replace(/^(a|b)\//, ''))
+        return (s.match(/a\/.*(?= b)|b\/.*$/g) || []).map(fileName => fileName.replace(/^(a|b)\//, ''))
     }
 }
 
@@ -209,7 +209,7 @@ function parseFileFallbackRename(s: string) {
     } else if (s.slice(7).startsWith('to')) {
         filename = s.slice(10)
     } else {
-        return null
+        return undefined
     }
 
     if (filename.startsWith('"')) {
@@ -238,9 +238,6 @@ function ensureString(s: any) {
 function defaultToWhiteSpace(chars: string | null) {
     if (chars === null) {
         return '\\s'
-    }
-    if (chars.source) {
-        return chars.source
     }
     return '[' + escapeRegExp(chars) + ']'
 }
