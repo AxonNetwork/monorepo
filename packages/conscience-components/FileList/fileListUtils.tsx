@@ -23,7 +23,7 @@ export function makeTree(files: { [name: string]: IRepoFile }) {
     return tree
 }
 
-function setPath(obj, keypath, value) {
+function setPath(obj: any, keypath: string, value: any) {
     obj.files = obj.files || {}
     const parts = keypath.split('/')
     let basepath = null

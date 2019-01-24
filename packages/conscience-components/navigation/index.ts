@@ -5,7 +5,6 @@ import history from '../redux/history'
 
 
 export function selectRepo(uri: URI, page: RepoPage) {
-    console.log('selectRepo', { uri, page })
     let parts: string[]
     if (uri.type === URIType.Local) {
         parts = ['local-repo', getHash(uri.repoRoot)]

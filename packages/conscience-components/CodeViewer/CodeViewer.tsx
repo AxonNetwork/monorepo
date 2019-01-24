@@ -16,7 +16,7 @@ class CodeViewer extends React.Component<Props>
         const backgroundColor = this.props.backgroundColor || (schemeDefaults || {}).background
         return (
             <div className={classes.codeContainer} style={{ backgroundColor }}>
-                <SyntaxHighlighter style={scheme} language={this.props.language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
+                <SyntaxHighlighter style={scheme} language={this.props.language} customStyle={{ ...syntaxStyle, ...this.props.syntaxStyle }} codeTagProps={codeTagProps as any}>
                     {this.props.fileContents || ''}
                 </SyntaxHighlighter>
             </div>
@@ -49,6 +49,7 @@ type Props = OwnProps & StateProps & { classes: any }
 interface OwnProps {
     language: string
     fileContents: string
+    syntaxStyle?: React.CSSProperties
     backgroundColor?: string
 }
 

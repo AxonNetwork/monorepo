@@ -31,7 +31,9 @@ class TextDiff extends React.Component<Props, State>
 
     render() {
         const { fileDiff, classes } = this.props
+        console.log('fileDiff', fileDiff)
         const language = fileDiff.to ? filetypes.getLanguage(fileDiff.to) : undefined
+        console.log('language', language)
         const type = fileDiff.to ? filetypes.getType(fileDiff.to) : undefined
 
         let panelTitle: JSX.Element | null = null
@@ -57,7 +59,7 @@ class TextDiff extends React.Component<Props, State>
                         fileDiff.chunks.map((chunk, i) => (
                             <React.Fragment>
                                 <div className={classes.line}>
-                                    {type === 'text' &&
+                                    {type !== 'data' &&
                                         <LineChunkContent chunk={chunk} codeColorScheme={this.props.codeColorScheme} language={language} />
                                     }
                                     {type === 'data' &&

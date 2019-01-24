@@ -1,5 +1,5 @@
 import union from 'lodash/union'
-import parseDiff from 'parse-diff'
+import parseDiff from 'conscience-lib/utils/parseDiff'
 import {
     RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,

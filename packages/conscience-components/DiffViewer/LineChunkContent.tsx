@@ -8,6 +8,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import SyntaxHighlighter from 'react-syntax-highlighter'
+import CodeViewer from 'conscience-components/CodeViewer'
 import parse from 'parse-diff'
 import tinycolor from 'tinycolor2'
 import { schemes } from 'conscience-lib/utils'
@@ -37,7 +38,7 @@ class LineChunkContent extends React.Component<Props>
     render() {
         const { classes, language, chunk } = this.props
 
-        const scheme = (schemes as any)[this.props.codeColorScheme || Object.keys(schemes)[0]]
+        const scheme = (schemes as any)[this.props.codeColorScheme || 'pojoaque']
         const schemeDefaults = scheme['pre[class*="language-"]']
         const backgroundColor = (schemeDefaults || {}).background || '#ffffff'
 
@@ -64,11 +65,13 @@ class LineChunkContent extends React.Component<Props>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumAdd, classes.constrainWidth)}><code>{change.ln}</code></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.constrainWidth)}><code>+</code></TableCell>
                                             <TableCell className={classes.cell}>
-                                                <div style={{ backgroundColor: bgGreen }}>
-                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
-                                                        {change.content.replace('+', ' ')}
-                                                    </SyntaxHighlighter>
-                                                </div>
+                                                <CodeViewer
+                                                    fileContents={' ' + change.content.slice(1)}
+                                                    language={this.props.language || ''}
+                                                    classes={{ codeContainer: classes.codeContainer }}
+                                                    syntaxStyle={{ lineHeight: '1.3rem' }}
+                                                    backgroundColor={bgGreen}
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     )
@@ -79,11 +82,13 @@ class LineChunkContent extends React.Component<Props>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.lineNumDel, classes.constrainWidth)}><code></code></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.constrainWidth)}><code>-</code></TableCell>
                                             <TableCell className={classes.cell}>
-                                                <div style={{ backgroundColor: bgRed }}>
-                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
-                                                        {change.content.replace('-', ' ')}
-                                                    </SyntaxHighlighter>
-                                                </div>
+                                                <CodeViewer
+                                                    fileContents={' ' + change.content.slice(1)}
+                                                    language={this.props.language || ''}
+                                                    classes={{ codeContainer: classes.codeContainer }}
+                                                    syntaxStyle={{ lineHeight: '1.3rem' }}
+                                                    backgroundColor={bgRed}
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     )
@@ -94,11 +99,12 @@ class LineChunkContent extends React.Component<Props>
                                             <TableCell className={classnames(classes.cell, classes.lineNum, classes.constrainWidth)}><code>{change.ln2}</code></TableCell>
                                             <TableCell className={classnames(classes.cell, classes.constrainWidth)}></TableCell>
                                             <TableCell className={classes.cell}>
-                                                <div style={{ backgroundColor }}>
-                                                    <SyntaxHighlighter style={scheme} language={language} customStyle={syntaxStyle} codeTagProps={codeTagProps as any}>
-                                                        {change.content}
-                                                    </SyntaxHighlighter>
-                                                </div>
+                                                <CodeViewer
+                                                    fileContents={change.content}
+                                                    language={this.props.language || ''}
+                                                    classes={{ codeContainer: classes.codeContainer }}
+                                                    syntaxStyle={{ lineHeight: '1.3rem' }}
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     )
@@ -154,6 +160,10 @@ const styles = (theme: Theme) => createStyles({
     constrainWidth: {
         width: '1%',
         minWidth: 50,
+    },
+    codeContainer: {
+        padding: 0,
+        overflowX: 'unset',
     },
 })
 

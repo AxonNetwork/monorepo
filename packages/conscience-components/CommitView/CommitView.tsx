@@ -5,6 +5,7 @@ import moment from 'moment'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
+import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import DiffViewer from '../DiffViewer'
 import UserAvatar from '../UserAvatar'
 import SecuredText from '../SecuredText'
@@ -76,7 +77,10 @@ class CommitView extends React.Component<Props>
                     </div>
                 </div>
 
-                {(this.props.fileDiffs || []).map(fileDiff => (
+                {!this.props.fileDiffs &&
+                    <LargeProgressSpinner />
+                }
+                {this.props.fileDiffs && this.props.fileDiffs.map(fileDiff => (
                     <DiffViewer
                         key={(fileDiff.from || '') + (fileDiff.to || '')}
                         uri={{ ...this.props.uri, filename: fileDiff.to }}
