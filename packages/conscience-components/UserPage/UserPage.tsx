@@ -99,17 +99,22 @@ class UserPage extends React.Component<Props>
     }
 }
 
+type Props = OwnProps & DispatchProps & RouteComponentProps<MatchParams> & { classes: any }
+
+interface OwnProps {
+    repoList: string[] | undefined
+    user: IUser
+    orgs: { [orgID: string]: IOrganization }
+}
+
+interface DispatchProps {
+    getRepoList: typeof getRepoList
+}
+
 interface MatchParams {
     username: string
 }
 
-interface Props extends RouteComponentProps<MatchParams> {
-    repoList: string[] | undefined
-    user: IUser
-    orgs: { [orgID: string]: IOrganization }
-    getRepoList: typeof getRepoList
-    classes: any
-}
 
 const styles = (theme: Theme) => createStyles({
     container: {
@@ -117,7 +122,7 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'center',
     },
     main: {
-        width: 1024,
+        // width: 1024,
         marginTop: 32,
         display: 'flex',
         flexDirection: 'row',

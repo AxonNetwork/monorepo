@@ -32,12 +32,8 @@ class RepoHistoryPage extends React.Component<Props>
         } else {
             return (
                 <div className={classes.main}>
-                    <CommitView
-                        uri={{
-                            ...this.props.uri,
-                            commit: commit
-                        }}
-                    />
+                    <CommitView uri={{ ...this.props.uri, commit }} />
+
                     <div className={classes.createDiscussionContainer}>
                         <H5>Start a discussion on this commit:</H5>
                         <div className={classes.createDiscussion}>

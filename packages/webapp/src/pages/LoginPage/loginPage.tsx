@@ -10,6 +10,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { login } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { H3 } from 'conscience-components/Typography/Headers'
+import { getUserURL } from 'conscience-components/navigation'
 import autobind from 'conscience-lib/utils/autobind'
 const logo = require('../../assets/logo-invert.png')
 
@@ -28,14 +29,16 @@ class LoginPage extends React.Component<Props>
     }
 
     render() {
-        const { checkedLoggedIn, loggedIn, error, classes } = this.props
-        const { from } = this.props.location.state || { from: { pathname: "/repo" } }
+        const { checkedLoggedIn, currentUser, error, classes } = this.props
         if (!checkedLoggedIn) {
             return <div></div>
         }
-        if (loggedIn) {
+
+        if (currentUser !== undefined) {
+            const { from } = this.props.location.state || { from: { pathname: getUserURL(currentUser) } }
             return <Redirect to={from} />
         }
+
         return (
             <div className={classes.background}>
                 <main className={classes.main}>
@@ -91,8 +94,8 @@ class LoginPage extends React.Component<Props>
 }
 
 interface Props extends RouteComponentProps {
+    currentUser: string | undefined
     checkedLoggedIn: boolean
-    loggedIn: boolean
     error: Error | undefined
     login: typeof login
     classes: any
@@ -165,11 +168,10 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const checkedLoggedIn = state.user.checkedLoggedIn
-    const loggedIn = state.user.currentUser !== undefined
     const error = state.user.loginError
     return {
+        currentUser: state.user.currentUser,
         checkedLoggedIn,
-        loggedIn,
         error
     }
 }

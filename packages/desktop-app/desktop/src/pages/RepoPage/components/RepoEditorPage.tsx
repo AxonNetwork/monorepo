@@ -65,7 +65,7 @@ const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
     const filename = props.match.params.filename
     const uri = { type: URIType.Local, repoRoot, filename } as LocalURI
     return {
-        uri
+        uri,
     }
 }
 

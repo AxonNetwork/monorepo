@@ -1,19 +1,21 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, Redirect, withRouter, RouteComponentProps } from 'react-router'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 import LoginPage from 'pages/LoginPage'
 import RepoPage from 'pages/RepoPage'
-import UserPage from 'pages/UserPage'
+import UserPage from 'conscience-components/UserPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
 import { IGlobalState } from 'conscience-components/redux'
 
 
-function Routes({ loginState, username, history }: Props) {
+function Routes({ loginState, username, history, classes }: Props) {
     const location = history.location.pathname
+    console.log('classes', classes)
     return (
         <div>
             {location !== '/login' &&
@@ -25,7 +27,9 @@ function Routes({ loginState, username, history }: Props) {
                 <PrivateRoute path="/settings" component={SettingsPage} loginState={loginState} />
                 <PrivateRoute path="/org/:orgID" component={OrgPage} loginState={loginState} />
                 <Route path="/showcase/:orgID" component={ShowcasePage} />
-                <Route path="/user/:username" component={UserPage} />
+                <Route path="/user/:username" render={props => {
+                    return <UserPage {...props} classes={{ main: classes.constrainedWidth }} />
+                }} />
                 <Route render={() => {
                     if (loginState === LoginState.LoggedIn) {
                         return <Redirect to={`/user/${username}`} />
@@ -48,6 +52,7 @@ enum LoginState {
 interface Props extends RouteComponentProps {
     loginState: LoginState
     username: string | undefined
+    classes?: any
 }
 
 export function PrivateRoute({ component: Component, loginState, ...rest }: any) {
@@ -83,13 +88,13 @@ const mapStateToProps = (state: IGlobalState) => {
     }
 }
 
+const styles = createStyles({
+    constrainedWidth: {
+        width: 1024,
+    },
+})
+
 const mapDispatchToProps = {}
 
-const RoutesContainer = withRouter(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(Routes) as any,
-)
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Routes))) as any
 
-export default RoutesContainer

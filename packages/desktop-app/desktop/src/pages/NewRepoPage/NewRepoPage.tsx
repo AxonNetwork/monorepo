@@ -51,8 +51,8 @@ class NewRepositoryPage extends React.Component<Props, State>
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                {Object.keys(orgs).map((id: string) => (
-                                    <MenuItem value={id}>{orgs[id].name}</MenuItem>
+                                {Object.keys(orgs).map(orgID => (
+                                    <MenuItem value={orgID}>{orgs[orgID].name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -76,15 +76,11 @@ class NewRepositoryPage extends React.Component<Props, State>
     }
 
     componentWillMount() {
-        this.setState({
-            orgID: this.props.match.params.orgID || ""
-        })
+        this.setState({ orgID: this.props.match.params.orgID || '' })
     }
 
     handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
-        this.setState({
-            orgID: this.props.match.params.orgID || ""
-        })
+        this.setState({ orgID: this.props.match.params.orgID || '' })
     }
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {

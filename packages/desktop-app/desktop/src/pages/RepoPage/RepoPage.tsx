@@ -18,7 +18,7 @@ import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 
 
 @autobind
-class RepoPageRoutes extends React.Component<Props>
+class RepoPage extends React.Component<Props>
 {
     constructor(props: Props) {
         super(props)
@@ -71,7 +71,7 @@ class RepoPageRoutes extends React.Component<Props>
     }
 
     fetchFullRepo() {
-        const { repoID, path } = this.props.repo || { repoID: undefined, path: undefined }
+        const { repoID = undefined, path = undefined } = this.props.repo || {}
         if (repoID && path) {
             this.props.fetchFullRepo({ repoID, path })
         }
@@ -129,4 +129,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoPageRoutes))
+)(withStyles(styles)(RepoPage))

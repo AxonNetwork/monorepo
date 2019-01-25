@@ -46,7 +46,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
     const uri = { type: URIType.Local, repoRoot } as URI
     return {
-        uri
+        uri,
     }
 }
 

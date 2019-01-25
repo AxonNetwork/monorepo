@@ -12,7 +12,7 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
     const logicDeps = {}
-    const logicMiddleware = createLogicMiddleware(logic, logicDeps as any)
+    const logicMiddleware = createLogicMiddleware(logic as any, logicDeps as any) // @@TODO: 'logic as any' because TS doesn't seem to like makeContinuousLogic actions
 
     const enhancer = composeEnhancers(
         applyMiddleware(routerMiddleware(history), logicMiddleware)

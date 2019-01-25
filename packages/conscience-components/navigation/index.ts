@@ -122,7 +122,11 @@ export function selectUser(username: string) {
     if (username === undefined) {
         return
     }
-    history.push(`/user/${username}`)
+    history.push(getUserURL(username))
+}
+
+export function getUserURL(username: string) {
+    return `/user/${username}`
 }
 
 export function selectOrg(orgID: string) {

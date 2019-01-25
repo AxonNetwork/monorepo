@@ -6,7 +6,7 @@ import uiReducer from 'conscience-components/redux/ui/uiReducer'
 import userReducer from './user/userReducer'
 import repoReducer from './repo/repoReducer'
 
-import { IGlobalState } from './store'
+import { IGlobalState } from 'conscience-components/redux'
 
 const appReducer = combineReducers({
     user: userReducer,

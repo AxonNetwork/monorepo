@@ -16,8 +16,9 @@ import DiscussionList from 'conscience-components/DiscussionList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
+import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, IUser, URI, URIType } from 'conscience-lib/common'
+import { FileMode, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -34,7 +35,7 @@ class RepoHomePage extends React.Component<Props>
                     {readme &&
                         <div>
                             <FileViewer
-                                uri={{ ...this.props.uri, filename: 'README.md' }}
+                                uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
                                 showViewerPicker={false}
                             />
                             <IconButton
@@ -108,14 +109,8 @@ class RepoHomePage extends React.Component<Props>
         )
     }
 
-    navigateUserPage(payload: { username: string }) {
-        const username = payload.username
-        this.props.history.push(`/user/${username}`)
-    }
-
     onClickEditReadme() {
-        const repoHash = this.props.match.params.repoHash
-        this.props.history.push(`/local-repo/${repoHash}/edit/README.md`)
+        selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.Edit)
     }
 }
 

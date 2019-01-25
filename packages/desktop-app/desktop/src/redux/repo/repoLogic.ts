@@ -21,7 +21,6 @@ import {
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
-    ISelectRepoAction, ISelectRepoSuccessAction,
 
     IWatchRepoAction,
     fetchFullRepo, fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
@@ -109,18 +108,6 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
         // await dispatch({ type: FETCH_SHARED_REPOS })
 
         return { repos }
-    },
-})
-
-const selectRepoLogic = makeLogic<ISelectRepoAction, ISelectRepoSuccessAction>({
-    type: DesktopRepoActionType.SELECT_REPO,
-    async process({ getState, action }, dispatch) {
-        const { repoID, path } = action.payload
-        // If we don't have this repo in the store, fetch it.  Otherwise, just select it.
-        if (!(getState().repo.repos[path] || {}).hasBeenFetched) {
-            await dispatch(fetchFullRepo({ repoID, path }))
-        }
-        return { repoID, path }
     },
 })
 
@@ -267,7 +254,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         const { uri, commit } = action.payload
         const repoRoot = (getRepo(uri) || {}).path || ''
         if (repoRoot === undefined) {
-            throw new Error("could not find repo at ${repoRoot}")
+            throw new Error(`could not find repo at ${repoRoot}`)
         }
 
         let diffBlob: string
@@ -306,8 +293,8 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
             email: emails[0],
         })
         dispatch(cloneRepoProgress({ repoID, fetched: 1, toFetch: 20 }))
-        var path = ""
-        var success = false
+        let path = ''
+        let success = false
         stream.on('data', async (data: any) => {
             console.log('data: ', data)
             if (data.progress !== undefined) {
@@ -418,7 +405,6 @@ export default [
     // desktop-specific
     createRepoLogic,
     getLocalReposLogic,
-    selectRepoLogic,
     fetchFullRepoLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
