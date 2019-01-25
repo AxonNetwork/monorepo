@@ -28,10 +28,14 @@ class RepoHistoryPage extends React.Component<Props>
         }
         const { commit } = this.props.match.params
         if (commit === undefined) {
-            return <Timeline uri={this.props.uri} />
+            return (
+                <div className={classes.timelineWrapper}>
+                    <Timeline uri={this.props.uri} />
+                </div>
+            )
         } else {
             return (
-                <div className={classes.main}>
+                <div>
                     <CommitView uri={{ ...this.props.uri, commit }} />
 
                     <div className={classes.createDiscussionContainer}>
@@ -60,6 +64,9 @@ interface Props extends RouteComponentProps<MatchParams> {
 }
 
 const styles = (theme: Theme) => createStyles({
+    timelineWrapper: {
+        marginTop: 10,
+    },
     progressContainer: {
         width: '100%',
         display: 'flex',

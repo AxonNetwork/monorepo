@@ -131,6 +131,7 @@ const styles = (theme: Theme) => createStyles({
         [theme.breakpoints.down(1080)]: {
             flexDirection: 'column',
         },
+        marginTop: 32,
     },
     readmeContainer: {
         position: 'relative',
