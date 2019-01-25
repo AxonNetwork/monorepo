@@ -63,7 +63,7 @@ class Sidebar extends React.Component<Props, State>
 
                 <Divider />
 
-                <List>
+                <List classes={{ root: classes.repoListRoot }}>
                     <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
                         <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                         {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
@@ -181,6 +181,9 @@ const styles = (theme: Theme) => createStyles({
             duration: theme.transitions.duration.leavingScreen,
         }),
         width: 0,
+    },
+    repoListRoot: {
+        overflowY: 'auto',
     },
     sidebarSpacer: {
         flexGrow: 1,

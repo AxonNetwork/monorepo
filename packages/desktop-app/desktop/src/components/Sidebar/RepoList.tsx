@@ -18,38 +18,36 @@ class RepoList extends React.Component<Props>
         const { repos, selectedRepo, classes } = this.props
         return (
             <List>
-                {
-                    Object.keys(repos).sort().map((folderPath: string) => {
-                        let repo = repos[folderPath]
-                        let isChanged = false
-                        const files = repo.files
-                        if (files !== undefined) {
-                            isChanged = Object.keys(files).some(
-                                (name) => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U',
-                            )
-                        }
-                        const isSelected = repo.path === selectedRepo
-                        return (
-                            <React.Fragment key={repo.path}>
-                                <ListItem
-                                    button
-                                    dense
-                                    className={classnames({ [classes.selected]: isSelected })}
-                                    onClick={() => selectRepo({ type: URIType.Local, repoRoot: repo.path! }, RepoPage.Home)}
-                                >
-                                    {isChanged &&
-                                        <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
-                                            <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                        </Badge>
-                                    }
-                                    {!isChanged &&
-                                        <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                    }
-                                </ListItem>
-                            </React.Fragment>
+                {Object.keys(repos).sort().map((folderPath: string) => {
+                    const repo = repos[folderPath]
+                    const files = repo.files
+                    let isChanged = false
+                    if (files !== undefined) {
+                        isChanged = Object.keys(files).some(
+                            (name) => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U',
                         )
-                    })
-                }
+                    }
+                    const isSelected = repo.path === selectedRepo
+                    return (
+                        <React.Fragment key={repo.path}>
+                            <ListItem
+                                button
+                                dense
+                                className={classnames({ [classes.selected]: isSelected })}
+                                onClick={() => selectRepo({ type: URIType.Local, repoRoot: repo.path! }, RepoPage.Home)}
+                            >
+                                {isChanged &&
+                                    <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
+                                        <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                    </Badge>
+                                }
+                                {!isChanged &&
+                                    <ListItemText primary={repo.repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                }
+                            </ListItem>
+                        </React.Fragment>
+                    )
+                })}
             </List>
         )
     }

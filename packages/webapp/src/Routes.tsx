@@ -15,12 +15,12 @@ import { IGlobalState } from 'conscience-components/redux'
 
 function Routes({ loginState, username, history, classes }: Props) {
     const location = history.location.pathname
-    console.log('classes', classes)
     return (
         <div>
             {location !== '/login' &&
                 <Header />
             }
+
             <Switch>
                 <Route exact path="/login" component={LoginPage} />
                 <PrivateRoute path="/repo/:repoID" component={RepoPage} loginState={loginState} />
@@ -38,6 +38,7 @@ function Routes({ loginState, username, history, classes }: Props) {
                     }
                 }} />
             </Switch>
+
             <Footer />
         </div>
     )
