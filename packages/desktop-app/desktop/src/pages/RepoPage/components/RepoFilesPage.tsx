@@ -102,9 +102,9 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        [theme.breakpoints.up(1090)]: {
-            alignItems: 'center',
-        },
+        // [theme.breakpoints.up(1090)]: {
+        alignItems: 'center',
+        // },
     },
     fileViewer: {
         maxWidth: 960,

@@ -94,10 +94,15 @@ app.on('ready', () => {
     })
 })
 
+// Redirect <a> tag links to an external browser
 app.on('web-contents-created', (event, webContents) => {
     webContents.on('will-navigate', (event, url) => {
-        event.preventDefault()
-        shell.openExternal(url)
+        if (process.env.NODE_ENV === 'development' && url.indexOf('http://localhost:3004') === 0) {
+            // this is probably the hot module reloader re-navigating to the app bundle, so don't block it
+        } else {
+            event.preventDefault()
+            shell.openExternal(url)
+        }
     })
 })
 

@@ -1,8 +1,11 @@
 import isEqual from 'lodash/isEqual'
 import React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import classnames from 'classnames'
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
+import Input from '@material-ui/core/Input'
+import SettingsIcon from '@material-ui/icons/Settings'
 import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
@@ -12,6 +15,13 @@ import { getFileContents } from '../env-specific'
 @autobind
 class FileViewer extends React.Component<Props, State>
 {
+    state = {
+        hovering: false,
+        viewerPickerOpen: false,
+        viewerName: undefined,
+        fileContents: '',
+    }
+
     render() {
         const { fileContents } = this.state
         const { classes } = this.props
@@ -40,31 +50,52 @@ class FileViewer extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
+                <div onMouseOver={() => this.onHoverViewer(true)} onMouseOut={() => this.onHoverViewer(false)}>
+                    <Viewer
+                        uri={this.props.uri}
+                        fileContents={fileContents}
+                        classes={classes}
+                    />
+                </div>
                 {this.props.showViewerPicker &&
-                    <Select
-                        value={viewerName}
-                        onChange={this.onChangeViewer}
-                        className={classes.viewerPicker}
-                    >
-                        {viewers.map(viewer => (
-                            <MenuItem value={viewer.name}>
-                                {viewer.humanName}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <div className={classnames(classes.viewerPicker, { [classes.viewerPickerVisible]: this.state.hovering })}>
+                        <Select
+                            value={viewerName}
+                            renderValue={() => <SettingsIcon className={classes.viewerPickerIcon} />}
+                            input={<Input disableUnderline={true} />}
+                            onChange={this.onChangeViewer}
+                            onMouseOver={() => this.onHoverViewer(true)}
+                            className={classes.viewerPickerSelect}
+                            IconComponent={() => null}
+                            classes={{
+                                select: classes.viewerPickerMenu,
+                            }}
+                        >
+                            {viewers.map(viewer => (
+                                <MenuItem value={viewer.name}>
+                                    {viewer.humanName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </div>
                 }
-
-                <Viewer
-                    uri={this.props.uri}
-                    fileContents={fileContents}
-                    classes={classes}
-                />
             </div>
         )
     }
 
+    onClickOpenViewerPicker() {
+        this.setState({ viewerPickerOpen: !this.state.viewerPickerOpen })
+    }
+
+    onHoverViewer(hovering: boolean) {
+        this.setState({ hovering })
+    }
+
     onChangeViewer(evt: React.ChangeEvent<HTMLSelectElement>) {
-        this.setState({ viewerName: evt.target.value })
+        this.setState({
+            viewerName: evt.target.value,
+            viewerPickerOpen: false,
+        })
     }
 
     componentDidMount() {
@@ -106,19 +137,47 @@ interface Props {
 }
 
 interface State {
+    hovering: boolean
     viewerName: string | undefined
+    viewerPickerOpen: boolean,
     fileContents: string
     error: Error | undefined
 }
 
-const styles = () => createStyles({
+const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
     },
     viewerPicker: {
         width: 'fit-content',
-        // marginBottom: 10,
+        position: 'absolute',
+        right: 0,
+        opacity: 0,
+        transition: theme.transitions.create('opacity', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    viewerPickerVisible: {
+        opacity: 1,
+        transition: theme.transitions.create('opacity', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    viewerPickerIcon: {
+        fill: theme.palette.secondary.main,
+    },
+    viewerPickerSelect: {
+        width: 'fit-content',
+    },
+    viewerPickerMenu: {
+        paddingRight: 4,
+        '&:focus': {
+            backgroundColor: 'transparent',
+        }
     },
     imageEmbed: {
         maxWidth: '100%',
