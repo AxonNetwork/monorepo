@@ -22,7 +22,7 @@ class SharedReposList extends React.Component<Props>
         const { sharedRepos, classes, cloneRepoProgress } = this.props
         return (
             <React.Fragment>
-                <H6>Repositories shared with you</H6>
+                <H6>Clone a repository shared with you</H6>
                 <List>
                     {values(sharedRepos).map(repo => {
                         const repoProgress = cloneRepoProgress[repo.repoID]
@@ -32,21 +32,19 @@ class SharedReposList extends React.Component<Props>
                             percentDownloaded = Math.floor(100 * (repoProgress || { fetched: 0 }).fetched / (repoProgress || { toFetch: 1 }).toFetch)
                         }
                         return (
-                            <React.Fragment>
-                                <ListItem key={repo.repoID}>
-                                    <ListItemText primary={repo.repoID} />
-                                    <ListItemSecondaryAction>
-                                        <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })} >
-                                            <ControlPointIcon />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
-                                    {isDownloading &&
-                                        <div className={classes.progressBar}>
-                                            <LinearProgress color="secondary" variant="determinate" value={percentDownloaded} />
-                                        </div>
-                                    }
-                                </ListItem>
-                            </React.Fragment>
+                            <ListItem key={repo.repoID}>
+                                <ListItemText primary={repo.repoID} classes={{ primary: classes.text }} />
+                                <ListItemSecondaryAction>
+                                    <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })} >
+                                        <ControlPointIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                                {isDownloading &&
+                                    <div className={classes.progressBar}>
+                                        <LinearProgress color="secondary" variant="determinate" value={percentDownloaded} />
+                                    </div>
+                                }
+                            </ListItem>
                         )
                     })}
                 </List>
@@ -69,6 +67,10 @@ interface Props {
 }
 
 const styles = (theme: Theme) => createStyles({
+    text: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
     buttonLoading: {
         color: theme.palette.secondary.main,
         margin: 12,

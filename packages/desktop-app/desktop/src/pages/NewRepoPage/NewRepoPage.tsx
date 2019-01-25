@@ -20,7 +20,7 @@ import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class NewRepositoryPage extends React.Component<Props, State>
+class NewRepoPage extends React.Component<Props, State>
 {
     _inputRepoID: HTMLInputElement | null = null
 
@@ -40,7 +40,7 @@ class NewRepositoryPage extends React.Component<Props, State>
                             <Card className={classes.card}>
                                 <CardContent>
                                     <H6>Create a new repository</H6>
-                                    <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
+                                    <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit}>
                                         <TextField
                                             id="repo-id"
                                             label="Repository ID"
@@ -151,9 +151,6 @@ const styles = (theme: Theme) => createStyles({
         width: 500,
         margin: 16,
     },
-    form: {
-        marginRight: 128
-    },
     button: {
         display: 'block',
         textTransform: 'none',
@@ -187,4 +184,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(NewRepositoryPage))
+)(withStyles(styles)(NewRepoPage))
