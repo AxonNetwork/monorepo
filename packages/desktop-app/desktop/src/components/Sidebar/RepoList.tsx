@@ -1,3 +1,4 @@
+import sortBy from 'lodash/sortBy'
 import React from 'react'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
@@ -19,7 +20,7 @@ class RepoList extends React.Component<Props>
         const { localRepoList, repoIDsByPath, filesByURI, selectedRepo, classes } = this.props
         return (
             <List>
-                {localRepoList.sort().map((uri: LocalURI) => {
+                {sortBy(localRepoList, uri => repoIDsByPath[uri.repoRoot].toLowerCase()).map((uri: LocalURI) => {
                     const repoID = repoIDsByPath[uri.repoRoot]
                     let isChanged = false
                     const files = filesByURI[uriToString(uri)]
@@ -30,23 +31,22 @@ class RepoList extends React.Component<Props>
                     }
                     const isSelected = uri.repoRoot === selectedRepo
                     return (
-                        <React.Fragment key={uri.repoRoot}>
-                            <ListItem
-                                button
-                                dense
-                                className={classnames({ [classes.selected]: isSelected })}
-                                onClick={() => selectRepo(uri, RepoPage.Home)}
-                            >
-                                {isChanged &&
-                                    <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
-                                        <ListItemText primary={repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                    </Badge>
-                                }
-                                {!isChanged &&
+                        <ListItem
+                            key={uri.repoRoot}
+                            button
+                            dense
+                            className={classnames({ [classes.selected]: isSelected })}
+                            onClick={() => selectRepo(uri, RepoPage.Home)}
+                        >
+                            {isChanged &&
+                                <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
                                     <ListItemText primary={repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                }
-                            </ListItem>
-                        </React.Fragment>
+                                </Badge>
+                            }
+                            {!isChanged &&
+                                <ListItemText primary={repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                            }
+                        </ListItem>
                     )
                 })}
             </List>
