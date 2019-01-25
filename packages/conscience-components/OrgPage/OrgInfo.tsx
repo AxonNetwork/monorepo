@@ -57,7 +57,6 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'space-between',
         width: '100%',
         borderBottom: '1px solid #e4e4e4',
-        marginBottom: theme.spacing.unit * 2,
     },
     orgInfoContainer: {
         display: 'flex',

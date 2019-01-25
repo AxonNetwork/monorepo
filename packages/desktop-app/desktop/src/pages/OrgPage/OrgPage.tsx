@@ -79,6 +79,7 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
         height: '100%',
         overflowY: 'auto',
+        paddingTop: theme.spacing.unit * 2,
     },
     orgPageInner: {
         marginBottom: 128,

@@ -4,6 +4,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import PushPullButtons from 'conscience-components/PushPullButtons'
 import Tabs from 'conscience-components/Tabs'
+import { H5 } from 'conscience-components/Typography/Headers'
 import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
@@ -25,7 +26,7 @@ class RepoInfo extends React.Component<Props>
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
-                    <Typography variant="headline" className={classes.headline}>{repo.repoID}</Typography>
+                    <H5 className={classes.headline}>{repo.repoID}</H5>
                     <Typography className={classes.version}>{version}</Typography>
 
                     {this.props.showPushPullButtons &&

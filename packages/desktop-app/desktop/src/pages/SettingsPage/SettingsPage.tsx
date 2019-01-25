@@ -15,6 +15,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { H5 } from 'conscience-components/Typography/Headers'
 import CodeViewer from 'conscience-components/CodeViewer'
 import { setLocalConfig } from 'redux/user/userActions'
 import { logout, uploadUserPicture, modifyUserEmail } from 'conscience-components/redux/user/userActions'
@@ -24,7 +25,7 @@ import { autobind, schemes } from 'conscience-lib/utils'
 
 
 @autobind
-class Settings extends React.Component<Props>
+class SettingsPage extends React.Component<Props>
 {
     _inputUserPicture!: HTMLInputElement | null
     _inputNewEmail!: HTMLInputElement | null
@@ -37,9 +38,7 @@ class Settings extends React.Component<Props>
 
         return (
             <div className={classes.root}>
-                <div className={classes.pageTitle}>
-                    <Typography variant="h5" className={classes.headline}>Settings</Typography>
-                </div>
+                <H5 className={classes.pageTitle}>Settings</H5>
 
                 <div className={classes.contentArea}>
                     <div className={classes.contentAreaInner}>
@@ -216,9 +215,10 @@ const styles = (theme: Theme) => createStyles({
         flexDirection: 'column',
     },
     pageTitle: {
-        width: '100%',
-        padding: 20,
+        fontSize: '2rem',
+        color: 'rgba(0, 0, 0, 0.7)',
         borderBottom: '1px solid #e4e4e4',
+        paddingBottom: 20,
     },
     contentArea: {
         overflowY: 'auto',
@@ -277,4 +277,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(Settings))
+)(withStyles(styles)(SettingsPage))
