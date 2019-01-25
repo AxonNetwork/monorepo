@@ -16,13 +16,12 @@ class BinaryDiff extends React.Component<Props>
 
         return (
             <div className={classes.root}>
-                <div className={classes.darkBar}></div>
                 <FileViewer
                     uri={{ ...this.props.uri, filename: fileDiff.to }}
                     showViewerPicker
                     classes={{
                         root: classes.fileViewerRoot,
-                        viewerPicker: classes.fileViewerViewerPicker,
+                        // viewerPicker: classes.fileViewerViewerPicker,
                     }} />
             </div>
         )
@@ -76,15 +75,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         backgroundColor: '#cecece',
     },
-    darkBar: {
-        position: 'absolute',
-        opacity: 0.3,
-        backgroundColor: 'black',
-        width: '100%',
-        height: 32,
-    },
     fileViewerRoot: {
-        display: 'block',
         margin: '0 auto',
         width: 'fit-content',
         maxWidth: '100%',
