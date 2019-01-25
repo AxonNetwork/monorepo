@@ -36,7 +36,7 @@ import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
-import parseDiff from 'parse-diff'
+import parseDiff from 'conscience-lib/utils/parseDiff'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
