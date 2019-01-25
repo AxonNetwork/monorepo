@@ -1,5 +1,5 @@
 import fromPairs from 'lodash/fromPairs'
-import { IUser, IUserSettings } from 'conscience-lib/common'
+import { IUser, ISharedRepoInfo, IUserSettings } from 'conscience-lib/common'
 import { UserActionType, IUserAction } from './userActions'
 
 export const initialState = {
@@ -18,6 +18,8 @@ export const initialState = {
     },
 
     loginError: undefined,
+
+    sharedRepos: {},
 }
 
 export interface IUserState {
@@ -31,6 +33,8 @@ export interface IUserState {
     userSettings: IUserSettings
 
     loginError: Error | undefined
+
+    sharedRepos: { [repoID: string]: ISharedRepoInfo }
 }
 
 const userReducer = (state: IUserState = initialState, action: IUserAction): IUserState => {

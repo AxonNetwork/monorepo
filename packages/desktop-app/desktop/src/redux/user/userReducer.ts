@@ -2,19 +2,16 @@ import pickBy from 'lodash/pickBy'
 import userReducer, { IUserState, initialState } from 'conscience-components/redux/user/userReducer'
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
 import { DesktopUserActionType, IDesktopUserAction } from './userActions'
-import { ISharedRepoInfo } from 'conscience-lib/common'
 import { fromPairs } from 'lodash'
 
 const desktopInitialState = {
     ...initialState,
     nodeUsername: undefined,
-    sharedRepos: {},
 }
 
 declare module 'conscience-components/redux/user/userReducer' {
     export interface IUserState {
         nodeUsername: string | undefined
-        sharedRepos: { [repoID: string]: ISharedRepoInfo }
     }
 }
 

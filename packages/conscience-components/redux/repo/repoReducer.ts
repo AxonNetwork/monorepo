@@ -5,6 +5,7 @@ import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
     repoListByUser: {},
+    localRepoList: [],
     filesByURI: {},
     commitListsByURI: {},
     commits: {},
@@ -17,6 +18,7 @@ export const initialState = {
 
 export interface IRepoState {
     repoListByUser: { [username: string]: string[] }
+    localRepoList: LocalURI[]
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }

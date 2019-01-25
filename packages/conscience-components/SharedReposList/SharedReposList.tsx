@@ -12,6 +12,7 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import { H6 } from 'conscience-components/Typography/Headers'
 
 import { pickBy } from 'lodash'
+import { getRepoID } from '../env-specific'
 import { cloneRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { ISharedRepoInfo } from 'conscience-lib/common'
@@ -85,11 +86,11 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const sharedRepos = state.user.sharedRepos || {}
-    const repos = state.repo.repos
-    const repoList = Object.keys(repos).map(r => repos[r].repoID)
+    // const username = (state.user.users[state.user.currentUser || ''] || {}).username || ''
+    const localRepos = state.repo.localRepoList.map(uri => getRepoID(uri))
     const filteredSharedRepos = pickBy(
         sharedRepos,
-        r => repoList.indexOf(r.repoID) < 0,
+        r => localRepos.indexOf(r.repoID) < 0,
     )
     const cloneRepoProgress = state.ui.cloneRepoProgress
 

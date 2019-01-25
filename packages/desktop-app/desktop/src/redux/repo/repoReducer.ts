@@ -1,5 +1,5 @@
 import fromPairs from 'lodash/fromPairs'
-import { ITimelineEvent, URIType, LocalURI } from 'conscience-lib/common'
+import { URIType, LocalURI } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
 import { DesktopRepoActionType, IDesktopRepoAction } from './repoActions'
@@ -10,7 +10,6 @@ const desktopInitialState = {
     ...initialState,
     reposByHash: {},
     timelinePage: {},
-    localRepoList: [],
     repoIDsByPath: {}
 }
 
@@ -18,7 +17,6 @@ declare module 'conscience-components/redux/repo/repoReducer' {
     export interface IRepoState {
         reposByHash: { [hash: string]: string }
         timelinePage: { [repoID: string]: number }
-        localRepoList: LocalURI[]
         repoIDsByPath: { [repoRoot: string]: string }
     }
 }
@@ -26,17 +24,14 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS: {
-            const { repoID, path } = action.payload
+            const { path } = action.payload
+            const uri = { type: URIType.Local, repoRoot: path } as LocalURI
             return {
                 ...state,
-                repos: {
-                    ...state.repos,
-                    [path]: {
-                        ...(state.repos[path] || {}),
-                        path,
-                        repoID,
-                    },
-                },
+                localRepoList: [
+                    ...state.localRepoList,
+                    uri
+                ],
                 reposByHash: {
                     ...state.reposByHash,
                     [getHash(path)]: path
@@ -57,52 +52,52 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        case DesktopRepoActionType.GET_LOCAL_REPOS_SUCCESS: {
-            const { repos } = action.payload
-            const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
-            const reposByHash = fromPairs(repoPairs)
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    ...repos,
-                },
-                reposByHash: {
-                    ...state.reposByHash,
-                    ...reposByHash,
-                }
-            }
-        }
+        // case DesktopRepoActionType.GET_LOCAL_REPOS_SUCCESS: {
+        //     const { repos } = action.payload
+        //     const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
+        //     const reposByHash = fromPairs(repoPairs)
+        //     return {
+        //         ...state,
+        //         repos: {
+        //             ...state.repos,
+        //             ...repos,
+        //         },
+        //         reposByHash: {
+        //             ...state.reposByHash,
+        //             ...reposByHash,
+        //         }
+        //     }
+        // }
 
-        case RepoActionType.PULL_REPO_SUCCESS: {
-            const { folderPath } = action.payload
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [folderPath]: {
-                        ...state.repos[folderPath],
-                        path: folderPath,
-                        behindRemote: false,
-                    },
-                },
-            }
-        }
+        // case RepoActionType.PULL_REPO_SUCCESS: {
+        //     const { folderPath } = action.payload
+        //     return {
+        //         ...state,
+        //         repos: {
+        //             ...state.repos,
+        //             [folderPath]: {
+        //                 ...state.repos[folderPath],
+        //                 path: folderPath,
+        //                 behindRemote: false,
+        //             },
+        //         },
+        //     }
+        // }
 
-        case DesktopRepoActionType.BEHIND_REMOTE: {
-            const { path } = action.payload
-            return {
-                ...state,
-                repos: {
-                    ...state.repos,
-                    [path]: {
-                        ...state.repos[path],
-                        path,
-                        behindRemote: true,
-                    },
-                },
-            }
-        }
+        // case DesktopRepoActionType.BEHIND_REMOTE: {
+        //     const { path } = action.payload
+        //     return {
+        //         ...state,
+        //         repos: {
+        //             ...state.repos,
+        //             [path]: {
+        //                 ...state.repos[path],
+        //                 path,
+        //                 behindRemote: true,
+        //             },
+        //         },
+        //     }
+        // }
 
         case DesktopRepoActionType.CHANGE_TIMELINE_PAGE: {
             const { repoID, page } = action.payload

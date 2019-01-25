@@ -1,12 +1,16 @@
 import {
     RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
+    IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction,
+    fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
+    fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer
 } from './repoActions'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { getRepoID } from 'conscience-components/env-specific'
+import { URIType } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import union from 'lodash/union'
 
@@ -15,9 +19,27 @@ const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction
     async process({ action }, dispatch) {
         const { username } = action.payload
         const repoList = await ServerRelay.getRepoList(username)
-        // await Promise.all(repoList.map(repoID => dispatch(fetchFullRepo({ repoID }))))
         return { username, repoList }
     }
+})
+
+const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccessAction>({
+    type: RepoActionType.FETCH_FULL_REPO,
+    async process({ action }, dispatch) {
+        const { uri } = action.payload
+        if (uri.type === URIType.Local) {
+            const repoID = getRepoID(uri)
+            dispatch(fetchRepoFiles({ uri }))
+            dispatch(fetchRepoTimeline({ uri }))
+            dispatch(getDiscussions({ uri }))
+            dispatch(fetchRepoUsersPermissions({ repoID }))
+            dispatch(fetchLocalRefs({ uri }))
+            dispatch(fetchRemoteRefs({ repoID }))
+        } else {
+            dispatch(fetchFullRepoFromServer({ uri }))
+        }
+        return { uri }
+    },
 })
 
 const fetchFullRepoFromServerLogic = makeLogic<IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction>({
@@ -39,5 +61,6 @@ const fetchFullRepoFromServerLogic = makeLogic<IFetchFullRepoFromServerAction, I
 
 export {
     getRepoListLogic,
+    fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
 }
