@@ -132,6 +132,8 @@ const styles = (theme: Theme) => createStyles({
         fontFamily: 'Consolas, Menlo, "Courier New", Courier, monospace',
         fontWeight: 400,
         flexGrow: 1,
+        fontSize: '0.9rem',
+        color: '#3e3e3e',
     },
     labelNew: {
         color: green[500],

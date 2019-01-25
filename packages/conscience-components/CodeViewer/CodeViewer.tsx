@@ -60,7 +60,7 @@ interface StateProps {
 const styles = () => createStyles({
     codeContainer: {
         padding: 30,
-        overflowX: 'scroll',
+        overflowX: 'auto',
     },
 })
 

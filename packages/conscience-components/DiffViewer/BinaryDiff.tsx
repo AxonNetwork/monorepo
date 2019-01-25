@@ -19,10 +19,7 @@ class BinaryDiff extends React.Component<Props>
                 <FileViewer
                     uri={{ ...this.props.uri, filename: fileDiff.to }}
                     showViewerPicker
-                    classes={{
-                        root: classes.fileViewerRoot,
-                        // viewerPicker: classes.fileViewerViewerPicker,
-                    }} />
+                    classes={{ root: classes.fileViewerRoot }} />
             </div>
         )
 
@@ -79,9 +76,6 @@ const styles = (theme: Theme) => createStyles({
         margin: '0 auto',
         width: 'fit-content',
         maxWidth: '100%',
-    },
-    fileViewerViewerPicker: {
-        display: 'block',
     },
     // chunk: {
     //     width: 16,
