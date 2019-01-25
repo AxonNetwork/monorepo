@@ -116,11 +116,12 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = getRepoID(ownProps.uri)
-    const version = (state.repo.commitListsByURI[uriToString(ownProps.uri)] || []).length
+    const uriStr = uriToString(ownProps.uri)
+    const version = (state.repo.commitListsByURI[uriStr] || []).length
     let pullProgress = undefined
     let checkpointLoading = false
     if (ownProps.uri.type === URIType.Local) {
-        pullProgress = state.ui.pullRepoProgress[ownProps.uri.repoRoot]
+        pullProgress = state.ui.pullRepoProgressByURI[uriStr]
         checkpointLoading = state.ui.checkpointLoading
     }
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false

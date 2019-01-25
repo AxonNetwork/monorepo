@@ -64,6 +64,11 @@ export enum RepoActionType {
     PULL_REPO_PROGRESS = 'PULL_REPO_PROGRESS',
     PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
     PULL_REPO_FAILED = 'PULL_REPO_FAILED',
+
+    WATCH_REPO = 'WATCH_REPO',
+    WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
+
+    BEHIND_REMOTE = 'BEHIND_REMOTE',
 }
 
 export interface IGetRepoListAction {
@@ -325,7 +330,7 @@ export interface IPullRepoAction {
 export interface IPullRepoProgressAction {
     type: RepoActionType.PULL_REPO_PROGRESS
     payload: {
-        folderPath: string
+        uri: URI
         toFetch: number
         fetched: number
     }
@@ -334,11 +339,30 @@ export interface IPullRepoProgressAction {
 export interface IPullRepoSuccessAction {
     type: RepoActionType.PULL_REPO_SUCCESS
     payload: {
-        folderPath: string,
+        uri: URI
     }
 }
 
 export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED>
+
+export interface IWatchRepoAction {
+    type: RepoActionType.WATCH_REPO
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IWatchRepoSuccessAction {
+    type: RepoActionType.WATCH_REPO_SUCCESS
+    payload: {}
+}
+
+export interface IBehindRemoteAction {
+    type: RepoActionType.BEHIND_REMOTE
+    payload: {
+        uri: URI
+    }
+}
 
 export type IRepoAction =
     IGetRepoListAction |
@@ -401,7 +425,12 @@ export type IRepoAction =
     IPullRepoAction |
     IPullRepoProgressAction |
     IPullRepoSuccessAction |
-    IPullRepoFailedAction
+    IPullRepoFailedAction |
+
+    IWatchRepoAction |
+    IWatchRepoSuccessAction |
+
+    IBehindRemoteAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
@@ -424,3 +453,6 @@ export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']):
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
 export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): IPullRepoProgressAction => ({ type: RepoActionType.PULL_REPO_PROGRESS, payload })
 export const pullRepoSuccess = (payload: IPullRepoSuccessAction['payload']): IPullRepoSuccessAction => ({ type: RepoActionType.PULL_REPO_SUCCESS, payload })
+
+export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
+export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, payload })

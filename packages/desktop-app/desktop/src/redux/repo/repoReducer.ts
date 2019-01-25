@@ -2,26 +2,25 @@ import fromPairs from 'lodash/fromPairs'
 import { URIType, LocalURI } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
-import { DesktopRepoActionType, IDesktopRepoAction } from './repoActions'
-import { getHash } from 'conscience-lib/utils'
+import { getHash, uriToString } from 'conscience-lib/utils'
 
 
 const desktopInitialState = {
     ...initialState,
     reposByHash: {},
-    timelinePage: {},
-    repoIDsByPath: {}
+    repoIDsByPath: {},
+    isBehindRemoteByURI: {},
 }
 
 declare module 'conscience-components/redux/repo/repoReducer' {
     export interface IRepoState {
         reposByHash: { [hash: string]: string }
-        timelinePage: { [repoID: string]: number }
         repoIDsByPath: { [repoRoot: string]: string }
+        isBehindRemoteByURI: { [uri: string]: boolean }
     }
 }
 
-const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRepoState => {
+const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.CREATE_REPO_SUCCESS: {
             const { path } = action.payload
@@ -52,61 +51,27 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
             }
         }
 
-        // case DesktopRepoActionType.GET_LOCAL_REPOS_SUCCESS: {
-        //     const { repos } = action.payload
-        //     const repoPairs = Object.keys(repos).map((path: string) => ([getHash(path), path]))
-        //     const reposByHash = fromPairs(repoPairs)
-        //     return {
-        //         ...state,
-        //         repos: {
-        //             ...state.repos,
-        //             ...repos,
-        //         },
-        //         reposByHash: {
-        //             ...state.reposByHash,
-        //             ...reposByHash,
-        //         }
-        //     }
-        // }
-
-        // case RepoActionType.PULL_REPO_SUCCESS: {
-        //     const { folderPath } = action.payload
-        //     return {
-        //         ...state,
-        //         repos: {
-        //             ...state.repos,
-        //             [folderPath]: {
-        //                 ...state.repos[folderPath],
-        //                 path: folderPath,
-        //                 behindRemote: false,
-        //             },
-        //         },
-        //     }
-        // }
-
-        // case DesktopRepoActionType.BEHIND_REMOTE: {
-        //     const { path } = action.payload
-        //     return {
-        //         ...state,
-        //         repos: {
-        //             ...state.repos,
-        //             [path]: {
-        //                 ...state.repos[path],
-        //                 path,
-        //                 behindRemote: true,
-        //             },
-        //         },
-        //     }
-        // }
-
-        case DesktopRepoActionType.CHANGE_TIMELINE_PAGE: {
-            const { repoID, page } = action.payload
+        case RepoActionType.BEHIND_REMOTE: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
             return {
                 ...state,
-                timelinePage: {
-                    ...state.timelinePage,
-                    [repoID]: page,
-                },
+                isBehindRemoteByURI: {
+                    ...state.isBehindRemoteByURI,
+                    [uriStr]: true
+                }
+            }
+        }
+
+        case RepoActionType.PULL_REPO_SUCCESS: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                isBehindRemoteByURI: {
+                    ...state.isBehindRemoteByURI,
+                    [uriStr]: false
+                }
             }
         }
 
@@ -115,7 +80,7 @@ const desktopRepoReducer = (state: IRepoState, action: IDesktopRepoAction): IRep
     }
 }
 
-export default function(state: IRepoState = desktopInitialState, action: IDesktopRepoAction): IRepoState {
+export default function(state: IRepoState = desktopInitialState, action: IRepoAction): IRepoState {
     state = repoReducer(state, action as IRepoAction)
     state = desktopRepoReducer(state, action)
     return state

@@ -1,6 +1,7 @@
 import { UserActionType, IUserAction } from '../user/userActions'
 import { RepoActionType, IRepoAction } from '../repo/repoActions'
 import { OrgActionType, IOrgAction } from '../org/orgActions'
+import { uriToString } from 'conscience-lib/utils'
 
 const initialState = {
     loginLoading: false,
@@ -8,7 +9,7 @@ const initialState = {
     checkpointLoading: false,
     pullLoading: false,
     updateOrgLoading: false,
-    pullRepoProgress: {},
+    pullRepoProgressByURI: {},
     cloneRepoProgress: {},
     updatingUserPermissions: undefined,
 }
@@ -19,7 +20,7 @@ export interface IUIState {
     checkpointLoading: boolean
     pullLoading: boolean
     updateOrgLoading: boolean
-    pullRepoProgress: {
+    pullRepoProgressByURI: {
         [path: string]: {
             fetched: number
             toFetch: number
@@ -79,12 +80,12 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             }
 
         case RepoActionType.PULL_REPO_PROGRESS: {
-            const { folderPath, fetched, toFetch } = action.payload
+            const { uri, fetched, toFetch } = action.payload
             return {
                 ...state,
-                pullRepoProgress: {
-                    ...state.pullRepoProgress,
-                    [folderPath]: {
+                pullRepoProgressByURI: {
+                    ...state.pullRepoProgressByURI,
+                    [uriToString(uri)]: {
                         fetched: fetched,
                         toFetch: toFetch,
                     }
@@ -93,12 +94,12 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
         }
 
         case RepoActionType.PULL_REPO_SUCCESS: {
-            const { folderPath } = action.payload
+            const { uri } = action.payload
             return {
                 ...state,
-                pullRepoProgress: {
-                    ...state.pullRepoProgress,
-                    [folderPath]: undefined
+                pullRepoProgressByURI: {
+                    ...state.pullRepoProgressByURI,
+                    [uriToString(uri)]: undefined
                 }
             }
         }

@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoFile, IRepoPermissions, ITimelineEvent } from 'conscience-lib/common'
+import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
