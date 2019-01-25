@@ -19,8 +19,12 @@ import {
     IPullRepoAction,
     cloneRepoProgress, pullRepoProgress, pullRepoSuccess, fetchFullRepo,
     fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
-    fetchLocalRefs, fetchRemoteRefs
+    fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer
 } from 'conscience-components/redux/repo/repoActions'
+import {
+    getRepoListLogic,
+    fetchFullRepoFromServerLogic
+} from 'conscience-components/redux/repo/repoLogic'
 import {
     DesktopRepoActionType,
     IGetLocalReposAction, IGetLocalReposSuccessAction,
@@ -146,14 +150,17 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
     type: RepoActionType.FETCH_FULL_REPO,
     async process({ action }, dispatch) {
         const { uri } = action.payload
-        const repoID = getRepoID(uri)
-
-        dispatch(fetchRepoFiles({ uri }))
-        dispatch(fetchRepoTimeline({ uri }))
-        dispatch(getDiscussions({ uri }))
-        dispatch(fetchRepoUsersPermissions({ repoID }))
-        dispatch(fetchLocalRefs({ uri }))
-        dispatch(fetchRemoteRefs({ repoID }))
+        if (uri.type === URIType.Local) {
+            const repoID = getRepoID(uri)
+            dispatch(fetchRepoFiles({ uri }))
+            dispatch(fetchRepoTimeline({ uri }))
+            dispatch(getDiscussions({ uri }))
+            dispatch(fetchRepoUsersPermissions({ repoID }))
+            dispatch(fetchLocalRefs({ uri }))
+            dispatch(fetchRemoteRefs({ repoID }))
+        } else {
+            dispatch(fetchFullRepoFromServer({ uri }))
+        }
         return { uri }
     },
 })
@@ -447,9 +454,11 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
 
 export default [
     // imported from conscience-components
-    updateUserPermissionsLogic,
+    getRepoListLogic,
+    fetchFullRepoFromServerLogic,
 
     // desktop-specific
+    updateUserPermissionsLogic,
     createRepoLogic,
     getLocalReposLogic,
     getLocalRepoListLogic,

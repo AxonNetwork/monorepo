@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { URI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { IRepo, URI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -34,6 +34,10 @@ export enum RepoActionType {
     FETCH_REPO_USERS_PERMISSIONS = 'FETCH_REPO_USERS_PERMISSIONS',
     FETCH_REPO_USERS_PERMISSIONS_SUCCESS = 'FETCH_REPO_USERS_PERMISSIONS_SUCCESS',
     FETCH_REPO_USERS_PERMISSIONS_FAILED = 'FETCH_REPO_USERS_PERMISSIONS_FAILED',
+
+    FETCH_FULL_REPO_FROM_SERVER = 'FETCH_FULL_REPO_FROM_SERVER',
+    FETCH_FULL_REPO_FROM_SERVER_SUCCESS = 'FETCH_FULL_REPO_FROM_SERVER_SUCCESS',
+    FETCH_FULL_REPO_FROM_SERVER_FAILED = 'FETCH_FULL_REPO_FROM_SERVER_FAILED',
 
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
@@ -196,6 +200,23 @@ export interface IFetchRepoUsersPermissionsSuccessAction {
 
 export type IFetchRepoUsersPermissionsFailedAction = FailedAction<RepoActionType.FETCH_REPO_USERS_PERMISSIONS_FAILED>
 
+export interface IFetchFullRepoFromServerAction {
+    type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchFullRepoFromServerSuccessAction {
+    type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS
+    payload: {
+        uri: URI
+        repo: IRepo
+    }
+}
+
+export type IFetchFullRepoFromServerFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED>
+
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
     payload: {
@@ -352,6 +373,10 @@ export type IRepoAction =
     IFetchRepoUsersPermissionsSuccessAction |
     IFetchRepoUsersPermissionsFailedAction |
 
+    IFetchFullRepoFromServerAction |
+    IFetchFullRepoFromServerSuccessAction |
+    IFetchFullRepoFromServerFailedAction |
+
     IGetDiffAction |
     IGetDiffSuccessAction |
     IGetDiffFailedAction |
@@ -387,6 +412,7 @@ export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']):
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
+export const fetchFullRepoFromServer = (payload: IFetchFullRepoFromServerAction['payload']): IFetchFullRepoFromServerAction => ({ type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER, payload })
 
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
