@@ -94,6 +94,13 @@ app.on('ready', () => {
     })
 })
 
+app.on('web-contents-created', (event, webContents) => {
+    webContents.on('will-navigate', (event, url) => {
+        event.preventDefault()
+        shell.openExternal(url)
+    })
+})
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar
