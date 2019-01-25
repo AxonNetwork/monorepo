@@ -29,7 +29,7 @@ let repoServer
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false } })
+    mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false, plugins: true } })
     mainWindow.maximize()
 
     // and load the index.html of the app.

@@ -81,8 +81,8 @@ interface StateProps {
 const styles = (theme: Theme) => createStyles({
     root: {
         flexGrow: 1,
-        minWidth: 300,
-        maxWidth: 350,
+        width: 300,
+        maxWidth: 300,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],

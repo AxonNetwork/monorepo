@@ -169,7 +169,10 @@ const styles = (theme: Theme) => createStyles({
     newRepoCard: {
         padding: 0,
         width: 100,
-        marginBottom: 24,
+
+        marginLeft: theme.spacing.unit * 1.5,
+        marginRight: theme.spacing.unit * 1.5,
+        marginBottom: theme.spacing.unit * 3,
     },
     newRepoButton: {
         height: '100%',
@@ -179,8 +182,8 @@ const styles = (theme: Theme) => createStyles({
     },
     repoCard: {
         flexGrow: 1,
-        minWidth: 300,
-        maxWidth: 350,
+        width: 300,
+        maxWidth: 300,
         padding: theme.spacing.unit,
         border: '1px solid',
         borderColor: theme.palette.grey[300],

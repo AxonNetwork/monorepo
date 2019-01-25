@@ -31,6 +31,7 @@ export default {
         { extensions: ['js', 'jsx', 'json'], type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'javascript' },
         { extensions: ['ts', 'tsx'],         type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'typescript' },
         { extensions: ['py', 'py2', 'py3'],  type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'python' },
+        { extensions: ['sh'],                type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'bash' },
         { extensions: ['proto'],             type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'protobuf' },
         { extensions: ['latex', 'tex'],      type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'latex' },
         { extensions: ['rb'],                type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'ruby' },

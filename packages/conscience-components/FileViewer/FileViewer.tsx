@@ -51,7 +51,7 @@ class FileViewer extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
-                <div onMouseOver={() => this.onHoverViewer(true)} onMouseOut={() => this.onHoverViewer(false)}>
+                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)}>
                     <Viewer
                         uri={this.props.uri}
                         fileContents={fileContents}
@@ -65,7 +65,8 @@ class FileViewer extends React.Component<Props, State>
                             renderValue={() => <SettingsIcon className={classes.viewerPickerIcon} />}
                             input={<Input disableUnderline={true} />}
                             onChange={this.onChangeViewer}
-                            onMouseOver={() => this.onHoverViewer(true)}
+                            onMouseEnter={() => this.onHoverViewer(true)}
+                            onMouseLeave={() => this.onHoverViewer(false)}
                             className={classes.viewerPickerSelect}
                             IconComponent={() => null}
                             classes={{
