@@ -25,14 +25,14 @@ export function makeLogic
             try {
                 const retval = await Promise.resolve((opts.process as any)(depObj, dispatch, done))
                 if (retval instanceof Error) {
-                    dispatch({ type: opts.type + '_FAILED', error: true, payload: retval })
+                    dispatch({ type: opts.type + '_FAILED', payload: { error: retval, original: depObj.action } })
                 } else {
                     dispatch({ type: opts.type + '_SUCCESS', payload: retval })
                 }
                 done()
 
             } catch (err) {
-                dispatch({ type: opts.type + '_FAILED', error: true, payload: err })
+                dispatch({ type: opts.type + '_FAILED', payload: { error: err, original: depObj.action } })
                 done()
                 throw err
             }
@@ -56,7 +56,6 @@ export function makeContinuousLogic
 
 export interface FailedAction<T extends string> {
     type: T
-    payload: Error
-    error: boolean
+    payload: { error: Error, original: ActionType }
 }
 

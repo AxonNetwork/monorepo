@@ -42,8 +42,16 @@ const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState =
             }
         }
 
-        case WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
-            return state
+        case WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED: {
+            const { original } = action.payload
+            const { uri } = original.payload
+            return {
+                ...state,
+                failedToFetchByURI: {
+                    ...state.failedToFetchByURI,
+                    [uriToString(uri)]: true
+                }
+            }
         }
 
         // case WebRepoActionType.GET_REPO_SUCCESS: {

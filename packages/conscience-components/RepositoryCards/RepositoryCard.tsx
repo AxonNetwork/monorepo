@@ -112,7 +112,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uri = ownProps.uri
     const uriStr = uriToString(uri)
     const repoID = getRepoID(uri)
-    const numFiles = (state.repo.filesByURI[uriStr] || {}).length
+    const numFiles = Object.keys(state.repo.filesByURI[uriStr] || {}).length
     const commitList = state.repo.commitListsByURI[uriStr]
     const lastCommitHash = commitList !== undefined ? commitList[0] : ''
     const lastCommit = state.repo.commits[lastCommitHash || ''] || {}

@@ -12,7 +12,7 @@ export const initialState = {
     remoteRefsByID: {},
     permissionsByID: {},
     diffsByCommitHash: {},
-    failedToFetch: {},
+    failedToFetchByURI: {},
 }
 
 export interface IRepoState {
@@ -24,7 +24,7 @@ export interface IRepoState {
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
-    failedToFetchByID: { [repoID: string]: boolean }
+    failedToFetchByURI: { [repoID: string]: boolean }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {

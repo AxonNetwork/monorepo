@@ -10,7 +10,7 @@ import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectOrgShowcase, selectUser } from 'conscience-components/navigation'
-import { IOrganization } from 'conscience-lib/common'
+import { IOrganization, URI, URIType } from 'conscience-lib/common'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { autobind } from 'conscience-lib/utils'
 
@@ -23,6 +23,7 @@ class OrgHomePage extends React.Component<Props>
         if (org === undefined) {
             return <LargeProgressSpinner />
         }
+        const repoURIList = org.repos.map(repoID => ({ type: URIType.Network, repoID }) as URI)
 
         return (
             <div className={classes.page}>
@@ -34,7 +35,7 @@ class OrgHomePage extends React.Component<Props>
 
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
-                        repoList={this.props.org.repos}
+                        repoList={repoURIList}
                         addRepo={this.addRepo}
                     />
                 </div>

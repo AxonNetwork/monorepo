@@ -1,5 +1,6 @@
 import * as envSpecific from 'conscience-components/env-specific'
-import { URI, URIType } from 'conscience-lib/common'
+import { IRepo, URI, URIType } from 'conscience-lib/common'
+import { uriToString } from 'conscience-lib/utils'
 import { Store } from 'redux'
 import { IGlobalState } from 'conscience-components/redux'
 import axios from 'axios'
@@ -32,7 +33,22 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 throw new Error('web platform cannot getRepo with a local URI')
             }
             state = state || store.getState()
-            return state.repo.repos[uri.repoID]
+            const repoID = uri.repoID
+            const uriStr = uriToString(uri)
+            const permissions = state.repo.permissionsByID[repoID] || {}
+            return {
+                repoID,
+                admins: permissions.admins,
+                pullers: permissions.pullers,
+                pushers: permissions.pushers,
+                isPublic: false,
+                files: state.repo.filesByURI[uriStr],
+                localRefs: state.repo.localRefsByURI[uriStr],
+                remoteRefs: state.repo.remoteRefsByID[repoID],
+                commits: state.repo.commits,
+                commitList: state.repo.commitListsByURI[uriStr],
+                behindRemote: false,
+            } as IRepo
         },
 
         getRepoID(uri: URI, state?: IGlobalState) {

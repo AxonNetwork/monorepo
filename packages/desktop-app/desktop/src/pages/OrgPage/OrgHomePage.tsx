@@ -1,6 +1,3 @@
-import keyBy from 'lodash/keyBy'
-import uniqBy from 'lodash/uniqBy'
-import values from 'lodash/values'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
@@ -10,32 +7,22 @@ import RepositoryCards from 'conscience-components/RepositoryCards'
 import OrgReadme from 'conscience-components/OrgPage/OrgReadme'
 import Members from 'conscience-components/OrgPage/ConnectedMembers'
 import { H6 } from 'conscience-components/Typography/Headers'
-import { fetchOrgInfo, addRepoToOrg } from 'conscience-components/redux/org/orgActions'
-import { fetchFullRepo } from 'redux/repo/repoActions'
+import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IOrganization, IRepo, IDiscussion, RepoPage } from 'conscience-lib/common'
-import { autobind, getHash } from 'conscience-lib/utils'
+import { selectUser } from 'conscience-components/navigation'
+import { IOrganization, URI, URIType } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
 class OrgHomePage extends React.Component<Props>
 {
-    constructor(props: Props) {
-        super(props)
-        if (props.org && props.org.repos) {
-            this.getRepos(props.org.repos)
-        }
-    }
-
     render() {
         const { org, classes } = this.props
         if (org === undefined) {
             return <LargeProgressSpinner />
         }
-        const repos = uniqBy(values(this.props.repos), (repo: IRepo) => repo.repoID)
-            .filter((repo: IRepo) => org.repos.indexOf(repo.repoID) > -1)
-        const reposByID = keyBy(repos, 'repoID')
-        const repoList = this.props.org.repos.filter(id => reposByID[id] !== undefined)
+        const repoURIList = org.repos.map(repoID => ({ type: URIType.Network, repoID }) as URI)
 
         return (
             <div className={classes.page}>
@@ -46,7 +33,7 @@ class OrgHomePage extends React.Component<Props>
                     />
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
-                        repoList={repoList}
+                        repoList={repoURIList}
                         addRepo={this.addRepo}
                     />
                 </div>
@@ -55,27 +42,6 @@ class OrgHomePage extends React.Component<Props>
                 </div>
             </div>
         )
-    }
-
-    getRepos(repoIDs: string[]) {
-        const repos = this.props.repos
-        for (let i = 0; i < repoIDs.length; i++) {
-            const repoID = repoIDs[i]
-            const path = Object.keys(repos).find(path => (repos[path].repoID === repoID))
-            if (path !== undefined) {
-                this.props.fetchFullRepo({ repoID, path })
-            }
-        }
-    }
-
-    componentDidUpdate(prevProps: Props) {
-        const org = this.props.org
-        if (!org || !org.repos) {
-            return
-        }
-        if ((prevProps.org || {}).repos !== org.repos) {
-            this.getRepos(org.repos)
-        }
     }
 
     onClickEditReadme() {
@@ -89,30 +55,8 @@ class OrgHomePage extends React.Component<Props>
         this.props.addRepoToOrg({ repoID, orgID })
     }
 
-    selectRepoAndPage(payload: { repoID?: string, repoRoot?: string | undefined, repoPage: RepoPage }) {
-        if (payload.repoRoot === undefined) {
-            return
-        }
-        const repoHash = getHash(payload.repoRoot)
-        switch (payload.repoPage) {
-            case RepoPage.Home:
-                this.props.history.push(`/repo/${repoHash}`)
-                return
-            case RepoPage.Files:
-                this.props.history.push(`/repo/${repoHash}/files`)
-                return
-            case RepoPage.Discussion:
-                this.props.history.push(`/repo/${repoHash}/discussion`)
-                return
-        }
-    }
-
     selectUser(payload: { username: string }) {
-        const username = payload.username
-        if (username === undefined) {
-            return
-        }
-        this.props.history.push(`/user/${username}`)
+        selectUser(payload.username)
     }
 }
 
@@ -122,12 +66,7 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
-    repos: { [repoRoot: string]: IRepo }
-    discussions: { [discussionID: string]: IDiscussion }
-    discussionsByRepo: { [repoID: string]: string[] }
-    fetchOrgInfo: typeof fetchOrgInfo
     addRepoToOrg: typeof addRepoToOrg
-    fetchFullRepo: typeof fetchFullRepo
     classes: any
 }
 
@@ -156,16 +95,11 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
     const orgID = props.match.params.orgID
     return {
         org: state.org.orgs[orgID],
-        repos: state.repo.repos,
-        discussions: state.discussion.discussions,
-        discussionsByRepo: state.discussion.discussionsByRepo,
     }
 }
 
 const mapDispatchToProps = {
-    fetchOrgInfo,
     addRepoToOrg,
-    fetchFullRepo,
 }
 
 export default connect(

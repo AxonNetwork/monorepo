@@ -13,7 +13,7 @@ import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectOrg } from 'conscience-components/navigation'
-import { IUser, IOrganization } from 'conscience-lib/common'
+import { IUser, IOrganization, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -29,6 +29,8 @@ class UserPage extends React.Component<Props>
                 </div>
             )
         }
+
+        const repoURIList = (this.props.repoList || []).map(repoID => ({ type: URIType.Network, repoID } as URI))
 
         return (
             <div className={classes.container}>
@@ -78,7 +80,7 @@ class UserPage extends React.Component<Props>
 
                             <Divider className={classes.repoDivider} />
 
-                            <RepositoryCards repoList={this.props.repoList} />
+                            <RepositoryCards repoList={repoURIList} />
                         </div>
                     </div>
                 </main>

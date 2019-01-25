@@ -13,10 +13,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
 import RepoCardLoader from '../ContentLoaders/RepoCardLoader'
+import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { getRepoID } from 'conscience-components/env-specific'
-import { URI, IRepo, IRepoFile, IDiscussion } from 'conscience-lib/common'
+import { URI, IRepoFile, IDiscussion } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import { isEqual } from 'lodash'
 
 
 @autobind
@@ -26,10 +28,15 @@ class RepositoryCards extends React.Component<Props, State>
         dialogOpen: false,
     }
 
+    constructor(props: Props) {
+        super(props)
+        this.fetchAllRepos()
+    }
+
     render() {
-        const { classes } = this.props
-        const loading = this.props.repoList === undefined ||
-            this.props.repoList.some(uri => this.props.filesByURI[uriToString(uri)] === undefined)
+        const { repoList, classes } = this.props
+        const notFailed = (repoList || []).filter(uri => !this.props.failedToFetchByURI[uriToString(uri)])
+        const loading = repoList === undefined || notFailed.some(uri => this.props.filesByURI[uriToString(uri)] === undefined)
 
         if (loading) {
             const loaderLength = this.props.repoList !== undefined ? this.props.repoList.length : 4
@@ -44,20 +51,10 @@ class RepositoryCards extends React.Component<Props, State>
             )
         }
 
-        // const repoList = (this.props.repoList || []).filter(repoID => repos[repoID] !== undefined)
-
-        let reposToAdd = [] as string[]
-        // if (this.state.dialogOpen) {
-        //     reposToAdd = Object.keys(repos)
-        //         // repo is not already part of org
-        //         .filter(key => (repoList || []).indexOf(repos[key].repoID) < 0)
-        //         .map(key => repos[key].repoID)
-        // }
-
         return (
             <React.Fragment>
                 <div className={classes.root}>
-                    {(this.props.repoList || []).map(uri =>
+                    {notFailed.map(uri =>
                         <RepositoryCard key={getRepoID(uri)} uri={uri} />
                     )}
 
@@ -84,9 +81,9 @@ class RepositoryCards extends React.Component<Props, State>
                         <DialogTitle>Add Repo To Organization</DialogTitle>
                         <DialogContent>
                             <List>
-                                {reposToAdd.map(repoID => (
-                                    <ListItem button onClick={() => this.onClickAddRepo(repoID)}>
-                                        <ListItemText primary={repoID} />
+                                {(this.props.reposToAdd || []).map(uri => (
+                                    <ListItem button onClick={() => this.onClickAddRepo(getRepoID(uri))}>
+                                        <ListItemText primary={getRepoID(uri)} />
                                     </ListItem>
                                 ))}
                                 <ListItem
@@ -104,6 +101,20 @@ class RepositoryCards extends React.Component<Props, State>
                 }
             </React.Fragment>
         )
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(this.props.repoList, prevProps.repoList)) {
+            this.fetchAllRepos()
+        }
+    }
+
+    fetchAllRepos() {
+        const repoList = this.props.repoList
+        if (repoList === undefined) {
+            return
+        }
+        repoList.forEach(uri => this.props.fetchFullRepo({ uri }))
     }
 
     onClickAddRepo(repoID: string) {
@@ -127,18 +138,23 @@ class RepositoryCards extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     repoList: URI[] | undefined
+    reposToAdd?: URI[]
     addRepo?: (payload: { repoID: string }) => void
 }
 
 interface StateProps {
-    repos: { [repoID: string]: IRepo }
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
+    failedToFetchByURI: { [repoID: string]: boolean }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
+}
+
+interface DispatchProps {
+    fetchFullRepo: typeof fetchFullRepo
 }
 
 interface State {
@@ -182,9 +198,14 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     return {
         filesByURI: state.repo.filesByURI,
+        failedToFetchByURI: state.repo.failedToFetchByURI,
         discussions: state.discussion.discussions,
         discussionsByRepo: state.discussion.discussionsByRepo,
     }
 }
 
-export default connect(mapStateToProps, null)(withStyles(styles)(RepositoryCards))
+const mapDispatchToProps = {
+    fetchFullRepo
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RepositoryCards))

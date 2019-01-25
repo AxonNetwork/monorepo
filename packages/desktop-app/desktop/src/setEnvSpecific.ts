@@ -73,7 +73,7 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 // const repoID = state.repo.reposByHash[getHash(uri.repoRoot)]
                 // return state.repo.repos[repoID]
             } else {
-                return state.repo.repos[uri.repoID]
+                return {}
             }
         },
 
