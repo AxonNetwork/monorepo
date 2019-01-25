@@ -105,7 +105,12 @@ const styles = (theme: Theme) => createStyles({
         // },
     },
     fileViewer: {
-        maxWidth: 960,
+        [theme.breakpoints.up(1280)]: {
+            width: 960,
+        },
+        [theme.breakpoints.down(1280)]: {
+            maxWidth: '100%',
+        },
     },
     createDiscussion: {
         textAlign: 'center',
