@@ -115,6 +115,46 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
+            const { uri, repo } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                filesByURI: {
+                    ...state.filesByURI,
+                    [uriStr]: repo.files || {}
+                },
+                commitListsByURI: {
+                    ...state.commitListsByURI,
+                    [uriStr]: repo.commitList || []
+                },
+                commits: {
+                    ...state.commits,
+                    ...repo.commits
+                },
+                permissionsByID: {
+                    ...state.permissionsByID,
+                    [repo.repoID]: {
+                        admins: repo.admins || [],
+                        pushers: repo.pushers || [],
+                        pullers: repo.pullers || []
+                    }
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED: {
+            const { original } = action.payload
+            const { uri } = original.payload
+            return {
+                ...state,
+                failedToFetchByURI: {
+                    ...state.failedToFetchByURI,
+                    [uriToString(uri)]: true
+                }
+            }
+        }
+
         case RepoActionType.GET_DIFF_SUCCESS: {
             const { commit, diff } = action.payload
             return {
