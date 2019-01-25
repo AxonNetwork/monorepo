@@ -10,10 +10,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
-import UserAvatar from 'conscience-components/UserAvatar'
-import { selectDiscussion } from 'conscience-components/navigation'
-import { getRepo } from 'conscience-components/env-specific'
-import { IGlobalState } from 'conscience-components/redux'
+import UserAvatar from '../UserAvatar'
+import { selectDiscussion } from '../navigation'
+import { getRepoID } from '../env-specific'
+import { IGlobalState } from '../redux'
 import { IDiscussion, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -170,8 +170,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri)
-    const repoID = (repo || {}).repoID || ''
+    const repoID = getRepoID(ownProps.uri)
 
     return {
         users: state.user.users,

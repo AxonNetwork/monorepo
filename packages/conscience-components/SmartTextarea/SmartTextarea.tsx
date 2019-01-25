@@ -7,8 +7,9 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormattingHelp from '../FormattingHelp'
 import { IGlobalState } from '../redux'
-import { IDiscussion, IRepo, IRepoFile, URI, URIType } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { getRepoID } from '../env-specific'
+import { IDiscussion, IRepoFile, URI } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 
@@ -202,18 +203,12 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    let repo = undefined as IRepo | undefined
-    if (ownProps.uri.type === URIType.Local) {
-        repo = state.repo.repos[ownProps.uri.repoRoot]
-    } else if (ownProps.uri.type === URIType.Network) {
-        repo = state.repo.repos[ownProps.uri.repoID]
-    }
-
-    const discussionIDs = state.discussion.discussionsByRepo[repo.repoID]
+    const repoID = getRepoID(ownProps.uri)
+    const discussionIDs = state.discussion.discussionsByRepo[repoID] || []
     const discussions = fromPairs(discussionIDs.map(discussionID => [discussionID, state.discussion.discussions[discussionID]]))
-
+    const uriStr = uriToString(ownProps.uri)
     return {
-        files: (repo || { files: {} }).files || {},
+        files: state.repo.filesByURI[uriStr] || {},
         discussions,
     }
 }

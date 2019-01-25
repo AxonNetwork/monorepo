@@ -47,18 +47,11 @@ class OrgHomePage extends React.Component<Props>
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
                         repoList={repoList}
-                        repos={reposByID}
-                        discussions={this.props.discussions}
-                        discussionsByRepo={this.props.discussionsByRepo}
                         addRepo={this.addRepo}
-                        selectRepoAndPage={this.selectRepoAndPage}
                     />
                 </div>
                 <div className={classes.sidebar}>
-                    <Members
-                        orgID={org.orgID}
-                        selectUser={this.selectUser}
-                    />
+                    <Members orgID={org.orgID} />
                 </div>
             </div>
         )

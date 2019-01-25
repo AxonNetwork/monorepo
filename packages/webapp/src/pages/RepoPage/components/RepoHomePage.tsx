@@ -7,8 +7,6 @@ import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import { IRepo, IUser, URI, URIType, FileMode } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
 import FileViewer from 'conscience-components/FileViewer'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
@@ -17,27 +15,26 @@ import DiscussionList from 'conscience-components/DiscussionList'
 import Timeline from 'conscience-components/Timeline'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectFile } from 'conscience-components/navigation'
+import { IUser, URI, URIType, FileMode } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoHomePage extends React.Component<Props>
 {
     render() {
-        const { repo, sharedUsers, classes } = this.props
-        const { repoID } = repo
-
-        const readme = (repo.files || {})['README.md']
+        const { uri, sharedUsers, classes } = this.props
 
         return (
             <div className={classes.main}>
-                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readme })}>
-                    {readme &&
+                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !this.props.hasReadme })}>
+                    {this.props.hasReadme &&
                         <FileViewer
                             uri={{ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }}
                             showViewerPicker={false}
                         />
                     }
-                    {!readme &&
+                    {!this.props.hasReadme &&
                         <div className={classes.readmeContainerNoReadmeContents}>
                             <div className={classes.noReadmeText}>
                                 Add a welcome message and instructions to this repository using the Conscience desktop app.
@@ -48,7 +45,7 @@ class RepoHomePage extends React.Component<Props>
                     }
                 </div>
                 <div className={classes.sidebarComponents}>
-                    {(repo.commitList || []).length > 0 &&
+                    {this.props.hasCommits &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
                                 <SecuredText uri={this.props.uri} />
@@ -77,7 +74,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Recent Discussions</H6>
 
                             <DiscussionList
-                                uri={{ type: URIType.Network, repoID }}
+                                uri={uri}
                                 maxLength={2}
                             />
                         </CardContent>
@@ -111,8 +108,9 @@ interface MatchParams {
 
 interface StateProps {
     uri: URI
-    repo: IRepo
     sharedUsers: IUser[]
+    hasCommits: boolean
+    hasReadme: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -171,15 +169,18 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoID = ownProps.match.params.repoID
     const uri = { type: URIType.Network, repoID } as URI
-    const repo = state.repo.repos[repoID]
-    const { admins = [], pushers = [], pullers = [] } = state.repo.repoPermissions[repoID] || {}
+    const { admins = [], pushers = [], pullers = [] } = state.repo.permissionsByID[repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
+    const uriStr = uriToString(uri)
+    const hasCommits = (state.repo.commitListsByURI[uriStr] || []).length > 0
+    const hasReadme = (state.repo.filesByURI[uriStr] || {})['README.md'] !== undefined
     return {
         uri,
-        repo,
         sharedUsers,
+        hasCommits,
+        hasReadme,
     }
 }
 

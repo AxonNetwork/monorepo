@@ -17,9 +17,10 @@ class FileViewer extends React.Component<Props, State>
 {
     state = {
         hovering: false,
-        viewerPickerOpen: false,
         viewerName: undefined,
+        viewerPickerOpen: false,
         fileContents: '',
+        error: undefined,
     }
 
     render() {

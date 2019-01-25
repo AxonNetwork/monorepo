@@ -9,7 +9,6 @@ import LinkIcon from '@material-ui/icons/Link'
 import UserAvatar from '../UserAvatar'
 import { URI, IUser, ITimelineEvent } from 'conscience-lib/common'
 import { autobind, extractEmail } from 'conscience-lib/utils'
-import { getRepo } from 'conscience-components/env-specific'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
 
@@ -150,8 +149,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri, state)
-    const event = ((repo || {}).commits || {})[ownProps.uri.commit || '']
+    const event = state.repo.commits[ownProps.uri.commit || '']
     const userEmail = event ? extractEmail(event.user) : undefined
     const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
     return {

@@ -1,19 +1,30 @@
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepo, IRepoPermissions } from 'conscience-lib/common'
+import { IRepoFile, IRepoPermissions, ITimelineEvent } from 'conscience-lib/common'
+import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
-    repos: {},
     repoListByUser: {},
-    repoPermissions: {},
+    filesByURI: {},
+    commitListsByURI: {},
+    commits: {},
+    localRefsByURI: {},
+    remoteRefsByID: {},
+    permissionsByID: {},
     diffsByCommitHash: {},
+    failedToFetch: {},
 }
 
 export interface IRepoState {
-    repos: { [repoID: string]: IRepo }
     repoListByUser: { [username: string]: string[] }
-    repoPermissions: { [repoID: string]: IRepoPermissions }
+    filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
+    commitListsByURI: { [uri: string]: string[] }
+    commits: { [commitHash: string]: ITimelineEvent }
+    localRefsByURI: { [uri: string]: { [name: string]: string } }
+    remoteRefsByID: { [repoID: string]: { [name: string]: string } }
+    permissionsByID: { [repoID: string]: IRepoPermissions }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
+    failedToFetchByID: { [repoID: string]: boolean }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
@@ -29,24 +40,72 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        // case RepoActionType.GET_REPO_SUCCESS: {
-        //     const { repo } = action.payload
-        //     return {
-        //         ...state,
-        //         repos: {
-        //             ...state.repos,
-        //             [repo.repoID]: repo
-        //         }
-        //     }
-        // }
+        case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
+            const { uri, files } = action.payload
+            const uriStr = uriToString(uri)
 
+            return {
+                ...state,
+                filesByURI: {
+                    ...state.filesByURI,
+                    [uriStr]: files
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
+            const { uri, timeline } = action.payload
+            const uriStr = uriToString(uri)
+            const commits = {} as { [commit: string]: ITimelineEvent }
+            const commitList = [] as string[]
+            for (let commit of timeline) {
+                commits[commit.commit] = commit
+                commitList.push(commit.commit)
+            }
+            return {
+                ...state,
+                commitListsByURI: {
+                    ...state.commitListsByURI,
+                    [uriStr]: commitList
+                },
+                commits: {
+                    ...state.commits,
+                    ...commits
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_LOCAL_REFS_SUCCESS: {
+            const { uri, localRefs } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                localRefsByURI: {
+                    ...state.localRefsByURI,
+                    [uriStr]: localRefs,
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REMOTE_REFS_SUCCESS: {
+            const { repoID, remoteRefs } = action.payload
+            return {
+                ...state,
+                remoteRefsByID: {
+                    ...state.remoteRefsByID,
+                    [repoID]: remoteRefs,
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS:
         case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
             const { repoID, admins, pushers, pullers } = action.payload
 
             return {
                 ...state,
-                repoPermissions: {
-                    ...state.repoPermissions,
+                permissionsByID: {
+                    ...state.permissionsByID,
                     [repoID]: {
                         admins: admins,
                         pushers: pushers,

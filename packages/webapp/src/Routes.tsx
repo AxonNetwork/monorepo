@@ -97,5 +97,4 @@ const styles = createStyles({
 
 const mapDispatchToProps = {}
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Routes))) as any
-
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Routes)))

@@ -10,7 +10,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { createComment } from '../redux/discussion/discussionActions'
 import { sawComment } from '../redux/user/userActions'
 import { IGlobalState } from '../redux'
-import { getRepo } from '../env-specific'
+import { getRepoID } from '../env-specific'
 import { IUser, IComment, IDiscussion, URI } from 'conscience-lib/common'
 import { autobind, checkVisible } from 'conscience-lib/utils'
 import RenderMarkdown from '../RenderMarkdown'
@@ -231,8 +231,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoID = (getRepo(ownProps.uri) || {}).repoID || ''
-
+    const repoID = getRepoID(ownProps.uri)
     return {
         repoID,
         currentUser: state.user.currentUser || '',

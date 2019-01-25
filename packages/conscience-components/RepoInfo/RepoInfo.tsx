@@ -8,27 +8,22 @@ import { H5 } from 'conscience-components/Typography/Headers'
 import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
-import { getRepo } from '../env-specific'
+import { getRepoID } from '../env-specific'
 import { RepoPage, URI, URIType } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoInfo extends React.Component<Props>
 {
     render() {
-        const { uri, classes } = this.props
-        const repo = getRepo(uri)
-        if (repo === undefined) {
-            return null
-        }
-        const version = (repo.commitList !== undefined) ? 'v' + repo.commitList.length : ''
+        const { repoID, version, classes } = this.props
+        const versionStr = version > 0 ? 'v' + version : ''
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
-                    <H5 className={classes.headline}>{repo.repoID}</H5>
-                    <Typography className={classes.version}>{version}</Typography>
-
+                    <H5 className={classes.headline}>{repoID}</H5>
+                    <Typography className={classes.version}>{versionStr}</Typography>
                     {this.props.showPushPullButtons &&
                         <PushPullButtons
                             uri={this.props.uri}
@@ -73,6 +68,8 @@ interface OwnProps {
 }
 
 interface StateProps {
+    repoID: string
+    version: number
     menuLabelsHidden: boolean
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
@@ -118,6 +115,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repoID = getRepoID(ownProps.uri)
+    const version = (state.repo.commitListsByURI[uriToString(ownProps.uri)] || []).length
     let pullProgress = undefined
     let checkpointLoading = false
     if (ownProps.uri.type === URIType.Local) {
@@ -126,6 +125,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
+        repoID,
+        version,
         menuLabelsHidden,
         pullProgress,
         checkpointLoading,

@@ -18,21 +18,20 @@ import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
 import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { FileMode, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { FileMode, IUser, URI, URIType } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoHomePage extends React.Component<Props>
 {
     render() {
-        const { repo, sharedUsers, classes } = this.props
-        const readme = (repo.files || {})['README.md']
+        const { sharedUsers, classes } = this.props
 
         return (
             <div className={classes.main}>
-                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !readme })}>
-                    {readme &&
+                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !this.props.hasReadme })}>
+                    {this.props.hasReadme &&
                         <div>
                             <FileViewer
                                 uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
@@ -46,7 +45,7 @@ class RepoHomePage extends React.Component<Props>
                             </IconButton>
                         </div>
                     }
-                    {!readme &&
+                    {!this.props.hasReadme &&
                         <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
                             <Typography className={classes.noReadmeText}>
                                 Add a welcome message and instructions to this repository using the Conscience Desktop App.
@@ -57,7 +56,7 @@ class RepoHomePage extends React.Component<Props>
                     }
                 </div>
                 <div className={classes.sidebarComponents}>
-                    {(repo.commitList || []).length > 0 &&
+                    {this.props.hasCommits &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
                                 <SecuredText uri={this.props.uri} />
@@ -120,8 +119,9 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
-    repo: IRepo
     sharedUsers: IUser[]
+    hasCommits: boolean
+    hasReadme: boolean
     classes: any
 }
 
@@ -198,15 +198,19 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
     const uri = { type: URIType.Local, repoRoot } as URI
-    const repo = state.repo.repos[repoRoot]
-    const { admins = [], pushers = [], pullers = [] } = state.repo.repoPermissions[repo.repoID] || {}
+    const repoID = state.repo.repoIDsByPath[repoRoot]
+    const { admins = [], pushers = [], pullers = [] } = state.repo.permissionsByID[repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
+    const uriStr = uriToString(uri)
+    const hasCommits = (state.repo.commitListsByURI[uriStr] || []).length > 0
+    const hasReadme = (state.repo.filesByURI[uriStr] || {})['README.md'] !== undefined
     return {
         uri,
-        repo,
         sharedUsers,
+        hasCommits,
+        hasReadme,
     }
 }
 

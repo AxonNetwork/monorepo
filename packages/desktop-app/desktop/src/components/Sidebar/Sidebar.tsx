@@ -23,9 +23,9 @@ import OrgList from './OrgList'
 import UserAvatar from 'conscience-components/UserAvatar'
 import { createOrg } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { selectRepo, selectSettings } from 'conscience-components/navigation'
-import { IRepo, IUser, IOrganization } from 'conscience-lib/common'
-import { autobind, getHash } from 'conscience-lib/utils'
+import { selectSettings } from 'conscience-components/navigation'
+import { IUser, IOrganization } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
@@ -69,10 +69,7 @@ class Sidebar extends React.Component<Props, State>
                         {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
                     </ListItem>
                     <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
-                        <RepoList
-                            repos={this.props.repos}
-                            selectedRepo={this.props.selectedRepo}
-                        />
+                        <RepoList selectedRepo={this.props.selectedRepo} />
                     </Collapse>
 
                     <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
@@ -137,7 +134,6 @@ interface OwnProps extends RouteComponentProps<MatchParams> {
 
 interface StateProps {
     user: IUser
-    repos: { [folderPath: string]: IRepo }
     selectedRepo?: string | undefined
     orgs: { [orgID: string]: IOrganization }
 }
@@ -227,7 +223,6 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const orgs = keyBy(orgList, 'orgID')
     const selectedRepo = state.repo.reposByHash[ownProps.match.params.repoHash || '']
     return {
-        repos: state.repo.repos,
         selectedRepo,
         user,
         orgs,

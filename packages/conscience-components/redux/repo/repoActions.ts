@@ -1,11 +1,39 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { URI } from 'conscience-lib/common'
+import { URI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
     GET_REPO_LIST_SUCCESS = 'GET_REPO_LIST_SUCCESS',
     GET_REPO_LIST_FAILED = 'GET_REPO_LIST_FAILED',
+
+    GET_LOCAL_REPO_LIST = 'GET_LOCAL_REPO_LIST',
+    GET_LOCAL_REPO_LIST_SUCCESS = 'GET_LOCAL_REPO_LIST_SUCCESS',
+    GET_LOCAL_REPO_LIST_FAILED = 'GET_LOCAL_REPO_LIST_FAILED',
+
+    FETCH_FULL_REPO = 'FETCH_FULL_REPO',
+    FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
+    FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
+
+    FETCH_REPO_FILES = 'FETCH_REPO_FILES',
+    FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
+    FETCH_REPO_FILES_FAILED = 'FETCH_REPO_FILES_FAILED',
+
+    FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
+    FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
+    FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
+
+    FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
+    FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
+    FETCH_REMOTE_REFS_FAILED = 'FETCH_REMOTE_REFS_FAILED',
+
+    FETCH_LOCAL_REFS = 'FETCH_LOCAL_REFS',
+    FETCH_LOCAL_REFS_SUCCESS = 'FETCH_LOCAL_REFS_SUCCESS',
+    FETCH_LOCAL_REFS_FAILED = 'FETCH_LOCAL_REFS_FAILED',
+
+    FETCH_REPO_USERS_PERMISSIONS = 'FETCH_REPO_USERS_PERMISSIONS',
+    FETCH_REPO_USERS_PERMISSIONS_SUCCESS = 'FETCH_REPO_USERS_PERMISSIONS_SUCCESS',
+    FETCH_REPO_USERS_PERMISSIONS_FAILED = 'FETCH_REPO_USERS_PERMISSIONS_FAILED',
 
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
@@ -50,6 +78,123 @@ export interface IGetRepoListSuccessAction {
 }
 
 export type IGetRepoListFailedAction = FailedAction<RepoActionType.GET_REPO_LIST_FAILED>
+
+export interface IGetLocalRepoListAction {
+    type: RepoActionType.GET_LOCAL_REPO_LIST
+    payload: {}
+}
+
+export interface IGetLocalRepoListSuccessAction {
+    type: RepoActionType.GET_LOCAL_REPO_LIST_SUCCESS
+    payload: {
+        localRepos: { [path: string]: string }
+    }
+}
+
+export type IGetLocalRepoListFailedAction = FailedAction<RepoActionType.GET_LOCAL_REPO_LIST_FAILED>
+
+export interface IFetchFullRepoAction {
+    type: RepoActionType.FETCH_FULL_REPO
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchFullRepoSuccessAction {
+    type: RepoActionType.FETCH_FULL_REPO_SUCCESS
+    payload: {
+        uri: URI
+    }
+}
+
+export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
+
+export interface IFetchRepoFilesAction {
+    type: RepoActionType.FETCH_REPO_FILES
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchRepoFilesSuccessAction {
+    type: RepoActionType.FETCH_REPO_FILES_SUCCESS
+    payload: {
+        uri: URI
+        files: { [path: string]: IRepoFile },
+    }
+}
+
+export type IFetchRepoFilesFailedAction = FailedAction<RepoActionType.FETCH_REPO_FILES_FAILED>
+
+export interface IFetchRepoTimelineAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchRepoTimelineSuccessAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE_SUCCESS
+    payload: {
+        uri: URI
+        timeline: ITimelineEvent[],
+    }
+}
+
+export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
+
+export interface IFetchLocalRefsAction {
+    type: RepoActionType.FETCH_LOCAL_REFS
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchLocalRefsSuccessAction {
+    type: RepoActionType.FETCH_LOCAL_REFS_SUCCESS
+    payload: {
+        uri: URI
+        localRefs: { [name: string]: string },
+    }
+}
+
+export type IFetchLocalRefsFailedAction = FailedAction<RepoActionType.FETCH_LOCAL_REFS_FAILED>
+
+export interface IFetchRemoteRefsAction {
+    type: RepoActionType.FETCH_REMOTE_REFS
+    payload: {
+        repoID: string
+    }
+}
+
+export interface IFetchRemoteRefsSuccessAction {
+    type: RepoActionType.FETCH_REMOTE_REFS_SUCCESS
+    payload: {
+        repoID: string
+        remoteRefs: { [name: string]: string },
+    }
+}
+
+export type IFetchRemoteRefsFailedAction = FailedAction<RepoActionType.FETCH_REMOTE_REFS_FAILED>
+
+export interface IFetchRepoUsersPermissionsAction {
+    type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS
+    payload: {
+        repoID: string
+    }
+}
+
+export interface IFetchRepoUsersPermissionsSuccessAction {
+    type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS
+    payload: {
+        repoID: string
+        admins: string[]
+        pushers: string[]
+        pullers: string[]
+    }
+}
+
+export type IFetchRepoUsersPermissionsFailedAction = FailedAction<RepoActionType.FETCH_REPO_USERS_PERMISSIONS_FAILED>
 
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
@@ -179,6 +324,34 @@ export type IRepoAction =
     IGetRepoListSuccessAction |
     IGetRepoListFailedAction |
 
+    IGetLocalRepoListAction |
+    IGetLocalRepoListSuccessAction |
+    IGetLocalRepoListFailedAction |
+
+    IFetchFullRepoAction |
+    IFetchFullRepoSuccessAction |
+    IFetchFullRepoFailedAction |
+
+    IFetchRepoFilesAction |
+    IFetchRepoFilesSuccessAction |
+    IFetchRepoFilesFailedAction |
+
+    IFetchRepoTimelineAction |
+    IFetchRepoTimelineSuccessAction |
+    IFetchRepoTimelineFailedAction |
+
+    IFetchLocalRefsAction |
+    IFetchLocalRefsSuccessAction |
+    IFetchLocalRefsFailedAction |
+
+    IFetchRemoteRefsAction |
+    IFetchRemoteRefsSuccessAction |
+    IFetchRemoteRefsFailedAction |
+
+    IFetchRepoUsersPermissionsAction |
+    IFetchRepoUsersPermissionsSuccessAction |
+    IFetchRepoUsersPermissionsFailedAction |
+
     IGetDiffAction |
     IGetDiffSuccessAction |
     IGetDiffFailedAction |
@@ -206,6 +379,15 @@ export type IRepoAction =
     IPullRepoFailedAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
+export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
+
+export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
+export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
+export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
+export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
+export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
+export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
+
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
 

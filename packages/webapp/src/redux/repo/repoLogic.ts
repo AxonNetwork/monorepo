@@ -3,41 +3,56 @@ import parseDiff from 'conscience-lib/utils/parseDiff'
 import {
     RepoActionType,
     IGetRepoListAction, IGetRepoListSuccessAction,
+    IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+    // fetchFullRepo
 } from 'conscience-components/redux/repo/repoActions'
-import { WebRepoActionType, IGetRepoAction, IGetRepoSuccessAction, getRepo } from './repoActions'
+import {
+    WebRepoActionType,
+    IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction,
+    fetchFullRepoFromServer
+} from './repoActions'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
-import { getRepo as getRepoFromURI } from 'conscience-components/env-specific'
+import { getRepo as getRepoFromURI, getRepoID } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import { URIType } from 'conscience-lib/common'
 
 const getRepoListLogic = makeLogic<IGetRepoListAction, IGetRepoListSuccessAction>({
     type: RepoActionType.GET_REPO_LIST,
     async process({ action }, dispatch) {
         const { username } = action.payload
         const repoList = await ServerRelay.getRepoList(username)
-        await Promise.all(repoList.map(repoID => dispatch(getRepo({ repoID }))))
+        // await Promise.all(repoList.map(repoID => dispatch(fetchFullRepo({ repoID }))))
         return { username, repoList }
     }
 })
 
-const getRepoLogic = makeLogic<IGetRepoAction, IGetRepoSuccessAction>({
-    type: WebRepoActionType.GET_REPO,
+const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccessAction>({
+    type: RepoActionType.FETCH_FULL_REPO,
     async process({ action }, dispatch) {
-        const { repoID } = action.payload
+        const { uri } = action.payload
+        await dispatch(fetchFullRepoFromServer({ uri }))
+        return { uri }
+    },
+})
+
+const fetchFullRepoFromServerLogic = makeLogic<IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction>({
+    type: WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER,
+    async process({ action }, dispatch) {
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
         const repo = await ServerRelay.getRepo(repoID)
         if (repo instanceof Error) {
             return repo
         }
         const { admins, pushers, pullers } = repo
         const usernames = union(admins, pushers, pullers)
-        dispatch(getDiscussions({ uri: { type: URIType.Network, repoID } }))
-        dispatch(fetchUserDataByUsername({ usernames }))
-        return { repo }
-    }
+        await dispatch(getDiscussions({ uri }))
+        await dispatch(fetchUserDataByUsername({ usernames }))
+        return { uri, repo }
+    },
 })
 
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
@@ -73,7 +88,8 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
 
 export default [
     getRepoListLogic,
-    getRepoLogic,
+    fetchFullRepoLogic,
+    fetchFullRepoFromServerLogic,
     getDiffLogic,
     updateUserPermissionsLogic,
 ]

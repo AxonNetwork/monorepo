@@ -155,7 +155,6 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const { codeColorScheme } = state.user.userSettings
-    console.log("map state: ", codeColorScheme)
     return {
         codeColorScheme,
     }

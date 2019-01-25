@@ -1,4 +1,3 @@
-import axios from 'axios'
 import OfflinePluginRuntime from 'offline-plugin/runtime'
 import React from 'react'
 import ReactDom from 'react-dom'
@@ -7,14 +6,12 @@ import { AppContainer } from 'react-hot-loader'
 import App from 'App'
 import createStore from 'redux/store'
 import history from 'conscience-components/redux/history'
-import { IGlobalState } from 'conscience-components/redux'
 import { whoami } from 'conscience-components/redux/user/userActions'
 import { isProduction } from 'utils'
+import setEnvSpecific from 'setEnvSpecific'
 
 import 'typeface-roboto'
 
-import * as envSpecific from 'conscience-components/env-specific'
-import { URI, URIType } from 'conscience-lib/common'
 
 // Webpack offline plugin
 if (isProduction) {
@@ -29,35 +26,8 @@ const initialState = {}
 // Create browser history
 // Configure store
 const store = createStore(initialState, history)
+setEnvSpecific(store)
 store.dispatch(whoami({}))
-
-envSpecific.init({
-    async getFileContents(uri: URI) {
-        if (uri.type === URIType.Local) {
-            throw new Error('web platform cannot getFileContents with a local URI')
-        }
-        const API_URL = process.env.API_URL
-        const { repoID, commit, filename } = uri
-        const fileURL = `${API_URL}/repo/${repoID}/file/${commit}/${filename}`
-        const resp = await axios.get<string>(fileURL)
-        return resp.data
-    },
-    directEmbedPrefix(uri: URI) {
-        if (uri.type === URIType.Local) {
-            throw new Error('web platform cannot directEmbedPrefix with a local URI')
-        }
-        const API_URL = process.env.API_URL
-        const { repoID, commit } = uri
-        return `${API_URL}/repo/${repoID}/file/${commit}`
-    },
-    getRepo(uri: URI, state?: IGlobalState) {
-        if (uri.type === URIType.Local) {
-            throw new Error('web platform cannot getRepo with a local URI')
-        }
-        state = state || store.getState()
-        return state.repo.repos[uri.repoID]
-    },
-})
 
 // Create render function
 const render = (Component: any) => {

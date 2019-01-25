@@ -29,7 +29,7 @@ import UserAvatar from '../UserAvatar'
 import { H6 } from '../Typography/Headers'
 import { updateUserPermissions } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
-import { getRepo } from '../env-specific'
+import { getRepoID } from '../env-specific'
 import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { union } from 'lodash'
@@ -326,9 +326,11 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoID = (getRepo(ownProps.uri) || {}).repoID || ''
+    const repoID = getRepoID(ownProps.uri) || ''
+    console.log('ID: ', repoID)
+    console.log('permissions: ', state.repo.permissionsByID[repoID])
     return {
-        permissions: state.repo.repoPermissions[repoID],
+        permissions: state.repo.permissionsByID[repoID],
         users: state.user.users,
         usersByUsername: state.user.usersByUsername,
         currentUser: state.user.currentUser || '',

@@ -1,13 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import TablePagination from '@material-ui/core/TablePagination'
+import LargeProgressSpinner from '../LargeProgressSpinner'
 import TimelineEvent from '../TimelineEvent'
-import { ITimelineEvent, URI } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
 import { IGlobalState } from 'conscience-components/redux'
-import { getRepo } from 'conscience-components/env-specific'
+import { URI } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
@@ -33,18 +32,13 @@ class Timeline extends React.Component<Props, State>
         const { hidePagination, classes } = this.props
         const { page, rowsPerPage } = this.state
 
-        if (!this.props.commits || !this.props.commitList) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
+        if (!this.props.commitList) {
+            return <LargeProgressSpinner />
         }
 
         const commitList = this.props.commitList || []
-        const commits = this.props.commits || {}
 
-        const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(c => commits[c])
+        const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
         return (
             <div>
                 {!hidePagination && commitList.length > this.state.rowsPerPage &&
@@ -62,8 +56,8 @@ class Timeline extends React.Component<Props, State>
                 }
 
                 <div>
-                    {timelinePage.map(event => (
-                        <TimelineEvent key={event.commit} uri={{ ...this.props.uri, commit: event.commit }} />
+                    {timelinePage.map(commitHash => (
+                        <TimelineEvent key={commitHash} uri={{ ...this.props.uri, commit: commitHash }} />
                     ))}
                 </div>
             </div>
@@ -81,7 +75,6 @@ interface OwnProps {
 }
 
 interface StateProps {
-    commits: { [commit: string]: ITimelineEvent } | undefined
     commitList: string[] | undefined
 }
 
@@ -104,11 +97,9 @@ const styles = () => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri, state)
-    const { commits, commitList } = repo
+    const uriStr = uriToString(ownProps.uri)
     return {
-        commits,
-        commitList,
+        commitList: state.repo.commitListsByURI[uriStr],
     }
 }
 

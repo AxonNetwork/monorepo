@@ -2,7 +2,7 @@ import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import DiscussionPane from 'conscience-components/DiscussionPane'
-import { URIType } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -13,10 +13,11 @@ class RepoDiscussionPage extends React.Component<Props>
         const { discussionID, repoID } = this.props.match.params
         const { classes } = this.props
 
+        const uri = { type: URIType.Network, repoID } as URI
         return (
             <div className={classes.page}>
                 <DiscussionPane
-                    uri={{ type: URIType.Network, repoID }}
+                    uri={uri}
                     selectedID={discussionID}
                 />
             </div>

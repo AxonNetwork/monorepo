@@ -6,13 +6,13 @@ import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import FolderOpenIcon from '@material-ui/icons/FolderOpen'
 import CommentIcon from '@material-ui/icons/Comment'
-import { URI, RepoPage } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
-import moment from 'moment'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { selectRepo } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { getRepo } from 'conscience-components/env-specific'
+import { getRepoID } from 'conscience-components/env-specific'
+import { URI, RepoPage } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
+import moment from 'moment'
 
 
 @autobind
@@ -109,13 +109,15 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri) || {}
-    const repoID = repo.repoID
-    const numFiles = Object.keys(repo.files || {}).length
-    const lastCommitHash = repo.commitList ? repo.commitList[0] : ''
-    const lastCommit = (repo.commits || {})[lastCommitHash || ''] || {}
+    const uri = ownProps.uri
+    const uriStr = uriToString(uri)
+    const repoID = getRepoID(uri)
+    const numFiles = (state.repo.filesByURI[uriStr] || {}).length
+    const commitList = state.repo.commitListsByURI[uriStr]
+    const lastCommitHash = commitList !== undefined ? commitList[0] : ''
+    const lastCommit = state.repo.commits[lastCommitHash || ''] || {}
     const lastUpdated = lastCommit.time
-    const numDiscussions = (state.discussion.discussionsByRepo[repo.repoID] || {}).length
+    const numDiscussions = (state.discussion.discussionsByRepo[repoID] || {}).length
     return {
         repoID,
         numFiles,

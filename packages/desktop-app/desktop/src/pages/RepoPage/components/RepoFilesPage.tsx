@@ -11,17 +11,15 @@ import FileViewer from 'conscience-components/FileViewer'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, URI, URIType } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { IRepoFile, URI, URIType } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
     render() {
-        const { repo, classes } = this.props
-        if (repo === undefined) { return null }
-        const files = repo.files
+        const { files, classes } = this.props
         if (files === undefined) {
             return <LargeProgressSpinner />
         }
@@ -40,7 +38,7 @@ class RepoFilesPage extends React.Component<Props>
                 <div className={classes.fileListContainer}>
                     <FileList
                         uri={fileURI}
-                        files={repo.files || {}}
+                        files={files || {}}
                         fileExtensionsHidden={this.props.fileExtensionsHidden}
                         canEditFiles
                         openFileIcon
@@ -82,7 +80,7 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
-    repo: IRepo | undefined
+    files: { [name: string]: IRepoFile } | undefined
     fileExtensionsHidden: boolean
     classes: any
 }
@@ -128,12 +126,12 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoHash = ownProps.match.params.repoHash
     const repoRoot = state.repo.reposByHash[repoHash]
-    const repo = state.repo.repos[repoRoot]
     const uri = { type: URIType.Local, repoRoot } as URI
+    const files = state.repo.filesByURI[uriToString(uri)]
 
     return {
         uri,
-        repo,
+        files,
         fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
 }

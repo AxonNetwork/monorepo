@@ -2,47 +2,40 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import RepoInfo from 'conscience-components/RepoInfo'
 import RepoHomePage from './components/RepoHomePage'
 import RepoFilesPage from './components/RepoFilesPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
-import { getRepo } from 'redux/repo/repoActions'
+import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, URI, URIType } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind, stringToRepoPage } from 'conscience-lib/utils'
+import { isEqual } from 'lodash'
 
 
 @autobind
 class RepoPageRoutes extends React.Component<Props>
 {
-    componentWillMount() {
-        const repoID = this.props.match.params.repoID
-        if (this.props.repo === undefined) {
-            this.props.getRepo({ repoID })
+    constructor(props: Props) {
+        super(props)
+        if (props.uri) {
+            this.props.fetchFullRepo({ uri: props.uri })
         }
     }
 
     render() {
-        const { repo, classes } = this.props
-        if (repo === undefined) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
-        }
+        const { uri, classes } = this.props
+
         const repoPage = stringToRepoPage(this.props.location.pathname)
-        console.log('repoPage', { path: this.props.location.pathname, repoPage })
 
         return (
             <div className={classes.container}>
                 <main className={classes.main}>
                     <div className={classes.repository}>
                         <RepoInfo
-                            uri={{ type: URIType.Network, repoID: repo.repoID, commit: "HEAD" } as URI}
+                            uri={uri}
                             repoPage={repoPage}
                         />
                         <div>
@@ -62,6 +55,12 @@ class RepoPageRoutes extends React.Component<Props>
             </div>
         )
     }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchFullRepo({ uri: this.props.uri })
+        }
+    }
 }
 
 interface MatchParams {
@@ -69,9 +68,9 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    repo: IRepo
+    uri: URI
     menuLabelsHidden: boolean
-    getRepo: typeof getRepo
+    fetchFullRepo: typeof fetchFullRepo
     classes: any
 }
 
@@ -97,15 +96,15 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
     const repoID = props.match.params.repoID
-    const repo = state.repo.repos[repoID]
+    const uri = { type: URIType.Network, repoID } as URI
     return {
-        repo,
+        uri,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
     }
 }
 
 const mapDispatchToProps = {
-    getRepo
+    fetchFullRepo
 }
 
 export default connect(

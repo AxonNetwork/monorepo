@@ -2,14 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Timeline from 'conscience-components/Timeline'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import CommitView from 'conscience-components/CommitView'
 import { H5 } from 'conscience-components/Typography/Headers'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepo, IUser, URI, URIType } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -17,16 +16,9 @@ import { autobind } from 'conscience-lib/utils'
 class RepoHistoryPage extends React.Component<Props>
 {
     render() {
-        const { repo, classes } = this.props
-        const commits = repo.commits
-        if (commits === undefined) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
-        }
+        const { classes } = this.props
         const { commit } = this.props.match.params
+
         if (commit === undefined) {
             return (
                 <div className={classes.timelineWrapper}>
@@ -57,8 +49,6 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
-    repo: IRepo
-    user: IUser
     getDiff: typeof getDiff
     classes: any
 }
@@ -87,12 +77,8 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
     const uri = { type: URIType.Local, repoRoot } as URI
-    const repo = state.repo.repos[repoRoot]
-    const user = state.user.users[state.user.currentUser || ''] || {}
     return {
         uri,
-        repo,
-        user,
     }
 }
 

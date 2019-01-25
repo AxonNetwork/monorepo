@@ -11,7 +11,7 @@ import DiscussionList from '../DiscussionList'
 import { selectDiscussion } from '../navigation'
 import { getDiscussions } from '../redux/discussion/discussionActions'
 import { IGlobalState } from '../redux'
-import { getRepo } from '../env-specific'
+import { getRepoID } from '../env-specific'
 
 import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -113,8 +113,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri)
-    const repoID = (repo || { repoID: '' }).repoID || ''
+    const repoID = getRepoID(ownProps.uri)
 
     return {
         discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),

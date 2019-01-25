@@ -2,15 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Timeline from 'conscience-components/Timeline'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import CommitView from 'conscience-components/CommitView'
 import { H5 } from 'conscience-components/Typography/Headers'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
-import { getRepo } from 'conscience-components/env-specific'
 import { IGlobalState } from 'conscience-components/redux'
-import { URI, URIType, IRepo, IUser } from 'conscience-lib/common'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -18,16 +16,9 @@ import { autobind } from 'conscience-lib/utils'
 class RepoHistoryPage extends React.Component<Props>
 {
     render() {
-        const { repo, classes } = this.props
-        const commits = repo.commits
-        if (commits === undefined) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
-        }
-        const { repoID, commit } = this.props.match.params
+        const { classes } = this.props
+        const { commit } = this.props.match.params
+
         if (commit === undefined) {
             return (
                 <Timeline uri={this.props.uri} />
@@ -35,7 +26,7 @@ class RepoHistoryPage extends React.Component<Props>
         } else {
             return (
                 <div className={classes.main}>
-                    <CommitView uri={{ type: URIType.Network, repoID, commit }} />
+                    <CommitView uri={{ ...this.props.uri, commit }} />
 
                     <div className={classes.createDiscussionContainer}>
                         <H5>Start a discussion on this commit:</H5>
@@ -58,8 +49,6 @@ interface MatchParams {
 
 interface StateProps {
     uri: URI
-    repo: IRepo
-    user: IUser
     getDiff: typeof getDiff
 }
 
@@ -83,12 +72,8 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: Props) => {
     const uri = { type: URIType.Network, repoID: props.match.params.repoID } as URI
-    const repo = getRepo(uri, state)
-    const user = state.user.users[state.user.currentUser || ''] || {}
     return {
         uri,
-        repo,
-        user,
     }
 }
 

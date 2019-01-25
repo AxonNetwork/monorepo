@@ -1,12 +1,14 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { Theme, createStyles, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
 import { selectCommit } from '../navigation'
-import { getRepo } from '../env-specific'
+import { IGlobalState } from '../redux'
 import { URI, ITimelineEvent } from 'conscience-lib/common'
 import timelineUtils from 'conscience-lib/utils/timeline'
+import { uriToString } from 'conscience-lib/utils'
 import moment from 'moment'
 import isEqual from 'lodash/isEqual'
 
@@ -31,9 +33,7 @@ class SecuredText extends React.Component<Props, State>
     }
 
     parseCommits() {
-        const repo = getRepo(this.props.uri)
-        const commits = (repo || { commits: {} }).commits || {}
-        const commitList = (repo || { commitList: [] }).commitList || []
+        const { commits, commitList } = this.props
         const { filename, commit } = this.props.uri
         if (commit) {
             const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, commit)
@@ -105,17 +105,22 @@ class SecuredText extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & { classes: any }
-
 interface State {
     lastVerified: ITimelineEvent | undefined
     firstVerified: ITimelineEvent | undefined
     lastUpdated: ITimelineEvent | undefined
 }
 
+type Props = OwnProps & StateProps & { classes: any }
+
 interface OwnProps {
     uri: URI
-    classes: any
+    classes?: any
+}
+
+interface StateProps {
+    commits: { [hash: string]: ITimelineEvent }
+    commitList: string[]
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -137,4 +142,17 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(SecuredText)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const commitList = state.repo.commitListsByURI[uriToString(ownProps.uri)] || []
+    return {
+        commits: state.repo.commits || {},
+        commitList,
+    }
+}
+
+const mapDispatchToProps = {}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(SecuredText))

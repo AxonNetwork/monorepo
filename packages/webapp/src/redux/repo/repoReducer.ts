@@ -1,6 +1,7 @@
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { initialState, IRepoState } from 'conscience-components/redux/repo/repoReducer'
 import { WebRepoActionType, IWebRepoAction } from './repoActions'
+import { uriToString } from 'conscience-lib/utils'
 
 const webInitialState = {
     ...initialState,
@@ -13,24 +14,56 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const webRepoReducer = (state: IRepoState, action: IWebRepoAction): IRepoState => {
     switch (action.type) {
-        case WebRepoActionType.GET_REPO_SUCCESS: {
-            const { repo } = action.payload
+        case WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
+            const { uri, repo } = action.payload
+            const uriStr = uriToString(uri)
             return {
                 ...state,
-                repos: {
-                    ...state.repos,
-                    [repo.repoID]: repo
+                filesByURI: {
+                    ...state.filesByURI,
+                    [uriStr]: repo.files || {}
                 },
-                repoPermissions: {
-                    ...state.repoPermissions,
+                commitListsByURI: {
+                    ...state.commitListsByURI,
+                    [uriStr]: repo.commitList || []
+                },
+                commits: {
+                    ...state.commits,
+                    ...repo.commits
+                },
+                permissionsByID: {
+                    ...state.permissionsByID,
                     [repo.repoID]: {
                         admins: repo.admins || [],
                         pushers: repo.pushers || [],
-                        pullers: repo.pullers || [],
+                        pullers: repo.pullers || []
                     }
                 }
             }
         }
+
+        case WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
+            return state
+        }
+
+        // case WebRepoActionType.GET_REPO_SUCCESS: {
+        //     const { repo } = action.payload
+        //     return {
+        //         ...state,
+        //         repos: {
+        //             ...state.repos,
+        //             [repo.repoID]: repo
+        //         },
+        //         repoPermissions: {
+        //             ...state.repoPermissions,
+        //             [repo.repoID]: {
+        //                 admins: repo.admins || [],
+        //                 pushers: repo.pushers || [],
+        //                 pullers: repo.pullers || [],
+        //             }
+        //         }
+        //     }
+        // }
 
         case RepoActionType.GET_DIFF_SUCCESS: {
             const { commit, diff } = action.payload

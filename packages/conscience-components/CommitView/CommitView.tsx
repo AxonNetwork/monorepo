@@ -9,11 +9,10 @@ import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import DiffViewer from '../DiffViewer'
 import UserAvatar from '../UserAvatar'
 import SecuredText from '../SecuredText'
-import { URI, IRepo, ITimelineEvent, IUser } from 'conscience-lib/common'
+import { URI, ITimelineEvent, IUser } from 'conscience-lib/common'
 import { autobind, extractEmail } from 'conscience-lib/utils'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { getRepo } from 'conscience-components/env-specific'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 
 
@@ -48,6 +47,10 @@ class CommitView extends React.Component<Props>
 
     render() {
         const { commit, classes } = this.props
+        if (!commit) {
+            return <LargeProgressSpinner />
+        }
+
         return (
             <div className={classes.root}>
                 <div className={classes.commitHeader}>
@@ -99,9 +102,8 @@ interface OwnProps {
 }
 
 interface StateProps {
-    repo: IRepo
     user: IUser | undefined
-    commit: ITimelineEvent
+    commit: ITimelineEvent | undefined
     fileDiffs: parseDiff.File[]
 }
 
@@ -178,13 +180,12 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repo = getRepo(ownProps.uri, state) || {}
-    const commit = (repo.commits || {})[ownProps.uri.commit || ''] || {}
+    const commitHash = ownProps.uri.commit || ''
+    const commit = state.repo.commits[commitHash]
     const userEmail = commit ? extractEmail(commit.user) : undefined
     const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
     const fileDiffs = state.repo.diffsByCommitHash[ownProps.uri.commit || '']
     return {
-        repo,
         commit,
         user,
         fileDiffs,

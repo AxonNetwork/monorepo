@@ -1,35 +1,36 @@
 import { FailedAction } from 'conscience-components/redux/reduxUtils'
-import { IRepo } from 'conscience-lib/common'
+import { IRepo, URI } from 'conscience-lib/common'
 import { IRepoAction } from 'conscience-components/redux/repo/repoActions'
 
 export enum WebRepoActionType {
-    GET_REPO = 'GET_REPO',
-    GET_REPO_SUCCESS = 'GET_REPO_SUCCESS',
-    GET_REPO_FAILED = 'GET_REPO_FAILED',
+    FETCH_FULL_REPO_FROM_SERVER = 'FETCH_FULL_REPO_FROM_SERVER',
+    FETCH_FULL_REPO_FROM_SERVER_SUCCESS = 'FETCH_FULL_REPO_FROM_SERVER_SUCCESS',
+    FETCH_FULL_REPO_FROM_SERVER_FAILED = 'FETCH_FULL_REPO_FROM_SERVER_FAILED',
 }
 
-export interface IGetRepoAction {
-    type: WebRepoActionType.GET_REPO
+export interface IFetchFullRepoFromServerAction {
+    type: WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER
     payload: {
-        repoID: string
+        uri: URI
     }
 }
 
-export interface IGetRepoSuccessAction {
-    type: WebRepoActionType.GET_REPO_SUCCESS
+export interface IFetchFullRepoFromServerSuccessAction {
+    type: WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS
     payload: {
+        uri: URI
         repo: IRepo
     }
 }
 
-export type IGetRepoFailedAction = FailedAction<WebRepoActionType.GET_REPO_FAILED>
+export type IFetchFullRepoFromServerFailedAction = FailedAction<WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED>
 
 export type IWebRepoAction =
     IRepoAction |
 
-    IGetRepoAction |
-    IGetRepoSuccessAction |
-    IGetRepoFailedAction
+    IFetchFullRepoFromServerAction |
+    IFetchFullRepoFromServerSuccessAction |
+    IFetchFullRepoFromServerFailedAction
 
-export const getRepo = (payload: IGetRepoAction['payload']): IGetRepoAction => ({ type: WebRepoActionType.GET_REPO, payload })
+export const fetchFullRepoFromServer = (payload: IFetchFullRepoFromServerAction['payload']): IFetchFullRepoFromServerAction => ({ type: WebRepoActionType.FETCH_FULL_REPO_FROM_SERVER, payload })
 

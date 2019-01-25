@@ -10,7 +10,7 @@ import {
 } from './discussionActions'
 import { push as pushToHistory } from 'connected-react-router'
 import { fetchUserData, sawComment } from '../user/userActions'
-import { getRepo } from '../../env-specific'
+import { getRepoID } from '../../env-specific'
 import { getDiscussionURL } from '../../navigation'
 import { IDiscussion, IComment } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
@@ -20,7 +20,7 @@ const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSucc
     type: DiscussionActionType.GET_DISCUSSIONS,
     async process({ action }, dispatch) {
         const { uri } = action.payload
-        const repoID = (getRepo(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         const discussionsList = await ServerRelay.getDiscussionsForRepo(repoID)
         const discussions = keyBy(discussionsList, 'discussionID') as { [discussionID: string]: IDiscussion }
 
@@ -37,7 +37,7 @@ const createDiscussionLogic = makeLogic<ICreateDiscussionAction, ICreateDiscussi
     type: DiscussionActionType.CREATE_DISCUSSION,
     async process({ action }, dispatch) {
         const { uri, subject, commentText } = action.payload
-        const repoID = (getRepo(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         const { comment, discussion } = await ServerRelay.createDiscussion(repoID, subject, commentText)
 
         const url = getDiscussionURL(uri, discussion.discussionID)
@@ -65,7 +65,7 @@ const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccess
     type: DiscussionActionType.CREATE_COMMENT,
     async process({ action }, dispatch) {
         const { uri, discussionID, text, callback } = action.payload
-        const repoID = (getRepo(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         try {
             const comment = await ServerRelay.createComment(repoID, discussionID, text)
             dispatch(sawComment({ uri, discussionID, commentTimestamp: comment.created }))
