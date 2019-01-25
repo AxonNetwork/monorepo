@@ -10,7 +10,7 @@ import DiffViewer from '../DiffViewer'
 import UserAvatar from '../UserAvatar'
 import SecuredText from '../SecuredText'
 import { URI, IRepo, ITimelineEvent, IUser } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { autobind, extractEmail } from 'conscience-lib/utils'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
 import { getRepo } from 'conscience-components/env-specific'
@@ -100,7 +100,7 @@ interface OwnProps {
 
 interface StateProps {
     repo: IRepo
-    user: IUser
+    user: IUser | undefined
     commit: ITimelineEvent
     fileDiffs: parseDiff.File[]
 }
@@ -177,11 +177,12 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
-    const repo = getRepo(props.uri) || {}
-    const commit = (repo.commits || {})[props.uri.commit || ''] || {}
-    const user = state.user.users[commit.user || ''] || {}
-    const fileDiffs = state.repo.diffsByCommitHash[props.uri.commit || '']
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const repo = getRepo(ownProps.uri, state) || {}
+    const commit = (repo.commits || {})[ownProps.uri.commit || ''] || {}
+    const userEmail = commit ? extractEmail(commit.user) : undefined
+    const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
+    const fileDiffs = state.repo.diffsByCommitHash[ownProps.uri.commit || '']
     return {
         repo,
         commit,
