@@ -9,14 +9,12 @@ const desktopInitialState = {
     ...initialState,
     reposByHash: {},
     repoIDsByPath: {},
-    isBehindRemoteByURI: {},
 }
 
 declare module 'conscience-components/redux/repo/repoReducer' {
     export interface IRepoState {
         reposByHash: { [hash: string]: string }
         repoIDsByPath: { [repoRoot: string]: string }
-        isBehindRemoteByURI: { [uri: string]: boolean }
     }
 }
 

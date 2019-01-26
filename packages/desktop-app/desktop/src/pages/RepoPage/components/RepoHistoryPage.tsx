@@ -8,7 +8,8 @@ import CommitView from 'conscience-components/CommitView'
 import { H5 } from 'conscience-components/Typography/Headers'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { URI, URIType } from 'conscience-lib/common'
+import { getURIFromParams } from 'conscience-components/env-specific'
+import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -18,6 +19,7 @@ class RepoHistoryPage extends React.Component<Props>
     render() {
         const { classes } = this.props
         const { commit } = this.props.match.params
+        if (!this.props.uri) return null
 
         if (commit === undefined) {
             return (
@@ -48,7 +50,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    uri: URI
+    uri?: URI
     getDiff: typeof getDiff
     classes: any
 }
@@ -75,8 +77,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
-    const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
-    const uri = { type: URIType.Local, repoRoot } as URI
+    const uri = getURIFromParams(ownProps.match.params)
     return {
         uri,
     }

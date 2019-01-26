@@ -327,8 +327,6 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = getRepoID(ownProps.uri) || ''
-    console.log('ID: ', repoID)
-    console.log('permissions: ', state.repo.permissionsByID[repoID])
     return {
         permissions: state.repo.permissionsByID[repoID],
         users: state.user.users,

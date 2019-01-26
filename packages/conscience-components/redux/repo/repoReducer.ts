@@ -13,6 +13,7 @@ export const initialState = {
     remoteRefsByID: {},
     permissionsByID: {},
     diffsByCommitHash: {},
+    isBehindRemoteByURI: {},
     failedToFetchByURI: {},
 }
 
@@ -26,6 +27,7 @@ export interface IRepoState {
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
+    isBehindRemoteByURI: { [uri: string]: boolean }
     failedToFetchByURI: { [repoID: string]: boolean }
 }
 

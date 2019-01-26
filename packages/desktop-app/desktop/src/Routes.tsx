@@ -8,10 +8,12 @@ import OrgPage from './pages/OrgPage'
 import SettingsPage from './pages/SettingsPage'
 import UserPage from 'conscience-components/UserPage'
 
-function Routes({ classes }: Props) {
+function Routes({ history, classes }: Props) {
+    console.log(history.location.pathname)
     return (
         <Switch>
             <Route path="/local-repo/:repoHash" component={RepoPage} />
+            <Route path="/repo/:repoID" component={RepoPage} />
             <Route path="/new-repo" component={NewRepoPage} />
             <Route path="/new-repo/:orgID" component={NewRepoPage} />
             <Route path="/org/:orgID" component={OrgPage} />
