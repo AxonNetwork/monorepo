@@ -20,7 +20,7 @@ import {
     IPullRepoAction,
     IWatchRepoAction,
     cloneRepoProgress, pullRepoProgress, pullRepoSuccess, fetchFullRepo,
-    fetchRepoFiles, watchRepo, behindRemote,
+    fetchRepoFiles, behindRemote,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -60,7 +60,6 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
         }
 
         const uri = { type: URIType.Local, repoRoot: path } as URI
-        await dispatch(watchRepo({ uri }))
         await dispatch(fetchFullRepo({ uri }))
         selectRepo(uri, RepoPage.Home)
 
@@ -95,14 +94,12 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 
         for (let repo of repoList) {
             localRepos[repo.path] = repo.repoID
-            const uri = { type: URIType.Local, repoRoot: repo.path } as URI
-            dispatch(watchRepo({ uri }))
         }
 
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         if (repoList.length > 0) {
             const uri = { type: URIType.Local, repoRoot: repoList[0].path } as URI
-            // selectRepoOnce(uri)
+            selectRepoOnce(uri)
         }
 
         return { localRepos }
@@ -332,7 +329,8 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
     type: RepoActionType.CLONE_REPO,
     async process({ action, getState }, dispatch, done) {
-        const { repoID } = action.payload
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
@@ -360,7 +358,6 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         stream.on('end', async () => {
             if (success) {
                 const uri = { type: URIType.Local, repoRoot: path } as URI
-                await dispatch(watchRepo({ uri }))
                 await dispatch(fetchFullRepo({ uri }))
                 selectRepo(uri, RepoPage.Home)
             }

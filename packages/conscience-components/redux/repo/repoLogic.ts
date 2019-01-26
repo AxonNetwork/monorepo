@@ -4,7 +4,8 @@ import {
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction,
     fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
-    fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer
+    fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer,
+    watchRepo,
 } from './repoActions'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
@@ -29,15 +30,18 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         const { uri } = action.payload
         if (uri.type === URIType.Local) {
             const repoID = getRepoID(uri)
-            dispatch(fetchRepoFiles({ uri }))
-            dispatch(fetchRepoTimeline({ uri }))
-            dispatch(getDiscussions({ uri }))
-            dispatch(fetchRepoUsersPermissions({ repoID }))
-            dispatch(fetchLocalRefs({ uri }))
-            dispatch(fetchRemoteRefs({ repoID }))
+            await Promise.all([
+                dispatch(fetchRepoFiles({ uri })),
+                dispatch(fetchRepoTimeline({ uri })),
+                dispatch(getDiscussions({ uri })),
+                dispatch(fetchRepoUsersPermissions({ repoID })),
+                dispatch(fetchLocalRefs({ uri })),
+                dispatch(fetchRemoteRefs({ repoID })),
+            ])
         } else {
-            dispatch(fetchFullRepoFromServer({ uri }))
+            await dispatch(fetchFullRepoFromServer({ uri }))
         }
+        await dispatch(watchRepo({ uri }))
         return { uri }
     },
 })
