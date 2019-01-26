@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import PushPullButtons from 'conscience-components/PushPullButtons'
+import CloneButton from 'conscience-components/CloneButton'
 import Tabs from 'conscience-components/Tabs'
 import { H5 } from 'conscience-components/Typography/Headers'
-import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
 import { getRepoID } from '../env-specific'
-import { IRepoFile, RepoPage, URI, URIType } from 'conscience-lib/common'
+import { RepoPage, URI, LocalURI, NetworkURI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -17,25 +17,29 @@ import { autobind, uriToString } from 'conscience-lib/utils'
 class RepoInfo extends React.Component<Props>
 {
     render() {
-        const { repoID, version, classes } = this.props
+        const { uri, version, showButtons, classes } = this.props
         const versionStr = version > 0 ? 'v' + version : ''
-        const showButtons = this.props.uri.type === URIType.Local && this.props.showPushPullButtons
 
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
-                    <H5 className={classes.headline}>{repoID}</H5>
+                    <div>
+                        <H5 className={classes.headline}>{getRepoID(uri)}</H5>
+                        {<Typography className={classes.location}>
+                            {uri.type === URIType.Local ? "Local" : "Conscience Network"}
+                        </Typography>}
+                    </div>
                     <Typography className={classes.version}>{versionStr}</Typography>
-                    {showButtons &&
+                    {showButtons && uri.type === URIType.Local &&
                         <PushPullButtons
-                            uri={this.props.uri}
-                            files={this.props.files}
-                            isBehindRemote={this.props.isBehindRemote}
-                            pullProgress={this.props.pullProgress}
-                            checkpointLoading={this.props.checkpointLoading}
-                            pullRepo={this.props.pullRepo}
-                            checkpointRepo={this.props.checkpointRepo}
+                            uri={uri as LocalURI}
                             classes={{ root: classes.pushPullButtons }}
+                        />
+                    }
+                    {showButtons && uri.type === URIType.Network &&
+                        <CloneButton
+                            uri={uri as NetworkURI}
+                            classes={{ root: classes.cloneButton }}
                         />
                     }
                 </div>
@@ -67,21 +71,13 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    showPushPullButtons?: boolean
+    showButtons?: boolean
     repoPage: RepoPage
 }
 
 interface StateProps {
-    repoID: string
     version: number
-    files: { [name: string]: IRepoFile }
-    isBehindRemote?: boolean
     menuLabelsHidden: boolean
-    pullProgress: { fetched: number, toFetch: number } | undefined
-    checkpointLoading: boolean
-
-    pullRepo: typeof pullRepo,
-    checkpointRepo: typeof checkpointRepo,
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -101,6 +97,9 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
     },
+    location: {
+        fontStyle: 'italic'
+    },
     version: {
         // display: 'inline-block',
     },
@@ -108,12 +107,15 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '10pt',
     },
     titleContainer: {
-        paddingBottom: 20,
+        paddingBottom: 8,
         display: 'flex',
         flexWrap: 'wrap',
     },
     pushPullButtons: {
         marginLeft: 30,
+    },
+    cloneButton: {
+        marginLeft: 64,
     },
     spacer: {
         flexGrow: 1,
@@ -121,33 +123,16 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoID = getRepoID(ownProps.uri)
     const uriStr = uriToString(ownProps.uri)
     const version = (state.repo.commitListsByURI[uriStr] || []).length
-    const files = state.repo.filesByURI[uriStr] || {}
-    const isBehind = state.repo.isBehindRemoteByURI[uriStr] || false
-    let pullProgress = undefined
-    let checkpointLoading = false
-    if (ownProps.uri.type === URIType.Local) {
-        pullProgress = state.ui.pullRepoProgressByURI[uriStr]
-        checkpointLoading = state.ui.checkpointLoading
-    }
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
-        repoID,
-        files,
         version,
-        isBehind,
         menuLabelsHidden,
-        pullProgress,
-        checkpointLoading,
     }
 }
 
-const mapDispatchToProps = {
-    pullRepo,
-    checkpointRepo,
-}
+const mapDispatchToProps = {}
 
 export default connect(
     mapStateToProps,

@@ -41,7 +41,7 @@ class RepoPageContainer extends React.Component<Props>
             <main className={classes.main}>
                 <RepoInfo
                     uri={uri}
-                    showPushPullButtons
+                    showButtons
                     repoPage={repoPage}
                 />
                 <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
