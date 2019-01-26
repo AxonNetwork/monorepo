@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, createStyles } from '@material-ui/core/styles'
@@ -60,6 +61,10 @@ class File extends React.Component<Props>
 
     render() {
         const { file, classes } = this.props
+        if (!file || !file.name) {
+            console.error('file.name is undefined', file)
+            return null
+        }
         const name = path.basename(file.name)
 
         let displayname: string
@@ -114,6 +119,14 @@ class File extends React.Component<Props>
         } else {
             return fileRow
         }
+    }
+
+    shouldComponentUpdate(nextProps: Props) {
+        return !isEqual(this.props.uri, nextProps.uri) ||
+            this.props.file.name !== nextProps.file.name ||
+            this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
+            this.props.openFileIcon !== nextProps.openFileIcon ||
+            this.props.canEditFiles !== nextProps.canEditFiles
     }
 }
 

@@ -1,5 +1,8 @@
+import isEqual from 'lodash/isEqual'
 import path from 'path'
 import React from 'react'
+import values from 'lodash/values'
+import debounce from 'lodash/debounce'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -8,6 +11,10 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
 import TextField from '@material-ui/core/TextField'
+import FormControl from '@material-ui/core/FormControl'
+import SearchIcon from '@material-ui/icons/Search'
+import Input from '@material-ui/core/Input'
+import InputAdornment from '@material-ui/core/InputAdornment'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import Typography from '@material-ui/core/Typography'
@@ -30,19 +37,51 @@ class FileList extends React.Component<Props, State>
     state = {
         newFileDialogOpen: false,
         tree: null,
+        quickNavOpen: false,
+        quickNavQuery: '',
+        quickNavFileList: [],
     }
 
     _inputNewFileName: HTMLInputElement | null = null
+    _inputQuickNav: HTMLInputElement | null = null
 
     componentDidMount() {
         if (this.props.files) {
             this.setState({ tree: makeTree(this.props.files) })
         }
+
+        document.addEventListener('keydown', this.onKeyDown, false)
     }
 
-    componentDidUpdate(prevProps: Props) {
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.onKeyDown, false)
+    }
+
+    componentDidUpdate(prevProps: Props, prevState: State) {
         if (this.props.files && this.props.files !== prevProps.files) {
             this.setState({ tree: makeTree(this.props.files) })
+        }
+
+        if (this.state.quickNavQuery !== prevState.quickNavQuery) {
+            if (this.state.quickNavQuery !== '') {
+                this.recalculateQuickNavFileList(this.state.quickNavQuery)
+            } else {
+                this.setState({ quickNavFileList: [] })
+            }
+        }
+    }
+
+    onKeyDown(evt: React.KeyboardEvent<Element>) {
+        if (!evt.metaKey && !evt.ctrlKey && !evt.altKey && !evt.shiftKey) {
+            if (!this.state.quickNavOpen && evt.key === '/') {
+                evt.stopPropagation()
+                this.setState({ quickNavOpen: true, quickNavQuery: '', quickNavFileList: [] }, () => {
+                    this._inputQuickNav!.focus()
+                })
+            } else if (this.state.quickNavOpen && evt.key === 'Escape') {
+                evt.stopPropagation()
+                this.setState({ quickNavOpen: false, quickNavQuery: '', quickNavFileList: [] })
+            }
         }
     }
 
@@ -61,7 +100,14 @@ class FileList extends React.Component<Props, State>
             }
         }
 
-        const entries = sortFiles(currentTree.files).map(key => currentTree.files[key])
+        let files: IRepoFile[]
+        if (this.state.quickNavQuery !== '') {
+            files = this.state.quickNavFileList
+        } else {
+            files = values(currentTree.files)
+        }
+
+        const entries = sortFiles(files)
 
         return (
             <React.Fragment>
@@ -75,16 +121,27 @@ class FileList extends React.Component<Props, State>
                     }
                 </div>
 
-                {entries.length === 0 &&
+                {Object.keys(this.props.files).length === 0 &&
                     <Typography className={classes.emptyRepoMessage}>
                         This is the file list view.  Right now, it's empty because nobody has committed any files to the repository.<br /><br />
                         Add some files and then commit them using the <BackupIcon /> button above.<br />
                         Open this folder on your computer by using the <FolderIcon /> button.
                     </Typography>
                 }
-                {entries.length > 0 &&
+                {Object.keys(this.props.files).length > 0 &&
                     <Card className={classes.fileListCard}>
                         <CardContent className={classes.fileListCardContent}>
+                            {this.state.quickNavOpen &&
+                                <FormControl fullWidth className={classes.quickNavSearchBar}>
+                                    <Input
+                                        inputRef={x => this._inputQuickNav = x}
+                                        onChange={this.onQuickNavSearchChange}
+                                        value={this.state.quickNavQuery}
+                                        startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
+                                    />
+                                </FormControl>
+                            }
+
                             <Table>
                                 <TableBody>
                                     {entries.map(file => (
@@ -124,6 +181,20 @@ class FileList extends React.Component<Props, State>
         )
     }
 
+    onQuickNavSearchChange(evt: React.ChangeEvent) {
+        if (evt.target.value === '/') {
+            return
+        }
+        this.setState({ quickNavQuery: evt.target.value })
+    }
+
+    recalculateQuickNavFileList = debounce((quickNavQuery: string) => {
+        const quickNavFileList = sortFiles(
+            values(this.props.files).filter(e => e.name.toLowerCase().includes(quickNavQuery.toLowerCase()))
+        )
+        this.setState({ quickNavFileList })
+    }, 300)
+
     onClickNewFile() {
         this.setState({ newFileDialogOpen: true })
     }
@@ -149,6 +220,19 @@ class FileList extends React.Component<Props, State>
         }
         this.setState({ newFileDialogOpen: false })
     }
+
+    shouldComponentUpdate(nextProps: Props, nextState: State) {
+        return !isEqual(this.props.uri, nextProps.uri) ||
+            this.props.files !== nextProps.files ||
+            this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
+            this.props.openFileIcon !== nextProps.openFileIcon ||
+            this.props.canEditFiles !== nextProps.canEditFiles ||
+            this.state.tree !== nextState.tree ||
+            this.state.newFileDialogOpen !== nextState.newFileDialogOpen ||
+            this.state.quickNavOpen !== nextState.quickNavOpen ||
+            this.state.quickNavQuery !== nextState.quickNavQuery ||
+            this.state.quickNavFileList !== nextState.quickNavFileList
+    }
 }
 
 type Props = OwnProps & { classes: any }
@@ -164,6 +248,9 @@ interface OwnProps {
 interface State {
     newFileDialogOpen: boolean
     tree: any
+    quickNavOpen: boolean
+    quickNavQuery: string
+    quickNavFileList: IRepoFile[]
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -212,6 +299,14 @@ const styles = (theme: Theme) => createStyles({
     },
     link: {
         color: theme.palette.secondary.main,
+    },
+    quickNavSearchBar: {
+        padding: '0 8px',
+        marginBottom: 10,
+
+        '& svg': {
+            color: 'rgba(0, 0, 0, 0.54)',
+        },
     },
 })
 

@@ -15,49 +15,34 @@ import { IRepoFile } from 'conscience-lib/common'
 //         }
 //     }
 // }
-export function makeTree(files: { [name: string]: IRepoFile }) {
+export function makeTree(allFiles: { [name: string]: IRepoFile }) {
     const tree = {
         files: {}
     }
-    for (let key of Object.keys(files)) {
-        setPath(tree, key, files[key])
+    for (let key of Object.keys(allFiles)) {
+        setPath(allFiles, tree, key)
     }
     return tree
 }
 
-function setPath(obj: any, keypath: string, value: IRepoFile) {
-    obj.files = obj.files || {}
+function setPath(allFiles: { [name: string]: IRepoFile }, tree: any, keypath: string) {
+    const file = allFiles[keypath]
+
+    tree.files = tree.files || {}
     const parts = keypath.split('/')
-    let basepath = null
+    let basepath = ''
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i]
+
         if (i < parts.length - 1) {
-            if (obj.files[part] === undefined) {
-                obj.files[part] = {
-                    name: path.join(basepath || '', part),
-                    type: 'folder',
-                    status: value.status,
-                    size: value.size,
-                    modified: new Date(value.modified),
-                    diff: '',
-                    mergeConflict: false,
-                    mergeUnresolved: false,
-                    files: {},
-                }
-            } else {
-                if (value.status === 'M' || value.status === '?' || value.status === 'U') {
-                    obj.files[part].status = 'M'
-                }
-                obj.files[part].size += value.size
-                if (value.modified > obj.files[part].modified) {
-                    obj.files[part].modified = new Date(value.modified)
-                }
+            if (tree.files[part] === undefined) {
+                tree.files[part] = { ...allFiles[path.join(basepath, part)], files: {} }
             }
         } else if (i === parts.length - 1) {
-            obj.files[part] = value
+            tree.files[part] = tree.files[part] || { ...file, files: {} }
             return
         }
-        obj = obj.files[part]
+        tree = tree.files[part]
         basepath = basepath
             ? basepath + '/' + part
             : part
@@ -65,11 +50,10 @@ function setPath(obj: any, keypath: string, value: IRepoFile) {
 }
 
 // Sort folders above files.  Anything of the same type is sorted alphabetically.
-export function sortFiles(files: { [name: string]: IRepoFile }) {
-    const names = Object.keys(files).sort((a, b) => {
-        if (files[a].type === 'folder' && files[b].type !== 'folder') { return -1 }
-        if (files[a].type !== 'folder' && files[b].type === 'folder') { return 1 }
-        return (a < b ? -1 : 1)
+export function sortFiles(files: IRepoFile[]) {
+    return files.sort((a, b) => {
+        if (a.type === 'folder' && b.type !== 'folder') { return -1 }
+        if (a.type !== 'folder' && b.type === 'folder') { return 1 }
+        return (a.name < b.name ? -1 : 1)
     })
-    return names
 }

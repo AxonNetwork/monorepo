@@ -33,7 +33,7 @@ class RepoFilesPage extends React.Component<Props>
             filename,
         }
 
-        if (!filename || !file) {
+        if (!filename || !file || file.type === 'folder') {
             return (
                 <div className={classes.fileListContainer}>
                     <FileList

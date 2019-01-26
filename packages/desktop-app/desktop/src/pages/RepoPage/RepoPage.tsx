@@ -13,13 +13,14 @@ import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { URI, URIType } from 'conscience-lib/common'
+import { selectRepo } from 'conscience-components/navigation'
+import { URI, URIType, RepoPage } from 'conscience-lib/common'
 import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 import { isEqual } from 'lodash'
 
 
 @autobind
-class RepoPage extends React.Component<Props>
+class RepoPageContainer extends React.Component<Props>
 {
     constructor(props: Props) {
         super(props)
@@ -61,6 +62,31 @@ class RepoPage extends React.Component<Props>
                 </div>
             </main>
         )
+    }
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.onKeyDown, false)
+    }
+
+    onKeyDown(evt: React.KeyboardEvent<Element>) {
+        if ((evt.metaKey || evt.ctrlKey) && !evt.altKey && !evt.shiftKey) {
+            if (evt.key === '1') {
+                selectRepo(this.props.uri!, RepoPage.Home)
+                evt.stopPropagation()
+            } else if (evt.key === '2') {
+                selectRepo(this.props.uri!, RepoPage.Files)
+                evt.stopPropagation()
+            } else if (evt.key === '3') {
+                selectRepo(this.props.uri!, RepoPage.History)
+                evt.stopPropagation()
+            } else if (evt.key === '4') {
+                selectRepo(this.props.uri!, RepoPage.Discussion)
+                evt.stopPropagation()
+            } else if (evt.key === '5') {
+                selectRepo(this.props.uri!, RepoPage.Team)
+                evt.stopPropagation()
+            }
+        }
     }
 
     componentDidUpdate(prevProps: Props) {
@@ -118,4 +144,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(RepoPage))
+)(withStyles(styles)(RepoPageContainer))

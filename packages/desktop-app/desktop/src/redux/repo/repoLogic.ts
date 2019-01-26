@@ -1,3 +1,4 @@
+import path from 'path'
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
@@ -95,6 +96,7 @@ const getLocalReposLogic = makeLogic<IGetLocalReposAction, IGetLocalReposSuccess
 
         let repos = {} as { [path: string]: ILocalRepo }
 
+        console.log('repoList', repoList)
         for (let repo of repoList) {
             // await dispatch(fetchedRepo({ repo }))
             // @@TODO: make sure we're not already watching a given repo
@@ -154,22 +156,79 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
             const repoID = getRepoID(uri)
 
             const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
+            console.log('filesListRaw', filesListRaw)
 
-            const filesList = filesListRaw.map(file => ({
-                name: file.name,
-                size: file.size ? file.size.toNumber() : 0,
-                modified: new Date(file.modified * 1000),
-                type: filetypes.getType(file.name),
-                status: file.stagedStatus,
-                mergeConflict: file.mergeConflict,
-                mergeUnresolved: file.mergeUnresolved,
-            } as IRepoFile))
+            const filesList = filesListRaw.map(file => {
+                if (file.name[file.name.length - 1] === '/') {
+                    file.name = file.name.slice(0, file.name.length - 1)
+                }
+                if (file.name[0] === '/') {
+                    file.name = file.name.slice(1)
+                }
+                return {
+                    name: file.name,
+                    size: file.size ? file.size.toNumber() : 0,
+                    modified: new Date(file.modified * 1000),
+                    type: filetypes.getType(file.name),
+                    status: file.stagedStatus,
+                    mergeConflict: file.mergeConflict,
+                    mergeUnresolved: file.mergeUnresolved,
+                } as IRepoFile
+            })
             const files = keyBy(filesList, 'name')
+            addFolders(files)
             return { uri, files }
         }
         return { uri, files: {} }
     },
 })
+
+function addFolders(files: { [name: string]: IRepoFile }) {
+    for (let filepath of Object.keys(files)) {
+        let dirname = path.dirname(filepath)
+        if (dirname[0] === '/') {
+            dirname = dirname.slice(1)
+        }
+
+        if (dirname === '.') {
+            console.log('bad dirname', filepath)
+            continue
+        }
+
+        const parts = dirname.split('/')
+        for (let i = 0; i < parts.length; i++) {
+            const partialDirname = parts.slice(0, i + 1).join('/')
+
+            if (!files[partialDirname]) {
+                const descendants = Object.keys(files).filter(filepath => filepath.startsWith(partialDirname) && files[filepath].type !== 'folder')
+                let size = 0
+                let modified: Date | null = null
+                let status = ''
+                for (let filepath of descendants) {
+                    size += files[filepath].size
+                    if (!modified || modified < files[filepath].modified) {
+                        modified = files[filepath].modified
+                    }
+
+                    if (status !== 'M' && (files[filepath].status === 'M' || files[filepath].status === '?' || files[filepath].status === 'U')) {
+                        status = 'M'
+                    }
+                }
+
+                files[partialDirname] = {
+                    name: partialDirname,
+                    type: 'folder',
+                    status,
+                    size,
+                    modified,
+                    diff: '',
+                    mergeConflict: false,
+                    mergeUnresolved: false,
+                } as IRepoFile
+            }
+        }
+    }
+}
 
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,
