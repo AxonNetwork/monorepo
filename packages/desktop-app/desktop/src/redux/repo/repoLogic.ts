@@ -93,7 +93,6 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 
         let localRepos = {} as { [path: string]: string }
 
-        console.log('repoList', repoList)
         for (let repo of repoList) {
             localRepos[repo.path] = repo.repoID
             const uri = { type: URIType.Local, repoRoot: repo.path } as URI
@@ -120,7 +119,6 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
             const repoID = getRepoID(uri)
 
             const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
-            console.log('filesListRaw', filesListRaw)
 
             const filesList = filesListRaw.map(file => {
                 if (file.name[file.name.length - 1] === '/') {
@@ -343,7 +341,6 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         let path = ''
         let success = false
         stream.on('data', async (data: any) => {
-            console.log('data: ', data)
             if (data.progress !== undefined) {
                 const fetched = data.progress.fetched !== undefined ? data.progress.fetched.toNumber() : 0
                 const toFetch = data.progress.toFetch !== undefined ? data.progress.toFetch.toNumber() : 0
@@ -380,7 +377,6 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
         const stream = rpc.getClient().pullRepo({ path: folderPath })
         dispatch(pullRepoProgress({ uri, fetched: 0, toFetch: 0 }))
         stream.on('data', async (data: any) => {
-            console.log("PULL", data)
             const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
             const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
             await dispatch(pullRepoProgress({ uri, fetched, toFetch }))

@@ -102,15 +102,18 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
         },
 
         getURIFromParams(params: { repoID?: string, repoHash?: string }, state?: IGlobalState) {
-            let uri = undefined as URI | undefined
             if (params.repoHash) {
                 state = state || store.getState()
                 const repoRoot = state.repo.reposByHash[params.repoHash]
-                uri = { type: URIType.Local, repoRoot } as URI
+                if (!repoRoot) {
+                    return undefined
+                } else {
+                    return { type: URIType.Local, repoRoot } as URI
+                }
             } else if (params.repoID) {
-                uri = { type: URIType.Network, repoID: params.repoID } as URI
+                return { type: URIType.Network, repoID: params.repoID } as URI
             }
-            return uri
+            return undefined
         }
     })
 }
