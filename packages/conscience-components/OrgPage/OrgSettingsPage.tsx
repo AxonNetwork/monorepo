@@ -20,13 +20,14 @@ class OrganizationPage extends React.Component<Props>
 
     render() {
         const { org, classes } = this.props
-        const hasOrgPicture = org.picture && Object.keys(org.picture).length === 0
+        console.log(org.picture)
+        const hasOrgPicture = org.picture && Object.keys(org.picture).length !== 0
+        console.log(hasOrgPicture)
 
         return (
             <div className={classes.settingsPage}>
                 <div className={classes.settings}>
                     <H6 className={classes.header}>Settings</H6>
-
                     <TextField
                         key={org.orgID + ':1'}
                         label="Organization Name"
@@ -54,33 +55,35 @@ class OrganizationPage extends React.Component<Props>
                         Update
                     </Button>
                 </div>
-                <div className={classes.imageContainer}>
-                    {!hasOrgPicture &&
-                        <div>No Image Uploaded</div>
-                    }
-                    {hasOrgPicture &&
-                        <div>
-                            <div>Current Image:</div>
-                            <img src={nonCacheImg(org.picture['256x256'])} className={classes.orgPicture} />
-                        </div>
-                    }
-                    <input type="file" ref={x => this._inputOrgPicture = x} /><br />
-                    <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
-                </div>
-                <div className={classes.imageContainer}>
-                    {org.banner.length === 0 &&
-                        <div>No Banner Uploaded</div>
-                    }
-                    {org.banner.length > 0 &&
-                        <div>
-                            <div>Current Banner:</div>
-                            <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
-                        </div>
-                    }
-                    <input type="file" ref={x => this._inputBanner = x} /><br />
-                    <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
-                </div>
-            </div>
+                <div className={classes.images}>
+                    <div className={classes.imageContainer}>
+                        {!hasOrgPicture &&
+                            <div>No Image Uploaded</div>
+                        }
+                        {hasOrgPicture &&
+                            <div>
+                                <div>Current Image:</div>
+                                <img src={nonCacheImg(org.picture['256x256'])} className={classes.orgPicture} />
+                            </div>
+                        }
+                        <input type="file" ref={x => this._inputOrgPicture = x} /><br />
+                        <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
+                    </div>
+                    <div className={classes.imageContainer}>
+                        {org.banner.length === 0 &&
+                            <div>No Banner Uploaded</div>
+                        }
+                        {org.banner.length > 0 &&
+                            <div>
+                                <div>Current Banner:</div>
+                                <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
+                            </div>
+                        }
+                        <input type="file" ref={x => this._inputBanner = x} /><br />
+                        <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
+                    </div>
+                </div >
+            </div >
         )
     }
 
@@ -132,11 +135,26 @@ const styles = (theme: Theme) => createStyles({
     settingsPage: {
         minWidth: 450,
         maxWidth: 650,
+        display: 'flex',
+        flexDirection: 'column',
     },
     settings: {
     },
+    images: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: '#eaeaea82',
+        padding: 32,
+        marginTop: 32,
+    },
     imageContainer: {
+        width: '50%',
         marginTop: theme.spacing.unit * 2,
+        '& img': {
+            marginTop: 8,
+            marginBottom: 8,
+        },
         '& button': {
             marginTop: theme.spacing.unit * 2,
         },
