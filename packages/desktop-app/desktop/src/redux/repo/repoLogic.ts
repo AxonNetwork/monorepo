@@ -102,7 +102,7 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
         if (repoList.length > 0) {
             const uri = { type: URIType.Local, repoRoot: repoList[0].path } as URI
-            selectRepoOnce(uri)
+            // selectRepoOnce(uri)
         }
 
         return { localRepos }
