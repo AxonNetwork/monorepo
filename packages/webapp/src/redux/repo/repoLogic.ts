@@ -4,14 +4,15 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
 } from 'conscience-components/redux/repo/repoActions'
-import { makeLogic } from 'conscience-components/redux/reduxUtils'
-import { getRepo as getRepoFromURI } from 'conscience-components/env-specific'
-import ServerRelay from 'conscience-lib/ServerRelay'
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic
 } from 'conscience-components/redux/repo/repoLogic'
+import { makeLogic } from 'conscience-components/redux/reduxUtils'
+import { getRepo as getRepoFromURI } from 'conscience-components/env-specific'
+import ServerRelay from 'conscience-lib/ServerRelay'
+
 
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,

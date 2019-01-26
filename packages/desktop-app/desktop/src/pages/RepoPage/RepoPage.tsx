@@ -14,7 +14,8 @@ import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
-import { URI, URIType, RepoPage } from 'conscience-lib/common'
+import { getURIFromParams } from 'conscience-components/env-specific'
+import { URI, RepoPage } from 'conscience-lib/common'
 import { autobind, stringToRepoPage } from 'conscience-lib/utils'
 import { isEqual } from 'lodash'
 
@@ -55,7 +56,21 @@ class RepoPageContainer extends React.Component<Props>
                             <Route path='/local-repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
                             <Route path='/local-repo/:repoHash/discussion' component={RepoDiscussionPage} />
                             <Route path='/local-repo/:repoHash/team' component={RepoTeamPage} />
+                            <Route path='/local-repo/:repoHash/home' component={RepoHomePage} />
                             <Route path='/local-repo/:repoHash' component={RepoHomePage} />
+
+                            <Route path='/repo/:repoID/files/:commit/:filename+' component={RepoFilesPage} />
+                            <Route path='/repo/:repoID/files/:commit' component={RepoFilesPage} />
+                            <Route path='/repo/:repoID/edit/:filename+' component={RepoEditorPage} />
+                            <Route path='/repo/:repoID/conflict/:filename+' component={RepoConflictPage} />
+                            <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
+                            <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
+                            <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
+                            <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
+                            <Route path='/repo/:repoID/team' component={RepoTeamPage} />
+                            <Route path='/repo/:repoID/home' component={RepoHomePage} />
+                            <Route path='/repo/:repoID' component={RepoHomePage} />
+
                             <Route render={() => null} />
                         </Switch>
                     </div>
@@ -97,7 +112,8 @@ class RepoPageContainer extends React.Component<Props>
 }
 
 interface MatchParams {
-    repoHash: string
+    repoHash?: string
+    repoID?: string
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -124,13 +140,8 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-const mapStateToProps = (state: IGlobalState, props: Props) => {
-    const repoHash = props.match.params.repoHash
-    const repoRoot = state.repo.reposByHash[repoHash]
-    let uri = undefined as URI | undefined
-    if (repoRoot) {
-        uri = { type: URIType.Local, repoRoot } as URI
-    }
+const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+    const uri = getURIFromParams(ownProps.match.params)
     return {
         uri,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,

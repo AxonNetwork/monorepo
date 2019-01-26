@@ -75,6 +75,8 @@ class File extends React.Component<Props>
             displayname = name
         }
 
+        const isLocal = this.props.uri.type === URIType.Local
+
         const fileRow = (
             <TableRow
                 hover
@@ -90,7 +92,7 @@ class File extends React.Component<Props>
                 </TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{bytes(file.size)}</TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{moment(file.modified).fromNow()}</TableCell>
-                {(this.canQuickEdit() || this.props.openFileIcon) &&
+                {isLocal && (this.canQuickEdit() || this.props.openFileIcon) &&
                     <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellActions)}>
                         {this.canQuickEdit() &&
                             <Tooltip title="Quick edit">

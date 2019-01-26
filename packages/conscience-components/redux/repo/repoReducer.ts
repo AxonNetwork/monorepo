@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoFile, IRepoPermissions, ITimelineEvent } from 'conscience-lib/common'
+import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
@@ -13,6 +13,7 @@ export const initialState = {
     remoteRefsByID: {},
     permissionsByID: {},
     diffsByCommitHash: {},
+    isBehindRemoteByURI: {},
     failedToFetchByURI: {},
 }
 
@@ -26,6 +27,7 @@ export interface IRepoState {
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
+    isBehindRemoteByURI: { [uri: string]: boolean }
     failedToFetchByURI: { [repoID: string]: boolean }
 }
 

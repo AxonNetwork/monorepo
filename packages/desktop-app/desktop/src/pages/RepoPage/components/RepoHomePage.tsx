@@ -18,7 +18,8 @@ import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
 import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { FileMode, IUser, URI, URIType } from 'conscience-lib/common'
+import { getURIFromParams, getRepoID } from 'conscience-components/env-specific'
+import { FileMode, IUser, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -27,6 +28,7 @@ class RepoHomePage extends React.Component<Props>
 {
     render() {
         const { sharedUsers, classes } = this.props
+        if (!this.props.uri) return null
 
         return (
             <div className={classes.main}>
@@ -109,16 +111,19 @@ class RepoHomePage extends React.Component<Props>
     }
 
     onClickEditReadme() {
-        selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.Edit)
+        if (this.props.uri) {
+            selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.Edit)
+        }
     }
 }
 
 interface MatchParams {
-    repoHash: string
+    repoHash?: string
+    repoID?: string
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    uri: URI
+    uri?: URI
     sharedUsers: IUser[]
     hasCommits: boolean
     hasReadme: boolean
@@ -196,9 +201,8 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
-    const repoRoot = state.repo.reposByHash[ownProps.match.params.repoHash]
-    const uri = { type: URIType.Local, repoRoot } as URI
-    const repoID = state.repo.repoIDsByPath[repoRoot]
+    const uri = getURIFromParams(ownProps.match.params)
+    const repoID = uri !== undefined ? getRepoID(uri) : ''
     const { admins = [], pushers = [], pullers = [] } = state.repo.permissionsByID[repoID] || {}
     const sharedUsers = union(admins, pushers, pullers)
         .map(username => state.user.usersByUsername[username])

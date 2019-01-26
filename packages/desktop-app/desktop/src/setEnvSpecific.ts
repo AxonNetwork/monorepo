@@ -11,46 +11,63 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
     envSpecific.init({
 
         async getFileContents(uri: URI) {
-            if (uri.type === URIType.Network) {
-                throw new Error('desktop platform cannot getFileContents with a network URI')
-            }
-            const { repoRoot, commit, filename } = uri
+            const { commit, filename } = uri
             if (!filename) {
                 throw new Error('must include filename in uri')
             }
-            if (commit === undefined || commit === 'working') {
-                return new Promise<string>((resolve, reject) => {
-                    fs.readFile(path.join(repoRoot, filename), 'utf8', (err: Error, contents: string) => {
-                        if (err) {
-                            reject(err)
-                        }
-                        resolve(contents)
-                    })
-                })
-            } else {
-                const repoHash = getHash(repoRoot)
-                const fileServer = process.env.STATIC_FILE_SERVER_URL
-                const fileURL = `${fileServer}/repo/${repoHash}/file/${commit}/${filename}`
+            if (uri.type === URIType.Network) {
+                const repoID = uri.repoID
+                const API_URL = process.env.API_URL
+                let fileURL = ''
+                if (commit === undefined || commit === 'working') {
+                    fileURL = `${API_URL}/repo/${repoID}/file/HEAD/${filename}`
+                } else {
+                    fileURL = `${API_URL}/repo/${repoID}/file/${commit}/${filename}`
+                }
                 const resp = await axios.get<string>(fileURL)
                 return resp.data
+            } else {
+                const repoRoot = uri.repoRoot
+                if (commit === undefined || commit === 'working') {
+                    return new Promise<string>((resolve, reject) => {
+                        fs.readFile(path.join(repoRoot, filename), 'utf8', (err: Error, contents: string) => {
+                            if (err) {
+                                reject(err)
+                            }
+                            resolve(contents)
+                        })
+                    })
+                } else {
+                    const repoHash = getHash(repoRoot)
+                    const fileServer = process.env.STATIC_FILE_SERVER_URL
+                    const fileURL = `${fileServer}/repo/${repoHash}/file/${commit}/${filename}`
+                    const resp = await axios.get<string>(fileURL)
+                    return resp.data
+                }
             }
         },
 
         directEmbedPrefix(uri: URI) {
             if (uri.type === URIType.Network) {
-                throw new Error('desktop platform cannot directEmbedPrefix with a network URI')
+                const API_URL = process.env.API_URL
+                const { repoID, commit } = uri
+                if (commit === undefined || commit === 'working') {
+                    return `${API_URL}/repo/${repoID}/file/HEAD`
+                } else {
+                    return `${API_URL}/repo/${repoID}/file/${commit}`
+                }
+            } else {
+                const fileServer = process.env.STATIC_FILE_SERVER_URL
+                const { repoRoot, commit } = uri
+                if (commit === undefined || commit === 'working') {
+                    return `file://${repoRoot}`
+                }
+                const repoHash = getHash(repoRoot)
+                return `${fileServer}/repo/${repoHash}/file/${commit}`
             }
-            const fileServer = process.env.STATIC_FILE_SERVER_URL
-            const { repoRoot, commit } = uri
-            if (commit === undefined || commit === 'working') {
-                return `file://${repoRoot}`
-            }
-            const repoHash = getHash(repoRoot)
-            return `${fileServer}/repo/${repoHash}/file/${commit}`
         },
 
         getRepo(uri: URI, state?: IGlobalState) {
-            state = state || store.getState()
             if (uri.type === URIType.Local) {
                 state = state || store.getState()
                 const repoID = state.repo.repoIDsByPath[uri.repoRoot]
@@ -70,10 +87,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                     commitList: state.repo.commitListsByURI[uriStr],
                     behindRemote: false,
                 } as IRepo
-                // const repoID = state.repo.reposByHash[getHash(uri.repoRoot)]
-                // return state.repo.repos[repoID]
             } else {
-                return {}
+                return undefined
             }
         },
 
@@ -84,6 +99,18 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 state = state || store.getState()
                 return state.repo.repoIDsByPath[uri.repoRoot]
             }
+        },
+
+        getURIFromParams(params: { repoID?: string, repoHash?: string }, state?: IGlobalState) {
+            let uri = undefined as URI | undefined
+            if (params.repoHash) {
+                state = state || store.getState()
+                const repoRoot = state.repo.reposByHash[params.repoHash]
+                uri = { type: URIType.Local, repoRoot } as URI
+            } else if (params.repoID) {
+                uri = { type: URIType.Network, repoID: params.repoID } as URI
+            }
+            return uri
         }
     })
 }

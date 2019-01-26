@@ -9,7 +9,10 @@ export function getConscienceURI(repoID: string, filename: string) {
     }
 }
 
-export function uriToString(uri: URI) {
+export function uriToString(uri?: URI) {
+    if (!uri) {
+        return ''
+    }
     if (uri.type === URIType.Local) {
         return "local://" + uri.repoRoot
     } else {

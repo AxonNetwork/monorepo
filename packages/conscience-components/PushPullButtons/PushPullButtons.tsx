@@ -18,8 +18,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { selectFile } from 'conscience-components/navigation'
-import { getRepo } from 'conscience-components/env-specific'
-import { FileMode, URI, URIType } from 'conscience-lib/common'
+import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
 import autobind from 'conscience-lib/utils/autobind'
 
 
@@ -34,8 +33,7 @@ class PushPullButtons extends React.Component<Props, State>
     _inputCommitMessage: HTMLInputElement | null = null
 
     render() {
-        const { uri, pullProgress, checkpointLoading, classes } = this.props
-        const repo = getRepo(uri)
+        const { files, pullProgress, checkpointLoading, classes } = this.props
 
         let pullLoading = pullProgress !== undefined
         let percentPulled
@@ -49,7 +47,6 @@ class PushPullButtons extends React.Component<Props, State>
             }
         }
 
-        const files = repo.files || {}
         // @@TODO: calculate this in the reducer, and only when `files` changes
         const filesChanged = Object.keys(files).some(name => {
             const file = files[name]
@@ -57,7 +54,7 @@ class PushPullButtons extends React.Component<Props, State>
         })
 
         const mergeConflicts = Object.keys(files).filter(name => files[name].mergeConflict)
-        const pullDisabled = !repo.behindRemote || pullLoading
+        const pullDisabled = !this.props.isBehindRemote || pullLoading
         const pushDisabled = !filesChanged || checkpointLoading
 
         return (
@@ -163,8 +160,7 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     onClickOpenPushDialog() {
-        const repo = getRepo(this.props.uri) || {}
-        const files = repo.files || {}
+        const files = this.props.files
         const mergeConflict = Object.keys(files).some(name => files[name].mergeConflict)
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
@@ -207,6 +203,8 @@ class PushPullButtons extends React.Component<Props, State>
 
 interface Props extends RouteComponentProps<{}> {
     uri: URI
+    files: { [name: string]: IRepoFile }
+    isBehindRemote?: boolean
     pullRepo: (payload: { uri: URI }) => void
     checkpointRepo: (payload: { uri: URI, message: string }) => void
 

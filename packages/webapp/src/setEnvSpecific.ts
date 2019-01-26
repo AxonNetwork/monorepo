@@ -56,6 +56,13 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 throw new Error('web platform cannot getRepoID with a local URI')
             }
             return uri.repoID
+        },
+
+        getURIFromParams(params: { repoID?: string }, state?: IGlobalState) {
+            if (!params.repoID) {
+                throw new Error('need repoID for URI')
+            }
+            return { type: URIType.Network, repoID: params.repoID } as URI
         }
     })
 }

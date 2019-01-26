@@ -11,7 +11,8 @@ import FileViewer from 'conscience-components/FileViewer'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { getDiff } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IRepoFile, URI, URIType } from 'conscience-lib/common'
+import { getURIFromParams } from 'conscience-components/env-specific'
+import { IRepoFile, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -20,6 +21,7 @@ class RepoFilesPage extends React.Component<Props>
 {
     render() {
         const { files, classes } = this.props
+        if (!this.props.uri) return null
         if (files === undefined) {
             return <LargeProgressSpinner />
         }
@@ -79,7 +81,7 @@ interface MatchParams {
 }
 
 interface Props extends RouteComponentProps<MatchParams> {
-    uri: URI
+    uri?: URI
     files: { [name: string]: IRepoFile } | undefined
     fileExtensionsHidden: boolean
     classes: any
@@ -129,9 +131,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
-    const repoHash = ownProps.match.params.repoHash
-    const repoRoot = state.repo.reposByHash[repoHash]
-    const uri = { type: URIType.Local, repoRoot } as URI
+    const uri = getURIFromParams(ownProps.match.params)
     const files = state.repo.filesByURI[uriToString(uri)]
 
     return {

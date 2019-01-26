@@ -9,7 +9,7 @@ import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
 import { getRepoID } from '../env-specific'
-import { RepoPage, URI, URIType } from 'conscience-lib/common'
+import { IRepoFile, RepoPage, URI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -19,14 +19,18 @@ class RepoInfo extends React.Component<Props>
     render() {
         const { repoID, version, classes } = this.props
         const versionStr = version > 0 ? 'v' + version : ''
+        const showButtons = this.props.uri.type === URIType.Local && this.props.showPushPullButtons
+
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
                     <H5 className={classes.headline}>{repoID}</H5>
                     <Typography className={classes.version}>{versionStr}</Typography>
-                    {this.props.showPushPullButtons &&
+                    {showButtons &&
                         <PushPullButtons
                             uri={this.props.uri}
+                            files={this.props.files}
+                            isBehindRemote={this.props.isBehindRemote}
                             pullProgress={this.props.pullProgress}
                             checkpointLoading={this.props.checkpointLoading}
                             pullRepo={this.props.pullRepo}
@@ -70,6 +74,8 @@ interface OwnProps {
 interface StateProps {
     repoID: string
     version: number
+    files: { [name: string]: IRepoFile }
+    isBehindRemote?: boolean
     menuLabelsHidden: boolean
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
@@ -116,17 +122,22 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = getRepoID(ownProps.uri)
-    const version = (state.repo.commitListsByURI[uriToString(ownProps.uri)] || []).length
+    const uriStr = uriToString(ownProps.uri)
+    const version = (state.repo.commitListsByURI[uriStr] || []).length
+    const files = state.repo.filesByURI[uriStr] || {}
+    const isBehind = state.repo.isBehindRemoteByURI[uriStr] || false
     let pullProgress = undefined
     let checkpointLoading = false
     if (ownProps.uri.type === URIType.Local) {
-        pullProgress = state.ui.pullRepoProgress[ownProps.uri.repoRoot]
+        pullProgress = state.ui.pullRepoProgressByURI[uriStr]
         checkpointLoading = state.ui.checkpointLoading
     }
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
         repoID,
+        files,
         version,
+        isBehind,
         menuLabelsHidden,
         pullProgress,
         checkpointLoading,
