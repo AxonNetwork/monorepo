@@ -65,7 +65,7 @@ class File extends React.Component<Props>
             console.error('file.name is undefined', file)
             return null
         }
-        const name = path.basename(file.name)
+        const name = this.props.showFullPaths ? file.name : path.basename(file.name)
 
         let displayname: string
         if (this.props.fileExtensionsHidden) {
@@ -128,7 +128,8 @@ class File extends React.Component<Props>
             this.props.file.name !== nextProps.file.name ||
             this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
             this.props.openFileIcon !== nextProps.openFileIcon ||
-            this.props.canEditFiles !== nextProps.canEditFiles
+            this.props.canEditFiles !== nextProps.canEditFiles ||
+            this.props.showFullPaths !== nextProps.showFullPaths
     }
 }
 
@@ -140,6 +141,7 @@ interface OwnProps {
     fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
+    showFullPaths?: boolean
 }
 
 const styles = createStyles({

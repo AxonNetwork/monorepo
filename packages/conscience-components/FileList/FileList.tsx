@@ -62,6 +62,10 @@ class FileList extends React.Component<Props, State>
             this.setState({ tree: makeTree(this.props.files) })
         }
 
+        if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.setState({ quickNavOpen: false, quickNavQuery: '' })
+        }
+
         if (this.state.quickNavQuery !== prevState.quickNavQuery) {
             if (this.state.quickNavQuery !== '') {
                 this.recalculateQuickNavFileList(this.state.quickNavQuery)
@@ -101,10 +105,13 @@ class FileList extends React.Component<Props, State>
         }
 
         let files: IRepoFile[]
+        let showFullPaths: boolean
         if (this.state.quickNavQuery !== '') {
             files = this.state.quickNavFileList
+            showFullPaths = true
         } else {
             files = values(currentTree.files)
+            showFullPaths = false
         }
 
         const entries = sortFiles(files)
@@ -152,6 +159,7 @@ class FileList extends React.Component<Props, State>
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             openFileIcon={this.props.openFileIcon}
                                             canEditFiles={this.props.canEditFiles}
+                                            showFullPaths={showFullPaths}
                                         />
                                     ))}
                                 </TableBody>
