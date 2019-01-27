@@ -20,7 +20,7 @@ import {
     IPullRepoAction,
     IWatchRepoAction,
     cloneRepoProgress, pullRepoProgress, pullRepoSuccess, fetchFullRepo,
-    fetchRepoFiles, watchRepo, behindRemote,
+    fetchRepoFiles, behindRemote,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -29,7 +29,7 @@ import {
 } from 'conscience-components/redux/repo/repoLogic'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
-import { getRepo, getRepoID } from 'conscience-components/env-specific'
+import { getRepoID } from 'conscience-components/env-specific'
 import { selectRepo } from 'conscience-components/navigation'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
@@ -60,7 +60,6 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
         }
 
         const uri = { type: URIType.Local, repoRoot: path } as URI
-        await dispatch(watchRepo({ uri }))
         await dispatch(fetchFullRepo({ uri }))
         selectRepo(uri, RepoPage.Home)
 
@@ -93,11 +92,8 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 
         let localRepos = {} as { [path: string]: string }
 
-        console.log('repoList', repoList)
         for (let repo of repoList) {
             localRepos[repo.path] = repo.repoID
-            const uri = { type: URIType.Local, repoRoot: repo.path } as URI
-            dispatch(watchRepo({ uri }))
         }
 
         // @@TODO: not a good place for this.  put it in the component or in a wrapper action.
@@ -120,7 +116,6 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
             const repoID = getRepoID(uri)
 
             const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
-            console.log('filesListRaw', filesListRaw)
 
             const filesList = filesListRaw.map(file => {
                 if (file.name[file.name.length - 1] === '/') {
@@ -243,7 +238,7 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
     async process({ action, getState }, dispatch) {
         const { uri, username, admin, pusher, puller } = action.payload
-        const repoID = (getRepo(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         const userID = getState().user.usersByUsername[username]
         const rpcClient = rpc.getClient()
 
@@ -297,32 +292,36 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
     type: RepoActionType.CHECKPOINT_REPO,
     async process({ action }, dispatch) {
         const { uri, message } = action.payload
-        const repo = getRepo(uri)
-        await rpc.getClient().checkpointRepoAsync({ path: repo.path || '', message: message })
-        await dispatch(fetchFullRepo({ uri }))
+        if (uri.type === URIType.Local) {
+            await rpc.getClient().checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
+            await dispatch(fetchFullRepo({ uri }))
+        } else {
+            return new Error("Cannot checkpoint network repo")
+        }
         return {}
     },
 })
 
 const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
-    async process({ action }) {
+    async process({ action, getState }) {
         const { uri, commit } = action.payload
-        const repoRoot = (getRepo(uri) || {}).path || ''
-        if (repoRoot === undefined) {
-            throw new Error(`could not find repo at ${repoRoot}`)
-        }
-
         let diffBlob: string
-        try {
-            diffBlob = await spawnCmd('git', ['show', commit], repoRoot)
-        } catch (err) {
-            console.log(`ERROR running git show ${commit} ~>`, err)
-            throw err
+        if (uri.type === URIType.Local) {
+            try {
+                diffBlob = await spawnCmd('git', ['show', commit], uri.repoRoot)
+            } catch (err) {
+                console.log(`ERROR running git show ${commit} ~>`, err)
+                throw err
+            }
+        } else {
+            const state = getState()
+            if (state.repo.diffsByCommitHash[commit]) {
+                return
+            }
+            diffBlob = await ServerRelay.getDiff({ repoID: uri.repoID, commit })
         }
-
         const diff = parseDiff(diffBlob)
-
         return { commit, diff }
     },
 })
@@ -330,7 +329,8 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
 const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
     type: RepoActionType.CLONE_REPO,
     async process({ action, getState }, dispatch, done) {
-        const { repoID } = action.payload
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
@@ -343,7 +343,6 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         let path = ''
         let success = false
         stream.on('data', async (data: any) => {
-            console.log('data: ', data)
             if (data.progress !== undefined) {
                 const fetched = data.progress.fetched !== undefined ? data.progress.fetched.toNumber() : 0
                 const toFetch = data.progress.toFetch !== undefined ? data.progress.toFetch.toNumber() : 0
@@ -359,7 +358,6 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         stream.on('end', async () => {
             if (success) {
                 const uri = { type: URIType.Local, repoRoot: path } as URI
-                await dispatch(watchRepo({ uri }))
                 await dispatch(fetchFullRepo({ uri }))
                 selectRepo(uri, RepoPage.Home)
             }
@@ -375,24 +373,25 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
     type: RepoActionType.PULL_REPO,
     async process({ action }, dispatch, done) {
         const { uri } = action.payload
-        const repo = getRepo(uri)
-        const folderPath = repo.path || ''
-        const stream = rpc.getClient().pullRepo({ path: folderPath })
-        dispatch(pullRepoProgress({ uri, fetched: 0, toFetch: 0 }))
-        stream.on('data', async (data: any) => {
-            console.log("PULL", data)
-            const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
-            const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
-            await dispatch(pullRepoProgress({ uri, fetched, toFetch }))
-        })
-        stream.on('end', async () => {
-            await dispatch(fetchFullRepo({ uri }))
-            await dispatch(pullRepoSuccess({ uri }))
-            done()
-        })
-        stream.on('error', (err: any) => {
-            throw err
-        })
+        if (uri.type === URIType.Local) {
+            const stream = rpc.getClient().pullRepo({ path: uri.repoRoot })
+            dispatch(pullRepoProgress({ uri, fetched: 0, toFetch: 0 }))
+            stream.on('data', async (data: any) => {
+                const toFetch = data.toFetch !== undefined ? data.toFetch.toNumber() : 0
+                const fetched = data.fetched !== undefined ? data.fetched.toNumber() : 0
+                await dispatch(pullRepoProgress({ uri, fetched, toFetch }))
+            })
+            stream.on('end', async () => {
+                await dispatch(fetchFullRepo({ uri }))
+                await dispatch(pullRepoSuccess({ uri }))
+                done()
+            })
+            stream.on('error', (err: any) => {
+                throw err
+            })
+        } else {
+            throw new Error("Cannot pull network repo")
+        }
     },
 })
 

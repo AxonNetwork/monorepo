@@ -15,18 +15,21 @@ import { pickBy } from 'lodash'
 import { getRepoID } from '../env-specific'
 import { cloneRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
-import { ISharedRepoInfo } from 'conscience-lib/common'
+import { ISharedRepoInfo, NetworkURI, URIType } from 'conscience-lib/common'
+import { autobind } from 'conscience-lib/utils'
 
+
+@autobind
 class SharedReposList extends React.Component<Props>
 {
     render() {
-        const { sharedRepos, classes, cloneRepoProgress } = this.props
+        const { sharedRepos, classes, cloneRepoProgressByID } = this.props
         return (
             <React.Fragment>
                 <H6>Clone a repository shared with you</H6>
                 <List>
                     {values(sharedRepos).map(repo => {
-                        const repoProgress = cloneRepoProgress[repo.repoID]
+                        const repoProgress = cloneRepoProgressByID[repo.repoID]
                         const isDownloading = repoProgress !== undefined
                         let percentDownloaded
                         if (isDownloading) {
@@ -36,7 +39,7 @@ class SharedReposList extends React.Component<Props>
                             <ListItem key={repo.repoID}>
                                 <ListItemText primary={repo.repoID} classes={{ primary: classes.text }} />
                                 <ListItemSecondaryAction>
-                                    <IconButton onClick={() => this.props.cloneRepo({ repoID: repo.repoID })} >
+                                    <IconButton onClick={() => this.cloneRepo(repo.repoID)} >
                                         <ControlPointIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
@@ -52,11 +55,16 @@ class SharedReposList extends React.Component<Props>
             </React.Fragment>
         )
     }
+
+    cloneRepo(repoID: string) {
+        const uri = { type: URIType.Network, repoID } as NetworkURI
+        this.props.cloneRepo({ uri })
+    }
 }
 
 interface Props {
     sharedRepos: { [repoID: string]: ISharedRepoInfo }
-    cloneRepoProgress: {
+    cloneRepoProgressByID: {
         [repoID: string]: {
             fetched: number,
             toFetch: number
@@ -92,11 +100,11 @@ const mapStateToProps = (state: IGlobalState) => {
         sharedRepos,
         r => localRepos.indexOf(r.repoID) < 0,
     )
-    const cloneRepoProgress = state.ui.cloneRepoProgress
+    const cloneRepoProgressByID = state.ui.cloneRepoProgressByID
 
     return {
         sharedRepos: filteredSharedRepos,
-        cloneRepoProgress,
+        cloneRepoProgressByID,
     }
 }
 

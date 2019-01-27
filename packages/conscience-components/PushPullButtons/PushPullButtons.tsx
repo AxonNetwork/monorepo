@@ -1,5 +1,5 @@
 import React from 'react'
-import { withRouter, RouteComponentProps } from 'react-router'
+import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -17,9 +17,11 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { selectFile } from 'conscience-components/navigation'
-import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
-import autobind from 'conscience-lib/utils/autobind'
+import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
+import { IGlobalState } from '../redux'
+import { selectFile } from '../navigation'
+import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
@@ -200,17 +202,23 @@ class PushPullButtons extends React.Component<Props, State>
     }
 }
 
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
-interface Props extends RouteComponentProps<{}> {
-    uri: URI
+interface OwnProps {
+    uri: LocalURI
+    classes?: any
+}
+
+interface StateProps {
     files: { [name: string]: IRepoFile }
-    isBehindRemote?: boolean
-    pullRepo: (payload: { uri: URI }) => void
-    checkpointRepo: (payload: { uri: URI, message: string }) => void
-
+    isBehindRemote: boolean
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
-    classes: any
+}
+
+interface DispatchProps {
+    pullRepo: typeof pullRepo
+    checkpointRepo: typeof checkpointRepo
 }
 
 interface State {
@@ -237,4 +245,23 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(PushPullButtons))
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const uriStr = uriToString(ownProps.uri)
+
+    return {
+        files: state.repo.filesByURI[uriStr] || {},
+        isBehindRemote: state.repo.isBehindRemoteByURI[uriStr] || false,
+        pullProgress: state.ui.pullRepoProgressByURI[uriStr],
+        checkpointLoading: state.ui.checkpointLoading || false,
+    }
+}
+
+const mapDispatchToProps = {
+    pullRepo,
+    checkpointRepo,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(PushPullButtons))

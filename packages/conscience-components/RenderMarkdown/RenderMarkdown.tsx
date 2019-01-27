@@ -60,7 +60,6 @@ class RenderMarkdown extends React.Component<Props>
     parseShortcodes(node: { identifier: string; contents: string }) {
         const { identifier, contents } = node
 
-        console.log('parseShortcodes', identifier)
         switch (identifier) {
             case 'image':
                 return (

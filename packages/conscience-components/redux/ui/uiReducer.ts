@@ -10,7 +10,7 @@ const initialState = {
     pullLoading: false,
     updateOrgLoading: false,
     pullRepoProgressByURI: {},
-    cloneRepoProgress: {},
+    cloneRepoProgressByID: {},
     updatingUserPermissions: undefined,
 }
 
@@ -21,12 +21,12 @@ export interface IUIState {
     pullLoading: boolean
     updateOrgLoading: boolean
     pullRepoProgressByURI: {
-        [path: string]: {
+        [uri: string]: {
             fetched: number
             toFetch: number
         } | undefined
     }
-    cloneRepoProgress: {
+    cloneRepoProgressByID: {
         [repoID: string]: {
             fetched: number
             toFetch: number
@@ -108,8 +108,8 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             const { repoID, fetched, toFetch } = action.payload
             return {
                 ...state,
-                cloneRepoProgress: {
-                    ...state.cloneRepoProgress,
+                cloneRepoProgressByID: {
+                    ...state.cloneRepoProgressByID,
                     [repoID]: {
                         fetched: fetched,
                         toFetch: toFetch,

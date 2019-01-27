@@ -101,6 +101,7 @@ const styles = (theme: Theme) => createStyles({
         height: 18,
         backgroundColor: theme.palette.secondary.main,
         color: 'white',
+        zIndex: 2,
     },
     eventIconContainer: {
         position: 'absolute',

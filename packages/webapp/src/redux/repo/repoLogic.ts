@@ -10,7 +10,7 @@ import {
     fetchFullRepoFromServerLogic
 } from 'conscience-components/redux/repo/repoLogic'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
-import { getRepo as getRepoFromURI } from 'conscience-components/env-specific'
+import { getRepoID } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
 
 
@@ -18,7 +18,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action, getState }, dispatch) {
         const { uri, commit } = action.payload
-        const repoID = (getRepoFromURI(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         if (repoID === undefined) {
             throw new Error("could not find repo ${repoID}")
         }
@@ -39,7 +39,7 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
     type: RepoActionType.UPDATE_USER_PERMISSIONS,
     async process({ action }, dispatch) {
         const { uri, username, admin, pusher, puller } = action.payload
-        const repoID = (getRepoFromURI(uri) || {}).repoID
+        const repoID = getRepoID(uri)
         const { admins, pushers, pullers } = await ServerRelay.updateUserPermissions(repoID, username, admin, pusher, puller)
         return { repoID, admins, pushers, pullers }
     }

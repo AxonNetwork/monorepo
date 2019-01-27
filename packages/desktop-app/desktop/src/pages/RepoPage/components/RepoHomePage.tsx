@@ -164,6 +164,7 @@ const styles = (theme: Theme) => createStyles({
         flexBasis: 320,
     },
     readmeContainerNoReadmeContents: {
+        cursor: 'pointer',
         position: 'relative',
         top: '15%',
     },

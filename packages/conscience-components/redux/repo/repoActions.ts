@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { IRepo, URI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -300,7 +300,7 @@ export type ICheckpointRepoFailedAction = FailedAction<RepoActionType.CHECKPOINT
 export interface ICloneRepoAction {
     type: RepoActionType.CLONE_REPO
     payload: {
-        repoID: string,
+        uri: NetworkURI
     }
 }
 
