@@ -1,6 +1,6 @@
 import { URI } from 'conscience-lib/common'
 
-export type PluginType = 'file type' | 'file viewer' | 'file editor'
+export type PluginType = 'file type' | 'file viewer' | 'file editor' | 'markdown shortcode'
 
 export interface IFileType {
     extensions: string[]
@@ -46,7 +46,19 @@ export type FileEditorComponent = React.ComponentClass<{
     fileContents?: string
 }>
 
-export type IPlugin = IFileTypePlugin | IFileViewerPlugin | IFileEditorPlugin
+export interface IMarkdownShortcodePlugin {
+    pluginType: 'markdown shortcode',
+    name: string
+    render: MarkdownShortcodeRenderFunc
+}
+
+export type MarkdownShortcodeRenderFunc = (contents: string, uri: URI) => JSX.Element
+
+export type IPlugin =
+    IFileTypePlugin |
+    IFileViewerPlugin |
+    IFileEditorPlugin |
+    IMarkdownShortcodePlugin
 
 const pluginRegistry = (function() {
     // Load all default plugins
@@ -57,6 +69,7 @@ const pluginRegistry = (function() {
         require('./defaults/viewer.data.tsx').default,
         require('./defaults/viewer.embed.tsx').default,
         require('./defaults/viewer.markdown.tsx').default,
+        require('./defaults/shortcode.mathjax.tsx').default,
     ] as IPlugin[]
 
     // Load user plugins (@@TODO)
@@ -68,6 +81,7 @@ const pluginRegistry = (function() {
         'file type': [] as IFileTypePlugin[],
         'file viewer': [] as IFileViewerPlugin[],
         'file editor': [] as IFileEditorPlugin[],
+        'markdown shortcode': [] as IMarkdownShortcodePlugin[],
     }
 
     for (let plugin of plugins) {
@@ -80,6 +94,9 @@ const pluginRegistry = (function() {
                 break
             case 'file editor':
                 registry[plugin.pluginType].push(plugin as IFileEditorPlugin)
+                break
+            case 'markdown shortcode':
+                registry[plugin.pluginType].push(plugin as IMarkdownShortcodePlugin)
                 break
             default:
                 console.error(

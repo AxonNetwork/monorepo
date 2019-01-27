@@ -10,7 +10,7 @@ export default {
     viewer: function(props: IFileViewerPluginProps) {
         const { uri } = props
         return (
-            <img src={urljoin(directEmbedPrefix(uri), uri.filename || '')} style={{ maxWidth: '100%' }} />
+            <img src={urljoin(directEmbedPrefix(uri), uri.filename || '')} style={{ maxWidth: '100%', display: 'block', margin: '0 auto' }} />
         )
     },
 }

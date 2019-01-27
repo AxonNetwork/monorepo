@@ -12,6 +12,7 @@ import shortcodes from './remark-references'
 import { autobind } from 'conscience-lib/utils'
 import { directEmbedPrefix } from 'conscience-components/env-specific'
 import { URI } from 'conscience-lib/common'
+import { renderShortcode } from 'conscience-lib/utils/markdownShortcodes'
 
 
 @autobind
@@ -59,6 +60,7 @@ class RenderMarkdown extends React.Component<Props>
     parseShortcodes(node: { identifier: string; contents: string }) {
         const { identifier, contents } = node
 
+        console.log('parseShortcodes', identifier)
         switch (identifier) {
             case 'image':
                 return (
@@ -77,11 +79,16 @@ class RenderMarkdown extends React.Component<Props>
                     <CommentLink uri={this.props.uri} commentID={contents} />
                 )
             default:
-                return (
-                    <span>
-                        @{identifier}:[{contents}]
-                    </span>
-                )
+                const rendered = renderShortcode(identifier, contents, this.props.uri)
+                if (rendered === null) {
+                    return (
+                        <span>
+                            @{identifier}:[{contents}]
+                        </span>
+                    )
+                } else {
+                    return rendered
+                }
         }
     }
 }

@@ -51,7 +51,7 @@ class FileViewer extends React.Component<Props, State>
 
         return (
             <div className={classes.root}>
-                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)}>
+                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)} className={classes.wrapper}>
                     <Viewer
                         uri={this.props.uri}
                         fileContents={fileContents}
@@ -151,6 +151,10 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+    },
+    wrapper: {
+        // display: 'flex',
+        // justifyContent: 'center',
     },
     viewerPicker: {
         width: 'fit-content',
