@@ -18,6 +18,8 @@ class FileLink extends React.Component<Props, State>
     render() {
         const { classes } = this.props
         const boundariesElement = document.getElementById('hihihi') // @@TODO: either pass ref via props, or rename div ID to something sane
+        const uri = { ...this.props.uri }
+        uri.commit = uri.commit || 'HEAD'
 
         return (
             <React.Fragment>
@@ -44,7 +46,7 @@ class FileLink extends React.Component<Props, State>
                     className={classes.popper}
                 >
                     <FileViewer
-                        uri={this.props.uri}
+                        uri={uri}
                         showViewerPicker={false}
                         classes={{ codeContainer: classes.codeContainer }}
                     />
