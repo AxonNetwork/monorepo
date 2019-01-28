@@ -6,9 +6,10 @@ import CardMedia from '@material-ui/core/CardMedia'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { IFeaturedRepo } from 'conscience-lib/common'
+import { URIType, RepoPage, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { H5 } from 'conscience-components/Typography/Headers'
+import { selectRepo } from 'conscience-components/navigation'
 const logo = require('../../../assets/logo-placeholder.png')
 
 
@@ -23,10 +24,10 @@ class FeaturedRepoCard extends React.Component<Props>
             <Card className={classes.card} onClick={this.selectRepo}>
                 {canEdit &&
                     <div className={classes.buttonRow}>
-                        <IconButton onClick={this.props.onEdit} >
+                        <IconButton onClick={this.onEdit}>
                             <EditIcon fontSize='small' />
                         </IconButton>
-                        <IconButton onClick={this.props.onDelete} >
+                        <IconButton onClick={this.onDelete}>
                             <DeleteIcon fontSize='small' />
                         </IconButton>
                     </div>
@@ -42,21 +43,27 @@ class FeaturedRepoCard extends React.Component<Props>
         )
     }
 
+    onEdit() {
+        this.props.onEdit(this.props.repoInfo.repoID)
+    }
+
+    onDelete() {
+        this.props.onDelete(this.props.repoInfo.repoID)
+    }
+
     selectRepo() {
         if (this.props.canEdit) {
             return
         }
-        const repoID = this.props.repoInfo.repoID
-        this.props.selectRepo({ repoID })
+        selectRepo({ type: URIType.Network, repoID: this.props.repoInfo.repoID }, RepoPage.Home)
     }
 }
 
 interface Props {
     repoInfo: IFeaturedRepo
     canEdit?: boolean
-    onEdit: () => void
-    onDelete: () => void
-    selectRepo: (payload: { repoID: string }) => void
+    onEdit: (repoID: string) => void
+    onDelete: (repoID: string) => void
     classes: any
 }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -19,8 +20,9 @@ import Button from '@material-ui/core/Button'
 import { H6 } from 'conscience-components/Typography/Headers'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Cancel'
-import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
-import { autobind } from 'conscience-lib/utils'
+import { URIType, IRepoFile, IFeaturedRepo } from 'conscience-lib/common'
+import { autobind, uriToString } from 'conscience-lib/utils'
+import { IGlobalState } from 'conscience-components/redux'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 const logo = require('../../../assets/logo-placeholder.png')
 
@@ -41,7 +43,7 @@ class EditRepoCard extends React.Component<Props, State>
     render() {
         const { repoInfo, classes } = this.props
         const { missing } = this.state
-        const images = Object.keys(((this.props.repo || {}).files) || {}).filter(name => filetypes.getType(name) === 'image')
+        const images = Object.keys(this.props.files).filter(name => filetypes.getType(name) === 'image')
         const image = this.state.image || repoInfo.image || logo
 
         return (
@@ -50,7 +52,7 @@ class EditRepoCard extends React.Component<Props, State>
                     <IconButton onClick={this.saveRepoCard} >
                         <SaveIcon fontSize='small' />
                     </IconButton>
-                    <IconButton onClick={this.props.onCancel} >
+                    <IconButton onClick={this.onCancel} >
                         <CancelIcon fontSize='small' />
                     </IconButton>
                 </div>
@@ -158,10 +160,13 @@ class EditRepoCard extends React.Component<Props, State>
         this.setState({ dialogOpen: false })
     }
 
+    onCancel() {
+        this.props.onCancel(this.props.repoInfo.repoID)
+    }
+
     selectImage(imgName: string) {
         const API_URL = process.env.API_URL
-        const repoID = this.props.repo.repoID
-        const image = `${API_URL}/repo/${repoID}/file/${imgName}`
+        const image = `${API_URL}/repo/${this.props.repoInfo.repoID}/file/HEAD/${imgName}`
         this.setState({ image })
         this.closeDialog()
     }
@@ -177,12 +182,16 @@ class EditRepoCard extends React.Component<Props, State>
     }
 }
 
-interface Props {
+type Props = OwnProps & StateProps & { classes: any }
+
+interface OwnProps {
     repoInfo: IFeaturedRepo
-    repo: IRepo
     onSave: (info: IFeaturedRepo) => void
-    onCancel: () => void
-    classes: any
+    onCancel: (repoID: string) => void
+}
+
+interface StateProps {
+    files: { [filename: string]: IRepoFile }
 }
 
 interface State {
@@ -224,4 +233,11 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-export default withStyles(styles)(EditRepoCard)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    const uriStr = uriToString({ type: URIType.Network, repoID: ownProps.repoInfo.repoID })
+    return {
+        files: state.repo.filesByURI[uriStr] || {},
+    }
+}
+
+export default connect(mapStateToProps, null)(withStyles(styles)(EditRepoCard))

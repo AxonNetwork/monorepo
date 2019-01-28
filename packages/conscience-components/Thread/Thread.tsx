@@ -105,11 +105,10 @@ class Thread extends React.Component<Props, State>
                             <div className={classes.comment}>No comments yet. Start the discussion!</div>
                         }
                         {commentsList.map(c => {
-                            const commentUser = users[c.userID]
                             return (
                                 <CommentWrapper
                                     key={c.created}
-                                    user={commentUser}
+                                    user={users[c.userID]}
                                     created={c.created}
                                     showBadge={c.created > this.props.newestViewedCommentTimestamp}
                                     onClickReplyLink={() => this.onClickReplyLink(c.commentID)}

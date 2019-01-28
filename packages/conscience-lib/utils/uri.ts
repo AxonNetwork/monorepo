@@ -1,7 +1,7 @@
 import path from 'path'
 import { URI, URIType } from '../common'
 
-export function getConscienceURI(repoID: string, filename: string) {
+export function getConscienceURI(repoID: string, filename?: string) {
     if (filename !== undefined) {
         return 'conscience://' + path.join(repoID, filename)
     } else {

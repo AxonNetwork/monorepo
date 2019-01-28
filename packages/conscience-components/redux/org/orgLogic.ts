@@ -17,10 +17,11 @@ import {
     ICreateOrgBlogAction, ICreateOrgBlogSuccessAction,
 } from './orgActions'
 import { fetchUserData, addedOrg } from '../user/userActions'
+import { fetchFullRepo } from '../repo/repoActions'
 // import { getRepo } from '../repo/repoActions'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import { nonCacheImg } from 'conscience-lib/utils'
-import { IOrgBlog } from 'conscience-lib/common'
+import { IOrgBlog, URIType } from 'conscience-lib/common'
 
 const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
     type: OrgActionType.CREATE_ORG,
@@ -39,6 +40,9 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
     async process({ action }, dispatch) {
         const { orgID } = action.payload
         const org = await ServerRelay.fetchOrgInfo(orgID)
+        for (let repoID of org.repos) {
+            dispatch(fetchFullRepo({ uri: { type: URIType.Network, repoID } }))
+        }
         // let promises = org.repos.map(repoID => dispatch(getRepo({ repoID })))
         // promises.push(dispatch(fetchUserData({ userIDs: org.members })))
         // await Promise.all(promises)

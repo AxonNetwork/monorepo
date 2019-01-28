@@ -1,22 +1,21 @@
+import path from 'path'
 import isEqual from 'lodash/isEqual'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import MenuItem from '@material-ui/core/MenuItem'
+import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select'
 import Input from '@material-ui/core/Input'
-import Button from '@material-ui/core/Button'
 import SettingsIcon from '@material-ui/icons/Settings'
 import EditIcon from '@material-ui/icons/Edit'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
-import { selectFile } from 'conscience-components/navigation'
 import { URI, URIType, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { FileViewerComponent } from 'conscience-lib/plugins'
 import { getFileContents } from '../env-specific'
-import path from 'path'
-
+import { selectFile } from '../navigation'
 
 @autobind
 class FileViewer extends React.Component<Props, State>
@@ -55,55 +54,66 @@ class FileViewer extends React.Component<Props, State>
             Viewer = viewers[0].viewer
         }
 
-        const canQuickEdit = this.props.showButtons && true
+        const canQuickEdit = this.props.showButtons && this.props.uri.type === URIType.Local
         const isLocal = this.props.showButtons && this.props.uri.type === URIType.Local
 
         return (
             <div className={classes.root}>
-                <div className={classes.toolbar}>
-                    {canQuickEdit &&
-                        <Button color="secondary" onClick={this.onClickQuickEdit}>
-                            <EditIcon /> Quick Edit
-                        </Button>
-                    }
-                    {isLocal &&
-                        <Button color="secondary" onClick={this.onClickOpenFile}>
-                            <OpenInNewIcon /> Open
-                        </Button>
-                    }
+                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)} className={classes.wrapper}>
+                    <Viewer
+                        uri={this.props.uri}
+                        fileContents={fileContents}
+                        classes={classes}
+                    />
                 </div>
-                <div className={classes.viewerContainer}>
-                    <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)}>
-                        <Viewer
-                            uri={this.props.uri}
-                            fileContents={fileContents}
-                            classes={classes}
-                        />
-                    </div>
-                    {this.props.showViewerPicker &&
-                        <div className={classnames(classes.viewerPicker, { [classes.viewerPickerVisible]: this.state.hovering })}>
-                            <Select
-                                value={viewerName}
-                                renderValue={() => <SettingsIcon className={classes.viewerPickerIcon} />}
-                                input={<Input disableUnderline={true} />}
-                                onChange={this.onChangeViewer}
+                {this.props.showViewerPicker &&
+                    <div className={classnames(classes.viewerPicker, { [classes.viewerPickerVisible]: this.state.hovering })}>
+                        {canQuickEdit &&
+                            <Button color="secondary"
+                                onClick={this.onClickQuickEdit}
                                 onMouseEnter={() => this.onHoverViewer(true)}
                                 onMouseLeave={() => this.onHoverViewer(false)}
-                                className={classes.viewerPickerSelect}
-                                IconComponent={() => null}
-                                classes={{
-                                    select: classes.viewerPickerMenu,
-                                }}
                             >
-                                {viewers.map(viewer => (
-                                    <MenuItem value={viewer.name}>
-                                        {viewer.humanName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-                    }
-                </div>
+                                <EditIcon /> Quick Edit
+                            </Button>
+                        }
+                        {isLocal &&
+                            <Button color="secondary"
+                                onMouseEnter={() => this.onHoverViewer(true)}
+                                onMouseLeave={() => this.onHoverViewer(false)}
+                                onClick={this.onClickOpenFile}
+                            >
+                                <OpenInNewIcon /> Open
+                            </Button>
+                        }
+                        <Select
+                            value={viewerName}
+                            renderValue={() => (
+                                <Button color="secondary"
+                                    onMouseEnter={() => this.onHoverViewer(true)}
+                                    onMouseLeave={() => this.onHoverViewer(false)}
+                                >
+                                    <SettingsIcon className={classes.viewerPickerIcon} /> Viewer
+                                </Button>
+                            )}
+                            input={<Input disableUnderline={true} />}
+                            onChange={this.onChangeViewer}
+                            onMouseEnter={() => this.onHoverViewer(true)}
+                            onMouseLeave={() => this.onHoverViewer(false)}
+                            className={classes.viewerPickerSelect}
+                            IconComponent={() => null}
+                            classes={{
+                                select: classes.viewerPickerMenu,
+                            }}
+                        >
+                            {viewers.map(viewer => (
+                                <MenuItem value={viewer.name}>
+                                    {viewer.humanName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </div>
+                }
             </div>
         )
     }
@@ -114,12 +124,13 @@ class FileViewer extends React.Component<Props, State>
 
     onClickOpenFile() {
         const uri = this.props.uri
+        console.log('uri', uri)
         if (uri.type !== URIType.Local) {
             return
         }
         try {
             const shell = (window as any).require('electron').shell
-            const { repoRoot = "", filename = "" } = uri
+            const { repoRoot = '', filename = '' } = uri
             shell.openItem(path.join(repoRoot, filename))
         } catch (err) {
             console.error("err opening file ~> ", err)
@@ -176,7 +187,7 @@ class FileViewer extends React.Component<Props, State>
 interface Props {
     uri: URI
     showViewerPicker: boolean
-    showButtons?: boolean
+    showButtons: boolean
     classes?: any
 }
 
@@ -194,19 +205,13 @@ const styles = (theme: Theme) => createStyles({
         flexDirection: 'column',
         position: 'relative',
     },
-    toolbar: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    viewerContainer: {
-        position: 'relative'
+    wrapper: {
+        // display: 'flex',
+        // justifyContent: 'center',
     },
     viewerPicker: {
         width: 'fit-content',
         position: 'absolute',
-        top: 0,
         right: 0,
         opacity: 0,
         transition: theme.transitions.create('opacity', {

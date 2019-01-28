@@ -1,23 +1,21 @@
 import React from 'react'
-import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
 import TimelineEvent from 'conscience-components/TimelineEvent'
-import { IOrganization, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
-import { collateTimelines } from 'conscience-lib/utils'
+import { IGlobalState } from 'conscience-components/redux'
+import { IOrganization, ITimelineEvent, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
+import { mergeTimelines } from 'conscience-lib/utils'
 
 
 class ShowcaseTimeline extends React.Component<Props>
 {
 
     render() {
-        const { org, repos } = this.props
-
-        const orgRepos = org.repos.map(id => repos[id])
-        const { commits, commitList } = collateTimelines(orgRepos)
+        const commitList = mergeTimelines(this.props.orgRepoIDs, this.props.commitListsByURI, this.props.commits)
 
         return (
             <div>
                 {commitList.map(hash => {
-                    const event = commits[hash]
+                    const event = this.props.commits[hash]
                     const uri = { type: URIType.Network, repoID: event.repoID || '', commit: event.commit } as URI
                     return (
                         <TimelineEvent uri={uri} />
@@ -28,15 +26,27 @@ class ShowcaseTimeline extends React.Component<Props>
     }
 }
 
-interface Props {
-    org: IOrganization
-    repos: { [repoID: string]: IRepo }
-    users: { [userID: string]: IUser }
-    usersByEmail: { [email: string]: string }
-    selectCommit: (commit: string, repoID: string | undefined) => void
-    classes: any
+type Props = OwnProps & StateProps
+
+interface OwnProps {
+    orgID: string
 }
 
-const styles = (theme: Theme) => createStyles({})
+interface StateProps {
+    orgRepoIDs: string[]
+    commitListsByURI: { [uri: string]: string[] }
+    commits: { [commitHash: string]: ITimelineEvent }
+}
 
-export default withStyles(styles)(ShowcaseTimeline)
+const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+    const orgRepoIDs = (state.org.orgs[ownProps.orgID] || {}).repos || []
+    const { commitListsByURI, commits } = state.repo
+
+    return {
+        orgRepoIDs,
+        commitListsByURI,
+        commits,
+    }
+}
+
+export default connect(mapStateToProps, null)(ShowcaseTimeline)

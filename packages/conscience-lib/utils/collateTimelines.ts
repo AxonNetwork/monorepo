@@ -1,46 +1,59 @@
-import { IRepo, ITimelineEvent } from 'conscience-lib/common'
+import { ITimelineEvent } from 'conscience-lib/common'
+import { getConscienceURI } from 'conscience-lib/utils'
 
-interface IEventToAdd {
-    repoID: string
-    index: number
-    event: ITimelineEvent | undefined
-}
+export default function mergeTimelines(
+    orgRepoIDList: string[],
+    commitListsByURI: { [uri: string]: string[] },
+    commits: { [commitHash: string]: ITimelineEvent }
+) {
+    let merged = [] as string[]
 
-export default function collateTimelines(toCollate: IRepo[]) {
-    const repos = toCollate.filter(repo => repo !== undefined && repo.repoID !== undefined)
-    // let currentEvents = {} as { [repoID: string]: ICurrentEvent }
-    const lastEventAdded = {} as { [repoID: string]: number }
-    const commits = {} as { [commit: string]: ITimelineEvent }
-    const commitList = [] as string[]
-    while (commitList.length < 8) {
-        const toAdd = repos
-            .map((repo: IRepo) => {
-                const lastAdded = lastEventAdded[repo.repoID]
-                const index = lastAdded !== undefined ? lastAdded + 1 : 0
-                const commit = (repo.commitList || [])[index]
-                return {
-                    repoID: repo.repoID,
-                    index,
-                    event: (repo.commits || {})[commit],
-                } as IEventToAdd
-            })
-            .reduce((acc, curr) => {
-                if (curr.event === undefined) { return acc }
-                if (acc.event === undefined) { return curr }
-                if (curr.event.time > acc.event.time) { return curr }
-                return acc
-            }, {} as IEventToAdd)
-        if (toAdd.event === undefined) {
-            break
-        }
-        const hash = toAdd.event.commit
-        commitList.push(hash)
-        commits[hash] = {
-            ...toAdd.event,
-            repoID: toAdd.repoID,
-        }
-        lastEventAdded[toAdd.repoID] = toAdd.index
+    let currentIndex = {} as { [repoID: string]: number }
+    for (let repoID of orgRepoIDList) {
+        currentIndex[repoID] = 0
     }
-    return { commits, commitList }
-}
 
+    while (merged.length < 8 && orgRepoIDList.length > 0) {
+        let currentMaxRepoID = null as null | string
+        let currentMaxCommit = null as null | ITimelineEvent
+
+        let reposToRemove = [] as string[]
+        for (let repoID of orgRepoIDList) {
+            const uriStr = getConscienceURI(repoID)
+
+            const list = commitListsByURI[uriStr]
+            if (!list || list.length <= currentIndex[repoID]) {
+                reposToRemove.push(repoID)
+                continue
+            }
+
+            const commitHash = list[currentIndex[repoID]]
+            if (!commitHash) {
+                reposToRemove.push(repoID)
+                continue
+            }
+
+            const commit = commits[commitHash]
+            if (!commit) {
+                reposToRemove.push(repoID)
+                continue
+            }
+
+            if (!currentMaxCommit || commit.time > currentMaxCommit!.time) {
+                currentMaxRepoID = repoID
+                currentMaxCommit = commit
+            }
+        }
+
+        if (currentMaxCommit && currentMaxRepoID) {
+            merged.push(currentMaxCommit!.commit)
+            currentIndex[currentMaxRepoID!]++
+        }
+
+        for (let repoID of reposToRemove) {
+            orgRepoIDList = orgRepoIDList.filter(_repoID => repoID !== _repoID)
+        }
+    }
+
+    return merged
+}

@@ -3,26 +3,33 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
+import Avatar from '@material-ui/core/Avatar'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
-import PeopleIcon from '@material-ui/icons/People'
-import DescriptionIcon from '@material-ui/icons/Description'
-import AssessmentIcon from '@material-ui/icons/Assessment'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import Fab from '@material-ui/core/Fab'
+import Tooltip from '@material-ui/core/Tooltip'
+import {
+    People as PeopleIcon,
+    Description as DescriptionIcon,
+    Assessment as AssessmentIcon,
+    ArrowForward as ArrowForwardIcon,
+    LocationCity as LocationCityIcon,
+    Edit as EditIcon,
+    PhotoCamera as PhotoCameraIcon
+} from '@material-ui/icons'
 import { Parallax } from 'react-parallax'
 import UserAvatar from 'conscience-components/UserAvatar'
-import { H5 } from 'conscience-components/Typography/Headers'
-import Container from './components/Container'
 import FeaturedRepos from './components/FeaturedRepos'
 import UploadBannerDialog from './components/UploadBannerDialog'
+import UploadPictureDialog from './components/UploadPictureDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
 import OrgBlog from './components/connected/OrgBlog'
-import { fetchOrgInfo, uploadOrgBanner, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
+import { getRepoList } from 'conscience-components/redux/repo/repoActions'
+import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
-import { autobind, nonCacheImg } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
 import pluralize from 'pluralize'
 
 
@@ -30,8 +37,9 @@ import pluralize from 'pluralize'
 class ShowcasePage extends React.Component<Props, State>
 {
     state = {
-        dialogOpen: false,
+        dialogBannerOpen: false,
         showAllMembers: false,
+        dialogImgOpen: false,
     }
 
     render() {
@@ -45,7 +53,7 @@ class ShowcasePage extends React.Component<Props, State>
         }
         const memberCount = org.members.length
         const activeRepoCount = org.repos.length
-        const publicRepoCount = org.repos.filter(id => (repos[id] || {}).isPublic).length
+        const publicRepoCount = 0 // org.repos.filter(id => (repos[id] || {}).isPublic).length
 
         let membersToShow = org.members
         if (!this.state.showAllMembers) {
@@ -55,116 +63,114 @@ class ShowcasePage extends React.Component<Props, State>
         return (
             <div>
                 <Parallax
-                    bgImage={nonCacheImg(org.banner)}
-                    strength={500}
+                    className={classes.parallax}
+                    bgImage={org.banner}
+
                     renderLayer={(percentage: any) => (
                         <div className={classes.titleContainer}>
-                            <Button
-                                variant="contained"
-                                className={classes.changeBannerButton}
-                                onClick={this.openBannerDialog}
-                            >
-                                Change Banner
-                            </Button>
-                            <div
-                                className={classes.title}
-                                style={{
-                                    bottom: (1 - percentage) * 700,
-                                }}
-                            >
-                                <Typography variant="h2"
-                                    style={{
-                                        color: `rgba(0, 0, 0, ${1.5 - percentage})`,
-                                        backgroundColor: `rgba(255, 255, 255, ${1.5 - percentage})`,
-                                        boxShadow: `0 0 5px 5px rgba(255, 255, 255, ${1.5 - percentage})`,
-                                    }}
+                            <Tooltip title='Change Banner' placement='left'>
+                                <Fab
+                                    size="large"
+                                    className={classes.changeBannerButton}
+                                    onClick={this.openBannerDialog}
                                 >
-                                    {org.name}
-                                </Typography>
-                            </div>
+                                    <EditIcon />
+                                </Fab>
+                            </Tooltip>
                         </div>
                     )}
                 />
                 <UploadBannerDialog
-                    open={this.state.dialogOpen}
+                    open={this.state.dialogBannerOpen}
                     onSelectBanner={this.onSelectBanner}
                 />
-                <Container>
-                    <div className={classes.statsContainer}>
-                        <div className={classes.stats}>
-                            <PeopleIcon />
-                            {memberCount} {pluralize('Researcher', memberCount)}
+                <Grid xs={12} container >
+                    <Grid item xs={false} sm={4} direction="column" className={classes.gridItem} style={{ backgroundColor: 'white' }}>
+                        <div className={classes.introContainer}>
+                            <div className={classes.uploadImg}>
+                                <Avatar
+                                    alt='conscience-logo'
+                                    className={classes.avatar}
+                                    src='https://i.ibb.co/Lt5V2FK/conscience-inverse.png'
+                                    onClick={this.dialogImgOpen}
+                                />
+                            </div>
+                            <UploadPictureDialog
+                                open={this.state.dialogImgOpen}
+                                onSelectImg={this.onSelectImg}
+                            />
                         </div>
-                        <div className={classes.stats}>
-                            <DescriptionIcon />
-                            {publicRepoCount} Published {pluralize('Study', publicRepoCount)}
+                        <div className={classes.statsContainer}>
+                            <div className={classes.stats}>
+                                <LocationCityIcon />
+                                <strong>{this.props.org ? this.props.org.name : 'No Organization Name'}</strong>
+                            </div>
+                            <div className={classes.stats}>
+                                <PeopleIcon />
+                                {memberCount} {pluralize('Researcher', memberCount)}
+                            </div>
+                            <div className={classes.stats}>
+                                <DescriptionIcon />
+                                {publicRepoCount} Published {pluralize('Study', publicRepoCount)}
+                            </div>
+                            <div className={classes.stats}>
+                                <AssessmentIcon />
+                                {activeRepoCount} Active {pluralize('Repository', activeRepoCount)}
+                            </div>
                         </div>
-                        <div className={classes.stats}>
-                            <AssessmentIcon />
-                            {activeRepoCount} Active {pluralize('Repository', activeRepoCount)}
-                        </div>
-                    </div>
-                    <Grid container spacing={40} >
-                        <Grid item xs={12} sm={8}>
+                        <Grid item className={classes.timelineContainer}>
+                            <div className={classes.sectionHeader}>Live Updates</div>
+                            <Divider className={classes.divider} />
+                            {/*<div style={{ padding: '10px 0' }}><em>From researchers doing their work in the open</em></div>
+                                                        <Divider className={classes.divider}/>*/}
+                            <ShowcaseTimeline orgID={this.props.org.orgID} />
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={false} sm={8} className={classes.gridItem}>
+                        <Grid item>
                             <FeaturedRepos
                                 featuredRepos={org.featuredRepos}
-                                repos={repos}
                                 orgRepoList={org.repos}
                                 canEdit
                                 onSave={this.saveFeaturedRepos}
-                                selectRepo={this.selectRepo}
                             />
-
                             <div>
+                                <div className={classes.sectionHeader}>News and Updates</div>
+                                <Divider className={classes.divider} />
                                 <OrgBlog orgID={this.props.match.params.orgID} />
                             </div>
-                        </Grid>
-
-                        <Grid item xs={false} sm={4} className={classes.timelineContainer}>
-                            <H5>Live Updates</H5>
-                            <div><em>From researchers who are doing their work in the open</em></div>
-
-                            <Divider />
-
-                            <ShowcaseTimeline
-                                org={this.props.org}
-                                repos={this.props.repos}
-                                users={this.props.users}
-                                usersByEmail={this.props.usersByEmail}
-                                selectCommit={this.selectCommit}
-                            />
+                            <div className={classes.sectionHeader} style={{ marginTop: 40 }}>Meet Our Researchers</div>
+                            <Divider className={classes.divider} />
+                            <div className={classes.team}>
+                                {membersToShow.map(id => {
+                                    const user = users[id] || {}
+                                    return (
+                                        <div className={classes.teamAvatarWrapper}>
+                                            <UserAvatar
+                                                classes={{ root: classes.teamAvatar }}
+                                                username={user.name}
+                                                userPicture={user.picture}
+                                            />
+                                            <div>{user.name}</div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            {memberCount > 6 && !!this.state.showAllMembers &&
+                                <div className={classes.teamSeeMore}>
+                                    <Button
+                                        color="secondary"
+                                        onClick={this.showAllMembers}
+                                    >
+                                        See All Researchers
+                                        <ArrowForwardIcon />
+                                    </Button>
+                                </div>
+                            }
                         </Grid>
                     </Grid>
 
-                    <H5 className={classes.teamHeader}>Meet Our Researchers</H5>
-                    <div className={classes.team}>
-                        {membersToShow.map(id => {
-                            const user = users[id] || {}
-                            return (
-                                <div className={classes.teamAvatarWrapper}>
-                                    <UserAvatar
-                                        user={user}
-                                        noTooltip
-                                        classes={{ root: classes.teamAvatar }}
-                                    />
-                                    <div>{user.name}</div>
-                                </div>
-                            )
-                        })}
-                    </div>
-
-                    {memberCount > 6 && !!this.state.showAllMembers &&
-                        <div className={classes.teamSeeMore}>
-                            <Button
-                                color="secondary"
-                                onClick={this.showAllMembers}
-                            >
-                                See All Researchers
-                                <ArrowForwardIcon />
-                            </Button>
-                        </div>
-                    }
-                </Container>
+                </Grid>
             </div>
         )
     }
@@ -172,6 +178,7 @@ class ShowcasePage extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
+        this.props.getRepoList({})
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
@@ -179,22 +186,9 @@ class ShowcasePage extends React.Component<Props, State>
         this.props.changeOrgFeaturedRepos({ orgID, featuredRepos })
     }
 
-    selectRepo(payload: { repoID: string }) {
-        const repoID = payload.repoID
-        if (repoID !== undefined) {
-            this.props.history.push(`/repo/${repoID}`)
-        }
-    }
-
-    selectCommit(commit: string, repoID: string | undefined) {
-        if (repoID === undefined) {
-            return
-        }
-        this.props.history.push(`/repo/${repoID}/history/${commit}`)
-    }
-
+    //---> Opens banner upload <---//
     openBannerDialog() {
-        this.setState({ dialogOpen: true })
+        this.setState({ dialogBannerOpen: true })
     }
 
     onSelectBanner(fileInput: any) {
@@ -202,20 +196,25 @@ class ShowcasePage extends React.Component<Props, State>
             const orgID = this.props.match.params.orgID
             this.props.uploadOrgBanner({ orgID, fileInput })
         }
-        this.setState({ dialogOpen: false })
+        this.setState({ dialogBannerOpen: false })
+    }
+
+    //---> Opens org picture upload <---//
+    dialogImgOpen() {
+        this.setState({ dialogImgOpen: true })
+    }
+
+    onSelectImg(fileInput: any) {
+        console.log(fileInput)
+        if (fileInput !== null) {
+            const orgID = this.props.match.params.orgID
+            this.props.uploadOrgPicture({ orgID, fileInput })
+        }
+        this.setState({ dialogImgOpen: false })
     }
 
     showAllMembers() {
         this.setState({ showAllMembers: true })
-    }
-
-    selectUser(payload: { username: string | undefined }) {
-        console.log(payload)
-        const username = payload.username
-        if (username === undefined) {
-            return
-        }
-        this.props.history.push(`/user/${username}`)
     }
 }
 
@@ -230,18 +229,39 @@ interface Props extends RouteComponentProps<MatchParams> {
     usersByEmail: { [email: string]: string }
     discussions: { [discussionID: string]: IDiscussion }
     discussionsByRepo: { [repoID: string]: string[] }
+    getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
     uploadOrgBanner: typeof uploadOrgBanner
+    uploadOrgPicture: typeof uploadOrgPicture
     changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
     classes: any
 }
 
 interface State {
-    dialogOpen: boolean
+    dialogBannerOpen: boolean
     showAllMembers: boolean
+    dialogImgOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
+    parallax: {
+        height: 300,
+    },
+    introContainer: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '-170px',
+    },
+    avatar: {
+        height: 200,
+        width: 200,
+        boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+    },
+    gridItem: {
+        padding: '60px 100px',
+    },
     progressContainer: {
         width: '100%',
         display: 'flex',
@@ -278,10 +298,21 @@ const styles = (theme: Theme) => createStyles({
         right: 16,
         textTransform: 'none',
     },
+    sectionHeader: {
+        margin: '40px 0 0',
+        fontSize: '2em',
+        fontWeight: 'bold',
+    },
+    divider: {
+        margin: '20px 0 30px'
+    },
     statsContainer: {
         width: '100%',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: '40px 0'
     },
     stats: {
         flexGrow: 1,
@@ -289,7 +320,7 @@ const styles = (theme: Theme) => createStyles({
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: '1rem',
-        marginBottom: 32,
+        margin: '5px 0',
         '& svg': {
             marginRight: 8,
         },
@@ -300,7 +331,8 @@ const styles = (theme: Theme) => createStyles({
     },
     teamHeader: {
         textAlign: 'center',
-        marginTop: 64,
+        marginTop: 16,
+        fontWeight: 'bold',
     },
     team: {
         marginTop: 16,
@@ -339,6 +371,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
     const orgID = props.match.params.orgID
+    console.log('showcase page', state)
     return {
         org: state.org.orgs[orgID],
         repos: state.repo.repos,
@@ -351,7 +384,9 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
 
 const mapDispatchToProps = {
     fetchOrgInfo,
+    getRepoList,
     uploadOrgBanner,
+    uploadOrgPicture,
     changeOrgFeaturedRepos,
 }
 

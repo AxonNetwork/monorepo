@@ -17,6 +17,7 @@
     "querystring": "^0.2.0",
     "react": "^16.6.3",
     "react-hot-loader": "^4.3.8",
+    "react-mathjax": "^1.0.1",
     "react-syntax-highlighter": "^8.0.1",
     "typescript": "^3.2.1",
     "url-join": "^4.0.0"
