@@ -25,7 +25,8 @@ import {
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
-    fetchFullRepoFromServerLogic
+    fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
@@ -219,18 +220,21 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
 const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction>({
     type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS,
     async process({ action }, dispatch) {
-        const { repoID } = action.payload
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
         const rpcClient = rpc.getClient()
-        const [admins, pushers, pullers] = await Promise.all([
+        const [admins, pushers, pullers, isPublic] = await Promise.all([
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
-            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER })
+            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER }),
+            ServerRelay.isRepoPublic(repoID),
         ])
 
         const usernames = union(admins, pushers, pullers)
         await dispatch(fetchUserDataByUsername({ usernames: usernames }))
 
-        return { repoID, admins, pushers, pullers }
+
+        return { repoID, admins, pushers, pullers, isPublic }
     },
 })
 
@@ -282,7 +286,8 @@ const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSucc
 const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction>({
     type: RepoActionType.FETCH_REMOTE_REFS,
     async process({ action }) {
-        const { repoID } = action.payload
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
         const remoteRefs = await rpc.getClient().getAllRemoteRefsAsync(repoID)
         return { repoID, remoteRefs }
     },
@@ -425,6 +430,7 @@ export default [
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 
     // desktop-specific
     updateUserPermissionsLogic,

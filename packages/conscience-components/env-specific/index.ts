@@ -6,6 +6,7 @@ var getRepoID: (uri: URI, state?: IGlobalState) => string
 var getURIFromParams: (params: { repoID?: string, repoHash?: string }, state?: IGlobalState) => URI | undefined
 var getFileContents: (uri: URI) => Promise<string>
 var directEmbedPrefix: (uri: URI) => string
+var isDesktop: () => boolean
 
 function init(params: {
     getRepo: typeof getRepo,
@@ -13,12 +14,14 @@ function init(params: {
     getURIFromParams: typeof getURIFromParams,
     getFileContents: typeof getFileContents,
     directEmbedPrefix: typeof directEmbedPrefix,
+    isDesktop: typeof isDesktop,
 }) {
     getRepo = params.getRepo
     getRepoID = params.getRepoID
     getURIFromParams = params.getURIFromParams
     getFileContents = params.getFileContents
     directEmbedPrefix = params.directEmbedPrefix
+    isDesktop = params.isDesktop
 }
 
 export {
@@ -28,4 +31,5 @@ export {
     getURIFromParams,
     getFileContents,
     directEmbedPrefix,
+    isDesktop
 }

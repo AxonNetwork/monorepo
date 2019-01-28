@@ -7,7 +7,8 @@ import {
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
-    fetchFullRepoFromServerLogic
+    fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
@@ -27,6 +28,9 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         if (state.repo.diffsByCommitHash[commit]) {
             return
         }
+        console.log("GET DIFF")
+        console.log(repoID)
+        console.log(commit)
 
         const diff = await ServerRelay.getDiff({ repoID, commit })
         const parsed = parseDiff(diff)
@@ -50,6 +54,7 @@ export default [
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 
     // web-specific
     getDiffLogic,

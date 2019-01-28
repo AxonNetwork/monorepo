@@ -114,6 +114,10 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 return { type: URIType.Network, repoID: params.repoID } as URI
             }
             return undefined
+        },
+
+        isDesktop() {
+            return true
         }
     })
 }
