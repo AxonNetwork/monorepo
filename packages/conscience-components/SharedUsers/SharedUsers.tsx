@@ -20,6 +20,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import Switch from '@material-ui/core/Switch'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -27,7 +28,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
 import { H6 } from '../Typography/Headers'
-import { updateUserPermissions } from '../redux/repo/repoActions'
+import { updateUserPermissions, setRepoPublic } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
 import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
@@ -39,7 +40,8 @@ import { union } from 'lodash'
 class SharedUsers extends React.Component<Props, State>
 {
     state = {
-        dialogOpen: false,
+        userDialogOpen: false,
+        publicDialogOpen: false,
         selectedUser: undefined,
         readChecked: false,
         writeChecked: false,
@@ -70,9 +72,20 @@ class SharedUsers extends React.Component<Props, State>
                 <CardContent>
                     <div className={classes.header}>
                         <H6>Access Controls</H6>
+                        {isAdmin &&
+                            <div className={classes.publicSwitch}>
+                                <Typography>Private</Typography>
+                                <Switch
+                                    color="secondary"
+                                    checked={this.props.isPublic}
+                                    onChange={this.togglePublic}
+                                />
+                                <Typography>Public</Typography>
+                            </div>
+                        }
                         <Button
                             color="secondary"
-                            onClick={() => this.openDialog()}
+                            onClick={() => this.openUserDialog()}
                             disabled={updatingNew}
                         >
                             {updatingNew && <CircularProgress size={24} className={classes.buttonLoading} />}
@@ -119,7 +132,7 @@ class SharedUsers extends React.Component<Props, State>
                                     {isAdmin &&
                                         <TableCell className={classes.centered}>
                                             {currentUser !== user.userID &&
-                                                <IconButton onClick={() => this.openDialog(user.username)}>
+                                                <IconButton onClick={() => this.openUserDialog(user.username)}>
                                                     {updatingUserPermissions === user.username &&
                                                         <CircularProgress size={24} className={classes.buttonLoading} />
                                                     }
@@ -135,7 +148,33 @@ class SharedUsers extends React.Component<Props, State>
                         </TableBody>
                     </Table>
 
-                    <Dialog open={this.state.dialogOpen} onClose={this.closeDialog}>
+                    <Dialog open={this.state.publicDialogOpen} onClose={this.closePublicDialog}>
+                        <DialogTitle>Make {getRepoID(this.props.uri)} public?</DialogTitle>
+                        <DialogContent>
+                            <Typography>
+                                Once you do, anyone will be able to download the repository contents.
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={this.confirmMakePublic}
+                                color="secondary"
+                                variant='contained'
+                            >
+                                Make Public
+                            </Button>
+                            <Button
+                                onClick={this.closePublicDialog}
+                                color="secondary"
+                                variant='outlined'
+                                autoFocus
+                            >
+                                Cancel
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
                         {selectedUser === undefined &&
                             <DialogTitle>Add User</DialogTitle>
                         }
@@ -180,7 +219,7 @@ class SharedUsers extends React.Component<Props, State>
                                 Set Permissions
                             </Button>
                             <Button
-                                onClick={this.closeDialog}
+                                onClick={this.closeUserDialog}
                                 color="secondary"
                                 variant='outlined'
                                 autoFocus
@@ -195,10 +234,29 @@ class SharedUsers extends React.Component<Props, State>
         )
     }
 
-    openDialog(username?: string) {
+    togglePublic() {
+        if (!this.props.isPublic) {
+            this.setState({ publicDialogOpen: true })
+        } else {
+            const repoID = getRepoID(this.props.uri)
+            this.props.setRepoPublic({ repoID, isPublic: false })
+        }
+    }
+
+    confirmMakePublic() {
+        const repoID = getRepoID(this.props.uri)
+        this.props.setRepoPublic({ repoID, isPublic: true })
+        this.setState({ publicDialogOpen: false })
+    }
+
+    closePublicDialog() {
+        this.setState({ publicDialogOpen: false })
+    }
+
+    openUserDialog(username?: string) {
         const { admins = [], pushers = [], pullers = [] } = this.props.permissions
         this.setState({
-            dialogOpen: true,
+            userDialogOpen: true,
             selectedUser: username,
             adminChecked: admins.indexOf(username || '') > -1,
             writeChecked: pushers.indexOf(username || '') > -1,
@@ -206,9 +264,9 @@ class SharedUsers extends React.Component<Props, State>
         })
     }
 
-    closeDialog() {
+    closeUserDialog() {
         this.setState({
-            dialogOpen: false,
+            userDialogOpen: false,
             selectedUser: undefined,
             adminChecked: false,
             writeChecked: false,
@@ -236,7 +294,7 @@ class SharedUsers extends React.Component<Props, State>
             pusher: writeChecked,
             puller: readChecked
         })
-        this.closeDialog()
+        this.closeUserDialog()
     }
 
     toggleRead() {
@@ -264,14 +322,17 @@ interface StateProps {
     usersByUsername: { [username: string]: string }
     currentUser: string
     updatingUserPermissions: string | undefined
+    isPublic: boolean
 }
 
 interface DispatchProps {
     updateUserPermissions: typeof updateUserPermissions
+    setRepoPublic: typeof setRepoPublic
 }
 
 interface State {
-    dialogOpen: boolean
+    userDialogOpen: boolean
+    publicDialogOpen: boolean
     selectedUser: string | undefined
     readChecked: boolean
     writeChecked: boolean
@@ -281,6 +342,12 @@ interface State {
 const styles = (theme: Theme) => createStyles({
     root: {
         minWidth: 350,
+    },
+    publicSwitch: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 64
     },
     header: {
         display: 'flex',
@@ -333,11 +400,13 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         usersByUsername: state.user.usersByUsername,
         currentUser: state.user.currentUser || '',
         updatingUserPermissions: state.ui.updatingUserPermissions,
+        isPublic: state.repo.isPublicByID[repoID] || false,
     }
 }
 
 const mapDispatchToProps = {
     updateUserPermissions,
+    setRepoPublic,
 }
 
 export default connect(

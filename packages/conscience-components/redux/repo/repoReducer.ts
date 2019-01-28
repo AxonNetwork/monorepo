@@ -2,6 +2,7 @@ import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
+import { getRepoID } from 'conscience-components/env-specific'
 
 export const initialState = {
     repoListByUser: {},
@@ -12,6 +13,7 @@ export const initialState = {
     localRefsByURI: {},
     remoteRefsByID: {},
     permissionsByID: {},
+    isPublicByID: {},
     diffsByCommitHash: {},
     isBehindRemoteByURI: {},
     failedToFetchByURI: {},
@@ -26,6 +28,7 @@ export interface IRepoState {
     localRefsByURI: { [uri: string]: { [name: string]: string } }
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
+    isPublicByID: { [repoID: string]: boolean }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
     isBehindRemoteByURI: { [uri: string]: boolean }
     failedToFetchByURI: { [repoID: string]: boolean }
@@ -102,7 +105,25 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        case RepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS:
+        case RepoActionType.FETCH_REPO_USERS_PERMISSIONS_SUCCESS: {
+            const { repoID, admins, pushers, pullers, isPublic } = action.payload
+            return {
+                ...state,
+                permissionsByID: {
+                    ...state.permissionsByID,
+                    [repoID]: {
+                        admins: admins,
+                        pushers: pushers,
+                        pullers: pullers,
+                    }
+                },
+                isPublicByID: {
+                    ...state.isPublicByID,
+                    [repoID]: isPublic
+                }
+            }
+        }
+
         case RepoActionType.UPDATE_USER_PERMISSIONS_SUCCESS: {
             const { repoID, admins, pushers, pullers } = action.payload
 
@@ -115,6 +136,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         pushers: pushers,
                         pullers: pullers,
                     }
+                }
+            }
+        }
+
+        case RepoActionType.SET_REPO_PUBLIC:
+        case RepoActionType.SET_REPO_PUBLIC_SUCCESS: {
+            const { repoID, isPublic } = action.payload
+            return {
+                ...state,
+                isPublicByID: {
+                    ...state.isPublicByID,
+                    [repoID]: isPublic
                 }
             }
         }
@@ -143,6 +176,10 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                         pushers: repo.pushers || [],
                         pullers: repo.pullers || []
                     }
+                },
+                isPublicByID: {
+                    ...state.isPublicByID,
+                    [repo.repoID]: repo.isPublic || false
                 }
             }
         }

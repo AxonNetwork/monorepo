@@ -193,6 +193,22 @@ const ServerRelay = {
         return response.data
     },
 
+    async setRepoPublic(repoID: string, isPublic: boolean) {
+        await axios.post(`${API_URL}/repo/${repoID}/set-public`, {
+            isPublic
+        })
+        return true
+    },
+
+    async isRepoPublic(repoID: string) {
+        interface IResponse {
+            isPublic: boolean
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/${repoID}/is-public`)
+        console.log("PUBLIC: ", response)
+        return response.data.isPublic
+    },
+
     async getRepoList(username: string) {
         interface IResponse {
             repoIDs: string[]

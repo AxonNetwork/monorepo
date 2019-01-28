@@ -7,7 +7,8 @@ import {
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
-    fetchFullRepoFromServerLogic
+    fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
@@ -53,6 +54,7 @@ export default [
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
+    setRepoPublicLogic,
 
     // web-specific
     getDiffLogic,

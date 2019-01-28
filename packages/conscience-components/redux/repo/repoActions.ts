@@ -47,6 +47,10 @@ export enum RepoActionType {
     UPDATE_USER_PERMISSIONS_SUCCESS = 'UPDATE_USER_PERMISSIONS_SUCCESS',
     UPDATE_USER_PERMISSIONS_FAILED = 'UPDATE_USER_PERMISSIONS_FAILED',
 
+    SET_REPO_PUBLIC = 'SET_REPO_PUBLIC',
+    SET_REPO_PUBLIC_SUCCESS = 'SET_REPO_PUBLIC_SUCCESS',
+    SET_REPO_PUBLIC_FAILED = 'SET_REPO_PUBLIC_FAILED',
+
     CREATE_REPO = 'CREATE_REPO',
     CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
     CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
@@ -172,7 +176,7 @@ export type IFetchLocalRefsFailedAction = FailedAction<RepoActionType.FETCH_LOCA
 export interface IFetchRemoteRefsAction {
     type: RepoActionType.FETCH_REMOTE_REFS
     payload: {
-        repoID: string
+        uri: URI
     }
 }
 
@@ -189,7 +193,7 @@ export type IFetchRemoteRefsFailedAction = FailedAction<RepoActionType.FETCH_REM
 export interface IFetchRepoUsersPermissionsAction {
     type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS
     payload: {
-        repoID: string
+        uri: URI
     }
 }
 
@@ -200,6 +204,7 @@ export interface IFetchRepoUsersPermissionsSuccessAction {
         admins: string[]
         pushers: string[]
         pullers: string[]
+        isPublic: boolean
     }
 }
 
@@ -262,6 +267,24 @@ export interface IUpdateUserPermissionsSuccessAction {
 }
 
 export type IUpdateUserPermissionsFailedAction = FailedAction<RepoActionType.UPDATE_USER_PERMISSIONS_FAILED>
+
+export interface ISetRepoPublicAction {
+    type: RepoActionType.SET_REPO_PUBLIC
+    payload: {
+        repoID: string
+        isPublic: boolean
+    }
+}
+
+export interface ISetRepoPublicSuccessAction {
+    type: RepoActionType.SET_REPO_PUBLIC_SUCCESS
+    payload: {
+        repoID: string
+        isPublic: boolean
+    }
+}
+
+export type ISetRepoPublicFailedAction = FailedAction<RepoActionType.SET_REPO_PUBLIC_FAILED>
 
 export interface ICreateRepoAction {
     type: RepoActionType.CREATE_REPO
@@ -409,6 +432,10 @@ export type IRepoAction =
     IUpdateUserPermissionsSuccessAction |
     IUpdateUserPermissionsFailedAction |
 
+    ISetRepoPublicAction |
+    ISetRepoPublicSuccessAction |
+    ISetRepoPublicFailedAction |
+
     ICreateRepoAction |
     ICreateRepoSuccessAction |
     ICreateRepoFailedAction |
@@ -445,6 +472,7 @@ export const fetchFullRepoFromServer = (payload: IFetchFullRepoFromServerAction[
 
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
+export const setRepoPublic = (payload: ISetRepoPublicAction['payload']): ISetRepoPublicAction => ({ type: RepoActionType.SET_REPO_PUBLIC, payload })
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
