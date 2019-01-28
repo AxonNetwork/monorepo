@@ -1,4 +1,4 @@
-import { ITimelineEvent } from 'conscience-lib/common'
+import { ITimelineEvent, URI, URIType } from 'conscience-lib/common'
 import { getConscienceURI } from 'conscience-lib/utils'
 
 export default function mergeTimelines(
@@ -6,7 +6,7 @@ export default function mergeTimelines(
     commitListsByURI: { [uri: string]: string[] },
     commits: { [commitHash: string]: ITimelineEvent }
 ) {
-    let merged = [] as string[]
+    let merged = [] as URI[]
 
     let currentIndex = {} as { [repoID: string]: number }
     for (let repoID of orgRepoIDList) {
@@ -46,7 +46,11 @@ export default function mergeTimelines(
         }
 
         if (currentMaxCommit && currentMaxRepoID) {
-            merged.push(currentMaxCommit!.commit)
+            merged.push({
+                type: URIType.Network,
+                repoID: currentMaxRepoID,
+                commit: currentMaxCommit!.commit,
+            } as URI)
             currentIndex[currentMaxRepoID!]++
         }
 

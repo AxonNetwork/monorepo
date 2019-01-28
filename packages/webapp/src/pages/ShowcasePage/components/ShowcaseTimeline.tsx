@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import TimelineEvent from 'conscience-components/TimelineEvent'
 import { IGlobalState } from 'conscience-components/redux'
-import { IOrganization, ITimelineEvent, IRepo, IUser, URI, URIType } from 'conscience-lib/common'
+import { ITimelineEvent } from 'conscience-lib/common'
 import { mergeTimelines } from 'conscience-lib/utils'
 
 
@@ -14,9 +14,7 @@ class ShowcaseTimeline extends React.Component<Props>
 
         return (
             <div>
-                {commitList.map(hash => {
-                    const event = this.props.commits[hash]
-                    const uri = { type: URIType.Network, repoID: event.repoID || '', commit: event.commit } as URI
+                {commitList.map(uri => {
                     return (
                         <TimelineEvent uri={uri} />
                     )

@@ -147,9 +147,8 @@ class ShowcasePage extends React.Component<Props, State>
                                     return (
                                         <div className={classes.teamAvatarWrapper}>
                                             <UserAvatar
+                                                user={user}
                                                 classes={{ root: classes.teamAvatar }}
-                                                username={user.name}
-                                                userPicture={user.picture}
                                             />
                                             <div>{user.name}</div>
                                         </div>
@@ -224,7 +223,6 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
-    repos: { [repoID: string]: IRepo }
     users: { [userID: string]: IUser }
     usersByEmail: { [email: string]: string }
     discussions: { [discussionID: string]: IDiscussion }
@@ -371,10 +369,8 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
     const orgID = props.match.params.orgID
-    console.log('showcase page', state)
     return {
         org: state.org.orgs[orgID],
-        repos: state.repo.repos,
         users: state.user.users,
         usersByEmail: state.user.usersByEmail,
         discussions: state.discussion.discussions,

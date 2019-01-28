@@ -123,10 +123,9 @@ class RepositoryCard extends React.Component<Props, State>
         } else {
             const local = this.props.localRepoList.find(uri => getRepoID(uri) === getRepoID(this.props.uri))
             if (local !== undefined) {
-                this.toggleDialog()
-                // selectRepo(local, page)
+                selectRepo(local, page)
             } else {
-                console.log('here')
+                this.toggleDialog()
             }
         }
     }

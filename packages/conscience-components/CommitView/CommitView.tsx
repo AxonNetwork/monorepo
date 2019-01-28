@@ -182,6 +182,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const commitHash = ownProps.uri.commit || ''
     const commit = state.repo.commits[commitHash]
+    console.log(commit)
     const userEmail = commit ? extractEmail(commit.user) : undefined
     const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
     const fileDiffs = state.repo.diffsByCommitHash[ownProps.uri.commit || '']
