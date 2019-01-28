@@ -58,53 +58,15 @@ const RepoWatcher = {
     },
 }
 
-function loop() {
+async function loop() {
     const repos = Object.keys(watching)
-    for (let i = 0; i < repos.length; i++) {
-        const path = repos[i]
-        // checkForChange(path)
-        checkBehindRemote(path)
-    }
-    setTimeout(loop, 5000)
+    const fetches = repos.map(repoRoot => checkBehindRemote(repoRoot))
+    await Promise.all(fetches)
+    // @@TODO: configurable interval
+    setTimeout(loop, 30000)
 }
 
 loop()
-
-// function getMtimeRecurse(folder: string) {
-//     const stat = fs.statSync(folder)
-//     if (!stat.isDirectory) {
-//         return stat.mtime.getTime()
-//     }
-//     let subfiles
-//     try {
-//         subfiles = fs.readdirSync(folder)
-//         .map((name: string) => join(folder, name))
-//     }catch (_) {
-//         return stat.mtime.getTime()
-//     }
-//     if (subfiles.length === 0) {
-//         return stat.mtime.getTime()
-//     }
-//     const mtimes = subfiles.map((path: string) => getMtimeRecurse(path))
-//     const max = mtimes.reduce((a: number, b: number) => {
-//         return Math.max(a, b)
-//     })
-//     return max
-// }
-
-// async function checkForChange(path: string) {
-//     const repo = watching[path]
-//     if (repo === undefined) {
-//         return
-//     }
-
-//     const mtime = getMtimeRecurse(path)
-//     if (mtime > repo.mtime && repo.mtime !== 0) {
-//         repo.emitter.emit('file_change')
-//     }
-//     repo.mtime = mtime
-//     watching[path] = repo
-// }
 
 async function checkBehindRemote(path: string) {
     const repo = watching[path]

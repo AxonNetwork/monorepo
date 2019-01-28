@@ -151,7 +151,6 @@ function addFolders(files: { [name: string]: IRepoFile }) {
         }
 
         if (dirname === '.') {
-            console.log('bad dirname', filepath)
             continue
         }
 
