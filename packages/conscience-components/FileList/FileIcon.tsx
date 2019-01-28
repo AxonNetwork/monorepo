@@ -16,12 +16,13 @@ interface FileIconProps {
 function FileIcon(props: FileIconProps) {
     const { filename, isFolder, status, classes } = props
 
+    let icon: JSX.Element
     if (isFolder) {
-        return <ListItemIcon><FolderIcon /></ListItemIcon>
+        icon = <FolderIcon />
+    } else {
+        const IconCmpt = filetypes.getIcon(filename) || HelpOutlineIcon
+        icon = <IconCmpt />
     }
-
-    const IconCmpt = filetypes.getIcon(filename) || HelpOutlineIcon
-    let icon = <IconCmpt />
 
     if (status === 'M' || status === '?' || status === 'U') {
         icon = <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">{icon}</Badge>

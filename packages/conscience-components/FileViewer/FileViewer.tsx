@@ -186,8 +186,8 @@ class FileViewer extends React.Component<Props, State>
 
 interface Props {
     uri: URI
-    showViewerPicker: boolean
-    showButtons: boolean
+    showViewerPicker?: boolean
+    showButtons?: boolean
     classes?: any
 }
 
