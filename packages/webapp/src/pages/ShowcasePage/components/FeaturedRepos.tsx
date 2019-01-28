@@ -1,16 +1,15 @@
+import omitBy from 'lodash/omitBy'
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import Divider from '@material-ui/core/Divider'
 import FeaturedRepoCard from './FeaturedRepoCard'
 import EditRepoCard from './EditRepoCard'
 import AddNewCard from './AddNewCard'
 import SelectRepoDialog from './SelectRepoDialog'
 import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { omitBy } from 'lodash'
-
 
 @autobind
 class FeaturedRepos extends React.Component<Props, State>
@@ -30,63 +29,61 @@ class FeaturedRepos extends React.Component<Props, State>
 
         return (
             <Grid container spacing={40} className={classes.root}>
-                <Grid item xs={12} className={classes.titleRow}>
-                    <Typography variant="h5">Featured Research</Typography>
-                    {canEdit && !editMode &&
-                        <Button
-                            className={classes.editButton}
-                            onClick={this.enterEditMode}
-                            color="secondary"
-                            variant="outlined"
-                        >
-                            Edit Featured Repos
-                        </Button>
-                    }
-                    {canEdit && editMode &&
-                        <div>
+                <Grid item xs={12} className={classes.titleColumn}>
+                    <div className={classes.titleRow}>
+                        <div style={{ fontSize: '2em', fontWeight: 'bold' }}>Featured Research</div>
+                        {canEdit && !editMode &&
                             <Button
                                 className={classes.editButton}
-                                onClick={this.saveSetup}
+                                onClick={this.enterEditMode}
                                 color="secondary"
                                 variant="outlined"
                             >
-                                Save
+                                Edit Featured Repos
                             </Button>
-                            <Button
-                                className={classes.editButton}
-                                onClick={this.cancelEdit}
-                                color="secondary"
-                                variant="outlined"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    }
+                        }
+                        {canEdit && editMode &&
+                            <div>
+                                <Button
+                                    className={classes.editButton}
+                                    onClick={this.saveSetup}
+                                    color="secondary"
+                                    variant="outlined"
+                                >
+                                    Save
+                                </Button>
+                                <Button
+                                    className={classes.editButton}
+                                    onClick={this.cancelEdit}
+                                    color="secondary"
+                                    variant="outlined"
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                    <Divider style={{ margin: '40px 0' }} />
+
                 </Grid>
                 {Object.keys(featuredRepos).length < 1 &&
-                    <Grid item xs={12}>
-                        <Typography>
-                            No featured studies at the moment
-                        </Typography>
-                    </Grid>
+                    <div>No featured studies at the moment</div>
                 }
-                {Object.keys(featuredRepos).map((repoID: string) => (
+                {Object.keys(featuredRepos).map(repoID => (
                     <Grid item xs={12} sm={6}>
                         {editing.indexOf(repoID) < 0 &&
                             <FeaturedRepoCard
                                 repoInfo={featuredRepos[repoID]}
                                 canEdit={editMode}
-                                onEdit={() => this.editRepoCard(repoID)}
-                                onDelete={() => this.deleteRepoCard(repoID)}
-                                selectRepo={this.props.selectRepo}
+                                onEdit={this.editRepoCard}
+                                onDelete={this.deleteRepoCard}
                             />
                         }
                         {editing.indexOf(repoID) > -1 &&
                             <EditRepoCard
                                 repoInfo={featuredRepos[repoID]}
-                                repo={this.props.repos[repoID]}
                                 onSave={this.saveRepoCard}
-                                onCancel={() => this.cancelEditRepoCard(repoID)}
+                                onCancel={this.cancelEditRepoCard}
                             />
                         }
                     </Grid>
@@ -182,6 +179,15 @@ class FeaturedRepos extends React.Component<Props, State>
     }
 }
 
+type Props = OwnProps & { classes: any }
+
+interface OwnProps {
+    featuredRepos: { [repoID: string]: IFeaturedRepo }
+    orgRepoList: string[]
+    canEdit?: boolean
+    onSave: (featuredRepos: { [repoID: string]: IFeaturedRepo }) => void
+}
+
 interface State {
     editMode: boolean
     featuredRepos: { [repoID: string]: IFeaturedRepo }
@@ -189,24 +195,23 @@ interface State {
     dialogOpen: boolean
 }
 
-interface Props {
-    featuredRepos: { [repoID: string]: IFeaturedRepo }
-    repos: { [repoID: string]: IRepo }
-    orgRepoList: string[]
-    canEdit?: boolean
-    onSave: (featuredRepos: { [repoID: string]: IFeaturedRepo }) => void
-    selectRepo: (payload: { repoID: string }) => void
-    classes: any
-}
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        marginTop: 8,
+        // marginTop: 8,
+    },
+    titleColumn: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '0 !important',
+        margin: '20px 0',
+        alignItems: 'center',
     },
     titleRow: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
     editButton: {
         marginLeft: 16,
@@ -215,3 +220,4 @@ const styles = (theme: Theme) => createStyles({
 })
 
 export default withStyles(styles)(FeaturedRepos)
+
