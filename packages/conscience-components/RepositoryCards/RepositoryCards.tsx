@@ -55,7 +55,11 @@ class RepositoryCards extends React.Component<Props, State>
             <React.Fragment>
                 <div className={classes.root}>
                     {notFailed.map(uri =>
-                        <RepositoryCard key={getRepoID(uri)} uri={uri} />
+                        <RepositoryCard
+                            key={getRepoID(uri)}
+                            uri={uri}
+                            redirectToLocal={this.props.redirectToLocal}
+                        />
                     )}
 
                     {/* Add repo button */}
@@ -143,6 +147,7 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 interface OwnProps {
     repoList: URI[] | undefined
     reposToAdd?: URI[]
+    redirectToLocal?: boolean
     addRepo?: (payload: { repoID: string }) => void
 }
 

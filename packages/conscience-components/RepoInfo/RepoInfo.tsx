@@ -3,13 +3,12 @@ import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import PushPullButtons from 'conscience-components/PushPullButtons'
-import CloneButton from 'conscience-components/CloneButton'
 import Tabs from 'conscience-components/Tabs'
 import { H5 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
 import { getRepoID } from '../env-specific'
-import { RepoPage, URI, LocalURI, NetworkURI, URIType } from 'conscience-lib/common'
+import { RepoPage, URI, LocalURI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -34,12 +33,6 @@ class RepoInfo extends React.Component<Props>
                         <PushPullButtons
                             uri={uri as LocalURI}
                             classes={{ root: classes.pushPullButtons }}
-                        />
-                    }
-                    {showButtons && uri.type === URIType.Network &&
-                        <CloneButton
-                            uri={uri as NetworkURI}
-                            classes={{ root: classes.cloneButton }}
                         />
                     }
                 </div>

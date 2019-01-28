@@ -3,8 +3,7 @@ import { FileMode, URI, URIType, RepoPage } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
 import history from '../redux/history'
 
-
-export function selectRepo(uri: URI, page: RepoPage) {
+export function getRepoURL(uri: URI, page: RepoPage) {
     let parts: string[]
     if (uri.type === URIType.Local) {
         parts = ['local-repo', getHash(uri.repoRoot)]
@@ -38,8 +37,12 @@ export function selectRepo(uri: URI, page: RepoPage) {
             break
     }
 
-    const url = path.join(...parts)
-    history.push('/' + url)
+    const url = '/' + path.join(...parts)
+    return url
+}
+
+export function selectRepo(uri: URI, page: RepoPage) {
+    history.push(getRepoURL(uri, page))
 }
 
 export function getFileURL(uri: URI, mode: FileMode) {

@@ -80,7 +80,10 @@ class UserPage extends React.Component<Props>
 
                             <Divider className={classes.repoDivider} />
 
-                            <RepositoryCards repoList={repoURIList} />
+                            <RepositoryCards
+                                repoList={repoURIList}
+                                redirectToLocal
+                            />
                         </div>
                     </div>
                 </main>
