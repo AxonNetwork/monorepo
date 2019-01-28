@@ -3,8 +3,7 @@ import { IRepo, URI, URIType } from 'conscience-lib/common'
 import { Store } from 'redux'
 import { IGlobalState } from 'conscience-components/redux'
 import { getHash, uriToString } from 'conscience-lib/utils'
-import path from 'path'
-import fs from 'fs'
+import * as rpc from 'conscience-lib/rpc'
 import axios from 'axios'
 
 export default function setEnvSpecific(store: Store<IGlobalState>) {
@@ -15,6 +14,7 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             if (!filename) {
                 throw new Error('must include filename in uri')
             }
+
             if (uri.type === URIType.Network) {
                 const repoID = uri.repoID
                 const API_URL = process.env.API_URL
@@ -26,24 +26,44 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 }
                 const resp = await axios.get<string>(fileURL)
                 return resp.data
+
             } else {
-                const repoRoot = uri.repoRoot
-                if (commit === undefined || commit === 'working') {
-                    return new Promise<string>((resolve, reject) => {
-                        fs.readFile(path.join(repoRoot, filename), 'utf8', (err: Error, contents: string) => {
-                            if (err) {
-                                reject(err)
-                            }
-                            resolve(contents)
-                        })
-                    })
-                } else {
-                    const repoHash = getHash(repoRoot)
-                    const fileServer = process.env.STATIC_FILE_SERVER_URL
-                    const fileURL = `${fileServer}/repo/${repoHash}/file/${commit}/${filename}`
-                    const resp = await axios.get<string>(fileURL)
-                    return resp.data
+                const { repoRoot, commit, filename } = uri
+
+                let stream
+                if (commit && commit.length === 40) {
+                    const commitHash = Buffer.from(commit!, 'hex')
+                    if (commitHash.length === 20) {
+                        stream = rpc.getClient().getObject({ repoRoot, commitHash, filename, maxSize: 999999999999999 })
+                    }
                 }
+                if (!stream) {
+                    const commitRef = commit || 'working'
+                    stream = rpc.getClient().getObject({ repoRoot, commitRef, filename, maxSize: 999999999999999 })
+                }
+
+                return new Promise((resolve, reject) => {
+                    let gotHeader = false
+                    let totalSize = 0
+                    let buffers = [] as Buffer[]
+
+                    stream.on('data', pkt => {
+                        if (!gotHeader && pkt.header) {
+                            totalSize = pkt.header.uncompressedSize
+                            gotHeader = true
+                        } else if (pkt.data.end) {
+                            const contents = Buffer.concat(buffers, totalSize).toString('utf8')
+                            resolve(contents)
+                        } else {
+                            buffers.push(pkt.data.data)
+                        }
+                    })
+
+                    stream.on('error', err => {
+                        console.error(`rpc.GetObject( ${repoRoot}, ${filename} ): ${err.toString()}`)
+                        reject(err)
+                    })
+                })
             }
         },
 

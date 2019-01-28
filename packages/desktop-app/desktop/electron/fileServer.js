@@ -1,3 +1,4 @@
+const memoize = require('lodash/memoize')
 const http = require('http')
 const url = require('url')
 const path = require('path')
@@ -10,14 +11,13 @@ const appPath = require('electron').app.getAppPath()
 
 const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
 rpc.initClient(protoPath)
-fs.writeFileSync('/tmp/zzz2', protoPath)
 
 const reposByHash = {}
 const crypto = require('crypto')
 
-function getHash(input) {
+const getHash = memoize((input) => {
     return crypto.createHash('sha1').update(JSON.stringify(input)).digest('hex')
-}
+})
 
 async function getRepoForHash(repoHash) {
     if (reposByHash[repoHash]) {
@@ -48,7 +48,6 @@ function start() {
         const repoHash = q.substring(repoIndex + 6, commitIndex)
         const commit = q.substring(commitIndex + 6, fileIndex)
         const filename = decodeURI(q.substring(fileIndex + 1))
-        fs.writeFileSync('/tmp/zzz', JSON.stringify({ repoIndex, commitIndex, fileIndex, repoHash, commit, filename }))
 
     	if (!repoHash || !commit || !filename) {
     		res.writeHead(400)

@@ -26,6 +26,8 @@ declare module 'conscience-lib/rpc' {
 
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
+        getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
+
         // @@TODO: convert to enum
         UserType: {
             ADMIN: 0,
