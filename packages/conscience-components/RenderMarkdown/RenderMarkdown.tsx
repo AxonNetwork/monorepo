@@ -61,23 +61,44 @@ class RenderMarkdown extends React.Component<Props>
         const { identifier, contents } = node
 
         switch (identifier) {
-            case 'image':
-                return (
-                    <img src={urljoin(directEmbedPrefix(this.props.uri), contents)} />
-                )
-            case 'file':
-                return (
-                    <FileLink uri={{ ...this.props.uri, filename: contents }} />
-                )
-            case 'discussion':
-                return (
-                    <DiscussionLink uri={this.props.uri} discussionID={contents} />
-                )
-            case 'comment':
-                return (
-                    <CommentLink uri={this.props.uri} commentID={contents} />
-                )
-            default:
+            case 'image': {
+                const parts = contents.split(':')
+                let uri = { ...this.props.uri }
+                let filename: string
+                if (parts.length === 0) {
+                    return null
+                } else if (parts.length === 1) {
+                    uri.commit = 'HEAD'
+                    filename = parts[0]
+                } else if (parts.length >= 2) {
+                    uri.commit = parts[0]
+                    filename = parts[1]
+                }
+
+                return <img src={urljoin(directEmbedPrefix(uri), filename!)} />
+            }
+
+            case 'file': {
+                const parts = contents.split(':')
+                let uri = { ...this.props.uri }
+                if (parts.length === 1) {
+                    uri.filename = parts[0]
+                } else if (parts.length >= 2) {
+                    uri.commit = parts[0]
+                    uri.filename = parts[1]
+                }
+                return <FileLink uri={uri} />
+            }
+
+            case 'discussion': {
+                return <DiscussionLink uri={this.props.uri} discussionID={contents} />
+            }
+
+            case 'comment': {
+                return <CommentLink uri={this.props.uri} commentID={contents} />
+            }
+
+            default: {
                 const rendered = renderShortcode(identifier, contents, this.props.uri)
                 if (rendered === null) {
                     return (
@@ -88,6 +109,7 @@ class RenderMarkdown extends React.Component<Props>
                 } else {
                     return rendered
                 }
+            }
         }
     }
 }

@@ -108,7 +108,8 @@ class SmartTextarea extends React.Component<Props, State>
 
     render() {
         const { files, classes } = this.props
-        const fileNames = Object.keys(files || {})
+        const fileNames = Object.keys(files || {}).sort()
+        const discussions = fromPairs(this.props.discussionIDs.map(discussionID => [discussionID, this.props.discussions[discussionID]]))
 
         return (
             <div>
@@ -131,41 +132,34 @@ class SmartTextarea extends React.Component<Props, State>
                     open={this.state.embedType !== null}
                     onClose={() => this.handleClose()}
                 >
-                    {this.state.embedType === '@file' && fileNames.map((file: string) => (
+                    {this.state.embedType === '@file' && fileNames.map(filename => (
                         <MenuItem
-                            onClick={() => this.handleClose('@file', file)}
-                            classes={{ root: classes.menuItem }}
-                        >
-                            {file}
-                        </MenuItem>
-                    ))}
-                    {this.state.embedType === '@image' && fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
-                        <MenuItem
-                            onClick={() => this.handleClose('@image', filename)}
+                            onClick={() => this.handleClose('@file', this.props.currentHEADCommit + ':' + filename)}
                             classes={{ root: classes.menuItem }}
                         >
                             {filename}
                         </MenuItem>
                     ))}
-                    {this.state.embedType === '@discussion' && Object.keys(this.props.discussions).map((discussionID: string) => (
+                    {this.state.embedType === '@image' && fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
+                        <MenuItem
+                            onClick={() => this.handleClose('@image', this.props.currentHEADCommit + ':' + filename)}
+                            classes={{ root: classes.menuItem }}
+                        >
+                            {filename}
+                        </MenuItem>
+                    ))}
+                    {this.state.embedType === '@discussion' && Object.keys(discussions).map(discussionID => (
                         <MenuItem
                             onClick={() => this.handleClose('@discussion', discussionID)}
                             classes={{ root: classes.menuItem }}
                         >
-                            {this.props.discussions[discussionID].subject}
+                            {discussions[discussionID].subject}
                         </MenuItem>
                     ))}
                 </Menu>
             </div>
         )
     }
-}
-
-interface State {
-    comment: string
-    anchorEl: any
-    position: number
-    embedType: string | null
 }
 
 type Props = OwnProps & StateProps & { classes: any }
@@ -181,7 +175,16 @@ interface OwnProps {
 
 interface StateProps {
     files: { [name: string]: IRepoFile } | undefined
+    discussionIDs: string[]
     discussions: { [discussionID: string]: IDiscussion }
+    currentHEADCommit: string | undefined
+}
+
+interface State {
+    comment: string
+    anchorEl: any
+    position: number
+    embedType: string | null
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -204,18 +207,22 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = getRepoID(ownProps.uri)
-    const discussionIDs = state.discussion.discussionsByRepo[repoID] || []
-    const discussions = fromPairs(discussionIDs.map(discussionID => [discussionID, state.discussion.discussions[discussionID]]))
     const uriStr = uriToString(ownProps.uri)
+
+    const commitList = state.repo.commitListsByURI[uriStr] || []
+    const currentHEADCommit = commitList.length > 0 ? commitList[0] : undefined
+
     return {
-        files: state.repo.filesByURI[uriStr] || {},
-        discussions,
+        files: state.repo.filesByURI[uriStr],
+        discussionIDs: state.discussion.discussionsByRepo[repoID],
+        discussions: state.discussion.discussions,
+        currentHEADCommit,
     }
 }
 
 const mapDispatchToProps = {}
 
-export default connect<StateProps, {}, OwnProps, IGlobalState>(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(SmartTextarea))
