@@ -63,6 +63,10 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 throw new Error('need repoID for URI')
             }
             return { type: URIType.Network, repoID: params.repoID } as URI
+        },
+
+        isDesktop() {
+            return false
         }
     })
 }

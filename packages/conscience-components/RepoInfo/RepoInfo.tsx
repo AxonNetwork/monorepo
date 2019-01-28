@@ -22,12 +22,7 @@ class RepoInfo extends React.Component<Props>
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
-                    <div>
-                        <H5 className={classes.headline}>{getRepoID(uri)}</H5>
-                        {<Typography className={classes.location}>
-                            {uri.type === URIType.Local ? "Local" : "Conscience Network"}
-                        </Typography>}
-                    </div>
+                    <H5 className={classes.headline}>{getRepoID(uri)}</H5>
                     <Typography className={classes.version}>{versionStr}</Typography>
                     {showButtons && uri.type === URIType.Local &&
                         <PushPullButtons
@@ -89,9 +84,6 @@ const styles = (theme: Theme) => createStyles({
         display: 'block',
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
-    },
-    location: {
-        fontStyle: 'italic'
     },
     version: {
         // display: 'inline-block',

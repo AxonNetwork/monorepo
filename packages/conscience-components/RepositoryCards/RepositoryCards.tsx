@@ -58,7 +58,6 @@ class RepositoryCards extends React.Component<Props, State>
                         <RepositoryCard
                             key={getRepoID(uri)}
                             uri={uri}
-                            redirectToLocal={this.props.redirectToLocal}
                         />
                     )}
 
@@ -147,7 +146,6 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 interface OwnProps {
     repoList: URI[] | undefined
     reposToAdd?: URI[]
-    redirectToLocal?: boolean
     addRepo?: (payload: { repoID: string }) => void
 }
 
