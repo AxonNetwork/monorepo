@@ -205,7 +205,6 @@ const ServerRelay = {
             isPublic: boolean
         }
         const response = await axios.get<IResponse>(`${API_URL}/repo/${repoID}/is-public`)
-        console.log("PUBLIC: ", response)
         return response.data.isPublic
     },
 

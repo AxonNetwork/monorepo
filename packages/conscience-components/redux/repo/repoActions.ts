@@ -338,7 +338,9 @@ export interface ICloneRepoProgressAction {
 
 export interface ICloneRepoSuccessAction {
     type: RepoActionType.CLONE_REPO_SUCCESS
-    payload: {}
+    payload: {
+        repoID: string
+    }
 }
 
 export type ICloneRepoFailedAction = FailedAction<RepoActionType.CLONE_REPO_FAILED>
@@ -476,11 +478,16 @@ export const setRepoPublic = (payload: ISetRepoPublicAction['payload']): ISetRep
 
 export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
+
 export const cloneRepo = (payload: ICloneRepoAction['payload']): ICloneRepoAction => ({ type: RepoActionType.CLONE_REPO, payload })
 export const cloneRepoProgress = (payload: ICloneRepoProgressAction['payload']): ICloneRepoProgressAction => ({ type: RepoActionType.CLONE_REPO_PROGRESS, payload })
+export const cloneRepoSuccess = (payload: ICloneRepoSuccessAction['payload']): ICloneRepoSuccessAction => ({ type: RepoActionType.CLONE_REPO_SUCCESS, payload })
+export const cloneRepoFailed = (payload: ICloneRepoFailedAction['payload']): ICloneRepoFailedAction => ({ type: RepoActionType.CLONE_REPO_FAILED, payload })
+
 export const pullRepo = (payload: IPullRepoAction['payload']): IPullRepoAction => ({ type: RepoActionType.PULL_REPO, payload })
 export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): IPullRepoProgressAction => ({ type: RepoActionType.PULL_REPO_PROGRESS, payload })
 export const pullRepoSuccess = (payload: IPullRepoSuccessAction['payload']): IPullRepoSuccessAction => ({ type: RepoActionType.PULL_REPO_SUCCESS, payload })
+export const pullRepoFailed = (payload: IPullRepoFailedAction['payload']): IPullRepoFailedAction => ({ type: RepoActionType.PULL_REPO_FAILED, payload })
 
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, payload })

@@ -8,12 +8,14 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import IconButton from '@material-ui/core/IconButton'
+import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import { H6 } from 'conscience-components/Typography/Headers'
 
 import { pickBy } from 'lodash'
 import { getRepoID } from '../env-specific'
 import { cloneRepo } from '../redux/repo/repoActions'
+import { clearCloneRepoError } from '../redux/ui/uiActions'
 import { IGlobalState } from '../redux'
 import { ISharedRepoInfo, NetworkURI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -24,6 +26,8 @@ class SharedReposList extends React.Component<Props>
 {
     render() {
         const { sharedRepos, classes, cloneRepoProgressByID } = this.props
+        const errorList = Object.keys(this.props.cloneRepoErrorByID)
+            .filter(id => this.props.cloneRepoErrorByID[id] !== undefined)
         return (
             <React.Fragment>
                 <H6>Clone a repository shared with you</H6>
@@ -52,8 +56,20 @@ class SharedReposList extends React.Component<Props>
                         )
                     })}
                 </List>
+                {errorList.map((id, i) => (
+                    <ErrorSnackbar
+                        open={errorList.length > 0}
+                        onClose={() => this.closeError(id)}
+                        message={`Oops! Something went wrong downloading '${id}'.`}
+                        style={{ marginBottom: 80 * i }}
+                    />
+                ))}
             </React.Fragment>
         )
+    }
+
+    closeError(repoID: string) {
+        this.props.clearCloneRepoError({ repoID })
     }
 
     cloneRepo(repoID: string) {
@@ -70,7 +86,9 @@ interface Props {
             toFetch: number
         } | undefined
     }
+    cloneRepoErrorByID: { [repoID: string]: Error | undefined }
     cloneRepo: typeof cloneRepo
+    clearCloneRepoError: typeof clearCloneRepoError
 
     classes?: any
 }
@@ -94,7 +112,6 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     const sharedRepos = state.user.sharedRepos || {}
-    // const username = (state.user.users[state.user.currentUser || ''] || {}).username || ''
     const localRepos = state.repo.localRepoList.map(uri => getRepoID(uri))
     const filteredSharedRepos = pickBy(
         sharedRepos,
@@ -105,11 +122,13 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         sharedRepos: filteredSharedRepos,
         cloneRepoProgressByID,
+        cloneRepoErrorByID: state.ui.cloneRepoErrorByID,
     }
 }
 
 const mapDispatchToProps = {
     cloneRepo,
+    clearCloneRepoError,
 }
 
 export default connect(

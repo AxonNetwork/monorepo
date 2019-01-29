@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import RepoInfo from 'conscience-components/RepoInfo'
 import RepoFilesPage from './components/RepoFilesPage'
@@ -12,11 +13,12 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
+import { clearPullRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
 import { getURIFromParams } from 'conscience-components/env-specific'
 import { URI, RepoPage } from 'conscience-lib/common'
-import { autobind, stringToRepoPage } from 'conscience-lib/utils'
+import { autobind, stringToRepoPage, uriToString } from 'conscience-lib/utils'
 import { isEqual } from 'lodash'
 
 
@@ -75,8 +77,19 @@ class RepoPageContainer extends React.Component<Props>
                         </Switch>
                     </div>
                 </div>
+                <ErrorSnackbar
+                    open={!!this.props.pullRepoError}
+                    onClose={this.closeError}
+                    message={'Oops! Something went wrong downloading the latest changes.'}
+                />
             </main>
         )
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchFullRepo({ uri: this.props.uri })
+        }
     }
 
     componentDidMount() {
@@ -104,9 +117,9 @@ class RepoPageContainer extends React.Component<Props>
         }
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
-            this.props.fetchFullRepo({ uri: this.props.uri })
+    closeError() {
+        if (this.props.uri) {
+            this.props.clearPullRepoError({ uri: this.props.uri })
         }
     }
 }
@@ -119,7 +132,9 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     menuLabelsHidden: boolean
+    pullRepoError: Error | undefined
     fetchFullRepo: typeof fetchFullRepo
+    clearPullRepoError: typeof clearPullRepoError
     classes: any
 }
 
@@ -134,22 +149,24 @@ const styles = (theme: Theme) => createStyles({
         overflowY: 'auto',
     },
     repoPageInner: {
-        // marginTop: 32,
         marginRight: 60,
         marginBottom: 96,
-    }
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const uri = getURIFromParams(ownProps.match.params, state)
+    const uriStr = uriToString(uri)
     return {
         uri,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
+        pullRepoError: state.ui.pullRepoErrorByURI[uriStr],
     }
 }
 
 const mapDispatchToProps = {
-    fetchFullRepo
+    fetchFullRepo,
+    clearPullRepoError,
 }
 
 export default connect(
