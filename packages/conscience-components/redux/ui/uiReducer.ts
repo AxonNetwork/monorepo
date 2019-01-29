@@ -8,6 +8,7 @@ const initialState = {
     loginLoading: false,
     createRepoLoading: false,
     checkpointLoading: false,
+    checkpointError: undefined,
     pullLoading: false,
     updateOrgLoading: false,
     pullRepoProgressByURI: {},
@@ -21,6 +22,7 @@ export interface IUIState {
     loginLoading: boolean
     createRepoLoading: boolean
     checkpointLoading: boolean
+    checkpointError: Error | undefined
     pullLoading: boolean
     updateOrgLoading: boolean
     pullRepoProgressByURI: {
@@ -82,10 +84,22 @@ const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserActi
             }
 
         case RepoActionType.CHECKPOINT_REPO_SUCCESS:
-        case RepoActionType.CHECKPOINT_REPO_FAILED:
             return {
                 ...state,
                 checkpointLoading: false
+            }
+
+        case RepoActionType.CHECKPOINT_REPO_FAILED:
+            return {
+                ...state,
+                checkpointLoading: false,
+                checkpointError: action.payload.error
+            }
+
+        case UIActionType.CLEAR_CHECKPOINT_REPO_ERROR:
+            return {
+                ...state,
+                checkpointError: undefined
             }
 
         case RepoActionType.PULL_REPO_PROGRESS: {

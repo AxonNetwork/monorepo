@@ -2,8 +2,8 @@ import { URI } from 'conscience-lib/common'
 
 export enum UIActionType {
     CLEAR_PULL_REPO_ERROR = 'CLEAR_PULL_REPO_ERROR',
-
     CLEAR_CLONE_REPO_ERROR = 'CLEAR_CLONE_REPO_ERROR',
+    CLEAR_CHECKPOINT_REPO_ERROR = 'CLEAR_CHECKPOINT_REPO_ERROR',
 }
 
 export interface IClearPullRepoErrorAction {
@@ -20,10 +20,16 @@ export interface IClearCloneRepoErrorAction {
     }
 }
 
+export interface IClearCheckpointRepoErrorAction {
+    type: UIActionType.CLEAR_CHECKPOINT_REPO_ERROR
+    payload: {}
+}
+
 export type IUIAction =
     IClearPullRepoErrorAction |
-
-    IClearCloneRepoErrorAction
+    IClearCloneRepoErrorAction |
+    IClearCheckpointRepoErrorAction
 
 export const clearPullRepoError = (payload: IClearPullRepoErrorAction['payload']): IClearPullRepoErrorAction => ({ type: UIActionType.CLEAR_PULL_REPO_ERROR, payload })
 export const clearCloneRepoError = (payload: IClearCloneRepoErrorAction['payload']): IClearCloneRepoErrorAction => ({ type: UIActionType.CLEAR_CLONE_REPO_ERROR, payload })
+export const clearCheckpointRepoError = (payload: IClearCheckpointRepoErrorAction['payload']): IClearCheckpointRepoErrorAction => ({ type: UIActionType.CLEAR_CHECKPOINT_REPO_ERROR, payload })
