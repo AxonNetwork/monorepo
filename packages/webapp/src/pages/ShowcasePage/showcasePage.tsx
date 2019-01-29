@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
@@ -40,6 +41,7 @@ class ShowcasePage extends React.Component<Props, State>
         dialogBannerOpen: false,
         showAllMembers: false,
         dialogImgOpen: false,
+        blogId: null,        
     }
 
     render() {
@@ -59,7 +61,7 @@ class ShowcasePage extends React.Component<Props, State>
         if (!this.state.showAllMembers) {
             membersToShow = org.members.slice(0, 6)
         }
-
+        console.log(this.state.blogId)
         return (
             <div>
                 <Parallax
@@ -101,8 +103,7 @@ class ShowcasePage extends React.Component<Props, State>
                             />
                         </div>
                         <div className={classes.statsContainer}>
-                            <div className={classes.stats}>
-                                <LocationCityIcon />
+                            <div className={classnames(classes.stats, classes.orgName)}>
                                 <strong>{this.props.org ? this.props.org.name : 'No Organization Name'}</strong>
                             </div>
                             <div className={classes.stats}>
@@ -121,52 +122,56 @@ class ShowcasePage extends React.Component<Props, State>
                         <Grid item className={classes.timelineContainer}>
                             <div className={classes.sectionHeader}>Live Updates</div>
                             <Divider className={classes.divider} />
-                            {/*<div style={{ padding: '10px 0' }}><em>From researchers doing their work in the open</em></div>
-                                                        <Divider className={classes.divider}/>*/}
                             <ShowcaseTimeline orgID={this.props.org.orgID} />
                         </Grid>
                     </Grid>
                     <Grid item xs={false} sm={8} className={classes.gridItem}>
-                        <Grid item>
-                            <FeaturedRepos
-                                featuredRepos={org.featuredRepos}
-                                orgRepoList={org.repos}
-                                canEdit
-                                onSave={this.saveFeaturedRepos}
-                            />
-                            <div>
-                                <div className={classes.sectionHeader}>News and Updates</div>
-                                <Divider className={classes.divider} />
-                                <OrgBlog orgID={this.props.match.params.orgID} />
-                            </div>
-                            <div className={classes.sectionHeader} style={{ marginTop: 40 }}>Meet Our Researchers</div>
-                            <Divider className={classes.divider} />
-                            <div className={classes.team}>
-                                {membersToShow.map(id => {
-                                    const user = users[id] || {}
-                                    return (
-                                        <div className={classes.teamAvatarWrapper}>
-                                            <UserAvatar
-                                                user={user}
-                                                classes={{ root: classes.teamAvatar }}
-                                            />
-                                            <div>{user.name}</div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                            {memberCount > 6 && !!this.state.showAllMembers &&
-                                <div className={classes.teamSeeMore}>
-                                    <Button
-                                        color="secondary"
-                                        onClick={this.showAllMembers}
-                                    >
-                                        See All Researchers
-                                        <ArrowForwardIcon />
-                                    </Button>
+                        {this.state.blogId ? 
+                            <div>yes</div>
+                        :
+                            <Grid item>
+                                <FeaturedRepos
+                                    featuredRepos={org.featuredRepos}
+                                    orgRepoList={org.repos}
+                                    canEdit
+                                    onSave={this.saveFeaturedRepos}
+                                />
+                                <div>
+                                    <div className={classes.sectionHeader}>News and Updates</div>
+                                    <Divider className={classes.divider} />
+                                    <OrgBlog orgID={this.props.match.params.orgID} />
                                 </div>
-                            }
-                        </Grid>
+
+                                <div className={classes.sectionHeader} style={{ marginTop: 40 }}>Meet Our Researchers</div>
+                                <Divider className={classes.divider} />
+                                <div className={classes.team}>
+                                    {membersToShow.map((id:number) => {
+                                        const user = users[id] || {}
+                                        return (
+                                            <div className={classes.teamAvatarWrapper}>
+                                                <UserAvatar
+                                                    user={user}
+                                                    classes={{ root: classes.teamAvatar }}
+                                                />
+                                                <div>{user.name}</div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                
+                                {memberCount > 6 && !!this.state.showAllMembers &&
+                                    <div className={classes.teamSeeMore}>
+                                        <Button
+                                            color="secondary"
+                                            onClick={this.showAllMembers}
+                                        >
+                                            See All Researchers
+                                            <ArrowForwardIcon />
+                                        </Button>
+                                    </div>
+                                }
+                            </Grid>
+                        }
                     </Grid>
 
                 </Grid>
@@ -239,6 +244,7 @@ interface State {
     dialogBannerOpen: boolean
     showAllMembers: boolean
     dialogImgOpen: boolean
+    blogId: number
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -322,6 +328,11 @@ const styles = (theme: Theme) => createStyles({
         '& svg': {
             marginRight: 8,
         },
+    },
+    orgName:{
+        fontSize: '2em',
+        paddingBottom: 10,
+        lineSpacing: '1em'
     },
     timelineContainer: {
         height: '100%',

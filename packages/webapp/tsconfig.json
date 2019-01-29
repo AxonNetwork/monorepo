@@ -15,7 +15,7 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true, // FIXME: workaround for immutable.js
     "keyofStringsOnly": true, // FIXME: workaround for immutable.js
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
