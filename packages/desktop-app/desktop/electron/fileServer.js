@@ -5,6 +5,7 @@ const path = require('path')
 const fs = require('fs')
 const mime = require('mime-types')
 const rpc = require('conscience-lib/rpc')
+const through2 = require('through2')
 
 const appPath = require('electron').app.getAppPath()
 
@@ -57,7 +58,7 @@ function start() {
         const client = rpc.getClient()
 
         let stream
-        if (commit === 'HEAD') {
+        if (commit === 'HEAD' || commit === 'working') {
             stream = client.getObject({ repoRoot, commitRef: commit, filename, maxSize: 999999999999999 })
         } else {
             if (commit.length != 40) {
@@ -76,7 +77,16 @@ function start() {
         const contentType = mime.lookup(filename)
         res.setHeader('Content-Type', contentType)
 
-        stream.pipe(res)
+        stream.pipe(through2({ objectMode: true }, (chunk, enc, cb) => {
+            const pkt = chunk.data
+            if (!pkt) {
+                return cb()
+            }
+            if (pkt.end) {
+                return cb()
+            }
+            return cb(null, pkt.data)
+        })).pipe(res)
     }).listen(3333)
 }
 
