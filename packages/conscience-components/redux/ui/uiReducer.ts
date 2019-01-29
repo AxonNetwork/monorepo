@@ -1,6 +1,7 @@
 import { UserActionType, IUserAction } from '../user/userActions'
 import { RepoActionType, IRepoAction } from '../repo/repoActions'
 import { OrgActionType, IOrgAction } from '../org/orgActions'
+import { UIActionType, IUIAction } from './uiActions'
 import { uriToString } from 'conscience-lib/utils'
 
 const initialState = {
@@ -10,7 +11,9 @@ const initialState = {
     pullLoading: false,
     updateOrgLoading: false,
     pullRepoProgressByURI: {},
+    pullRepoErrorByURI: {},
     cloneRepoProgressByID: {},
+    cloneRepoErrorByID: {},
     updatingUserPermissions: undefined,
 }
 
@@ -26,16 +29,22 @@ export interface IUIState {
             toFetch: number
         } | undefined
     }
+    pullRepoErrorByURI: {
+        [uri: string]: Error | undefined
+    }
     cloneRepoProgressByID: {
         [repoID: string]: {
             fetched: number
             toFetch: number
         } | undefined
     }
+    cloneRepoErrorByID: {
+        [repoID: string]: Error | undefined
+    }
     updatingUserPermissions: string | undefined
 }
 
-const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAction | IOrgAction): IUIState => {
+const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserAction | IRepoAction | IOrgAction): IUIState => {
     switch (action.type) {
         case UserActionType.SIGNUP:
         case UserActionType.LOGIN:
@@ -93,6 +102,22 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
             }
         }
 
+        case RepoActionType.PULL_REPO_FAILED: {
+            const { error, original } = action.payload
+            const uriStr = uriToString(original.payload.uri)
+            return {
+                ...state,
+                pullRepoProgressByURI: {
+                    ...state.pullRepoProgressByURI,
+                    [uriStr]: undefined
+                },
+                pullRepoErrorByURI: {
+                    ...state.pullRepoErrorByURI,
+                    [uriStr]: error
+                }
+            }
+        }
+
         case RepoActionType.PULL_REPO_SUCCESS: {
             const { uri } = action.payload
             return {
@@ -100,6 +125,17 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                 pullRepoProgressByURI: {
                     ...state.pullRepoProgressByURI,
                     [uriToString(uri)]: undefined
+                }
+            }
+        }
+
+        case UIActionType.CLEAR_PULL_REPO_ERROR: {
+            const uriStr = uriToString(action.payload.uri)
+            return {
+                ...state,
+                pullRepoErrorByURI: {
+                    ...state.pullRepoErrorByURI,
+                    [uriStr]: undefined
                 }
             }
         }
@@ -114,6 +150,44 @@ const uiReducer = (state: IUIState = initialState, action: IUserAction | IRepoAc
                         fetched: fetched,
                         toFetch: toFetch,
                     }
+                }
+            }
+        }
+
+        case RepoActionType.CLONE_REPO_FAILED: {
+            const { error, original } = action.payload
+            const repoID = original.payload.uri.repoID
+            return {
+                ...state,
+                cloneRepoProgressByID: {
+                    ...state.cloneRepoProgressByID,
+                    [repoID]: undefined
+                },
+                cloneRepoErrorByID: {
+                    ...state.cloneRepoErrorByID,
+                    [repoID]: error
+                }
+            }
+        }
+
+        case RepoActionType.CLONE_REPO_SUCCESS: {
+            const { repoID } = action.payload
+            return {
+                ...state,
+                cloneRepoProgressByID: {
+                    ...state.cloneRepoProgressByID,
+                    [repoID]: undefined
+                }
+            }
+        }
+
+        case UIActionType.CLEAR_CLONE_REPO_ERROR: {
+            const { repoID } = action.payload
+            return {
+                ...state,
+                cloneRepoErrorByID: {
+                    ...state.cloneRepoErrorByID,
+                    [repoID]: undefined
                 }
             }
         }
