@@ -4,8 +4,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import MarkdownEditor from 'conscience-components/MarkdownEditor'
 import { IGlobalState } from 'conscience-components/redux'
+import FileEditor from 'conscience-components/FileEditor'
+import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import { LocalURI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -17,24 +18,15 @@ class RepoEditorPage extends React.Component<Props>
         const { classes } = this.props
         return (
             <div className={classes.page}>
-                <MarkdownEditor
+                <Breadcrumbs uri={this.props.uri} />
+
+                <FileEditor
                     uri={this.props.uri}
-                    saveFileContents={this.saveFileContents}
+                    showButtons
+                    showEditorPicker
                 />
             </div>
         )
-    }
-
-    async saveFileContents(contents: string) {
-        return new Promise<string>((resolve, reject) => {
-            const { repoRoot = '', filename = '' } = this.props.uri
-            fs.writeFile(path.join(repoRoot, filename), contents, 'utf8', (err?: Error) => {
-                if (err) {
-                    reject(err)
-                }
-                resolve({})
-            })
-        })
     }
 }
 

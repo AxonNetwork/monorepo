@@ -9,12 +9,8 @@ import { URI } from 'conscience-lib/common'
 
 
 @autobind
-class MarkdownViewerPlugin extends React.Component<Props, State>
+class MarkdownViewerPlugin extends React.Component<Props>
 {
-    state = {
-        textViewerMode: 'viewer' as IViewerMode,
-    }
-
     render() {
         const { fileContents, classes } = this.props
 
@@ -30,10 +26,6 @@ class MarkdownViewerPlugin extends React.Component<Props, State>
             </Card>
         )
     }
-
-    onChangeTextViewerMode(mode: IViewerMode) {
-        this.setState({ textViewerMode: mode })
-    }
 }
 
 type Props = OwnProps & { classes: any }
@@ -43,16 +35,9 @@ interface OwnProps {
     fileContents?: string
 }
 
-type IViewerMode = 'raw' | 'viewer'
-
-interface State {
-    textViewerMode: IViewerMode
-}
-
 const styles = () => createStyles({
     mdRoot: {
         padding: 48,
-        // minWidth: 680,
     },
     textViewerMode: {
         textAlign: 'right',

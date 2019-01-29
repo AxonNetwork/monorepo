@@ -40,7 +40,7 @@ export default {
 
         { extensions: ['doc', 'docx'],             type: 'text', iconComponent: SubjectIcon, isTextFile: true, viewers: [], editors: [] },
         { extensions: ['txt'],                     type: 'text', iconComponent: SubjectIcon, isTextFile: true, viewers: ['code-viewer'], editors: ['text'] },
-        { extensions: ['md', 'mdown', 'markdown'], type: 'text', iconComponent: SubjectIcon, isTextFile: true, viewers: ['markdown-viewer', 'code-viewer'], editors: ['markdown'] },
+        { extensions: ['md', 'mdown', 'markdown'], type: 'text', iconComponent: SubjectIcon, isTextFile: true, viewers: ['markdown-viewer', 'code-viewer'], editors: ['markdown-editor'] },
 
         { extensions: ['png'],                type: 'image', iconComponent: ImageIconColored, isTextFile: false, viewers: ['img-viewer'], editors: [] },
         { extensions: ['jpg', 'jpeg', 'jpe'], type: 'image', iconComponent: ImageIconColored, isTextFile: false, viewers: ['img-viewer'], editors: [] },

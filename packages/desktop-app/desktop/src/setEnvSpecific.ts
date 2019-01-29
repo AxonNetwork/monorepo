@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import * as envSpecific from 'conscience-components/env-specific'
 import { IRepo, URI, URIType } from 'conscience-lib/common'
 import { Store } from 'redux'
@@ -60,11 +62,29 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                     })
 
                     stream.on('error', err => {
-                        console.error(`rpc.GetObject( ${repoRoot}, ${filename} ): ${err.toString()}`)
+                        console.error(`rpc.GetObject( ${repoRoot}, ${commit}, ${filename} ): ${err.toString()}`)
                         reject(err)
                     })
                 })
             }
+        },
+
+        async saveFileContents(uri: URI, fileContents: string) {
+            if (uri.type === URIType.Network) {
+                throw new Error(`cannot saveFileContents on a URIType.Network: ${uri.type} : ${uri.repoID} : ${uri.commit} : ${uri.filename}`)
+            } else if (!uri.filename) {
+                throw new Error(`cannot saveFileContents for a URI with no filename: ${uri.type} : ${uri.repoRoot} : ${uri.commit} : ${uri.filename}`)
+            }
+
+            return new Promise<void>((resolve, reject) => {
+                // const { repoRoot = '', filename = '' } = uri
+                fs.writeFile(path.join(uri.repoRoot, uri.filename!), fileContents, 'utf8', (err?: Error) => {
+                    if (err) {
+                        reject(err)
+                    }
+                    resolve()
+                })
+            })
         },
 
         directEmbedPrefix(uri: URI) {

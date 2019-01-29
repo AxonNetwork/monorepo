@@ -2,6 +2,10 @@ import { URI } from 'conscience-lib/common'
 
 export type PluginType = 'file type' | 'file viewer' | 'file editor' | 'markdown shortcode'
 
+/**
+ * file type
+ */
+
 export interface IFileType {
     extensions: string[]
     type: string
@@ -16,6 +20,10 @@ export interface IFileTypePlugin {
     pluginType: 'file type'
     fileTypes: IFileType[]
 }
+
+/**
+ * viewer
+ */
 
 export interface IFileViewerPlugin {
     pluginType: 'file viewer'
@@ -32,6 +40,10 @@ export interface IFileViewerPluginProps {
     classes: any
 }
 
+/**
+ * editor
+ */
+
 export interface IFileEditorPlugin {
     pluginType: 'file editor'
     name: string
@@ -39,12 +51,16 @@ export interface IFileEditorPlugin {
     editor: FileEditorComponent
 }
 
-export type FileEditorComponent = React.ComponentClass<{
-    repoID: string
-    directEmbedPrefix: string
-    filename: string
-    fileContents?: string
-}>
+export type FileEditorComponent = React.ComponentClass<IFileEditorPluginProps>
+
+export interface IFileEditorPluginProps {
+    uri: URI
+    classes?: any
+}
+
+/**
+ * markdown shortcode
+ */
 
 export interface IMarkdownShortcodePlugin {
     pluginType: 'markdown shortcode',
@@ -69,6 +85,7 @@ const pluginRegistry = (function() {
         require('./defaults/viewer.data.tsx').default,
         require('./defaults/viewer.embed.tsx').default,
         require('./defaults/viewer.markdown.tsx').default,
+        require('./defaults/editor.markdown.tsx').default,
         require('./defaults/shortcode.mathjax.tsx').default,
     ] as IPlugin[]
 
