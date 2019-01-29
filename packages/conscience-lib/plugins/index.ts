@@ -83,6 +83,7 @@ const pluginRegistry = (function() {
         require('./defaults/viewer.img.tsx').default,
         require('./defaults/viewer.code.tsx').default,
         require('./defaults/viewer.data.tsx').default,
+        require('./defaults/viewer.data-spreadsheet.tsx').default,
         require('./defaults/viewer.embed.tsx').default,
         require('./defaults/viewer.markdown.tsx').default,
         require('./defaults/editor.markdown.tsx').default,

@@ -37,6 +37,7 @@ import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
+import retry from 'conscience-lib/utils/retry'
 import parseDiff from 'conscience-lib/utils/parseDiff'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
@@ -70,29 +71,13 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
 
 const selectRepoOnce = once((uri: URI) => selectRepo(uri, RepoPage.Home))
 
+
 const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoListSuccessAction>({
     type: RepoActionType.GET_LOCAL_REPO_LIST,
     async process(_, dispatch) {
-        const repoList = await new Promise<ILocalRepo[]>(async (resolve, reject) => {
-            let repeat = 10
-            const attempt = async function() {
-                try {
-                    const result = await rpc.getClient().getLocalReposAsync()
-                    resolve(result)
-                } catch (err) {
-                    repeat -= 1
-                    if (repeat > 0) {
-                        setTimeout(attempt, 200)
-                    } else {
-                        reject(err)
-                    }
-                }
-            }
-            attempt()
-        })
+        const repoList = await retry({ retries: 10, timeout: 200 }, () => rpc.getClient().getLocalReposAsync())
 
         let localRepos = {} as { [path: string]: string }
-
         for (let repo of repoList) {
             localRepos[repo.path] = repo.repoID
         }

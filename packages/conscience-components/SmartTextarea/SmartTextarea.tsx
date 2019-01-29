@@ -109,7 +109,7 @@ class SmartTextarea extends React.Component<Props, State>
     render() {
         const { files, classes } = this.props
         const fileNames = Object.keys(files || {}).sort()
-        const discussions = fromPairs(this.props.discussionIDs.map(discussionID => [discussionID, this.props.discussions[discussionID]]))
+        const discussions = fromPairs((this.props.discussionIDs || []).map(discussionID => [discussionID, this.props.discussions[discussionID]]))
 
         return (
             <div>

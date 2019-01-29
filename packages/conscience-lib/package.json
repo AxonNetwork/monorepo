@@ -20,6 +20,8 @@
     "react-mathjax": "^1.0.1",
     "react-syntax-highlighter": "^8.0.1",
     "typescript": "^3.2.1",
-    "url-join": "^4.0.0"
+    "url-join": "^4.0.0",
+    "x-data-spreadsheet": "^1.0.1",
+    "xlsx": "^0.14.1"
   }
 }

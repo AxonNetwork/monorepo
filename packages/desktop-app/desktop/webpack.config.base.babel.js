@@ -103,6 +103,14 @@ export default {
                     { loader: 'sass-loader', options: { sourceMap: true } },
                 ],
             },
+            // Use a list of loaders to load less files
+            {
+                test: /\.less$/,
+                use:  [ { loader: 'style-loader', // creates style nodes from JS strings
+                }, { loader: 'css-loader', // translates CSS into CommonJS
+                }, { loader: 'less-loader', // compiles Less to CSS
+                } ],
+            },
             // Use image-webpack-loader and url-loader to load images
             {
                 test: /\.(png|jpe?g|gif|svg|webp|tiff)(\?.*)?$/,
