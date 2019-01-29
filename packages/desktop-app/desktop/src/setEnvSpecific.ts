@@ -21,8 +21,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 const repoID = uri.repoID
                 const API_URL = process.env.API_URL
                 let fileURL = ''
-                if (commit === undefined || commit === 'working') {
-                    fileURL = `${API_URL}/repo/${repoID}/file/HEAD/${filename}`
+                if (commit === undefined) {
+                    fileURL = `${API_URL}/repo/${repoID}/file/working/${filename}`
                 } else {
                     fileURL = `${API_URL}/repo/${repoID}/file/${commit}/${filename}`
                 }
@@ -95,8 +95,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             if (uri.type === URIType.Network) {
                 const API_URL = process.env.API_URL
                 const { repoID, commit } = uri
-                if (commit === undefined || commit === 'working') {
-                    return `${API_URL}/repo/${repoID}/file/HEAD`
+                if (commit === undefined) {
+                    return `${API_URL}/repo/${repoID}/file/working`
                 } else {
                     return `${API_URL}/repo/${repoID}/file/${commit}`
                 }

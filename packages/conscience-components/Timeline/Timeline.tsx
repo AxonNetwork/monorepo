@@ -4,6 +4,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import TablePagination from '@material-ui/core/TablePagination'
 import LargeProgressSpinner from '../LargeProgressSpinner'
 import TimelineEvent from '../TimelineEvent'
+import TimelineEventLoader from '../ContentLoaders/TimelineEventLoader'
 import { IGlobalState } from 'conscience-components/redux'
 import { URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
@@ -33,7 +34,13 @@ class Timeline extends React.Component<Props, State>
         const { page, rowsPerPage } = this.state
 
         if (!this.props.commitList) {
-            return <LargeProgressSpinner />
+            return (
+                <div>
+                    {Array(rowsPerPage).fill(0).map(i => (
+                        <TimelineEventLoader />
+                    ))}
+                </div>
+            )
         }
 
         const commitList = this.props.commitList || []

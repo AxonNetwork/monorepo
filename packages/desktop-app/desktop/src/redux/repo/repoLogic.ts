@@ -19,8 +19,9 @@ import {
     ICloneRepoAction,
     IPullRepoAction,
     IWatchRepoAction,
-    cloneRepoProgress, pullRepoProgress, pullRepoSuccess, fetchFullRepo,
-    fetchRepoFiles, behindRemote,
+    cloneRepoProgress, cloneRepoSuccess, cloneRepoFailed,
+    pullRepoProgress, pullRepoSuccess, pullRepoFailed,
+    fetchFullRepo, fetchRepoFiles, behindRemote,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -37,8 +38,7 @@ import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
 import spawnCmd from 'utils/spawnCmd'
-import retry from 'conscience-lib/utils/retry'
-import parseDiff from 'conscience-lib/utils/parseDiff'
+import { parseDiff, uriToString, retry } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 
@@ -347,13 +347,14 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         stream.on('end', async () => {
             if (success) {
                 const uri = { type: URIType.Local, repoRoot: path } as URI
+                await dispatch(cloneRepoSuccess({ repoID }))
                 await dispatch(fetchFullRepo({ uri }))
                 selectRepo(uri, RepoPage.Home)
             }
             done()
         })
-        stream.on('error', (err: any) => {
-            throw err
+        stream.on('error', async (err: any) => {
+            await dispatch(cloneRepoFailed({ error: err, original: action }))
         })
     },
 })
@@ -375,23 +376,26 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
                 await dispatch(pullRepoSuccess({ uri }))
                 done()
             })
-            stream.on('error', (err: any) => {
-                throw err
+            stream.on('error', async (err: any) => {
+                await dispatch(pullRepoFailed({ error: err, original: action }))
+                done()
             })
         } else {
-            throw new Error("Cannot pull network repo")
+            const err = new Error("Cannot pull network repo")
+            await dispatch(pullRepoFailed({ error: err, original: action }))
         }
     },
 })
 
 const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
     type: RepoActionType.WATCH_REPO,
-    async process({ action }, dispatch, done) {
+    async process({ action, getState }, dispatch, done) {
         const { uri } = action.payload
         if (uri.type === URIType.Network) {
             done()
         } else {
             const path = uri.repoRoot
+            const uriStr = uriToString(uri)
             const repoID = getRepoID(uri)
             const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists
             if (watcher) {
@@ -399,7 +403,9 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
                     dispatch(fetchRepoFiles({ uri }))
                 })
                 watcher.on('behind_remote', () => {
-                    dispatch(behindRemote({ uri }))
+                    if (!getState().repo.isBehindRemoteByURI[uriStr]) {
+                        dispatch(behindRemote({ uri }))
+                    }
                 })
                 watcher.on('end', () => {
                     done()

@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import RepoInfo from 'conscience-components/RepoInfo'
 import RepoFilesPage from './components/RepoFilesPage'
@@ -12,11 +13,12 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
+import { clearPullRepoError, clearCheckpointRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
 import { getURIFromParams } from 'conscience-components/env-specific'
 import { URI, RepoPage } from 'conscience-lib/common'
-import { autobind, stringToRepoPage } from 'conscience-lib/utils'
+import { autobind, stringToRepoPage, uriToString } from 'conscience-lib/utils'
 import { isEqual } from 'lodash'
 
 
@@ -36,6 +38,7 @@ class RepoPageContainer extends React.Component<Props>
             return <LargeProgressSpinner />
         }
         const repoPage = stringToRepoPage(this.props.location.pathname)
+
 
         return (
             <main className={classes.main}>
@@ -75,8 +78,24 @@ class RepoPageContainer extends React.Component<Props>
                         </Switch>
                     </div>
                 </div>
+                <ErrorSnackbar
+                    open={!!this.props.pullError}
+                    onClose={this.closePullError}
+                    message={'Oops! Something went wrong downloading the latest changes.'}
+                />
+                <ErrorSnackbar
+                    open={!!this.props.checkpointError}
+                    onClose={this.closeCheckpointError}
+                    message={'Oops! Something went wrong sharing your latest changes.'}
+                />
             </main>
         )
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchFullRepo({ uri: this.props.uri })
+        }
     }
 
     componentDidMount() {
@@ -104,9 +123,15 @@ class RepoPageContainer extends React.Component<Props>
         }
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
-            this.props.fetchFullRepo({ uri: this.props.uri })
+    closePullError() {
+        if (this.props.uri) {
+            this.props.clearPullRepoError({ uri: this.props.uri })
+        }
+    }
+
+    closeCheckpointError() {
+        if (this.props.uri) {
+            this.props.clearCheckpointRepoError({})
         }
     }
 }
@@ -119,7 +144,11 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     menuLabelsHidden: boolean
+    pullError: Error | undefined
+    checkpointError: Error | undefined
     fetchFullRepo: typeof fetchFullRepo
+    clearPullRepoError: typeof clearPullRepoError
+    clearCheckpointRepoError: typeof clearCheckpointRepoError
     classes: any
 }
 
@@ -134,22 +163,26 @@ const styles = (theme: Theme) => createStyles({
         overflowY: 'auto',
     },
     repoPageInner: {
-        // marginTop: 32,
         marginRight: 60,
         marginBottom: 96,
-    }
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const uri = getURIFromParams(ownProps.match.params, state)
+    const uriStr = uriToString(uri)
     return {
         uri,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
+        pullError: state.ui.pullRepoErrorByURI[uriStr],
+        checkpointError: state.ui.checkpointError,
     }
 }
 
 const mapDispatchToProps = {
-    fetchFullRepo
+    fetchFullRepo,
+    clearPullRepoError,
+    clearCheckpointRepoError
 }
 
 export default connect(

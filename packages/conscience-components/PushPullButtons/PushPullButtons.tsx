@@ -38,16 +38,17 @@ class PushPullButtons extends React.Component<Props, State>
         const { files, pullProgress, checkpointLoading, classes } = this.props
 
         let pullLoading = pullProgress !== undefined
-        let percentPulled
-        if (pullLoading) {
-            percentPulled = Math.floor(100 * ((pullProgress || {} as any).fetched || 0) / ((pullProgress || {} as any).toFetch || 1))
-            // min 10 so the progress spinner shows something pulled
-            percentPulled = Math.max(percentPulled, 10)
-            if (percentPulled === 100) {
-                // pull complete
-                pullLoading = false
-            }
-        }
+        // @@TODO determinate spinner looks really clunky
+        // let percentPulled
+        // if (pullLoading) {
+        //     percentPulled = Math.floor(100 * ((pullProgress || {} as any).fetched || 0) / ((pullProgress || {} as any).toFetch || 1))
+        //     // min 10 so the progress spinner shows something pulled
+        //     percentPulled = Math.max(percentPulled, 10)
+        //     if (percentPulled === 100) {
+        //         // pull complete
+        //         pullLoading = false
+        //     }
+        // }
 
         // @@TODO: calculate this in the reducer, and only when `files` changes
         const filesChanged = Object.keys(files).some(name => {
@@ -69,14 +70,7 @@ class PushPullButtons extends React.Component<Props, State>
                         onClick={this.onClickPull}
                     >
                         {!pullLoading && <SyncIcon className={classes.icon} />}
-                        {pullLoading &&
-                            <CircularProgress
-                                size={24}
-                                className={classes.buttonLoading}
-                                value={percentPulled}
-                                variant="determinate"
-                            />
-                        }
+                        {pullLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                     </IconButton>
                 </Tooltip>
 
