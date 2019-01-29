@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import IconButton from '@material-ui/core/IconButton'
@@ -6,38 +7,34 @@ import SaveIcon from '@material-ui/icons/Save'
 import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import RenderMarkdown from '../RenderMarkdown'
-import Breadcrumbs from '../Breadcrumbs'
-import FormattingHelp from '../FormattingHelp'
-import { selectFile } from '../navigation'
-import { getFileContents } from '../env-specific'
+import RenderMarkdown from 'conscience-components/RenderMarkdown'
+import FormattingHelp from 'conscience-components/FormattingHelp'
+import { selectFile } from 'conscience-components/navigation'
 import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import * as filetypes from 'conscience-lib/utils/fileTypes'
-import isEqual from 'lodash/isEqual'
-import path from 'path'
 
 
 @autobind
 class MarkdownEditor extends React.Component<Props, State>
 {
-    state = {
-        fileContents: '',
-        contentsOnDisk: '',
-        fileExistsOnDisk: false,
-        error: undefined,
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            currentContents: props.initialContents,
+            contentsOnDisk: props.initialContents,
+            fileExistsOnDisk: props.fileExistsOnDisk || false,
+            error: undefined,
+        }
     }
 
     _inputText: HTMLTextAreaElement | null = null
 
     render() {
-        const { uri, classes } = this.props
-
-        const modified = this.state.contentsOnDisk !== this.state.fileContents
+        const { classes } = this.props
+        const modified = this.state.currentContents !== this.state.contentsOnDisk
 
         return (
             <div className={classes.root}>
-                <Breadcrumbs uri={uri} />
                 <div className={classes.toolbar}>
                     <IconButton
                         onClick={this.onClickSave}
@@ -57,7 +54,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             fullWidth
                             variant="outlined"
                             rows="38"
-                            value={this.state.fileContents}
+                            value={this.state.currentContents}
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
                         />
@@ -69,7 +66,7 @@ class MarkdownEditor extends React.Component<Props, State>
                             <CardContent>
                                 <RenderMarkdown
                                     uri={this.props.uri}
-                                    text={this.state.fileContents}
+                                    text={this.state.currentContents}
                                 />
                             </CardContent>
                         </Card>
@@ -79,43 +76,14 @@ class MarkdownEditor extends React.Component<Props, State>
         )
     }
 
-    componentDidMount() {
-        this.updateFileContents()
-    }
-
-    componentDidUpdate(prevProps: Props) {
-        if (!isEqual(prevProps.uri, this.props.uri)) {
-            this.updateFileContents()
-        }
-    }
-
-    async updateFileContents() {
-        // Don't handle binary files, only text
-        if (!filetypes.isTextFile(this.props.uri.filename || '')) {
-            this.setState({ fileContents: '' })
-            return
-        }
-
-        try {
-            const fileContents = await getFileContents(this.props.uri)
-            this.setState({
-                fileContents,
-                contentsOnDisk: fileContents,
-                fileExistsOnDisk: true,
-            })
-        } catch (error) {
-            this.setState({ fileContents: '', contentsOnDisk: '', fileExistsOnDisk: false, error })
-        }
-    }
-
     async onClickSave() {
         try {
-            this.props.saveFileContents(this.state.fileContents)
+            this.props.saveFileContents(this.state.currentContents)
+            this.setState({ contentsOnDisk: this.state.currentContents })
         } catch (error) {
             this.setState({ error })
             return
         }
-        this.setState({ contentsOnDisk: this.state.fileContents })
     }
 
     onClickClose() {
@@ -123,15 +91,9 @@ class MarkdownEditor extends React.Component<Props, State>
         if (!this.state.fileExistsOnDisk) {
             const dir = path.dirname(this.props.uri.filename || '')
             if (dir === '.') {
-                uri = {
-                    ...this.props.uri,
-                    filename: undefined,
-                }
+                uri = { ...this.props.uri, filename: undefined }
             } else {
-                uri = {
-                    ...this.props.uri,
-                    filename: dir
-                }
+                uri = { ...this.props.uri, filename: dir }
             }
         }
         selectFile(uri, FileMode.View)
@@ -141,19 +103,20 @@ class MarkdownEditor extends React.Component<Props, State>
         if (!this._inputText) {
             return
         }
-        this.setState({ fileContents: this._inputText.value })
+        this.setState({ currentContents: this._inputText.value })
     }
 }
 
 interface Props {
     uri: URI
+    initialContents: string
     fileExistsOnDisk?: boolean
-    saveFileContents: (contents: string) => Promise<{}>
+    saveFileContents: (contents: string) => Promise<void>
     classes: any
 }
 
 interface State {
-    fileContents: string
+    currentContents: string
     contentsOnDisk: string
     fileExistsOnDisk: boolean
     error: Error | undefined

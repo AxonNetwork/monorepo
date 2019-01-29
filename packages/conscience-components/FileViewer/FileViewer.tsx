@@ -30,7 +30,7 @@ class FileViewer extends React.Component<Props, State>
 
     render() {
         const { fileContents } = this.state
-        const { classes } = this.props
+        const { classes, showButtons, showViewerPicker } = this.props
         if (!this.props.uri.filename) {
             return null
         }
@@ -54,8 +54,8 @@ class FileViewer extends React.Component<Props, State>
             Viewer = viewers[0].viewer
         }
 
-        const canQuickEdit = this.props.showButtons && this.props.uri.type === URIType.Local
-        const isLocal = this.props.showButtons && this.props.uri.type === URIType.Local
+        const canQuickEdit = this.props.uri.type === URIType.Local && filetypes.getEditors(this.props.uri.filename).length > 0
+        const isLocal = this.props.uri.type === URIType.Local
 
         return (
             <div className={classes.root}>
@@ -66,9 +66,9 @@ class FileViewer extends React.Component<Props, State>
                         classes={classes}
                     />
                 </div>
-                {this.props.showViewerPicker &&
+                {showViewerPicker &&
                     <div className={classnames(classes.viewerPicker, { [classes.viewerPickerVisible]: this.state.hovering })}>
-                        {canQuickEdit &&
+                        {showButtons && canQuickEdit &&
                             <Button color="secondary"
                                 onClick={this.onClickQuickEdit}
                                 onMouseEnter={() => this.onHoverViewer(true)}
@@ -77,7 +77,7 @@ class FileViewer extends React.Component<Props, State>
                                 <EditIcon /> Quick Edit
                             </Button>
                         }
-                        {isLocal &&
+                        {showButtons && isLocal &&
                             <Button color="secondary"
                                 onMouseEnter={() => this.onHoverViewer(true)}
                                 onMouseLeave={() => this.onHoverViewer(false)}
@@ -102,9 +102,7 @@ class FileViewer extends React.Component<Props, State>
                             onMouseLeave={() => this.onHoverViewer(false)}
                             className={classes.viewerPickerSelect}
                             IconComponent={() => null}
-                            classes={{
-                                select: classes.viewerPickerMenu,
-                            }}
+                            classes={{ select: classes.viewerPickerMenu }}
                         >
                             {viewers.map(viewer => (
                                 <MenuItem value={viewer.name}>
