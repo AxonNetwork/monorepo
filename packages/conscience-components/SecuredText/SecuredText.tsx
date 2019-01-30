@@ -35,7 +35,7 @@ class SecuredText extends React.Component<Props, State>
     parseCommits() {
         const { commits, commitList } = this.props
         const { filename, commit } = this.props.uri
-        if (commit) {
+        if (commit && !filename) {
             const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, commit)
             this.setState({ lastVerified })
             return
