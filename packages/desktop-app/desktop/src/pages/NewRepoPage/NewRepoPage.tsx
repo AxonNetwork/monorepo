@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
@@ -39,52 +40,60 @@ class NewRepoPage extends React.Component<Props, State>
                 <div className={classes.contentArea}>
                     <div className={classes.contentAreaInner}>
                         <div className={classes.cardContainer}>
-                            <Card className={classes.card}>
-                                <CardContent>
-                                    <H6>Create a new repository</H6>
-                                    <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit}>
-                                        <TextField
-                                            id="repo-id"
-                                            label="Repository ID"
-                                            fullWidth
-                                            inputRef={x => this._inputRepoID = x}
-                                        />
-                                        <FormControl className={classes.selectContainer}>
-                                            <InputLabel>
-                                                Organization
+                            <div className={classes.leftColContainer}>
+                                <Card className={classes.card}>
+                                    <CardContent>
+                                        <H6>Create a new repository</H6>
+                                        <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit}>
+                                            <TextField
+                                                id="repo-id"
+                                                label="Repository ID"
+                                                fullWidth
+                                                inputRef={x => this._inputRepoID = x}
+                                            />
+                                            <FormControl className={classes.selectContainer}>
+                                                <InputLabel>
+                                                    Organization
                                             </InputLabel>
-                                            <Select
-                                                value={this.state.orgID}
-                                                onChange={this.handleSelectChange}
+                                                <Select
+                                                    value={this.state.orgID}
+                                                    onChange={this.handleSelectChange}
+                                                >
+                                                    <MenuItem value=""><em>None</em></MenuItem>
+                                                    {Object.keys(orgs).map(orgID => (
+                                                        <MenuItem value={orgID}>{orgs[orgID].name}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                            <Button
+                                                variant="raised"
+                                                color="secondary"
+                                                className={classes.button}
+                                                disabled={this.props.createRepoLoading}
+                                                type="submit"
                                             >
-                                                <MenuItem value=""><em>None</em></MenuItem>
-                                                {Object.keys(orgs).map(orgID => (
-                                                    <MenuItem value={orgID}>{orgs[orgID].name}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                        <Button
-                                            variant="raised"
-                                            color="secondary"
-                                            className={classes.button}
-                                            disabled={this.props.createRepoLoading}
-                                            type="submit"
-                                        >
-                                            Create
-                                            {this.props.createRepoLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
-                                        </Button>
-                                    </form>
-                                    <Divider className={classes.divider} />
-                                    <H6>Or import an existing repository</H6>
-                                    <ImportRepoButton
-                                        orgs={orgs}
-                                        importRepoLoading={this.props.importRepoLoading}
-                                        onImport={this.onImport}
-                                        classes={{ root: classes.button }}
-                                    />
+                                                Create
+                                                {this.props.createRepoLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
+                                            </Button>
+                                        </form>
 
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className={classnames(classes.card, classes.cardImport)}>
+                                    <CardContent>
+                                        <H6>Import an existing repository</H6>
+
+                                        <ImportRepoButton
+                                            orgs={orgs}
+                                            importRepoLoading={this.props.importRepoLoading}
+                                            onImport={this.onImport}
+                                            classes={{ root: classes.button }}
+                                        />
+
+                                    </CardContent>
+                                </Card>
+                            </div>
 
                             <Card className={classes.card}>
                                 <CardContent>
@@ -163,9 +172,16 @@ const styles = (theme: Theme) => createStyles({
         flexWrap: 'wrap',
         justifyContent: 'center',
     },
+    leftColContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
     card: {
         width: 500,
         margin: 16,
+    },
+    cardImport: {
+        flexGrow: 1,
     },
     button: {
         display: 'block',
