@@ -20,6 +20,8 @@ declare module 'conscience-lib/rpc' {
         signMessageAsync: (params: { message: Buffer }) => Promise<{ signature: Buffer }>
         ethAddressAsync: (params: {}) => Promise<{ address: string }>
 
+        setRepoPublicAsync: (params: { repoID: string, isPublic: boolean }) => Promise<{ repoID: string, isPublic: boolean }>
+        isRepoPublicAsync: (params: { repoID: string }) => Promise<{ repoID: string, isPublic: boolean }>
         setUserPermissionsAsync: (params: { repoID: string, username: string, puller: boolean, pusher: boolean, admin: boolean }) => Promise<{}>
         getRepoUsersAsync: (params: { repoID: string, type: (0 | 1 | 2), pageSize: number, page: number }) => Promise<string[]>
         getAllUsersOfTypeAsync: (params: { repoID: string, type: (0 | 1 | 2) }) => Promise<string[]>

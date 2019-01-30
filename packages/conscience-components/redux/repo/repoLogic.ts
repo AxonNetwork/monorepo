@@ -3,7 +3,6 @@ import {
     IGetRepoListAction, IGetRepoListSuccessAction,
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction,
-    ISetRepoPublicAction, ISetRepoPublicSuccessAction,
     fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
     fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer,
     watchRepo,
@@ -63,18 +62,8 @@ const fetchFullRepoFromServerLogic = makeLogic<IFetchFullRepoFromServerAction, I
     },
 })
 
-const setRepoPublicLogic = makeLogic<ISetRepoPublicAction, ISetRepoPublicSuccessAction>({
-    type: RepoActionType.SET_REPO_PUBLIC,
-    async process({ action }, dispatch) {
-        const { repoID, isPublic } = action.payload
-        await ServerRelay.setRepoPublic(repoID, isPublic)
-        return { repoID, isPublic }
-    },
-})
-
 export {
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
-    setRepoPublicLogic,
 }

@@ -13,6 +13,7 @@ import {
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
+    ISetRepoPublicAction, ISetRepoPublicSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
     IInitRepoAction, IInitRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
@@ -27,7 +28,6 @@ import {
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
-    setRepoPublicLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
@@ -208,18 +208,29 @@ const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsActio
         const { uri } = action.payload
         const repoID = getRepoID(uri)
         const rpcClient = rpc.getClient()
-        const [admins, pushers, pullers, isPublic] = await Promise.all([
+        const [admins, pushers, pullers, isPublicResp] = await Promise.all([
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
             rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER }),
-            ServerRelay.isRepoPublic(repoID),
+            rpcClient.isRepoPublicAsync({ repoID })
         ])
+        const isPublic = isPublicResp.isPublic
 
         const usernames = union(admins, pushers, pullers)
         await dispatch(fetchUserDataByUsername({ usernames: usernames }))
 
 
         return { repoID, admins, pushers, pullers, isPublic }
+    },
+})
+
+const setRepoPublicLogic = makeLogic<ISetRepoPublicAction, ISetRepoPublicSuccessAction>({
+    type: RepoActionType.SET_REPO_PUBLIC,
+    async process({ action }, dispatch) {
+        const { repoID, isPublic } = action.payload
+        const rpcClient = rpc.getClient()
+        await rpcClient.setRepoPublicAsync({ repoID, isPublic })
+        return { repoID, isPublic }
     },
 })
 
@@ -421,10 +432,8 @@ export default [
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
-    setRepoPublicLogic,
 
     // desktop-specific
-    updateUserPermissionsLogic,
     initRepoLogic,
     getLocalRepoListLogic,
     fetchRepoFilesLogic,
@@ -434,6 +443,8 @@ export default [
     fetchRemoteRefsLogic,
     checkpointRepoLogic,
     getDiffLogic,
+    updateUserPermissionsLogic,
+    setRepoPublicLogic,
     cloneRepoLogic,
     pullRepoLogic,
     watchRepoLogic,
