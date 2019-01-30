@@ -174,7 +174,7 @@ const styles = (theme: Theme) => createStyles({
         marginLeft: -12,
     },
     orgPicture: {
-        width: 100,
+        height: 100,
         display: 'block',
     },
 })
