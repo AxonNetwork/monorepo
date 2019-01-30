@@ -3,7 +3,7 @@ import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import once from 'lodash/once'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { ILocalRepo, IRepoFile, ITimelineEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
+import { IRepoFile, ITimelineEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetLocalRepoListAction, IGetLocalRepoListSuccessAction,
@@ -14,7 +14,7 @@ import {
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
-    ICreateRepoAction, ICreateRepoSuccessAction,
+    IInitRepoAction, IInitRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
@@ -42,18 +42,20 @@ import { parseDiff, uriToString, retry } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
 
-const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
-    type: RepoActionType.CREATE_REPO,
+const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
+    type: RepoActionType.INIT_REPO,
     async process({ action, getState }, dispatch) {
-        const { repoID, orgID } = action.payload
+        const { repoID, path, orgID } = action.payload
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
-        const { path } = await rpc.getClient().initRepoAsync({
+        const resp = await rpc.getClient().initRepoAsync({
             repoID: repoID,
+            path: path,
             name: name,
             email: emails[0],
         })
+        const initPath = resp.path
 
         await ServerRelay.createRepo(repoID)
 
@@ -61,16 +63,15 @@ const createRepoLogic = makeLogic<ICreateRepoAction, ICreateRepoSuccessAction>({
             await dispatch(addRepoToOrg({ orgID, repoID }))
         }
 
-        const uri = { type: URIType.Local, repoRoot: path } as URI
+        const uri = { type: URIType.Local, repoRoot: initPath } as URI
         await dispatch(fetchFullRepo({ uri }))
         selectRepo(uri, RepoPage.Home)
 
-        return { repoID, path, orgID }
+        return { repoID, path: initPath, orgID }
     },
 })
 
 const selectRepoOnce = once((uri: URI) => selectRepo(uri, RepoPage.Home))
-
 
 const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoListSuccessAction>({
     type: RepoActionType.GET_LOCAL_REPO_LIST,
@@ -424,7 +425,7 @@ export default [
 
     // desktop-specific
     updateUserPermissionsLogic,
-    createRepoLogic,
+    initRepoLogic,
     getLocalRepoListLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,

@@ -51,9 +51,9 @@ export enum RepoActionType {
     SET_REPO_PUBLIC_SUCCESS = 'SET_REPO_PUBLIC_SUCCESS',
     SET_REPO_PUBLIC_FAILED = 'SET_REPO_PUBLIC_FAILED',
 
-    CREATE_REPO = 'CREATE_REPO',
-    CREATE_REPO_SUCCESS = 'CREATE_REPO_SUCCESS',
-    CREATE_REPO_FAILED = 'CREATE_REPO_FAILED',
+    INIT_REPO = 'INIT_REPO',
+    INIT_REPO_SUCCESS = 'INIT_REPO_SUCCESS',
+    INIT_REPO_FAILED = 'INIT_REPO_FAILED',
 
     CHECKPOINT_REPO = 'CHECKPOINT_REPO',
     CHECKPOINT_REPO_SUCCESS = 'CHECKPOINT_REPO_SUCCESS',
@@ -286,16 +286,17 @@ export interface ISetRepoPublicSuccessAction {
 
 export type ISetRepoPublicFailedAction = FailedAction<RepoActionType.SET_REPO_PUBLIC_FAILED>
 
-export interface ICreateRepoAction {
-    type: RepoActionType.CREATE_REPO
+export interface IInitRepoAction {
+    type: RepoActionType.INIT_REPO
     payload: {
         repoID: string
-        orgID: string,
+        path?: string
+        orgID: string
     }
 }
 
-export interface ICreateRepoSuccessAction {
-    type: RepoActionType.CREATE_REPO_SUCCESS
+export interface IInitRepoSuccessAction {
+    type: RepoActionType.INIT_REPO_SUCCESS
     payload: {
         repoID: string
         path: string
@@ -303,7 +304,7 @@ export interface ICreateRepoSuccessAction {
     }
 }
 
-export type ICreateRepoFailedAction = FailedAction<RepoActionType.CREATE_REPO_FAILED>
+export type IInitRepoFailedAction = FailedAction<RepoActionType.INIT_REPO_FAILED>
 
 export interface ICheckpointRepoAction {
     type: RepoActionType.CHECKPOINT_REPO
@@ -438,9 +439,9 @@ export type IRepoAction =
     ISetRepoPublicSuccessAction |
     ISetRepoPublicFailedAction |
 
-    ICreateRepoAction |
-    ICreateRepoSuccessAction |
-    ICreateRepoFailedAction |
+    IInitRepoAction |
+    IInitRepoSuccessAction |
+    IInitRepoFailedAction |
 
     ICheckpointRepoAction |
     ICheckpointRepoSuccessAction |
@@ -476,7 +477,8 @@ export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => (
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
 export const setRepoPublic = (payload: ISetRepoPublicAction['payload']): ISetRepoPublicAction => ({ type: RepoActionType.SET_REPO_PUBLIC, payload })
 
-export const createRepo = (payload: ICreateRepoAction['payload']): ICreateRepoAction => ({ type: RepoActionType.CREATE_REPO, payload })
+export const initRepo = (payload: IInitRepoAction['payload']): IInitRepoAction => ({ type: RepoActionType.INIT_REPO, payload })
+
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })
 
 export const cloneRepo = (payload: ICloneRepoAction['payload']): ICloneRepoAction => ({ type: RepoActionType.CLONE_REPO, payload })

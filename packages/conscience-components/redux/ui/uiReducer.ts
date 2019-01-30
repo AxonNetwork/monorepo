@@ -7,6 +7,7 @@ import { uriToString } from 'conscience-lib/utils'
 const initialState = {
     loginLoading: false,
     createRepoLoading: false,
+    importRepoLoading: false
     checkpointLoading: false,
     checkpointError: undefined,
     pullLoading: false,
@@ -21,6 +22,7 @@ const initialState = {
 export interface IUIState {
     loginLoading: boolean
     createRepoLoading: boolean
+    importRepoLoading: boolean
     checkpointLoading: boolean
     checkpointError: Error | undefined
     pullLoading: boolean
@@ -64,17 +66,20 @@ const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserActi
                 loginLoading: false
             }
 
-        case RepoActionType.CREATE_REPO:
+        case RepoActionType.INIT_REPO:
+            const { path } = action.payload
             return {
                 ...state,
-                createRepoLoading: true
+                createRepoLoading: path === undefined,
+                importRepoLoading: path !== undefined,
             }
 
-        case RepoActionType.CREATE_REPO_SUCCESS:
-        case RepoActionType.CREATE_REPO_FAILED:
+        case RepoActionType.INIT_REPO_SUCCESS:
+        case RepoActionType.INIT_REPO_FAILED:
             return {
                 ...state,
-                createRepoLoading: false
+                createRepoLoading: false,
+                importRepoLoading: false,
             }
 
         case RepoActionType.CHECKPOINT_REPO:
