@@ -10,11 +10,13 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
+import Divider from '@material-ui/core/Divider'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import SharedReposList from 'conscience-components/SharedReposList'
+import ImportRepoButton from 'conscience-components/ImportRepoButton'
 import { IGlobalState } from 'conscience-components/redux'
-import { createRepo } from 'conscience-components/redux/repo/repoActions'
+import { initRepo } from 'conscience-components/redux/repo/repoActions'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -72,9 +74,17 @@ class NewRepoPage extends React.Component<Props, State>
                                             {this.props.createRepoLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                                         </Button>
                                     </form>
+                                    <Divider className={classes.divider} />
+                                    <H6>Or import an existing repository</H6>
+                                    <ImportRepoButton
+                                        orgs={orgs}
+                                        importRepoLoading={this.props.importRepoLoading}
+                                        onImport={this.onImport}
+                                        classes={{ root: classes.button }}
+                                    />
+
                                 </CardContent>
                             </Card>
-
 
                             <Card className={classes.card}>
                                 <CardContent>
@@ -86,6 +96,11 @@ class NewRepoPage extends React.Component<Props, State>
                 </div>
             </div>
         )
+    }
+
+    onImport(repoID: string, path: string, orgID: string) {
+        this.props.initRepo({ repoID, path, orgID })
+        console.log(path)
     }
 
     componentWillMount() {
@@ -103,7 +118,7 @@ class NewRepoPage extends React.Component<Props, State>
         }
         const repoID = this._inputRepoID.value
         const orgID = this.state.orgID
-        this.props.createRepo({ repoID, orgID })
+        this.props.initRepo({ repoID, orgID })
     }
 }
 
@@ -118,7 +133,8 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     orgs: { [orgID: string]: IOrganization }
     createRepoLoading: boolean
-    createRepo: typeof createRepo
+    importRepoLoading: boolean
+    initRepo: typeof initRepo
     classes: any
 }
 
@@ -153,7 +169,6 @@ const styles = (theme: Theme) => createStyles({
     },
     button: {
         display: 'block',
-        textTransform: 'none',
         marginTop: 16,
     },
     buttonLoading: {
@@ -167,6 +182,10 @@ const styles = (theme: Theme) => createStyles({
     selectContainer: {
         width: '100%',
         marginTop: 16
+    },
+    divider: {
+        marginTop: 16,
+        marginBottom: 16,
     }
 })
 
@@ -174,11 +193,12 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
     return {
         orgs: state.org.orgs,
         createRepoLoading: state.ui.createRepoLoading,
+        importRepoLoading: state.ui.importRepoLoading,
     }
 }
 
 const mapDispatchToProps = {
-    createRepo
+    initRepo
 }
 
 export default connect(

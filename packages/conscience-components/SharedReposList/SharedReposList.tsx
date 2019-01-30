@@ -58,7 +58,7 @@ class SharedReposList extends React.Component<Props>
                 </List>
                 {errorList.map((id, i) => (
                     <ErrorSnackbar
-                        open={errorList.length > 0}
+                        open={true}
                         onClose={() => this.closeError(id)}
                         message={`Oops! Something went wrong downloading '${id}'.`}
                         style={{ marginBottom: 80 * i }}

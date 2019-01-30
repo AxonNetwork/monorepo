@@ -4,10 +4,14 @@ import { IGlobalState } from 'conscience-components/redux'
 var getRepo: (uri: URI, state?: IGlobalState) => IRepo | undefined
 var getRepoID: (uri: URI, state?: IGlobalState) => string
 var getURIFromParams: (params: { repoID?: string, repoHash?: string }, state?: IGlobalState) => URI | undefined
-var getFileContents: (uri: URI) => Promise<string>
+var getFileContents: (uri: URI, opts?: IGetFileContentsOptions) => Promise<string | Buffer>
 var saveFileContents: (uri: URI, fileContents: string) => Promise<void>
 var directEmbedPrefix: (uri: URI) => string
 var isDesktop: () => boolean
+
+export interface IGetFileContentsOptions {
+    as?: 'buffer' | 'string'
+}
 
 function init(params: {
     getRepo: typeof getRepo,

@@ -11,7 +11,7 @@ import axios from 'axios'
 export default function setEnvSpecific(store: Store<IGlobalState>) {
     envSpecific.init({
 
-        async getFileContents(uri: URI) {
+        async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions) {
             const { commit, filename } = uri
             if (!filename) {
                 throw new Error('must include filename in uri')
@@ -54,8 +54,12 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                             totalSize = pkt.header.uncompressedSize
                             gotHeader = true
                         } else if (pkt.data.end) {
-                            const contents = Buffer.concat(buffers, totalSize).toString('utf8')
-                            resolve(contents)
+                            const contents = Buffer.concat(buffers, totalSize)
+                            if (opts && opts.as === 'buffer') {
+                                resolve(contents)
+                            } else {
+                                resolve(contents.toString('utf8'))
+                            }
                         } else {
                             buffers.push(pkt.data.data)
                         }

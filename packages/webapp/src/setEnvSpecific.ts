@@ -8,7 +8,7 @@ import axios from 'axios'
 export default function setEnvSpecific(store: Store<IGlobalState>) {
     envSpecific.init({
 
-        async getFileContents(uri: URI) {
+        async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions) {
             if (uri.type === URIType.Local) {
                 throw new Error('web platform cannot getFileContents with a local URI')
             }
@@ -17,6 +17,10 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             const fileURL = `${API_URL}/repo/${repoID}/file/${commit}/${filename}`
             const resp = await axios.get<string>(fileURL)
             return resp.data
+        },
+
+        async saveFileContents(uri: URI, fileContents: string) {
+            throw new Error('web platform cannot saveFileContents')
         },
 
         directEmbedPrefix(uri: URI) {

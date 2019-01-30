@@ -7,7 +7,9 @@ import { uriToString } from 'conscience-lib/utils'
 const initialState = {
     loginLoading: false,
     createRepoLoading: false,
+    importRepoLoading: false
     checkpointLoading: false,
+    checkpointError: undefined,
     pullLoading: false,
     updateOrgLoading: false,
     pullRepoProgressByURI: {},
@@ -20,7 +22,9 @@ const initialState = {
 export interface IUIState {
     loginLoading: boolean
     createRepoLoading: boolean
+    importRepoLoading: boolean
     checkpointLoading: boolean
+    checkpointError: Error | undefined
     pullLoading: boolean
     updateOrgLoading: boolean
     pullRepoProgressByURI: {
@@ -62,17 +66,20 @@ const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserActi
                 loginLoading: false
             }
 
-        case RepoActionType.CREATE_REPO:
+        case RepoActionType.INIT_REPO:
+            const { path } = action.payload
             return {
                 ...state,
-                createRepoLoading: true
+                createRepoLoading: path === undefined,
+                importRepoLoading: path !== undefined,
             }
 
-        case RepoActionType.CREATE_REPO_SUCCESS:
-        case RepoActionType.CREATE_REPO_FAILED:
+        case RepoActionType.INIT_REPO_SUCCESS:
+        case RepoActionType.INIT_REPO_FAILED:
             return {
                 ...state,
-                createRepoLoading: false
+                createRepoLoading: false,
+                importRepoLoading: false,
             }
 
         case RepoActionType.CHECKPOINT_REPO:
@@ -82,10 +89,22 @@ const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserActi
             }
 
         case RepoActionType.CHECKPOINT_REPO_SUCCESS:
-        case RepoActionType.CHECKPOINT_REPO_FAILED:
             return {
                 ...state,
                 checkpointLoading: false
+            }
+
+        case RepoActionType.CHECKPOINT_REPO_FAILED:
+            return {
+                ...state,
+                checkpointLoading: false,
+                checkpointError: action.payload.error
+            }
+
+        case UIActionType.CLEAR_CHECKPOINT_REPO_ERROR:
+            return {
+                ...state,
+                checkpointError: undefined
             }
 
         case RepoActionType.PULL_REPO_PROGRESS: {

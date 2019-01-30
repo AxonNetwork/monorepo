@@ -1,4 +1,5 @@
 export { default as autobind } from './autobind'
+export { default as retry } from './retry'
 export { default as strToColor } from './strToColor'
 export { default as schemes } from './codeColorSchemes'
 export { default as getLanguage } from './getLanguage'

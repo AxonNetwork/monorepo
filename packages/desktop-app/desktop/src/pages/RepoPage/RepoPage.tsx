@@ -13,7 +13,7 @@ import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
 import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
-import { clearPullRepoError } from 'conscience-components/redux/ui/uiActions'
+import { clearPullRepoError, clearCheckpointRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
 import { getURIFromParams } from 'conscience-components/env-specific'
@@ -38,6 +38,7 @@ class RepoPageContainer extends React.Component<Props>
             return <LargeProgressSpinner />
         }
         const repoPage = stringToRepoPage(this.props.location.pathname)
+
 
         return (
             <main className={classes.main}>
@@ -78,9 +79,14 @@ class RepoPageContainer extends React.Component<Props>
                     </div>
                 </div>
                 <ErrorSnackbar
-                    open={!!this.props.pullRepoError}
-                    onClose={this.closeError}
+                    open={!!this.props.pullError}
+                    onClose={this.closePullError}
                     message={'Oops! Something went wrong downloading the latest changes.'}
+                />
+                <ErrorSnackbar
+                    open={!!this.props.checkpointError}
+                    onClose={this.closeCheckpointError}
+                    message={'Oops! Something went wrong sharing your latest changes.'}
                 />
             </main>
         )
@@ -117,9 +123,15 @@ class RepoPageContainer extends React.Component<Props>
         }
     }
 
-    closeError() {
+    closePullError() {
         if (this.props.uri) {
             this.props.clearPullRepoError({ uri: this.props.uri })
+        }
+    }
+
+    closeCheckpointError() {
+        if (this.props.uri) {
+            this.props.clearCheckpointRepoError({})
         }
     }
 }
@@ -132,9 +144,11 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     menuLabelsHidden: boolean
-    pullRepoError: Error | undefined
+    pullError: Error | undefined
+    checkpointError: Error | undefined
     fetchFullRepo: typeof fetchFullRepo
     clearPullRepoError: typeof clearPullRepoError
+    clearCheckpointRepoError: typeof clearCheckpointRepoError
     classes: any
 }
 
@@ -160,13 +174,15 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     return {
         uri,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
-        pullRepoError: state.ui.pullRepoErrorByURI[uriStr],
+        pullError: state.ui.pullRepoErrorByURI[uriStr],
+        checkpointError: state.ui.checkpointError,
     }
 }
 
 const mapDispatchToProps = {
     fetchFullRepo,
     clearPullRepoError,
+    clearCheckpointRepoError
 }
 
 export default connect(

@@ -45,6 +45,8 @@ const RepoWatcher = {
             watcher.on('error', (err: Error) => console.error('chokidar error:', err))
         })
 
+        checkBehindRemote(path)
+
         return emitter
     },
 
