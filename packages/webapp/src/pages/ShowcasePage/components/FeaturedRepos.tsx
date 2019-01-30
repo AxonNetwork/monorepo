@@ -63,7 +63,7 @@ class FeaturedRepos extends React.Component<Props, State>
                             </div>
                         }
                     </div>
-                    <Divider style={{ margin: '40px 0' }} />
+                    <Divider style={{ margin: '40px 0', width: '100%' }} />
 
                 </Grid>
                 {Object.keys(featuredRepos).length < 1 &&
@@ -212,6 +212,7 @@ const styles = (theme: Theme) => createStyles({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        width: '100%',
     },
     editButton: {
         marginLeft: 16,
