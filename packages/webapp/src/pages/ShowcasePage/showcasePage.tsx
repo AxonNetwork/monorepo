@@ -1,31 +1,27 @@
 import React from 'react'
 import classnames from 'classnames'
 import { connect } from 'react-redux'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps, Switch, Route } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import Avatar from '@material-ui/core/Avatar'
 import Divider from '@material-ui/core/Divider'
-import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
 import {
     People as PeopleIcon,
     Description as DescriptionIcon,
     Assessment as AssessmentIcon,
-    ArrowForward as ArrowForwardIcon,
-    LocationCity as LocationCityIcon,
     Edit as EditIcon,
     PhotoCamera as PhotoCameraIcon
 } from '@material-ui/icons'
 import { Parallax } from 'react-parallax'
-import UserAvatar from 'conscience-components/UserAvatar'
-import FeaturedRepos from './components/FeaturedRepos'
 import UploadBannerDialog from './components/UploadBannerDialog'
 import UploadPictureDialog from './components/UploadPictureDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
-import OrgBlog from './components/connected/OrgBlog'
+import FeatResearchAndBlogs from './components/FeatResearchAndBlogs'
+import BlogPage from './components/BlogPage'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
 import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
@@ -41,7 +37,6 @@ class ShowcasePage extends React.Component<Props, State>
         dialogBannerOpen: false,
         showAllMembers: false,
         dialogImgOpen: false,
-        blogId: null,        
     }
 
     render() {
@@ -61,7 +56,6 @@ class ShowcasePage extends React.Component<Props, State>
         if (!this.state.showAllMembers) {
             membersToShow = org.members.slice(0, 6)
         }
-        console.log(this.state.blogId)
         return (
             <div>
                 <Parallax
@@ -125,54 +119,8 @@ class ShowcasePage extends React.Component<Props, State>
                             <ShowcaseTimeline orgID={this.props.org.orgID} />
                         </Grid>
                     </Grid>
-                    <Grid item xs={false} sm={8} className={classes.gridItem}>
-                        {this.state.blogId ? 
-                            <div>yes</div>
-                        :
-                            <Grid item>
-                                <FeaturedRepos
-                                    featuredRepos={org.featuredRepos}
-                                    orgRepoList={org.repos}
-                                    canEdit
-                                    onSave={this.saveFeaturedRepos}
-                                />
-                                <div>
-                                    <div className={classes.sectionHeader}>News and Updates</div>
-                                    <Divider className={classes.divider} />
-                                    <OrgBlog orgID={this.props.match.params.orgID} />
-                                </div>
-
-                                <div className={classes.sectionHeader} style={{ marginTop: 40 }}>Meet Our Researchers</div>
-                                <Divider className={classes.divider} />
-                                <div className={classes.team}>
-                                    {membersToShow.map((id:number) => {
-                                        const user = users[id] || {}
-                                        return (
-                                            <div className={classes.teamAvatarWrapper}>
-                                                <UserAvatar
-                                                    user={user}
-                                                    classes={{ root: classes.teamAvatar }}
-                                                />
-                                                <div>{user.name}</div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                                
-                                {memberCount > 6 && !!this.state.showAllMembers &&
-                                    <div className={classes.teamSeeMore}>
-                                        <Button
-                                            color="secondary"
-                                            onClick={this.showAllMembers}
-                                        >
-                                            See All Researchers
-                                            <ArrowForwardIcon />
-                                        </Button>
-                                    </div>
-                                }
-                            </Grid>
-                        }
-                    </Grid>
+                    <FeatResearchAndBlogs orgID={this.props.org.orgID} users={users} repos={repos}/>
+                        
 
                 </Grid>
             </div>
@@ -244,7 +192,6 @@ interface State {
     dialogBannerOpen: boolean
     showAllMembers: boolean
     dialogImgOpen: boolean
-    blogId: number
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -264,7 +211,7 @@ const styles = (theme: Theme) => createStyles({
         boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
     },
     gridItem: {
-        padding: '60px 100px',
+        padding: '60px',
     },
     progressContainer: {
         width: '100%',
@@ -337,44 +284,6 @@ const styles = (theme: Theme) => createStyles({
     timelineContainer: {
         height: '100%',
         overflow: 'hidden',
-    },
-    teamHeader: {
-        textAlign: 'center',
-        marginTop: 16,
-        fontWeight: 'bold',
-    },
-    team: {
-        marginTop: 16,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        flexWrap: 'wrap',
-    },
-    teamAvatarWrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        margin: 16,
-        '& p': {
-            fontSize: '1.1rem',
-            marginTop: 8,
-        },
-    },
-    teamAvatar: {
-        width: 150,
-        height: 150,
-        fontSize: '2rem',
-    },
-    teamSeeMore: {
-        width: '100%',
-        textAlign: 'center',
-        marginTop: 16,
-        '& button': {
-            textTransform: 'none',
-            '& svg': {
-                marginLeft: 8,
-            },
-        },
     },
 })
 
