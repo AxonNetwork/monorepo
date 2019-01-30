@@ -20,8 +20,8 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.CREATE_REPO_SUCCESS: {
-            const { path } = action.payload
+        case RepoActionType.INIT_REPO_SUCCESS: {
+            const { path, repoID } = action.payload
             const uri = { type: URIType.Local, repoRoot: path } as LocalURI
             return {
                 ...state,
@@ -32,6 +32,10 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
                 reposByHash: {
                     ...state.reposByHash,
                     [getHash(path)]: path
+                },
+                repoIDsByPath: {
+                    ...state.repoIDsByPath,
+                    [path]: repoID
                 }
             }
         }
