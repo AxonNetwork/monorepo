@@ -47,7 +47,7 @@ class RepoPageContainer extends React.Component<Props>
                     showButtons
                     repoPage={repoPage}
                 />
-                <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
+                <div id="hihihi" className={classes.repoPage} data-simplebar> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
                     <div className={classes.repoPageInner}>
                         <Switch>
                             <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />
