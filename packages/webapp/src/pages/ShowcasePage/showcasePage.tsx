@@ -9,13 +9,11 @@ import Avatar from '@material-ui/core/Avatar'
 import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
-import {
-    People as PeopleIcon,
-    Description as DescriptionIcon,
-    Assessment as AssessmentIcon,
-    Edit as EditIcon,
-    PhotoCamera as PhotoCameraIcon
-} from '@material-ui/icons'
+import PeopleIcon from '@material-ui/icons/People'
+import DescriptionIcon from '@material-ui/icons/Description'
+import AssessmentIcon from '@material-ui/icons/Assessment'
+import EditIcon from '@material-ui/icons/Edit'
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera'
 import { Parallax } from 'react-parallax'
 import UploadBannerDialog from './components/UploadBannerDialog'
 import UploadPictureDialog from './components/UploadPictureDialog'
