@@ -8,7 +8,7 @@ import FeaturedRepoCard from './FeaturedRepoCard'
 import EditRepoCard from './EditRepoCard'
 import AddNewCard from './AddNewCard'
 import SelectRepoDialog from './SelectRepoDialog'
-import { IRepo, IFeaturedRepo } from 'conscience-lib/common'
+import { IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 @autobind

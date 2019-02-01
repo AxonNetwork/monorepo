@@ -20,8 +20,8 @@ class SpreadsheetViewerPlugin extends React.Component<Props, State>
         const workbook = XLSX.read(data, { type: 'buffer' })
         const sheet = workbook.Sheets[Object.keys(workbook.Sheets)[0]]
         let j = XLSX.utils.sheet_to_json(sheet, { header: 1 })
-        j = j.map(row => {
-            return row.map(cell => {
+        j = j.map((row: any) => {
+            return row.map((cell: string) => {
                 return { text: cell }
             })
         })

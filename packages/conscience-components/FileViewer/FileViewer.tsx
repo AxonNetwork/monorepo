@@ -173,7 +173,7 @@ class FileViewer extends React.Component<Props, State>
         }
 
         try {
-            const fileContents = await getFileContents(this.props.uri)
+            const fileContents = (await getFileContents(this.props.uri)).toString()
             this.setState({ fileContents })
         } catch (error) {
             this.setState({ fileContents: '', error })

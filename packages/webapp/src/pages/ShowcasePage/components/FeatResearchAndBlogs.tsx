@@ -11,17 +11,17 @@ import UserAvatar from 'conscience-components/UserAvatar'
 import FeaturedRepos from './FeaturedRepos'
 import OrgBlog from 'conscience-components/OrgBlog/OrgBlog'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
-import { fetchOrgInfo, fetchOrgBlogs, changeOrgFeaturedRepos  } from 'conscience-components/redux/org/orgActions'
+import { fetchOrgInfo, fetchOrgBlogs, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
+import { IOrganization, IUser, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
 @autobind
-class FeatResearchAndBlogs extends React.Component<Props, State> 
+class FeatResearchAndBlogs extends React.Component<Props, State>
 {
     state = {
-        showAllMembers: false,       
+        showAllMembers: false,
     }
 
     render() {
@@ -39,7 +39,7 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
         if (!this.state.showAllMembers) {
             membersToShow = org.members.slice(0, 6)
         }
-        
+
         return (
             <Grid item xs={false} sm={8} className={classes.gridItem}>
                 <Grid item>
@@ -52,17 +52,17 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
                     <div>
                         <div className={classes.sectionHeader}>News and Updates</div>
                         <Divider className={classes.divider} />
-                        <OrgBlog orgID={this.props.match.params.orgID} fetchOrgBlogs={this.props.fetchOrgBlogs} blogs={this.props.blogs}/>
+                        <OrgBlog orgID={this.props.match.params.orgID} fetchOrgBlogs={this.props.fetchOrgBlogs} blogs={this.props.blogs} />
                     </div>
 
                     <div className={classes.sectionHeader} style={{ marginTop: 70 }}>Meet Our Researchers</div>
                     <Divider className={classes.divider} />
                     <div className={classes.team}>
-                        {membersToShow.map((id:number) => {
-                            const user = users[id] || {}
+                        {membersToShow.map(userID => {
+                            const user = users[userID] || {}
                             return (
                                 <div className={classes.teamAvatarWrapper}>
-                                    <UserAvatar user={user} classes={{ root: classes.teamAvatar }}/>
+                                    <UserAvatar user={user} classes={{ root: classes.teamAvatar }} />
                                     <div>{user.name}</div>
                                 </div>
                             )
@@ -85,7 +85,6 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
-        this.props.getRepoList({})
         this.props.fetchOrgBlogs({ orgID })
     }
 
@@ -115,7 +114,7 @@ interface DispatchProps {
     changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
 }
 
-interface State { 
+interface State {
     showAllMembers: boolean
 }
 
@@ -182,7 +181,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
-    return {        
+    return {
         org: state.org.orgs[props.match.params.orgID],
         users: state.user.users,
         blogs: state.org.blogs[props.match.params.orgID] || {},

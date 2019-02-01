@@ -13,17 +13,15 @@ import PeopleIcon from '@material-ui/icons/People'
 import DescriptionIcon from '@material-ui/icons/Description'
 import AssessmentIcon from '@material-ui/icons/Assessment'
 import EditIcon from '@material-ui/icons/Edit'
-import PhotoCameraIcon from '@material-ui/icons/PhotoCamera'
 import { Parallax } from 'react-parallax'
 import UploadBannerDialog from './components/UploadBannerDialog'
 import UploadPictureDialog from './components/UploadPictureDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
 import FeatResearchAndBlogs from './components/FeatResearchAndBlogs'
 import BlogPage from './components/BlogPage'
-import { getRepoList } from 'conscience-components/redux/repo/repoActions'
 import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
+import { IOrganization, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import pluralize from 'pluralize'
 
@@ -33,12 +31,11 @@ class ShowcasePage extends React.Component<Props, State>
 {
     state = {
         dialogBannerOpen: false,
-        showAllMembers: false,
         dialogImgOpen: false,
     }
 
     render() {
-        const { org, users, repos, classes } = this.props
+        const { org, classes } = this.props
         if (org === undefined) {
             return (
                 <div className={classes.progressContainer}>
@@ -50,10 +47,6 @@ class ShowcasePage extends React.Component<Props, State>
         const activeRepoCount = org.repos.length
         const publicRepoCount = 0 // org.repos.filter(id => (repos[id] || {}).isPublic).length
 
-        let membersToShow = org.members
-        if (!this.state.showAllMembers) {
-            membersToShow = org.members.slice(0, 6)
-        }
         return (
             <div>
                 <Parallax
@@ -116,10 +109,10 @@ class ShowcasePage extends React.Component<Props, State>
                             <Divider className={classes.divider} />
                             <ShowcaseTimeline orgID={this.props.org.orgID} />
                         </Grid>
-                    </Grid>    
+                    </Grid>
                     <Switch>
                         <Route path='/showcase/:orgID/blog/:blogID' component={BlogPage} />
-                        <Route exact component={FeatResearchAndBlogs}/>
+                        <Route exact component={FeatResearchAndBlogs} />
                     </Switch>
                 </Grid>
             </div>
@@ -129,7 +122,6 @@ class ShowcasePage extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
-        this.props.getRepoList({})
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
@@ -163,10 +155,6 @@ class ShowcasePage extends React.Component<Props, State>
         }
         this.setState({ dialogImgOpen: false })
     }
-
-    showAllMembers() {
-        this.setState({ showAllMembers: true })
-    }
 }
 
 interface MatchParams {
@@ -175,11 +163,6 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     org: IOrganization
-    users: { [userID: string]: IUser }
-    usersByEmail: { [email: string]: string }
-    discussions: { [discussionID: string]: IDiscussion }
-    discussionsByRepo: { [repoID: string]: string[] }
-    getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
     uploadOrgBanner: typeof uploadOrgBanner
     uploadOrgPicture: typeof uploadOrgPicture
@@ -189,7 +172,6 @@ interface Props extends RouteComponentProps<MatchParams> {
 
 interface State {
     dialogBannerOpen: boolean
-    showAllMembers: boolean
     dialogImgOpen: boolean
 }
 
@@ -275,7 +257,7 @@ const styles = (theme: Theme) => createStyles({
             marginRight: 8,
         },
     },
-    orgName:{
+    orgName: {
         fontSize: '2em',
         paddingBottom: 10,
         lineSpacing: '1em'
@@ -290,16 +272,11 @@ const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchPa
     const orgID = props.match.params.orgID
     return {
         org: state.org.orgs[orgID],
-        users: state.user.users,
-        usersByEmail: state.user.usersByEmail,
-        discussions: state.discussion.discussions,
-        discussionsByRepo: state.discussion.discussionsByRepo,
     }
 }
 
 const mapDispatchToProps = {
     fetchOrgInfo,
-    getRepoList,
     uploadOrgBanner,
     uploadOrgPicture,
     changeOrgFeaturedRepos,

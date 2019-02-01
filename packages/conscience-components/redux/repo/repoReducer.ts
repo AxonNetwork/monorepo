@@ -2,7 +2,6 @@ import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
-import { getRepoID } from 'conscience-components/env-specific'
 
 export const initialState = {
     repoListByUser: {},

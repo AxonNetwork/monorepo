@@ -75,7 +75,7 @@ class FileList extends React.Component<Props, State>
         }
     }
 
-    onKeyDown(evt: React.KeyboardEvent<Element>) {
+    onKeyDown(evt: KeyboardEvent) {
         if (!evt.metaKey && !evt.ctrlKey && !evt.altKey && !evt.shiftKey) {
             if (!this.state.quickNavOpen && evt.key === '/') {
                 evt.stopPropagation()
@@ -189,7 +189,7 @@ class FileList extends React.Component<Props, State>
         )
     }
 
-    onQuickNavSearchChange(evt: React.ChangeEvent) {
+    onQuickNavSearchChange(evt: React.ChangeEvent<HTMLInputElement>) {
         if (evt.target.value === '/') {
             return
         }
