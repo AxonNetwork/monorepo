@@ -57,6 +57,8 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
         })
         const initPath = resp.path
 
+        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher true, admin: true })
+
         await ServerRelay.createRepo(repoID)
 
         if (orgID && orgID.length > 0) {
