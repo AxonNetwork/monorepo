@@ -32,6 +32,7 @@ class ShowcasePage extends React.Component<Props, State>
     state = {
         dialogBannerOpen: false,
         dialogImgOpen: false,
+        hover: false,
     }
 
     render() {
@@ -74,14 +75,20 @@ class ShowcasePage extends React.Component<Props, State>
                 <Grid xs={12} container >
                     <Grid item xs={false} sm={4} direction="column" className={classes.gridItem} style={{ backgroundColor: 'white' }}>
                         <div className={classes.introContainer}>
-                            <div className={classes.uploadImg}>
-                                <Avatar
-                                    alt='conscience-logo'
-                                    className={classes.avatar}
-                                    src='https://i.ibb.co/Lt5V2FK/conscience-inverse.png'
-                                    onClick={this.dialogImgOpen}
-                                />
-                            </div>
+                            <Avatar
+                                onMouseOver={this.handleMouseOver}
+                                onMouseOut={this.handleMouseOut}
+                                alt='conscience-logo'
+                                className={classes.avatar}
+                                src='https://i.ibb.co/Lt5V2FK/conscience-inverse.png'
+                                onClick={this.dialogImgOpen}
+                            />
+                            {this.state.hover ?
+                                <div style={{ position: 'absolute', right: 0, color: 'white' }}>
+                                    <PhotoCameraIcon />
+                                </div>
+                                : null
+                            }
                             <UploadPictureDialog
                                 open={this.state.dialogImgOpen}
                                 onSelectImg={this.onSelectImg}
@@ -148,12 +155,20 @@ class ShowcasePage extends React.Component<Props, State>
     }
 
     onSelectImg(fileInput: any) {
-        console.log(fileInput)
         if (fileInput !== null) {
             const orgID = this.props.match.params.orgID
             this.props.uploadOrgPicture({ orgID, fileInput })
         }
         this.setState({ dialogImgOpen: false })
+    }
+
+    handleMouseOver = () => {
+        this.setState({ hover: true })
+
+    }
+
+    handleMouseOut = () => {
+        this.setState({ hover: false })
     }
 }
 
@@ -173,6 +188,7 @@ interface Props extends RouteComponentProps<MatchParams> {
 interface State {
     dialogBannerOpen: boolean
     dialogImgOpen: boolean
+    hover: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -185,6 +201,7 @@ const styles = (theme: Theme) => createStyles({
         flexDirection: 'column',
         alignItems: 'center',
         marginTop: '-170px',
+        position: 'relative',
     },
     avatar: {
         height: 200,
@@ -266,6 +283,10 @@ const styles = (theme: Theme) => createStyles({
         height: '100%',
         overflow: 'hidden',
     },
+    uploadImg: {
+        borderRadius: '100%',
+        backgroundColor: 'red'
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
