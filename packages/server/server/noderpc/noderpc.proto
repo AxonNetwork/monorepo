@@ -1,0 +1,374 @@
+
+syntax = "proto3";
+
+package noderpc;
+
+option go_package = "pb";
+
+service NodeRPC {
+  rpc SetUsername(SetUsernameRequest) returns (SetUsernameResponse) {}
+  rpc GetUsername(GetUsernameRequest) returns (GetUsernameResponse) {}
+
+  rpc InitRepo(InitRepoRequest) returns (InitRepoResponse) {}
+  rpc CheckpointRepo(CheckpointRepoRequest) returns (CheckpointRepoResponse) {}
+  rpc PullRepo(PullRepoRequest) returns (stream PullRepoResponsePacket) {}
+  rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
+  rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponse) {}
+  rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
+  rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
+  rpc GetLocalRepos(GetLocalReposRequest) returns (stream GetLocalReposResponsePacket) {}
+  rpc SetReplicationPolicy(SetReplicationPolicyRequest) returns (SetReplicationPolicyResponse) {}
+  rpc AnnounceRepoContent(AnnounceRepoContentRequest) returns (AnnounceRepoContentResponse) {}
+  rpc GetLocalRefs(GetLocalRefsRequest) returns (GetLocalRefsResponse) {}
+  rpc GetRemoteRefs(GetRemoteRefsRequest) returns (GetRemoteRefsResponse) {}
+  rpc IsBehindRemote(IsBehindRemoteRequest) returns (IsBehindRemoteResponse) {}
+  rpc UpdateRef(UpdateRefRequest) returns (UpdateRefResponse) {}
+  rpc RequestReplication(ReplicationRequest) returns (stream ReplicationResponsePacket) {}
+
+  rpc SetRepoPublic(SetRepoPublicRequest) returns (SetRepoPublicResponse) {}
+  rpc IsRepoPublic(IsRepoPublicRequest) returns (IsRepoPublicResponse) {}
+  rpc SetUserPermissions(SetUserPermissionsRequest) returns (SetUserPermissionsResponse) {}
+  rpc GetRepoUsers(GetRepoUsersRequest) returns (GetRepoUsersResponse) {}
+
+  rpc GetRepoHistory(GetRepoHistoryRequest) returns (GetRepoHistoryResponse) {}
+  rpc GetRepoFiles(GetRepoFilesRequest) returns (GetRepoFilesResponse) {}
+  rpc RepoHasObject(RepoHasObjectRequest) returns (RepoHasObjectResponse) {}
+  rpc SignMessage(SignMessageRequest) returns (SignMessageResponse) {}
+  rpc EthAddress(EthAddressRequest) returns (EthAddressResponse) {}
+
+  rpc GetObject(GetObjectRequest) returns (stream GetObjectResponse) {}
+  rpc GetDiff(GetDiffRequest) returns (stream GetDiffResponse) {}
+}
+
+message SetUsernameRequest {
+    string username = 1;
+}
+
+message SetUsernameResponse {
+    bytes signature = 2;
+}
+
+message GetUsernameRequest {}
+
+message GetUsernameResponse {
+    string username = 1;
+    bytes signature = 2;
+}
+
+message InitRepoRequest {
+    string repoID = 1;
+    string path = 2;
+    string name = 3;
+    string email = 4;
+}
+
+message InitRepoResponse {
+    string path = 1;
+}
+
+message CheckpointRepoRequest {
+    string path = 1;
+    string message = 2;
+}
+
+message CheckpointRepoResponse {
+    bool ok = 1;
+}
+
+message PullRepoRequest {
+    string path = 1;
+}
+
+message PullRepoResponsePacket {
+    int64 toFetch = 1;
+    int64 fetched = 2;
+}
+
+message CloneRepoRequest {
+    string repoID = 1;
+    string path = 2;
+    string name = 3;
+    string email = 4;
+}
+
+message CloneRepoResponsePacket {
+    message Progress {
+        int64 toFetch = 1;
+        int64 fetched = 2;
+    }
+
+    message Success {
+        string path = 1;
+    }
+
+    oneof payload {
+        Progress progress = 1;
+        Success success = 2;
+    }
+}
+
+message FetchFromCommitRequest {
+    string repoID = 1;
+    string path = 2;
+    bytes commit = 3;
+}
+
+message FetchFromCommitResponse {
+    message Header {
+        int64 uncompressedSize = 1;
+    }
+
+    message PackfileHeader {
+        bytes packfileID = 1;
+        int64 uncompressedSize = 2;
+    }
+
+    message PackfileData {
+        bytes packfileID = 1;
+        bytes data = 2;
+        bool end = 3;
+    }
+
+    oneof payload {
+        Header header = 1;
+        PackfileHeader packfileHeader = 2;
+        PackfileData packfileData = 3;
+    }
+}
+
+message RegisterRepoIDRequest {
+    string repoID = 1;
+}
+
+message RegisterRepoIDResponse {}
+
+message TrackLocalRepoRequest {
+    string repoPath = 1;
+    bool forceReload = 2;
+}
+
+message TrackLocalRepoResponse {}
+
+message GetLocalReposRequest {}
+
+message GetLocalReposResponsePacket {
+    string repoID = 1;
+    string path = 2;
+}
+
+message SetReplicationPolicyRequest {
+    string repoID = 1;
+    bool shouldReplicate = 2;
+}
+
+message SetReplicationPolicyResponse {}
+
+message AnnounceRepoContentRequest {
+    string repoID = 1;
+}
+
+message AnnounceRepoContentResponse {}
+
+message Ref {
+    string refName = 1;
+    string commitHash = 2;
+}
+
+message GetLocalRefsRequest {
+    string repoID = 1;
+    string path = 2;
+}
+
+message GetLocalRefsResponse {
+    string path = 1;
+    repeated Ref refs = 2;
+}
+
+message GetRemoteRefsRequest {
+    string repoID = 1;
+    uint64 pageSize = 2;
+    uint64 page = 3;
+}
+
+message GetRemoteRefsResponse {
+    uint64 total = 1;
+    repeated Ref refs = 2;
+}
+
+message IsBehindRemoteRequest {
+    string repoID = 1;
+    string path = 2;
+}
+
+message IsBehindRemoteResponse {
+    string repoID = 1;
+    bool isBehindRemote = 2;
+}
+
+message UpdateRefRequest {
+    string repoID = 1;
+    string refName = 2;
+    string commitHash = 3;
+}
+
+message UpdateRefResponse {}
+
+message ReplicationRequest {
+    string repoID = 1;
+}
+
+message ReplicationResponsePacket {
+    int32 percent = 1;
+}
+
+message SetRepoPublicRequest {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message SetRepoPublicResponse {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message IsRepoPublicRequest {
+    string repoID = 1;
+}
+
+message IsRepoPublicResponse {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message GetRepoUsersRequest {
+    string repoID = 1;
+    uint64 type = 2;
+    uint64 pageSize = 3;
+    uint64 page = 4;
+}
+
+message GetRepoUsersResponse {
+    uint64 total = 1;
+    repeated string users = 2;
+}
+
+message SetUserPermissionsRequest {
+    string repoID = 1;
+    string username = 2;
+    bool puller = 3;
+    bool pusher = 4;
+    bool admin = 5;
+}
+
+message SetUserPermissionsResponse {}
+
+message GetRepoHistoryRequest {
+    string repoID = 1;
+    string path = 2;
+    uint64 page = 3;
+}
+
+message Commit {
+    string commitHash = 1;
+    string author = 2;
+    string message = 3;
+    uint64 timestamp = 4;
+    repeated string files = 5;
+    uint64 verified = 6;
+}
+
+message GetRepoHistoryResponse {
+    repeated Commit commits = 1;
+}
+
+message GetRepoFilesRequest {
+    string repoID = 1;
+    string path = 2;
+}
+
+message File {
+    string name = 1;
+    bytes hash = 2;
+    uint32 mode = 3;
+    uint64 size = 4;
+    uint32 modified = 5;
+    string unstagedStatus = 6;
+    string stagedStatus = 7;
+    bool mergeConflict = 8;
+    bool mergeUnresolved = 9;
+}
+
+message GetRepoFilesResponse {
+    repeated File files = 1;
+}
+
+message RepoHasObjectRequest {
+    string repoID = 1;
+    string path = 2;
+    bytes objectID = 3;
+}
+
+message RepoHasObjectResponse {
+    bool hasObject = 1;
+}
+
+message SignMessageRequest {
+    bytes message = 1;
+}
+
+message SignMessageResponse {
+    bytes signature = 1;
+}
+
+message EthAddressRequest {}
+
+message EthAddressResponse {
+    string address = 1;
+}
+
+message GetObjectRequest {
+    // need one or the other
+    string repoID = 1;
+    string repoRoot = 2;
+
+    // need objectID -or-
+    //  (filename -and-
+    //     (commitHash -or- commitRef)
+    //  )
+    // @@TODO: unfuck this
+    bytes objectID = 3;
+    string filename = 4;
+    bytes commitHash = 5;
+    string commitRef = 6;
+    uint64 maxSize = 7;
+}
+
+message GetObjectResponse {
+    message Header {
+        uint64 uncompressedSize = 1;
+    }
+
+    message Data {
+        bytes data = 1;
+        bool end = 2;
+    }
+
+    oneof payload {
+        Header header = 1;
+        Data data = 2;
+    }
+}
+
+message GetDiffRequest {
+    // need one or the other
+    string repoID = 1;
+    string repoRoot = 2;
+
+    bytes commitHash = 3;
+    string commitRef = 4;
+}
+
+message GetDiffResponse {
+    bytes data = 1;
+    bool end = 2;
+}
