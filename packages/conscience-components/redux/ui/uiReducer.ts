@@ -7,7 +7,7 @@ import { uriToString } from 'conscience-lib/utils'
 const initialState = {
     loginLoading: false,
     createRepoLoading: false,
-    importRepoLoading: false
+    importRepoLoading: false,
     checkpointLoading: false,
     checkpointError: undefined,
     pullLoading: false,
