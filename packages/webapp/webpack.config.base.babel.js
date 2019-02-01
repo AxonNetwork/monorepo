@@ -130,6 +130,14 @@ export default {
                     { loader: 'url-loader', options: { limit: 10000, name: '[name].[hash:7].[ext]' } },
                 ],
             },
+            // Use a list of loaders to load less files
+            {
+                test: /\.less$/,
+                use:  [ { loader: 'style-loader', // creates style nodes from JS strings
+                }, { loader: 'css-loader', // translates CSS into CommonJS
+                }, { loader: 'less-loader', // compiles Less to CSS
+                } ],
+            },
         ],
     },
 

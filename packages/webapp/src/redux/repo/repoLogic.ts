@@ -3,12 +3,12 @@ import {
     RepoActionType,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+    ISetRepoPublicAction, ISetRepoPublicSuccessAction,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
-    setRepoPublicLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
@@ -49,14 +49,23 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
     }
 })
 
+const setRepoPublicLogic = makeLogic<ISetRepoPublicAction, ISetRepoPublicSuccessAction>({
+    type: RepoActionType.SET_REPO_PUBLIC,
+    async process({ action }, dispatch) {
+        const { repoID, isPublic } = action.payload
+        await ServerRelay.setRepoPublic(repoID, isPublic)
+        return { repoID, isPublic }
+    },
+})
+
 export default [
     // imported from conscience-components
     getRepoListLogic,
     fetchFullRepoLogic,
     fetchFullRepoFromServerLogic,
-    setRepoPublicLogic,
 
     // web-specific
     getDiffLogic,
     updateUserPermissionsLogic,
+    setRepoPublicLogic,
 ]

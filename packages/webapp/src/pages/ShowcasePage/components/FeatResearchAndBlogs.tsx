@@ -1,5 +1,4 @@
 import React from 'react'
-import classnames from 'classnames'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
@@ -10,13 +9,12 @@ import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
 import UserAvatar from 'conscience-components/UserAvatar'
 import FeaturedRepos from './FeaturedRepos'
-import OrgBlog from './connected/OrgBlog'
+import OrgBlog from 'conscience-components/OrgBlog/OrgBlog'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
-import { fetchOrgInfo } from 'conscience-components/redux/org/orgActions'
+import { fetchOrgInfo, fetchOrgBlogs, changeOrgFeaturedRepos  } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IRepo, IUser, IDiscussion, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import pluralize from 'pluralize'
 
 
 @autobind
@@ -27,7 +25,7 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
     }
 
     render() {
-        const { org, users, repos, classes } = this.props
+        const { org, users, classes } = this.props
         if (org === undefined) {
             return (
                 <div className={classes.progressContainer}>
@@ -54,10 +52,10 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
                     <div>
                         <div className={classes.sectionHeader}>News and Updates</div>
                         <Divider className={classes.divider} />
-                        <OrgBlog orgID={this.props.orgID} />
+                        <OrgBlog orgID={this.props.match.params.orgID} fetchOrgBlogs={this.props.fetchOrgBlogs} blogs={this.props.blogs}/>
                     </div>
 
-                    <div className={classes.sectionHeader} style={{ marginTop: 40 }}>Meet Our Researchers</div>
+                    <div className={classes.sectionHeader} style={{ marginTop: 70 }}>Meet Our Researchers</div>
                     <Divider className={classes.divider} />
                     <div className={classes.team}>
                         {membersToShow.map((id:number) => {
@@ -85,13 +83,14 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
     }
 
     componentDidMount() {
-        const orgID = this.props.orgID
+        const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
         this.props.getRepoList({})
+        this.props.fetchOrgBlogs({ orgID })
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
-        const orgID = this.props.orgID
+        const orgID = this.props.match.params.orgID
         this.props.changeOrgFeaturedRepos({ orgID, featuredRepos })
     }
 
@@ -100,30 +99,33 @@ class FeatResearchAndBlogs extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
-
-interface OwnProps {
-    orgID: string
-}
+type Props = StateProps & DispatchProps & RouteComponentProps<MatchParams> & { classes: any }
 
 interface StateProps {
     org: IOrganization
     users: { [userID: string]: IUser }
     repos: any
+    blogs: any
 }
 
 interface DispatchProps {
     getRepoList: typeof getRepoList
     fetchOrgInfo: typeof fetchOrgInfo
+    fetchOrgBlogs: typeof fetchOrgBlogs
+    changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
 }
 
 interface State { 
     showAllMembers: boolean
 }
 
+interface MatchParams {
+    orgID: string
+}
+
 const styles = (theme: Theme) => createStyles({
     gridItem: {
-        padding: '60px',
+        padding: '40px 60px 60px',
     },
     progressContainer: {
         width: '100%',
@@ -179,10 +181,11 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
-    return {
-        org: state.org.orgs[props.orgID],
+const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
+    return {        
+        org: state.org.orgs[props.match.params.orgID],
         users: state.user.users,
+        blogs: state.org.blogs[props.match.params.orgID] || {},
         usersByEmail: state.user.usersByEmail,
         discussions: state.discussion.discussions,
         discussionsByRepo: state.discussion.discussionsByRepo,
@@ -192,9 +195,8 @@ const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
 const mapDispatchToProps = {
     fetchOrgInfo,
     getRepoList,
-    // uploadOrgBanner,
-    // uploadOrgPicture,
-    // changeOrgFeaturedRepos,
+    changeOrgFeaturedRepos,
+    fetchOrgBlogs
 }
 
 export default connect(

@@ -1,8 +1,9 @@
 import moment from 'moment'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Link } from 'react-router-dom'
+import {Card, Button} from '@material-ui/core'
+import {Person, AccessTime} from '@material-ui/icons'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ReactMarkdown from 'react-markdown'
@@ -15,7 +16,7 @@ import { autobind } from 'conscience-lib/utils'
 class OrgBlog extends React.Component<Props>
 {
     render() {
-        const { blogs, limit, classes } = this.props
+        const { blogs, limit, classes, orgID } = this.props
         const blogMap = blogs.map || {}
         let sortedIDs = blogs.sortedIDs || []
 
@@ -26,29 +27,42 @@ class OrgBlog extends React.Component<Props>
         if (sortedIDs.length === 0) {
             return null
         }
-
         return (
             <div>
-                <H5 className={classes.sectionHeader}>News and Updates</H5>
-                <Card>
-                    <CardContent>
-                        <List>
-                            {sortedIDs.map(id => {
-                                const blog = blogMap[`${id}`]
-                                return (
+                {sortedIDs.map(id => {
+                    const blog = blogMap[`${id}`]
+                    return (
+                        <Card className={classes.card}>
+                            
+                                <List>
                                     <ListItem>
                                         <div>
-                                            <H6>{blog.title}</H6>
-                                            <div>{blog.author}</div>
-                                            <div>{moment(blog.created).calendar()}</div>
-                                            <ReactMarkdown source={blog.body} />
+                                            <div className={classes.header}>
+                                                <H6>{blog.title}</H6>
+                                                <div className={classes.subTitle}>
+                                                    <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
+                                                        <Person style={{height: 20, marginRight: 5}}/>
+                                                        {blog.author}
+                                                    </div>
+                                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                                        <AccessTime style={{height: 20, marginRight: 5}}/>
+                                                        {moment(blog.created).calendar()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ReactMarkdown source={this.blogSnippet(blog.body)} />
+                                            <div className={classes.link}>
+                                                <Link to={'/showcase/'+orgID+'/blog/'+blog.created.toString()} style={{textDecoration: 'none'}}>
+                                                    <Button>Finish Reading</Button>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </ListItem>
-                                )
-                            })}
-                        </List>
-                    </CardContent>
-                </Card>
+                                </List>
+                                    
+                        </Card>
+                    )
+                })}
             </div>
         )
     }
@@ -56,6 +70,11 @@ class OrgBlog extends React.Component<Props>
     componentDidMount() {
         this.props.fetchOrgBlogs({ orgID: this.props.orgID })
     }
+
+    blogSnippet = (blog:string) => {
+        return blog.split(' ').slice(0, 50).join(' ').concat('...')
+    }
+  
 }
 
 
@@ -66,9 +85,7 @@ interface Props {
         sortedIDs: number[],
     }
     limit?: number
-
     fetchOrgBlogs: Function
-
     classes: any
 }
 
@@ -76,6 +93,30 @@ const styles = () => createStyles({
     sectionHeader: {
         margin: '20px 0 30px',
     },
+    card: {
+        margin: '20px 0',
+        padding: '10px 30px',
+        paddingBottom: 0
+    },
+    header: {
+        display: 'flex',
+        flexFlow: 'row wrap',
+        marginBottom: 10,
+        justifyContent: 'space-between'
+    },
+    subTitle: {
+        display: 'flex',
+        flexFlow: 'row nowrap',
+    },
+    body: {
+        lineClamp: 2,
+        textOverflow: 'ellipsis',
+        overflow: 'hidden'
+    },
+    link: {
+        width: '100%',
+
+    }
 })
 
 export default withStyles(styles)(OrgBlog)

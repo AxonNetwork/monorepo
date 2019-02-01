@@ -118,10 +118,11 @@ class ShowcasePage extends React.Component<Props, State>
                             <Divider className={classes.divider} />
                             <ShowcaseTimeline orgID={this.props.org.orgID} />
                         </Grid>
-                    </Grid>
-                    <FeatResearchAndBlogs orgID={this.props.org.orgID} users={users} repos={repos}/>
-                        
-
+                    </Grid>    
+                    <Switch>
+                        <Route path='/showcase/:orgID/blog/:blogID' component={BlogPage} />
+                        <Route exact component={FeatResearchAndBlogs}/>
+                    </Switch>
                 </Grid>
             </div>
         )

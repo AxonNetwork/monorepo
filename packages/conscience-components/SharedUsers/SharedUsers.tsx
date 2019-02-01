@@ -58,7 +58,10 @@ class SharedUsers extends React.Component<Props, State>
 
         const { admins = [], pushers = [], pullers = [] } = permissions
         const sharedUsernames = union(admins, pushers, pullers)
-        const sharedUsers = sharedUsernames.map(username => usersByUsername[username])
+        // @@TODO: Hardcoded filter, replace after adding replicator/delegator permissions
+        const sharedUsers = sharedUsernames
+            .filter(username => username !== 'conscience')
+            .map(username => usersByUsername[username])
             .map(id => users[id])
             .filter(user => !!user)
 

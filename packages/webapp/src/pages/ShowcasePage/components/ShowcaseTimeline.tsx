@@ -36,7 +36,7 @@ interface StateProps {
     commits: { [commitHash: string]: ITimelineEvent }
 }
 
-const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const orgRepoIDs = (state.org.orgs[ownProps.orgID] || {}).repos || []
     const { commitListsByURI, commits } = state.repo
 

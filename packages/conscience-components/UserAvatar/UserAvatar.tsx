@@ -61,7 +61,8 @@ class UserAvatar extends React.Component<Props>
         )
     }
 
-    selectUser() {
+    selectUser(e: React.MouseEvent<HTMLElement>) {
+        e.preventDefault()
         const user = this.props.user
         if (user && user.username) {
             selectUser(user.username)
