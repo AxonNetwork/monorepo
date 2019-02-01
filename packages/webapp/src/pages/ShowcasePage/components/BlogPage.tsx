@@ -1,84 +1,81 @@
-import moment from 'moment'
 import React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
-import {Card, CardContent, Button} from '@material-ui/core'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
+import moment from 'moment'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import ReactMarkdown from 'react-markdown'
-import { H5, H6 } from '../Typography/Headers'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import { Card, Button, Grid } from '@material-ui/core'
+import { ArrowBackIos, AccessTime, Person } from '@material-ui/icons'
 import { IOrgBlog } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import { IGlobalState } from 'conscience-components/redux'
+import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
+import { fetchOrgBlogs  } from 'conscience-components/redux/org/orgActions'
 
 
 @autobind
 class BlogPage extends React.Component<Props>
 {
+    componentDidMount() {
+        this.props.fetchOrgBlogs({ orgID: this.props.match.params.orgID })
+    }
+    
     render() {
-        const { blogs, limit, classes } = this.props
-        const blogMap = blogs.map || {}
-        let sortedIDs = blogs.sortedIDs || []
-
-        if (limit !== undefined) {
-            sortedIDs = sortedIDs.slice(0, limit)
+        const { classes, blogs } = this.props
+        if (blogs === undefined || blogs.map === undefined ) {
+            return <LargeProgressSpinner/>
         }
-
-        if (sortedIDs.length === 0) {
-            return null
-        }
-
+        const blogID = this.props.match.params.blogID
+        const orgID = this.props.match.params.orgID
+        const blog = this.props.blogs.map[blogID]
+        
         return (
-            <div>
-                <H5 className={classes.sectionHeader}>News and Updates</H5>
-                            {sortedIDs.map(id => {
-                                const blog = blogMap[`${id}`]
-                                console.log(blog)
-                                return (
-                                    <Card className={classes.card}>
-                                        <CardContent>
-                                            <List>
-                                                <ListItem>
-                                                    <div>
-                                                        <H6>{blog.title}</H6>
-                                                        <div>{blog.author}</div>
-                                                        <div>{moment(blog.created).calendar()}</div>
-                                                        <ReactMarkdown source={this.blogSnippet(blog.body)} />
-                                                        <Button onClick={() => this.handleFinishReading(blog)}>Finish Reading</Button>
-                                                    </div>
-                                                </ListItem>
-                                            </List>
-                                        </CardContent>
-                                    </Card>
-                                )
-                            })}
-            </div>
+            <Grid item xs={false} sm={8} className={classes.gridItem}>
+                <Card className={classes.blogCard}>
+                    <h1>{blog.title}</h1>
+                    <div className={classes.subTitle}>
+                        <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
+                            <Person style={{height: 20, marginRight: 5}}/>
+                            {blog.author}
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <AccessTime style={{height: 20, marginRight: 5}}/>
+                            {moment(blog.created).calendar()}
+                        </div>
+                    </div>
+                    <ReactMarkdown source={blog.body}/>        
+                    <Link to={'/showcase/'+orgID} style={{textDecoration: 'none'}}>
+                        <Button><ArrowBackIos/>Back</Button>
+                    </Link>    
+                </Card>
+            </Grid>
         )
     }
 
-    componentDidMount() {
-        this.props.fetchOrgBlogs({ orgID: this.props.orgID })
-    }
-
-    blogSnippet = (blog:string) => {
-        return blog.split(' ').slice(0, 50).join(' ').concat('...')
-    }
-
-    handleFinishReading = (blog:any) => {
-        
-    }
 }
 
 
 interface Props {
     orgID: string
+    blogID: string
     blogs: {
-        map: { [created: string]: IOrgBlog }
-        sortedIDs: number[],
-    }
-    limit?: number
-
+            map: { [created: string]: IOrgBlog }
+            sortedIDs: number[],
+        }
     fetchOrgBlogs: Function
-
     classes: any
+}
+
+
+interface MatchParams {
+    orgID: string
+    blogID: string
+}
+
+interface Props extends RouteComponentProps<MatchParams>{
+    orgID: string
+    blogID: string
 }
 
 const styles = () => createStyles({
@@ -92,7 +89,34 @@ const styles = () => createStyles({
         lineClamp: 2,
         textOverflow: 'ellipsis',
         overflow: 'hidden'
-    }
+    },
+    gridItem: {
+        padding: '60px',
+    },
+    blogCard: {
+        padding: '20px 40px'
+    },
+    subTitle: {
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        padding: '10px 0'
+    },
+    header: {
+        display: 'flex',
+        flexFlow: 'row wrap',
+        marginTop: 10,
+        justifyContent: 'space-between'
+    },
 })
 
-export default withStyles(styles)(BlogPage)
+const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
+    return {        
+        org: state.org.orgs[props.match.params.orgID],
+        blogs: state.org.blogs[props.match.params.orgID] || {},
+    }
+}
+
+const mapDispatchToProps = { fetchOrgBlogs }
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(BlogPage))
+

@@ -28,7 +28,7 @@ class FeaturedRepos extends React.Component<Props, State>
         const reposToAdd = this.props.orgRepoList.filter(repoID => featuredRepos[repoID] === undefined)
 
         return (
-            <Grid container spacing={40} className={classes.root}>
+            <Grid container className={classes.root}>
                 <Grid item xs={12} className={classes.titleColumn}>
                     <div className={classes.titleRow}>
                         <div style={{ fontSize: '2em', fontWeight: 'bold' }}>Featured Research</div>
@@ -63,14 +63,14 @@ class FeaturedRepos extends React.Component<Props, State>
                             </div>
                         }
                     </div>
-                    <Divider style={{ margin: '40px 0', width: '100%' }} />
+                    <Divider style={{ margin: '15px 0 0', width: '100%' }} />
 
                 </Grid>
                 {Object.keys(featuredRepos).length < 1 &&
                     <div>No featured studies at the moment</div>
                 }
                 {Object.keys(featuredRepos).map(repoID => (
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={6} className={classes.repoCard}>
                         {editing.indexOf(repoID) < 0 &&
                             <FeaturedRepoCard
                                 repoInfo={featuredRepos[repoID]}
@@ -204,7 +204,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         padding: '0 !important',
-        margin: '20px 0',
+        margin: '0 0 30px',
         alignItems: 'center',
     },
     titleRow: {
@@ -218,6 +218,9 @@ const styles = (theme: Theme) => createStyles({
         marginLeft: 16,
         textTransform: 'none',
     },
+    repoCard: {
+        padding: '0 10px',
+    }
 })
 
 export default withStyles(styles)(FeaturedRepos)
