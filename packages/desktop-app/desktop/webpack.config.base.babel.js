@@ -17,7 +17,6 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin'
 
 const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json')
-const ImmutableManifest = path.join(__dirname, 'dist-bundle/dll/immutable_manifest.json')
 const devMode = process.env.NODE_ENV !== 'production'
 
 const PACKAGE = require('../package.json')
@@ -106,10 +105,11 @@ export default {
             // Use a list of loaders to load less files
             {
                 test: /\.less$/,
-                use:  [ { loader: 'style-loader', // creates style nodes from JS strings
-                }, { loader: 'css-loader', // translates CSS into CommonJS
-                }, { loader: 'less-loader', // compiles Less to CSS
-                } ],
+                use:  [
+                    { loader: 'style-loader' }, // creates style nodes from JS strings
+                    { loader: 'css-loader' }, // translates CSS into CommonJS
+                    { loader: 'less-loader' }, // compiles Less to CSS
+                ],
             },
             // Use image-webpack-loader and url-loader to load images
             {
@@ -147,7 +147,6 @@ export default {
         new DuplicatePackageCheckerPlugin(),
         // Load pre-build dll reference files
         new webpack.DllReferencePlugin({ manifest: ReactManifest }),
-        new webpack.DllReferencePlugin({ manifest: ImmutableManifest }),
         // Extract css part from javascript bundle into separated file
         new MiniCssExtractPlugin({
             filename:      '[name].[contenthash:10].css',
