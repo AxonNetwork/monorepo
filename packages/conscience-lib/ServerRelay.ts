@@ -29,12 +29,16 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/login', { email, password })
         } catch (err) {
+            if (!err || !err.response) {
+                throw err
+            }
+
             if (err.response.status === 403) {
                 return new Error(err.response.data.error)
             } else if (err.response.status === 400) {
                 return new Error(err.response.data.error)
             }
-            throw err.response.data.error
+            throw err.response ? err.response.data.error : err
         }
 
         ServerRelay.setJWT(resp.data.jwt)
@@ -62,7 +66,7 @@ const ServerRelay = {
             } else if (err.response.status === 400) {
                 return new Error(err.response.data.error)
             }
-            throw err.response.data.error
+            throw err.response ? err.response.data.error : err
         }
         console.log(resp)
 
@@ -91,7 +95,7 @@ const ServerRelay = {
             } else if (err.response.status === 400) {
                 return new Error(err.response.data.error)
             }
-            throw err.response.data.error
+            throw err.response ? err.response.data.error : err
         }
 
         const { userID, emails, name, username, picture, orgs, profile, jwt } = resp.data
@@ -125,10 +129,7 @@ const ServerRelay = {
 
     async hitEthFaucet(address: string) {
         interface IResponse { }
-        await axios.post<IResponse>(API_URL + '/faucet', {
-            address: address,
-            amount: 10,
-        })
+        await axios.post<IResponse>(API_URL + '/faucet', { address, amount: 10 })
     },
 
     async createRepo(repoID: string) {
@@ -158,10 +159,7 @@ const ServerRelay = {
         interface IResponse {
             message: string
         }
-        await axios.post<IResponse>(API_URL + '/share-repo', {
-            repoID,
-            userID
-        })
+        await axios.post<IResponse>(API_URL + '/share-repo', { repoID, userID })
         return true
     },
 
@@ -169,10 +167,7 @@ const ServerRelay = {
         interface IResponse {
             message: string
         }
-        await axios.post<IResponse>(API_URL + '/unshare-repo', {
-            repoID,
-            userID
-        })
+        await axios.post<IResponse>(API_URL + '/unshare-repo', { repoID, userID })
         return true
     },
 
@@ -194,9 +189,7 @@ const ServerRelay = {
     },
 
     async setRepoPublic(repoID: string, isPublic: boolean) {
-        await axios.post(`${API_URL}/repo/${repoID}/set-public`, {
-            isPublic
-        })
+        await axios.post(`${API_URL}/repo/${repoID}/set-public`, { isPublic })
         return true
     },
 
@@ -225,7 +218,7 @@ const ServerRelay = {
             if ((err.response || {}).status === 404) {
                 return new Error(err.response.data.error)
             }
-            throw err.response.data.error
+            throw err.response ? err.response.data.error : err
         }
         return response.data
     },
@@ -239,7 +232,7 @@ const ServerRelay = {
             if (err.response.status === 404) {
                 return new Error(err.response.data.error)
             }
-            throw err.response.data.error
+            throw err.response ? err.response.data.error : err
         }
         return file
     },
@@ -352,7 +345,7 @@ const ServerRelay = {
         await axios.post<IResponse>(API_URL + "/user/sawComment", {
             repoID,
             discussionID,
-            commentTimestamp
+            commentTimestamp,
         })
     },
 

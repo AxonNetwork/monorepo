@@ -124,58 +124,11 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
                 } as IRepoFile
             })
             const files = keyBy(filesList, 'name')
-            addFolders(files)
             return { uri, files }
         }
         return { uri, files: {} }
     },
 })
-
-function addFolders(files: { [name: string]: IRepoFile }) {
-    for (let filepath of Object.keys(files)) {
-        let dirname = path.dirname(filepath)
-        if (dirname[0] === '/') {
-            dirname = dirname.slice(1)
-        }
-
-        if (dirname === '.') {
-            continue
-        }
-
-        const parts = dirname.split('/')
-        for (let i = 0; i < parts.length; i++) {
-            const partialDirname = parts.slice(0, i + 1).join('/')
-
-            if (!files[partialDirname]) {
-                const descendants = Object.keys(files).filter(filepath => filepath.startsWith(partialDirname) && files[filepath].type !== 'folder')
-                let size = 0
-                let modified: Date | null = null
-                let status = ''
-                for (let filepath of descendants) {
-                    size += files[filepath].size
-                    if (!modified || modified < files[filepath].modified) {
-                        modified = files[filepath].modified
-                    }
-
-                    if (status !== 'M' && (files[filepath].status === 'M' || files[filepath].status === '?' || files[filepath].status === 'U')) {
-                        status = 'M'
-                    }
-                }
-
-                files[partialDirname] = {
-                    name: partialDirname,
-                    type: 'folder',
-                    status,
-                    size,
-                    modified,
-                    diff: '',
-                    mergeConflict: false,
-                    mergeUnresolved: false,
-                } as IRepoFile
-            }
-        }
-    }
-}
 
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,

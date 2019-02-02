@@ -29,13 +29,13 @@ class LoginPage extends React.Component<Props>
     }
 
     render() {
-        const { checkedLoggedIn, currentUser, error, classes } = this.props
+        const { checkedLoggedIn, currentUsername, error, classes } = this.props
         if (!checkedLoggedIn) {
             return <div></div>
         }
 
-        if (currentUser !== undefined) {
-            const { from } = this.props.location.state || { from: { pathname: getUserURL(currentUser) } }
+        if (currentUsername !== undefined) {
+            const { from } = this.props.location.state || { from: { pathname: getUserURL(currentUsername) } }
             return <Redirect to={from} />
         }
 
@@ -94,7 +94,7 @@ class LoginPage extends React.Component<Props>
 }
 
 interface Props extends RouteComponentProps {
-    currentUser: string | undefined
+    currentUsername: string | undefined
     checkedLoggedIn: boolean
     error: Error | undefined
     login: typeof login
@@ -169,15 +169,21 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState) => {
     const checkedLoggedIn = state.user.checkedLoggedIn
     const error = state.user.loginError
+
+    const currentUserID = state.user.currentUser
+    const currentUsername = (currentUserID && state.user.users[currentUserID])
+        ? state.user.users[currentUserID].username
+        : undefined
+
     return {
-        currentUser: state.user.currentUser,
+        currentUsername,
         checkedLoggedIn,
-        error
+        error,
     }
 }
 
 const mapDispatchToProps = {
-    login
+    login,
 }
 
 const LoginPageContainer = connect(

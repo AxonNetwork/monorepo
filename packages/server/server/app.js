@@ -9,7 +9,6 @@ import passport from 'passport'
 
 import './config/passport'
 
-import userController from './controllers/userController'
 import routes from './routes'
 import HTTPError from './util/HTTPError'
 
@@ -33,9 +32,9 @@ app.use(morgan('dev'))
 app.use(allowCrossDomain)
 
 app.use('/static', express.static(`${__dirname}/public`))
-app.set('views', `${__dirname}/views`)
-app.engine('html', engines.mustache)
-app.set('view engine', 'html')
+// app.set('views', `${__dirname}/views`)
+// app.engine('html', engines.mustache)
+// app.set('view engine', 'html')
 
 app.use(passport.initialize())
 
@@ -60,17 +59,17 @@ const isDeveloping = process.env.NODE_ENV !== 'production'
 // })
 
 app.use(compression())
-app.use(express.static(path.join(__dirname, '../dist')))
+app.use(express.static(path.join(__dirname, '../dist/public')))
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/index.html'))
+    res.sendFile(path.join(__dirname, '../dist/public/index.html'))
 })
 // }
 
 // error handler
 app.use((err, req, res, next) => {
-    if (isDeveloping) {
-        console.error(err)
-    }
+    // if (isDeveloping) {
+    console.error(err)
+    // }
 
     if (err.statusCode) {
         res.status(err.statusCode).json({ error: err.message })

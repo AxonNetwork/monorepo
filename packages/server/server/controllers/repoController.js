@@ -39,10 +39,10 @@ repoController.getUserRepos = async (req, res, next) => {
     const local = await rpcClient.getLocalReposAsync({})
     const permissionsByRepo = await Promise.all(local.map(async (repo) => {
         const [ admins, pullers, pushers, isPublicResp ] = await Promise.all([
-            rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.ADMIN),
-            rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.PULLER),
-            rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.PUSHER),
-            rpcClient.isRepoPublicAsync(repo.repoID),
+            defaultOnError(rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.ADMIN), []),
+            defaultOnError(rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.PULLER), []),
+            defaultOnError(rpcClient.getAllUsersOfTypeAsync(repo.repoID, rpcClient.UserType.PUSHER), []),
+            defaultOnError(rpcClient.isRepoPublicAsync(repo.repoID), false),
         ])
         const users = union(admins, pullers, pushers)
         const isPublic = isPublicResp.isPublic
@@ -71,6 +71,8 @@ repoController.get = async (req, res, next) => {
         throw new HTTPError(404, 'Repository does not exist')
     }
 
+    console.log('repoController.get 111')
+
     const [ admins, pullers, pushers, isPublicResp, repoRow ] = await Promise.all([
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.ADMIN),
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PULLER),
@@ -78,6 +80,7 @@ repoController.get = async (req, res, next) => {
         rpcClient.isRepoPublicAsync({ repoID }),
         defaultOnError(Repo.get(repoID), {}),
     ])
+    console.log('repoController.get 222')
     const isPublic = isPublicResp.isPublic
     const allUsers = union(admins, pullers, pushers)
     const hasAccess = req.user !== undefined && allUsers.indexOf(req.user.username) > -1
@@ -85,7 +88,9 @@ repoController.get = async (req, res, next) => {
         throw new HTTPError(403, 'Unauthorized to view this repo')
     }
 
+    console.log('repoController.get 333')
     const history = (await rpcClient.getRepoHistoryAsync({ repoID })).commits || []
+    console.log('repoController.get 444')
     const timeline = history.map(event => ({
         version:  0,
         commit:   event.commitHash,
@@ -95,11 +100,13 @@ repoController.get = async (req, res, next) => {
         files:    event.files,
         verified: event.verified !== undefined ? new Date(event.verified.toNumber() * 1000) : undefined,
     }))
+    console.log('repoController.get 555')
     const commits = keyBy(timeline, 'commit')
     const commitList = Object.keys(commits)
 
     // @@TODO: don't hardcode the commit hash thing?
     const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID })).files || []
+    console.log('repoController.get 666')
     const contents = filesListRaw.map(file => ({
         name:            file.name,
         hash:            file.hash ? file.hash.toString('hex') : null,
@@ -112,6 +119,7 @@ repoController.get = async (req, res, next) => {
     }))
     const files = keyBy(contents, 'name')
 
+    console.log('repoController.get 777')
     res.status(200).json({
         repoID,
         admins,

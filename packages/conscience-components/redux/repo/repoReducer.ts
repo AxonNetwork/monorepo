@@ -1,3 +1,4 @@
+import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
 import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
@@ -49,6 +50,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
             const { uri, files } = action.payload
             const uriStr = uriToString(uri)
+            addFolders(files)
 
             return {
                 ...state,
@@ -154,31 +156,35 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         case RepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
             const { uri, repo } = action.payload
             const uriStr = uriToString(uri)
+            if (repo.files) {
+                addFolders(repo.files)
+            }
+
             return {
                 ...state,
                 filesByURI: {
                     ...state.filesByURI,
-                    [uriStr]: repo.files || {}
+                    [uriStr]: repo.files || {},
                 },
                 commitListsByURI: {
                     ...state.commitListsByURI,
-                    [uriStr]: repo.commitList || []
+                    [uriStr]: repo.commitList || [],
                 },
                 commits: {
                     ...state.commits,
-                    ...repo.commits
+                    ...repo.commits,
                 },
                 permissionsByID: {
                     ...state.permissionsByID,
                     [repo.repoID]: {
                         admins: repo.admins || [],
                         pushers: repo.pushers || [],
-                        pullers: repo.pullers || []
+                        pullers: repo.pullers || [],
                     }
                 },
                 isPublicByID: {
                     ...state.isPublicByID,
-                    [repo.repoID]: repo.isPublic || false
+                    [repo.repoID]: repo.isPublic || false,
                 }
             }
         }
@@ -213,3 +219,49 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
 
 export default repoReducer
 
+// Adds folders to a file list obtained from the backend server or from the node via RPC
+function addFolders(files: { [name: string]: IRepoFile }) {
+    for (let filepath of Object.keys(files)) {
+        let dirname = path.dirname(filepath)
+        if (dirname[0] === '/') {
+            dirname = dirname.slice(1)
+        }
+
+        if (dirname === '.') {
+            continue
+        }
+
+        const parts = dirname.split('/')
+        for (let i = 0; i < parts.length; i++) {
+            const partialDirname = parts.slice(0, i + 1).join('/')
+
+            if (!files[partialDirname]) {
+                const descendants = Object.keys(files).filter(filepath => filepath.startsWith(partialDirname) && files[filepath].type !== 'folder')
+                let size = 0
+                let modified: Date | null = null
+                let status = ''
+                for (let filepath of descendants) {
+                    size += files[filepath].size
+                    if (!modified || modified < files[filepath].modified) {
+                        modified = files[filepath].modified
+                    }
+
+                    if (status !== 'M' && (files[filepath].status === 'M' || files[filepath].status === '?' || files[filepath].status === 'U')) {
+                        status = 'M'
+                    }
+                }
+
+                files[partialDirname] = {
+                    name: partialDirname,
+                    type: 'folder',
+                    status,
+                    size,
+                    modified,
+                    diff: '',
+                    mergeConflict: false,
+                    mergeUnresolved: false,
+                } as IRepoFile
+            }
+        }
+    }
+}

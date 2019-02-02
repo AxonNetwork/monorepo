@@ -28,9 +28,6 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
         if (state.repo.diffsByCommitHash[commit]) {
             return
         }
-        console.log("GET DIFF")
-        console.log(repoID)
-        console.log(commit)
 
         const diff = await ServerRelay.getDiff({ repoID, commit })
         const parsed = parseDiff(diff)

@@ -27,6 +27,7 @@ userController.whoAmI = async (req, res, next) => {
 }
 
 userController.login = async (req, res, next) => {
+    console.log('login route')
     const { user, info } = await passportAuthenticateAsync('local', req, res, next)
     if (!user) {
         throw new HTTPError(403, 'Username or password is invalid')
@@ -34,6 +35,7 @@ userController.login = async (req, res, next) => {
     const { token } = await reqLoginAsync(req, user)
 
     const { userID, emails, name, username, picture, orgs, profile, mnemonic } = user
+    console.log('user ~>', user)
     return res.status(200).json({ userID, emails, name, username, picture, orgs, profile, jwt: token, mnemonic })
 }
 

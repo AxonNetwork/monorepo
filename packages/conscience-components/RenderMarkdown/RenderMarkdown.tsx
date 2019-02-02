@@ -25,7 +25,7 @@ class RenderMarkdown extends React.Component<Props>
                     source={this.props.text}
                     plugins={[shortcodes]}
                     renderers={{
-                        shortcode: this.parseShortcodes,
+                        shortcode: (node: { identifier: string; contents: string }) => this.parseShortcodes(node),
                         code: this.renderCode,
                         image: this.renderImg,
                     }}

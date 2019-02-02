@@ -1,4 +1,4 @@
-import { functionsIn } from 'lodash'
+import functionsIn from 'lodash/functionsIn'
 import { makeClassDecorator, construct } from './decorators'
 
 /**

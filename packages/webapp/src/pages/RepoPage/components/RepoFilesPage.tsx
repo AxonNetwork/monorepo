@@ -19,18 +19,21 @@ class RepoFilesPage extends React.Component<Props>
 {
     render() {
         const { files, classes } = this.props
-        if (files === undefined) {
+        if (!this.props.uri) {
+            return null
+        } else if (files === undefined) {
             return <LargeProgressSpinner />
         }
 
         const { repoID, commit, filename } = this.props.match.params
         const file = files[filename || '']
+        const fileURI = { ...this.props.uri, repoID, commit, filename }
 
-        if (!filename || !file) {
+        if (!filename || !file || file.type === 'folder') {
             return (
                 <div className={classes.fileListContainer}>
                     <FileList
-                        uri={{ type: URIType.Network, repoID, commit, filename }}
+                        uri={fileURI}
                         files={files}
                         fileExtensionsHidden={this.props.fileExtensionsHidden}
                     />
@@ -41,16 +44,13 @@ class RepoFilesPage extends React.Component<Props>
         return (
             <div>
                 <div className={classes.fileInfo}>
-                    <Breadcrumbs
-                        uri={{ type: URIType.Network, repoID, commit, filename }}
-                        classes={{ root: classes.breadcrumbs }}
-                    />
-                    <SecuredText uri={{ type: URIType.Network, repoID, commit, filename }} />
+                    <Breadcrumbs uri={fileURI} />
+                    <SecuredText uri={fileURI} />
                 </div>
                 <div className={classes.fileViewerContainer}>
                     <div className={classes.fileViewer}>
                         <FileViewer
-                            uri={{ type: URIType.Network, repoID, commit, filename }}
+                            uri={fileURI}
                             showViewerPicker={true}
                         />
                     </div>
@@ -58,7 +58,7 @@ class RepoFilesPage extends React.Component<Props>
                     <div className={classes.createDiscussion}>
                         <H5>Start a discussion on {filename}</H5>
                         <CreateDiscussion
-                            uri={{ type: URIType.Network, repoID, commit, filename }}
+                            uri={fileURI}
                             attachedTo={filename}
                         />
                     </div>

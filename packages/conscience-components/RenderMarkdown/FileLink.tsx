@@ -1,10 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import FileViewer from '../FileViewer'
 import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { selectFile } from 'conscience-components/navigation'
+import { selectFile, getFileURL } from 'conscience-components/navigation'
 
 @autobind
 class FileLink extends React.Component<Props, State>
@@ -13,7 +14,7 @@ class FileLink extends React.Component<Props, State>
         showPopper: false,
     }
 
-    _anchorElement: HTMLAnchorElement | null = null
+    _anchorElement: HTMLSpanElement | null = null
 
     render() {
         const { classes } = this.props
@@ -23,15 +24,15 @@ class FileLink extends React.Component<Props, State>
 
         return (
             <React.Fragment>
-                <a
-                    className={classes.link}
-                    onClick={this.goToFile}
-                    onMouseEnter={this.showPopper}
-                    onMouseLeave={this.hidePopper}
-                    ref={x => this._anchorElement = x}
-                >
-                    {this.props.uri.filename || ''}
-                </a>
+                <span ref={x => this._anchorElement = x}>
+                    <Link to={getFileURL(uri, FileMode.View)}
+                        className={classes.link}
+                        onMouseEnter={this.showPopper}
+                        onMouseLeave={this.hidePopper}
+                    >
+                        {this.props.uri.filename || ''}
+                    </Link>
+                </span>
                 <Popper
                     open={this.state.showPopper}
                     anchorEl={this._anchorElement}
@@ -56,15 +57,17 @@ class FileLink extends React.Component<Props, State>
         )
     }
 
-    goToFile() {
-        selectFile(this.props.uri, FileMode.View)
+    goToFile = () => {
+        const uri = { ...this.props.uri }
+        uri.commit = uri.commit || 'HEAD'
+        selectFile(uri, FileMode.View)
     }
 
-    showPopper() {
+    showPopper = () => {
         this.setState({ showPopper: true })
     }
 
-    hidePopper() {
+    hidePopper = () => {
         this.setState({ showPopper: false })
     }
 }

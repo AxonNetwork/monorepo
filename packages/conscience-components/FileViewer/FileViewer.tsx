@@ -116,11 +116,11 @@ class FileViewer extends React.Component<Props, State>
         )
     }
 
-    onClickQuickEdit() {
+    onClickQuickEdit = () => {
         selectFile(this.props.uri, FileMode.Edit)
     }
 
-    onClickOpenFile() {
+    onClickOpenFile = () => {
         const uri = this.props.uri
         console.log('uri', uri)
         if (uri.type !== URIType.Local) {
@@ -135,32 +135,32 @@ class FileViewer extends React.Component<Props, State>
         }
     }
 
-    onClickOpenViewerPicker() {
+    onClickOpenViewerPicker = () => {
         this.setState({ viewerPickerOpen: !this.state.viewerPickerOpen })
     }
 
-    onHoverViewer(hovering: boolean) {
+    onHoverViewer = (hovering: boolean) => {
         this.setState({ hovering })
     }
 
-    onChangeViewer(evt: React.ChangeEvent<HTMLSelectElement>) {
+    onChangeViewer = (evt: React.ChangeEvent<HTMLSelectElement>) => {
         this.setState({
             viewerName: evt.target.value,
             viewerPickerOpen: false,
         })
     }
 
-    componentDidMount() {
+    componentDidMount = () => {
         this.updateFileContents()
     }
 
-    componentDidUpdate(prevProps: Props) {
+    componentDidUpdate = (prevProps: Props) => {
         if (!isEqual(prevProps.uri, this.props.uri)) {
             this.updateFileContents()
         }
     }
 
-    async updateFileContents() {
+    updateFileContents = async () => {
         if (!this.props.uri.filename) {
             this.setState({ fileContents: '' })
             return

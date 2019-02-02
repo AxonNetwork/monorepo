@@ -60,7 +60,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         }
 
         await dispatch(getUserSettings({}))
-        await Promise.all(orgs.map(orgID => dispatch(fetchOrgInfo({ orgID }))))
+        await Promise.all((orgs || []).map(orgID => dispatch(fetchOrgInfo({ orgID }))))
 
         return { userID, emails, name, username, picture, orgs, profile }
     },

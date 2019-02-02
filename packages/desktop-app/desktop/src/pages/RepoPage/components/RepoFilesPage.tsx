@@ -21,19 +21,15 @@ class RepoFilesPage extends React.Component<Props>
 {
     render() {
         const { files, classes } = this.props
-        if (!this.props.uri) return null
-        if (files === undefined) {
+        if (!this.props.uri) {
+            return null
+        } else if (files === undefined) {
             return <LargeProgressSpinner />
         }
 
         const { commit, filename } = this.props.match.params
         const file = files[filename || '']
-
-        const fileURI = {
-            ...this.props.uri,
-            commit,
-            filename,
-        }
+        const fileURI = { ...this.props.uri, commit, filename }
 
         if (!filename || !file || file.type === 'folder') {
             return (
@@ -48,6 +44,7 @@ class RepoFilesPage extends React.Component<Props>
                 </div>
             )
         }
+
         return (
             <div>
                 <div className={classes.fileInfo}>

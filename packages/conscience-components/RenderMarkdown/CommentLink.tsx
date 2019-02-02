@@ -66,11 +66,11 @@ class CommentLink extends React.Component<Props, State>
         )
     }
 
-    showPopper() {
+    showPopper = () => {
         this.setState({ showPopper: true })
     }
 
-    hidePopper() {
+    hidePopper = () => {
         this.setState({ showPopper: false })
     }
 }

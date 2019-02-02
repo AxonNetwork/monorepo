@@ -77,7 +77,8 @@ export function getFileURL(uri: URI, mode: FileMode) {
 }
 
 export function selectFile(uri: URI, mode: FileMode) {
-    console.log('selectFile', uri)
+    uri = { ...uri } // make a copy
+    uri.commit = uri.commit || 'HEAD'
     history.push(getFileURL(uri, mode))
 }
 

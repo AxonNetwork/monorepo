@@ -16,11 +16,11 @@ class FormattingHelp extends React.Component<Props, State>
         syntaxModalOpen: false,
     }
 
-    openSyntaxModal() {
+    openSyntaxModal = () => {
         this.setState({ syntaxModalOpen: true })
     }
 
-    closeSyntaxModal() {
+    closeSyntaxModal = () => {
         this.setState({ syntaxModalOpen: false })
     }
 
