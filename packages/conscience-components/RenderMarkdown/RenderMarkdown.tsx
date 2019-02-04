@@ -25,7 +25,7 @@ class RenderMarkdown extends React.Component<Props>
                     source={this.props.text}
                     plugins={[shortcodes]}
                     renderers={{
-                        shortcode: (node: { identifier: string; contents: string }) => this.parseShortcodes(node),
+                        shortcode: this.parseShortcodes,
                         code: this.renderCode,
                         image: this.renderImg,
                     }}
@@ -34,7 +34,7 @@ class RenderMarkdown extends React.Component<Props>
         )
     }
 
-    renderCode(node: any) {
+    renderCode = (node: any) => {
         return (
             <CodeViewer
                 fileContents={node.value}
@@ -43,7 +43,7 @@ class RenderMarkdown extends React.Component<Props>
         )
     }
 
-    renderImg(node: any) {
+    renderImg = (node: any) => {
         if (node.src.startsWith('http://') || node.src.startsWith('https://')) {
             return <img src={node.src} />
         } else {
@@ -57,7 +57,7 @@ class RenderMarkdown extends React.Component<Props>
         }
     }
 
-    parseShortcodes(node: { identifier: string; contents: string }) {
+    parseShortcodes = (node: { identifier: string; contents: string }) => {
         const { identifier, contents } = node
 
         switch (identifier) {
