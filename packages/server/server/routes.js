@@ -13,6 +13,7 @@ import discussionController from './controllers/discussionController'
 import organizationController from './controllers/organizationController'
 import organizationBlogsController from './controllers/organizationBlogsController'
 import faucetController from './controllers/faucetController'
+import searchController from './controllers/searchController'
 
 const mustAuthenticate = passport.authenticate('jwt', { session: false })
 const tryAuthenticate = (req, res, next) => {
@@ -190,5 +191,10 @@ routes.get('/api/repo/:repoID/diff/:commit', (req, res) => {
         return cb(null, pkt.data)
     })).pipe(res)
 })
+
+routes.get('/api/search/get', asyncMiddleware(searchController.get))
+routes.get('/api/search/search', asyncMiddleware(searchController.search))
+routes.get('/api/search/refresh', asyncMiddleware(searchController.refresh))
+routes.get('/api/search/reindex-repo', asyncMiddleware(searchController.reindexRepo))
 
 export default routes

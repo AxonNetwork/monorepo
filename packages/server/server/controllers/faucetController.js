@@ -6,8 +6,6 @@ import Promise from 'bluebird'
 const MAX_AMOUNT = 10
 
 const provider = new HDWalletProvider(process.env.MNEMONIC, process.env.GETH_NODE, 0, 1)
-console.log(process.env.MNEMONIC, process.env.GETH_NODE)
-console.log('provider', provider)
 
 const web3 = new Web3(provider)
 Promise.promisifyAll(web3.eth)
