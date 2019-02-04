@@ -7,7 +7,7 @@ var getURIFromParams: (params: { repoID?: string, repoHash?: string }, state?: I
 var getFileContents: (uri: URI, opts?: IGetFileContentsOptions) => Promise<string | Buffer>
 var saveFileContents: (uri: URI, fileContents: string) => Promise<void>
 var directEmbedPrefix: (uri: URI) => string
-var isDesktop: () => boolean
+var getPlatformName: () => string
 
 export interface IGetFileContentsOptions {
     as?: 'buffer' | 'string'
@@ -20,7 +20,7 @@ function init(params: {
     getFileContents: typeof getFileContents,
     saveFileContents: typeof saveFileContents,
     directEmbedPrefix: typeof directEmbedPrefix,
-    isDesktop: typeof isDesktop,
+    getPlatformName: typeof getPlatformName,
 }) {
     getRepo = params.getRepo
     getRepoID = params.getRepoID
@@ -28,7 +28,7 @@ function init(params: {
     getFileContents = params.getFileContents
     saveFileContents = params.saveFileContents
     directEmbedPrefix = params.directEmbedPrefix
-    isDesktop = params.isDesktop
+    getPlatformName = params.getPlatformName
 }
 
 export {
@@ -39,5 +39,5 @@ export {
     getFileContents,
     saveFileContents,
     directEmbedPrefix,
-    isDesktop
+    getPlatformName
 }

@@ -7,10 +7,14 @@ import { IGlobalState } from 'conscience-components/redux'
 import { getHash, uriToString } from 'conscience-lib/utils'
 import * as rpc from 'conscience-lib/rpc'
 import axios from 'axios'
+import { setPlatformSpecificPlugins } from 'conscience-lib/plugins/platform-specific'
 
 export default function setEnvSpecific(store: Store<IGlobalState>) {
-    envSpecific.init({
+    setPlatformSpecificPlugins([
+        require('conscience-lib/plugins/defaults/viewer.pdf.desktop').default,
+    ])
 
+    envSpecific.init({
         async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions) {
             const { commit, filename } = uri
             if (!filename) {
@@ -160,8 +164,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             return undefined
         },
 
-        isDesktop() {
-            return true
-        }
+        getPlatformName() {
+            return 'desktop'
+        },
     })
 }

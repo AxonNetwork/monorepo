@@ -7,14 +7,14 @@ import * as ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
+import store from 'redux/store'
 import history from 'conscience-components/redux/history'
-import createStore from 'redux/store'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
 import * as rpc from 'conscience-lib/rpc'
 import { isProduction } from 'conscience-lib/utils'
-
-import 'typeface-roboto'
+import { initPlugins } from 'conscience-lib/plugins'
 import setEnvSpecific from './setEnvSpecific'
+import 'typeface-roboto'
 
 console.log('app version ~>', process.env.APP_VERSION)
 console.log('env ~>', process.env)
@@ -23,11 +23,9 @@ const appPath = (window as any).require('electron').remote.app.getAppPath()
 const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
 rpc.initClient(protoPath)
 
-
-const initialState = {}
-
-const store = createStore(initialState, history)
 setEnvSpecific(store)
+initPlugins()
+
 store.dispatch(readLocalConfig())
 store.dispatch(checkBalanceAndHitFaucet())
 store.dispatch(checkNodeUser())

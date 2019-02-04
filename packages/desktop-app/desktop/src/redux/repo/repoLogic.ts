@@ -106,23 +106,25 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 
             const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
 
-            const filesList = filesListRaw.map(file => {
-                if (file.name[file.name.length - 1] === '/') {
-                    file.name = file.name.slice(0, file.name.length - 1)
-                }
-                if (file.name[0] === '/') {
-                    file.name = file.name.slice(1)
-                }
-                return {
-                    name: file.name,
-                    size: file.size ? file.size.toNumber() : 0,
-                    modified: new Date(file.modified * 1000),
-                    type: filetypes.getType(file.name),
-                    status: file.stagedStatus,
-                    mergeConflict: file.mergeConflict,
-                    mergeUnresolved: file.mergeUnresolved,
-                } as IRepoFile
-            })
+            const filesList = filesListRaw
+                .filter(file => file && file.name)
+                .map(file => {
+                    if (file.name[file.name.length - 1] === '/') {
+                        file.name = file.name.slice(0, file.name.length - 1)
+                    }
+                    if (file.name[0] === '/') {
+                        file.name = file.name.slice(1)
+                    }
+                    return {
+                        name: file.name,
+                        size: file.size ? file.size.toNumber() : 0,
+                        modified: new Date(file.modified * 1000),
+                        type: filetypes.getType(file.name),
+                        status: file.stagedStatus,
+                        mergeConflict: file.mergeConflict,
+                        mergeUnresolved: file.mergeUnresolved,
+                    } as IRepoFile
+                })
             const files = keyBy(filesList, 'name')
             return { uri, files }
         }

@@ -47,6 +47,6 @@ export default {
         { extensions: ['gif'],                type: 'image', iconComponent: ImageIconColored, isTextFile: false, viewers: ['img-viewer'], editors: [] },
         { extensions: ['tif', 'tiff'],        type: 'image', iconComponent: ImageIconColored, isTextFile: false, viewers: ['img-viewer'], editors: [] },
 
-        { extensions: ['pdf'], type: 'pdf', iconComponent: InsertDriveFileIconColored, isTextFile: false, viewers: ['embed-viewer'], editors: [] },
+        { extensions: ['pdf'], type: 'pdf', iconComponent: InsertDriveFileIconColored, isTextFile: false, viewers: ['pdf-viewer'], editors: [] },
     ]
 }

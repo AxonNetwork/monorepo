@@ -1,46 +1,46 @@
 import path from 'path'
 import flatMap from 'lodash/flatMap'
-import { getPlugins, IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins'
+import { getPlugins, onPluginsReady } from '../plugins'
+import { IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins/types'
 
-export const filetypes = function() {
-    const filetypes = flatMap((getPlugins('file type') as IFileTypePlugin[]).map(plugin => plugin.fileTypes))
+export let filetypes: {[extension: string]: IFileType}
+export let fileViewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent } }
+export let fileEditors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } }
 
-    const types = {} as { [extension: string]: IFileType }
-    for (let filetype of filetypes) {
+onPluginsReady(() => {
+    // initialize file type plugins
+    const filetypePlugins = flatMap((getPlugins('file type') as IFileTypePlugin[]).map(plugin => plugin.fileTypes))
+
+    filetypes = {} as { [extension: string]: IFileType }
+    for (let filetype of filetypePlugins) {
         for (let ext of filetype.extensions) {
-            types[ext] = filetype
+            filetypes[ext] = filetype
         }
     }
-    return types
-}()
 
-export const fileViewers = function() {
-    const plugins = getPlugins('file viewer') as IFileViewerPlugin[]
-
-    const viewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent } } = {}
-    for (let plugin of plugins) {
-        viewers[plugin.name] = {
+    // initialize file viewer plugins
+    const viewerPlugins = getPlugins('file viewer') as IFileViewerPlugin[]
+    fileViewers = {}
+    for (let plugin of viewerPlugins) {
+        fileViewers[plugin.name] = {
             viewer: plugin.viewer,
             name: plugin.name,
             humanName: plugin.humanName,
         }
     }
-    return viewers
-}()
 
-export const fileEditors = function() {
-    const plugins = getPlugins('file editor') as IFileEditorPlugin[]
-
-    const editors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } } = {}
-    for (let plugin of plugins) {
-        editors[plugin.name] = {
+    // initialize file editor plugins
+    const editorPlugins = getPlugins('file editor') as IFileEditorPlugin[]
+    fileEditors = {}
+    for (let plugin of editorPlugins) {
+        fileEditors[plugin.name] = {
             editor: plugin.editor,
             name: plugin.name,
             humanName: plugin.humanName,
         }
     }
-    return editors
-}()
+})
+
 
 // Get the normalized extension for the given filename
 export function ext(filename: string) {

@@ -1,13 +1,11 @@
 import { connectRouter, routerMiddleware, RouterState } from 'connected-react-router'
-import { History } from 'history'
-import { createStore, applyMiddleware, compose, Store } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import { createLogicMiddleware } from 'redux-logic'
+import history from 'conscience-components/redux/history'
 import logic from './logic'
 import reducer from './reducer'
-import { IGlobalState } from 'conscience-components/redux'
 
-export default (initialState: {} | IGlobalState, history: History): Store<IGlobalState> => {
-
+const store = function() {
     // Redux DevTools
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
@@ -17,6 +15,8 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
     const enhancer = composeEnhancers(
         applyMiddleware(routerMiddleware(history), logicMiddleware)
     )
+
+    const initialState = {}
 
     const store = createStore(
         connectRouter(history)(reducer),
@@ -33,7 +33,9 @@ export default (initialState: {} | IGlobalState, history: History): Store<IGloba
     }
 
     return store
-}
+}()
+
+export default store
 
 declare module 'conscience-components/redux' {
     export interface IGlobalState {

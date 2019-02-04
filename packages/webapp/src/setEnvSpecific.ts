@@ -4,10 +4,14 @@ import { uriToString } from 'conscience-lib/utils'
 import { Store } from 'redux'
 import { IGlobalState } from 'conscience-components/redux'
 import axios from 'axios'
+import { setPlatformSpecificPlugins } from 'conscience-lib/plugins/platform-specific'
 
 export default function setEnvSpecific(store: Store<IGlobalState>) {
-    envSpecific.init({
+    setPlatformSpecificPlugins([
+        require('conscience-lib/plugins/defaults/viewer.pdf.web').default,
+    ])
 
+    envSpecific.init({
         async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions) {
             if (uri.type === URIType.Local) {
                 throw new Error('web platform cannot getFileContents with a local URI')
@@ -69,8 +73,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             return { type: URIType.Network, repoID: params.repoID } as URI
         },
 
-        isDesktop() {
-            return false
-        }
+        getPlatformName() {
+            return 'web'
+        },
     })
 }

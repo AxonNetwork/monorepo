@@ -1,82 +1,31 @@
-import { URI } from 'conscience-lib/common'
+import {
+    IPlugin,
+    IFileTypePlugin,
+    IFileViewerPlugin,
+    IFileEditorPlugin,
+    IMarkdownShortcodePlugin,
+    PluginType,
+} from './types'
+import { getPlatformSpecificPlugins } from './platform-specific'
 
-export type PluginType = 'file type' | 'file viewer' | 'file editor' | 'markdown shortcode'
-
-/**
- * file type
- */
-
-export interface IFileType {
-    extensions: string[]
-    type: string
-    language?: string
-    isTextFile: boolean
-    viewers: string[]
-    editors: string[]
-    iconComponent: React.ComponentType<{}>
+let pluginRegistry: {
+    'file type': IFileTypePlugin[],
+    'file viewer': IFileViewerPlugin[],
+    'file editor': IFileEditorPlugin[],
+    'markdown shortcode': IMarkdownShortcodePlugin[],
 }
 
-export interface IFileTypePlugin {
-    pluginType: 'file type'
-    fileTypes: IFileType[]
+let pluginsReady = false
+let pluginsReadyCallbacks = [] as (() => void)[]
+export function onPluginsReady(fn: () => void) {
+    if (pluginsReady) {
+        return fn()
+    }
+    pluginsReadyCallbacks.push(fn)
 }
 
-/**
- * viewer
- */
 
-export interface IFileViewerPlugin {
-    pluginType: 'file viewer'
-    name: string
-    humanName: string
-    viewer: FileViewerComponent
-}
-
-export type FileViewerComponent = React.ComponentClass<IFileViewerPluginProps>
-
-export interface IFileViewerPluginProps {
-    uri: URI
-    fileContents?: string
-    classes: any
-}
-
-/**
- * editor
- */
-
-export interface IFileEditorPlugin {
-    pluginType: 'file editor'
-    name: string
-    humanName: string
-    editor: FileEditorComponent
-}
-
-export type FileEditorComponent = React.ComponentClass<IFileEditorPluginProps>
-
-export interface IFileEditorPluginProps {
-    uri: URI
-    classes?: any
-}
-
-/**
- * markdown shortcode
- */
-
-export interface IMarkdownShortcodePlugin {
-    pluginType: 'markdown shortcode',
-    name: string
-    render: MarkdownShortcodeRenderFunc
-}
-
-export type MarkdownShortcodeRenderFunc = (contents: string, uri: URI) => JSX.Element
-
-export type IPlugin =
-    IFileTypePlugin |
-    IFileViewerPlugin |
-    IFileEditorPlugin |
-    IMarkdownShortcodePlugin
-
-const pluginRegistry = (function() {
+export function initPlugins() {
     // Load all default plugins
     const defaultPlugins = [
         require('./defaults/filetype.defaults.tsx').default,
@@ -84,18 +33,21 @@ const pluginRegistry = (function() {
         require('./defaults/viewer.code.tsx').default,
         require('./defaults/viewer.data.tsx').default,
         require('./defaults/viewer.data-spreadsheet.tsx').default,
-        require('./defaults/viewer.embed.tsx').default,
         require('./defaults/viewer.markdown.tsx').default,
         require('./defaults/editor.markdown.tsx').default,
         require('./defaults/shortcode.mathjax.tsx').default,
     ] as IPlugin[]
 
+    // Load platform-specific plugins
+    const platformPlugins = getPlatformSpecificPlugins()
+
     // Load user plugins (@@TODO)
     const userPlugins = [] as IPlugin[]
 
-    const plugins = [...defaultPlugins, ...userPlugins]
+    console.log('platform specific plugins', platformPlugins)
+    const plugins = [...defaultPlugins, ...platformPlugins, ...userPlugins]
 
-    const registry = {
+    pluginRegistry = {
         'file type': [] as IFileTypePlugin[],
         'file viewer': [] as IFileViewerPlugin[],
         'file editor': [] as IFileEditorPlugin[],
@@ -105,27 +57,28 @@ const pluginRegistry = (function() {
     for (let plugin of plugins) {
         switch (plugin.pluginType) {
             case 'file type':
-                registry[plugin.pluginType].push(plugin as IFileTypePlugin)
+                pluginRegistry[plugin.pluginType].push(plugin as IFileTypePlugin)
                 break
             case 'file viewer':
-                registry[plugin.pluginType].push(plugin as IFileViewerPlugin)
+                pluginRegistry[plugin.pluginType].push(plugin as IFileViewerPlugin)
                 break
             case 'file editor':
-                registry[plugin.pluginType].push(plugin as IFileEditorPlugin)
+                pluginRegistry[plugin.pluginType].push(plugin as IFileEditorPlugin)
                 break
             case 'markdown shortcode':
-                registry[plugin.pluginType].push(plugin as IMarkdownShortcodePlugin)
+                pluginRegistry[plugin.pluginType].push(plugin as IMarkdownShortcodePlugin)
                 break
             default:
-                console.error(
-                    'Unknown plugin type:',
-                    (plugin as any).pluginType
-                )
+                console.error('Unknown plugin type:', (plugin as any).pluginType)
+                break
         }
     }
 
-    return registry
-})()
+    pluginsReady = true
+    for (let cb of pluginsReadyCallbacks) {
+        cb()
+    }
+}
 
 export function getPlugins(pluginType: PluginType) {
     return pluginRegistry[pluginType]

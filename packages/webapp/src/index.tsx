@@ -4,10 +4,11 @@ import ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
 import App from 'App'
-import createStore from 'redux/store'
+import store from 'redux/store'
 import history from 'conscience-components/redux/history'
 import { whoami } from 'conscience-components/redux/user/userActions'
 import { isProduction } from 'utils'
+import { initPlugins } from 'conscience-lib/plugins'
 import setEnvSpecific from 'setEnvSpecific'
 
 import 'typeface-roboto'
@@ -18,15 +19,9 @@ if (isProduction) {
     OfflinePluginRuntime.install()
 }
 
-// To keep reducers self-sufficient and reusable, we choose to not set
-// initial state here, and let each reducer to handle the default state
-// https://github.com/reactjs/redux/issues/1189#issuecomment-168025590
-const initialState = {}
-
-// Create browser history
-// Configure store
-const store = createStore(initialState, history)
 setEnvSpecific(store)
+initPlugins()
+
 store.dispatch(whoami({}))
 
 // Create render function

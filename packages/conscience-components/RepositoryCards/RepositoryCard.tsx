@@ -16,7 +16,7 @@ import { H6 } from 'conscience-components/Typography/Headers'
 import { selectRepo, getRepoURL } from 'conscience-components/navigation'
 import { cloneRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
-import { getRepoID, isDesktop } from 'conscience-components/env-specific'
+import { getRepoID, getPlatformName } from 'conscience-components/env-specific'
 import { URI, URIType, LocalURI, RepoPage } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 import moment from 'moment'
@@ -118,15 +118,21 @@ class RepositoryCard extends React.Component<Props, State>
     }
 
     navigateOrRedirectTo(page: RepoPage) {
-        if (!isDesktop()) {
+        const platform = getPlatformName()
+
+        if (platform === 'web') {
             selectRepo(this.props.uri, page)
-        } else {
+
+        } else if (platform === 'desktop') {
             const local = this.props.localRepoList.find(uri => getRepoID(uri) === getRepoID(this.props.uri))
             if (local !== undefined) {
                 selectRepo(local, page)
             } else {
                 this.toggleDialog()
             }
+
+        } else {
+            throw new Error(`unknown platform: ${platform}`)
         }
     }
 
