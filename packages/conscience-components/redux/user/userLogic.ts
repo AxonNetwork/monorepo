@@ -1,3 +1,5 @@
+import uniq from 'lodash/uniq'
+import keyBy from 'lodash/keyBy'
 import {
     UserActionType,
     IFetchUserDataAction, IFetchUserDataSuccessAction,
@@ -10,7 +12,6 @@ import {
 } from './userActions'
 import { fetchOrgInfo } from '../org/orgActions'
 import { makeLogic } from '../reduxUtils'
-import { keyBy, uniq } from 'lodash'
 import { IUser } from 'conscience-lib/common'
 import ServerRelay from 'conscience-lib/ServerRelay'
 

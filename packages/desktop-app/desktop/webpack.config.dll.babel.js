@@ -1,7 +1,7 @@
-import path from 'path';
-import webpack from 'webpack';
+import path from 'path'
+import webpack from 'webpack'
 
-import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin';
+import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin'
 
 const reactVendors = [
     'connected-react-router',
@@ -10,16 +10,13 @@ const reactVendors = [
     'react-hot-loader',
     'react-i18next',
     'react-loadable',
+    'react-router',
     'react-router-dom',
     'react-redux',
     'redux',
     'redux-logger',
-    'redux-saga',
-];
-
-const immutableVendors = [
-    'immutable',
-];
+    'redux-logic',
+]
 
 const config = {
     // Get mode from NODE_ENV
@@ -29,19 +26,16 @@ const config = {
     context: path.resolve(__dirname),
 
     // The point or points to enter the application.
-    entry: {
-        react: reactVendors,
-        immutable: immutableVendors,
-    },
+    entry: { react: reactVendors },
 
     // Affecting the output of the compilation
     output: {
     // path: the output directory as an absolute path (required)
-        path: path.resolve(__dirname, 'dist-bundle/dll/'),
+        path:     path.resolve(__dirname, 'dist-bundle/dll/'),
         // filename: specifies the name of output file on disk (required)
         filename: '[name]_dll.js',
         // library: name of the generated dll reference
-        library: '[name]_dll',
+        library:  '[name]_dll',
     },
 
     // A list of used webpack plugins
@@ -56,9 +50,7 @@ const config = {
     ],
 
     // Turn off performance hints (assets size limit)
-    performance: {
-        hints: false,
-    },
-};
+    performance: { hints: false },
+}
 
-export default config;
+export default config

@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, RouteComponentProps } from 'react-router'
@@ -19,7 +20,6 @@ import { selectRepo } from 'conscience-components/navigation'
 import { getURIFromParams } from 'conscience-components/env-specific'
 import { URI, RepoPage } from 'conscience-lib/common'
 import { autobind, stringToRepoPage, uriToString } from 'conscience-lib/utils'
-import { isEqual } from 'lodash'
 
 
 @autobind

@@ -1,5 +1,5 @@
 import path from 'path'
-import { uniq } from 'lodash'
+import uniq from 'lodash/uniq'
 import toml from 'toml-j0.4'
 import tomlify from 'tomlify-j0.4'
 const { app } = (window as any).require('electron').remote
@@ -138,7 +138,7 @@ const UserData = {
         parsed.node.EthereumBIP39Seed = mnemonic
         var updated = tomlify.toToml(parsed, {
             space: 2,
-            replace: function (key: string, value: any) {
+            replace: function(key: string, value: any) {
                 // prevent tomlify from turning port number into a floating point
                 if (key === 'P2PListenPort') {
                     return value.toFixed(0)

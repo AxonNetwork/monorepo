@@ -18,7 +18,7 @@ import { IGlobalState } from 'conscience-components/redux'
 import { getRepoID } from 'conscience-components/env-specific'
 import { URI, IRepoFile, IDiscussion } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
-import { isEqual } from 'lodash'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind

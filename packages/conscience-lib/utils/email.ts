@@ -1,4 +1,4 @@
-import { memoize } from 'lodash'
+import memoize from 'lodash/memoize'
 
 export const removeEmail = memoize(function(gitUsername: string) {
     return gitUsername.replace(/<.*>/, '').trim()

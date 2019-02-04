@@ -12,7 +12,7 @@ import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { URI, URIType } from 'conscience-lib/common'
 import { autobind, stringToRepoPage } from 'conscience-lib/utils'
-import { isEqual } from 'lodash'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind

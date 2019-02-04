@@ -1,4 +1,4 @@
-import { keyBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
 import { makeLogic } from '../reduxUtils'
 import {
     DiscussionActionType,

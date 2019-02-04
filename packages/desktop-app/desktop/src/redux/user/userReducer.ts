@@ -1,8 +1,8 @@
 import pickBy from 'lodash/pickBy'
+import fromPairs from 'lodash/fromPairs'
 import userReducer, { IUserState, initialState } from 'conscience-components/redux/user/userReducer'
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
 import { DesktopUserActionType, IDesktopUserAction } from './userActions'
-import { fromPairs } from 'lodash'
 
 const desktopInitialState = {
     ...initialState,

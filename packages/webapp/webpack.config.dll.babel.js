@@ -18,11 +18,6 @@ const reactVendors = [
     'redux-logic',
 ]
 
-// const muiVendors = [
-//     '@material-ui/core',
-//     '@material-ui/icons',
-// ]
-
 const config = {
     // Get mode from NODE_ENV
     mode: process.env.NODE_ENV,
@@ -31,10 +26,7 @@ const config = {
     context: path.resolve(__dirname),
 
     // The point or points to enter the application.
-    entry: {
-        react: reactVendors,
-        // mui:   muiVendors,
-    },
+    entry: { react: reactVendors },
 
     // Affecting the output of the compilation
     output: {

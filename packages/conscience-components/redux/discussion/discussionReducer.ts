@@ -1,6 +1,8 @@
+import uniq from 'lodash/uniq'
+import values from 'lodash/values'
+import sortBy from 'lodash/sortBy'
 import { DiscussionActionType, IDiscussionAction } from './discussionActions'
 import { IDiscussion, IComment } from 'conscience-lib/common'
-import { uniq, values, sortBy } from 'lodash'
 
 const initialState = {
     discussions: {},

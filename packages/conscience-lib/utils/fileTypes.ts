@@ -1,5 +1,5 @@
 import path from 'path'
-import { flatMap } from 'lodash'
+import flatMap from 'lodash/flatMap'
 import { getPlugins, IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins'
 
 export const filetypes = function() {

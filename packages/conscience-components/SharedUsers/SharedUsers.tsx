@@ -1,3 +1,4 @@
+import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
@@ -33,7 +34,6 @@ import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
 import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { union } from 'lodash'
 
 
 @autobind
