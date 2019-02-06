@@ -8,7 +8,6 @@ import CardContent from '@material-ui/core/CardContent'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Divider from '@material-ui/core/Divider'
 import { search } from 'conscience-components/redux/search/searchActions'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
@@ -16,8 +15,12 @@ import { getFileURL, getDiscussionURL } from 'conscience-components/navigation'
 import { ISearchResults, URIType, FileMode } from 'conscience-lib/common'
 
 
-class SearchPage extends React.Component<Props>
+class SearchPage extends React.Component<Props, State>
 {
+    state = {
+        resultType: 'files' as 'files'|'comments',
+    }
+
     render() {
         const { results, classes } = this.props
         if (!results) {
@@ -33,35 +36,64 @@ class SearchPage extends React.Component<Props>
                 <main className={classes.main}>
                     <H5>Searching for "{this.props.match.params.query}"</H5>
 
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <H6>Files</H6>
-                            <List>
-                                {results.files.map(file => (
-                                    <ListItem>
-                                        <Link to={getFileURL({ type: URIType.Network, repoID: file.repoID, commit: 'HEAD', filename: file.filename }, FileMode.View)}>
-                                            <div>{file.repoID}</div>
-                                            <div>{file.filename}</div>
-                                        </Link>
+                    <div className={classes.columnContainer}>
+                        <Card className={classes.leftCol}>
+                            <CardContent>
+                                <List>
+                                    <ListItem
+                                        button
+                                        classes={{ button: classes.listItemHover }}
+                                        onClick={() => this.setState({ resultType: 'files' })}
+                                    >
+                                        {results.files.length} files
                                     </ListItem>
-                                ))}
-                            </List>
-
-                            <Divider />
-
-                            <H6>Comments</H6>
-                            <List>
-                                {results.comments.map(comment => (
-                                    <ListItem>
-                                        <Link to={getDiscussionURL({ type: URIType.Network, repoID: comment.repoID }, comment.discussionID)}>
-                                            <div>{comment.repoID}</div>
-                                            <div>{comment.commentID}</div>
-                                        </Link>
+                                    <ListItem
+                                        button
+                                        classes={{ button: classes.listItemHover }}
+                                        onClick={() => this.setState({ resultType: 'comments' })}
+                                    >
+                                        {results.comments.length} comments
                                     </ListItem>
-                                ))}
-                            </List>
-                        </CardContent>
-                    </Card>
+                                </List>
+                            </CardContent>
+                        </Card>
+
+                        <Card className={classes.rightCol}>
+                            <CardContent>
+                                {this.state.resultType === 'files' &&
+                                    <React.Fragment>
+                                        <H6>Files</H6>
+                                        <List>
+                                            {results.files.map(file => (
+                                                <ListItem>
+                                                    <Link to={getFileURL({ type: URIType.Network, repoID: file.repoID, commit: 'HEAD', filename: file.filename }, FileMode.View)}>
+                                                        <div>{file.repoID}</div>
+                                                        <div>{file.filename}</div>
+                                                    </Link>
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </React.Fragment>
+                                }
+
+                                {this.state.resultType === 'comments' &&
+                                    <React.Fragment>
+                                        <H6>Comments</H6>
+                                        <List>
+                                            {results.comments.map(comment => (
+                                                <ListItem>
+                                                    <Link to={getDiscussionURL({ type: URIType.Network, repoID: comment.repoID }, comment.discussionID)}>
+                                                        <div>{comment.repoID}</div>
+                                                        <div>{comment.commentID}</div>
+                                                    </Link>
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </React.Fragment>
+                                }
+                            </CardContent>
+                        </Card>
+                    </div>
                 </main>
             </div>
         )
@@ -94,6 +126,9 @@ interface MatchParams {
     query: string
 }
 
+interface State {
+    resultType: 'files' | 'comments'
+}
 
 const styles = (theme: Theme) => createStyles({
     container: {
@@ -106,8 +141,21 @@ const styles = (theme: Theme) => createStyles({
         width: 1024,
         marginTop: 32,
     },
-    card: {
+    columnContainer: {
+        display: 'flex',
         width: '100%',
+    },
+    leftCol: {
+        width: 220,
+        marginRight: 20,
+    },
+    rightCol: {
+        flexGrow: 1,
+    },
+    listItemHover: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        },
     },
 })
 
