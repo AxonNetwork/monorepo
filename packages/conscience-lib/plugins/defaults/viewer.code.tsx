@@ -61,4 +61,5 @@ export default {
     name: 'code-viewer',
     humanName: 'Default code viewer',
     viewer: connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(CodeViewerPlugin)),
+    widthMode: 'full',
 }

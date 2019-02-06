@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture } from './common'
+import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -68,7 +68,6 @@ const ServerRelay = {
             }
             throw err.response ? err.response.data.error : err
         }
-        console.log(resp)
 
         ServerRelay.setJWT(resp.data.jwt)
         return resp.data
@@ -454,6 +453,14 @@ const ServerRelay = {
         type IResponse = IOrgBlog
 
         const resp = await axios.post<IResponse>(API_URL + `/org/${blog.orgID}/blog`, blog)
+        return resp.data
+    },
+
+    async search(query: string) {
+        type IResponse = ISearchResults
+
+        const qs = querystring.stringify({ q: query })
+        const resp = await axios.get<IResponse>(API_URL + `/search/search?${qs}`)
         return resp.data
     },
 }

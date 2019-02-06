@@ -46,7 +46,7 @@ class RepoInfo extends React.Component<Props>
                     onTabSelect={this.navigateRepoPage}
                     menuLabelsHidden={this.props.menuLabelsHidden}
                 />
-            </div >
+            </div>
         )
     }
 

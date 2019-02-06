@@ -1,6 +1,7 @@
 import keyBy from 'lodash/keyBy'
 import { URI } from 'conscience-lib/common'
-import { getPlugins, IMarkdownShortcodePlugin } from '../plugins'
+import { getPlugins } from '../plugins'
+import { IMarkdownShortcodePlugin } from '../plugins/types'
 
 let plugins: { [name: string]: IMarkdownShortcodePlugin }
 

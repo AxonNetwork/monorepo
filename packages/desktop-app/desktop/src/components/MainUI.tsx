@@ -44,7 +44,7 @@ class MainUI extends React.Component<Props, State>
                 />
                 <main className={classes.mainUI}>
                     <div className={classnames(classes.mainUISidebarToggle, { [classes.mainUISidebarToggleHidden]: this.state.sidebarOpen })}>
-                        <IconButton onClick={this.onToggleSidebar}>
+                        <IconButton onClick={this.onToggleSidebar} disabled={this.state.sidebarOpen}>
                             <MenuIcon />
                         </IconButton>
                     </div>

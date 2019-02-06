@@ -1,4 +1,3 @@
-import isEqual from 'lodash/isEqual'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
@@ -10,7 +9,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import { FileEditorComponent } from 'conscience-lib/plugins'
+import { FileEditorComponent } from 'conscience-lib/plugins/types'
 
 
 @autobind

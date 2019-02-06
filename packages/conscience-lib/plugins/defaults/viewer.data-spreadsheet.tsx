@@ -1,7 +1,5 @@
 import React from 'react'
 import XLSX from 'xlsx'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
 import Spreadsheet from 'x-data-spreadsheet'
 import { autobind } from 'conscience-lib/utils'
 import { URI } from 'conscience-lib/common'
@@ -61,11 +59,7 @@ class SpreadsheetViewerPlugin extends React.Component<Props, State>
     render() {
         // const extension = this.props.uri.filename ? filetypes.ext(this.props.uri.filename) : 'csv'
         return (
-            <Card>
-                <CardContent>
-                    <div ref={x => this._container = x}></div>
-                </CardContent>
-            </Card>
+            <div ref={x => this._container = x}></div>
         )
     }
 }
@@ -83,4 +77,5 @@ export default {
     name: 'spreadsheet-viewer',
     humanName: 'Spreadsheet viewer',
     viewer: SpreadsheetViewerPlugin,
+    widthMode: 'full',
 }

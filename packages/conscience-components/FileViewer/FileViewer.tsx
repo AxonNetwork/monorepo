@@ -13,7 +13,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import { URI, URIType, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import { FileViewerComponent } from 'conscience-lib/plugins'
+import { FileViewerComponent, WidthMode } from 'conscience-lib/plugins/types'
 import { getFileContents } from '../env-specific'
 import { selectFile } from '../navigation'
 
@@ -43,22 +43,35 @@ class FileViewer extends React.Component<Props, State>
         }
 
         const viewerName = this.state.viewerName || viewers[0].name
-        let Viewer: FileViewerComponent | undefined
+        let Viewer: FileViewerComponent = viewers[0].viewer
+        let widthMode: WidthMode = 'unset'
         for (let v of viewers) {
             if (v.name === viewerName) {
                 Viewer = v.viewer
+                widthMode = v.widthMode
                 break
             }
         }
-        if (Viewer === undefined) {
-            Viewer = viewers[0].viewer
+
+        // Override plugin default widthMode if explicitly specified in props
+        if (this.props.widthMode) {
+            widthMode = this.props.widthMode
+        }
+
+        let widthClass = ''
+        if (widthMode === 'full') {
+            widthClass = classes.rootFullWidth
+        } else if (widthMode === 'breakpoints') {
+            widthClass = classes.rootRegularWidth
+        } else if (widthMode === 'unset') {
+            widthClass = ''
         }
 
         const canQuickEdit = this.props.uri.type === URIType.Local && filetypes.getEditors(this.props.uri.filename).length > 0
         const isLocal = this.props.uri.type === URIType.Local
 
         return (
-            <div className={classes.root}>
+            <div className={classnames(classes.root, widthClass)}>
                 <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)} className={classes.wrapper}>
                     <Viewer
                         uri={this.props.uri}
@@ -184,6 +197,7 @@ class FileViewer extends React.Component<Props, State>
 
 interface Props {
     uri: URI
+    widthMode?: WidthMode
     showViewerPicker?: boolean
     showButtons?: boolean
     classes?: any
@@ -202,6 +216,17 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+    },
+    rootRegularWidth: {
+        [theme.breakpoints.up(1280)]: {
+            maxWidth: 960,
+        },
+        [theme.breakpoints.down(1280)]: {
+            maxWidth: '100%',
+        },
+    },
+    rootFullWidth: {
+        width: '100%',
     },
     wrapper: {
         // display: 'flex',

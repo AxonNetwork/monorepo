@@ -190,3 +190,20 @@ export enum OrgPage {
     Settings,
     Editor,
 }
+
+export interface ISearchCommentResult {
+    repoID: string
+    discussionID: string
+    commentID: string
+}
+
+export interface ISearchFileResult {
+    repoID: string
+    filename: string
+    hash: string
+}
+
+export interface ISearchResults {
+    comments: ISearchCommentResult[]
+    files: ISearchFileResult[]
+}

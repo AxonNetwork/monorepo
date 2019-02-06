@@ -14,15 +14,17 @@ class UserAvatar extends React.Component<Props>
 {
     render() {
         const { user, userPictureSize, noTooltip, disableClick, classes } = this.props
-        let seedText = this.props.seedText || "unknown"
+        let seedText = this.props.seedText || 'unknown'
         if (user && user.userID) {
             seedText = user.userID
         }
+
+        const avatarClasses = { root: classes.root, colorDefault: classes.colorDefault, img: classes.img }
         let avatar
         if (user && user.picture) {
             avatar = (
                 <Avatar
-                    classes={this.props.classes}
+                    classes={avatarClasses}
                     className={this.props.className}
                     src={user.picture[userPictureSize || '128x128']}
                 />
@@ -31,7 +33,7 @@ class UserAvatar extends React.Component<Props>
             const svg = jdenticon.toSvg(seedText, 200)
             avatar = (
                 <Avatar
-                    classes={this.props.classes}
+                    classes={avatarClasses}
                     className={this.props.className}
                 >
                     <div

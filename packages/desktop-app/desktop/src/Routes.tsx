@@ -6,10 +6,10 @@ import RepoPage from './pages/RepoPage'
 import NewRepoPage from './pages/NewRepoPage'
 import OrgPage from './pages/OrgPage'
 import SettingsPage from './pages/SettingsPage'
+import SearchPage from 'conscience-components/SearchPage'
 import UserPage from 'conscience-components/UserPage'
 
 function Routes({ history, classes }: Props) {
-    console.log(history.location.pathname)
     return (
         <Switch>
             <Route path="/local-repo/:repoHash" component={RepoPage} />
@@ -22,6 +22,7 @@ function Routes({ history, classes }: Props) {
             <Route path="/user/:username" render={props => {
                 return <UserPage {...props} classes={{ container: classes.scrollContainer }} />
             }} />
+            <Route path="/search/:query" component={SearchPage} />
             <Route render={() => (
                 <Redirect to="/welcome" />
             )} />

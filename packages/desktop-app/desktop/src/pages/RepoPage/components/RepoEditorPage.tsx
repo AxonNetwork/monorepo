@@ -55,7 +55,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
     const repoRoot = state.repo.reposByHash[props.match.params.repoHash]
     const filename = props.match.params.filename
-    const uri = { type: URIType.Local, repoRoot, filename } as LocalURI
+    const uri = { type: URIType.Local, repoRoot, commit: 'working', filename } as LocalURI
     return {
         uri,
     }

@@ -102,7 +102,7 @@ class RepoPageContainer extends React.Component<Props>
         document.addEventListener('keydown', this.onKeyDown, false)
     }
 
-    onKeyDown(evt: React.KeyboardEvent<Element>) {
+    onKeyDown(evt: KeyboardEvent) {
         if ((evt.metaKey || evt.ctrlKey) && !evt.altKey && !evt.shiftKey) {
             if (evt.key === '1') {
                 selectRepo(this.props.uri!, RepoPage.Home)

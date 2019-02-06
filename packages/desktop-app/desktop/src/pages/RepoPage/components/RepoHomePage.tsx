@@ -38,6 +38,7 @@ class RepoHomePage extends React.Component<Props>
                             <FileViewer
                                 uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
                                 showViewerPicker={false}
+                                widthMode='unset'
                             />
                             <IconButton
                                 onClick={this.onClickEditReadme}
@@ -136,7 +137,8 @@ const styles = (theme: Theme) => createStyles({
         [theme.breakpoints.down(1080)]: {
             flexDirection: 'column',
         },
-        marginTop: 32,
+        margin: '32px auto',
+        maxWidth: 1440,
     },
     readmeContainer: {
         position: 'relative',

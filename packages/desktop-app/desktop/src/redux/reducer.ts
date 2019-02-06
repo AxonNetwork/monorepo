@@ -5,6 +5,7 @@ import orgReducer from 'conscience-components/redux/org/orgReducer'
 import uiReducer from 'conscience-components/redux/ui/uiReducer'
 import userReducer from './user/userReducer'
 import repoReducer from './repo/repoReducer'
+import searchReducer from './search/searchReducer'
 
 import { IGlobalState } from 'conscience-components/redux'
 
@@ -14,6 +15,7 @@ const appReducer = combineReducers({
     discussion: discussionReducer,
     org: orgReducer,
     ui: uiReducer,
+    search: searchReducer,
 })
 
 const rootReducer = (state: IGlobalState | undefined, action: { type: string }): IGlobalState => {

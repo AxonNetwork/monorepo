@@ -42,6 +42,7 @@ declare module 'conscience-lib/rpc' {
         name: string,
         size: Long,
         modified: number,
+        unstagedStatus: string,
         stagedStatus: string,
         mergeConflict: boolean,
         mergeUnresolved: boolean,

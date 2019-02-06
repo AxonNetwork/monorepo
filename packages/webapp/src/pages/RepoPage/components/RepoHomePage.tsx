@@ -96,7 +96,7 @@ class RepoHomePage extends React.Component<Props>
     }
 
     onClickEditReadme() {
-        selectFile({ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }, FileMode.Edit)
+        selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.Edit)
     }
 }
 

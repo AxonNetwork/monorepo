@@ -7,6 +7,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconButton from '@material-ui/core/IconButton'
 import UserAvatar from 'conscience-components/UserAvatar'
+import SearchBar from 'conscience-components/SearchBar'
 import { logout } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectUser, selectSettings } from 'conscience-components/navigation'
@@ -31,6 +32,11 @@ class Header extends React.Component<Props, State>
                 <Link to={`/user/${username}`}>
                     <img src={logo} className={classes.img} alt="Conscience Logo" />
                 </Link>
+
+                <SearchBar classes={{ root: classes.searchBar }} />
+
+                <div style={{flexGrow: 1}}></div>
+
                 {user !== undefined &&
                     <div className={classes.avatar}>
                         <IconButton onClick={this.openUserMenu} classes={{ root: classes.avatarButton }}>
@@ -93,7 +99,10 @@ const styles = (theme: Theme) => createStyles({
         paddingLeft: 8,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
+    },
+    searchBar: {
+        marginLeft: 10,
     },
     img: {
         width: 48,

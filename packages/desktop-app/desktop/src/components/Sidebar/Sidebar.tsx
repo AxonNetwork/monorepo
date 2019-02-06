@@ -151,8 +151,8 @@ const drawerWidth = 200
 
 const styles = (theme: Theme) => createStyles({
     sidebarToggle: {
-        display: 'flex',
-        justifyContent: 'flex-start',
+        // display: 'flex',
+        // justifyContent: 'flex-start',
         '& svg': {
             fill: 'rgb(212, 212, 212)',
         },
@@ -204,9 +204,9 @@ const styles = (theme: Theme) => createStyles({
         boxShadow: 'inset 0px 5px 15px -3px rgba(0, 0, 0, 0.44)',
     },
     avatarWrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        // display: 'flex',
+        // flexDirection: 'column',
+        // alignItems: 'center',
         width: '100%',
         padding: '20px 0',
         textAlign: 'center',

@@ -22,6 +22,7 @@ declare module 'react-syntax-highlighter/prism' {
 
 declare module 'tomlify-j0.4'
 declare module 'toml-j0.4'
+declare module 'x-data-spreadsheet'
 
 
 declare module 'bugsnag-react' {

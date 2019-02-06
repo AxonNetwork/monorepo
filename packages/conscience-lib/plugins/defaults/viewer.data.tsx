@@ -37,4 +37,5 @@ export default {
     name: 'data-viewer',
     humanName: 'Default data table viewer',
     viewer: DataViewerPlugin,
+    widthMode: 'breakpoints',
 }

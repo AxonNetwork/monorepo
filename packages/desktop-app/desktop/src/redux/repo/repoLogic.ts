@@ -120,7 +120,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
                         size: file.size ? file.size.toNumber() : 0,
                         modified: new Date(file.modified * 1000),
                         type: filetypes.getType(file.name),
-                        status: file.stagedStatus,
+                        status: file.unstagedStatus,
                         mergeConflict: file.mergeConflict,
                         mergeUnresolved: file.mergeUnresolved,
                     } as IRepoFile

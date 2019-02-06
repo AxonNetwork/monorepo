@@ -52,13 +52,11 @@ class RepoFilesPage extends React.Component<Props>
                     <SecuredText uri={fileURI} />
                 </div>
                 <div className={classes.fileViewerContainer}>
-                    <div className={classes.fileViewer}>
-                        <FileViewer
-                            uri={fileURI}
-                            showViewerPicker={true}
-                            showButtons
-                        />
-                    </div>
+                    <FileViewer
+                        uri={fileURI}
+                        showViewerPicker={true}
+                        showButtons
+                    />
                     <div className={classes.createDiscussion}>
                         <H5>Start a discussion on {filename}</H5>
                         <CreateDiscussion
@@ -104,14 +102,15 @@ const styles = (theme: Theme) => createStyles({
         alignItems: 'center',
         // },
     },
-    fileViewer: {
-        [theme.breakpoints.up(1280)]: {
-            width: 960,
-        },
-        [theme.breakpoints.down(1280)]: {
-            maxWidth: '100%',
-        },
-    },
+    // fileViewer: {
+    //     [theme.breakpoints.up(1280)]: {
+    //         width: 960,
+    //         // width: '100%',
+    //     },
+    //     [theme.breakpoints.down(1280)]: {
+    //         maxWidth: '100%',
+    //     },
+    // },
     createDiscussion: {
         textAlign: 'center',
         marginTop: 32,
@@ -131,7 +130,6 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const uri = getURIFromParams(ownProps.match.params)
     const files = state.repo.filesByURI[uriToString(uri)]
-
     return {
         uri,
         files,

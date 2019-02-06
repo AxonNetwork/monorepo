@@ -10,6 +10,7 @@ import UserPage from 'conscience-components/UserPage'
 import SettingsPage from 'pages/SettingsPage'
 import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
+import SearchPage from 'conscience-components/SearchPage'
 import { IGlobalState } from 'conscience-components/redux'
 
 
@@ -30,6 +31,7 @@ function Routes({ loginState, username, history, classes }: Props) {
                 <Route path="/user/:username" render={props => {
                     return <UserPage {...props} classes={{ main: classes.constrainedWidth }} />
                 }} />
+                <Route path="/search/:query" component={SearchPage} />
                 <Route render={() => {
                     if (loginState === LoginState.LoggedIn) {
                         return <Redirect to={`/user/${username}`} />

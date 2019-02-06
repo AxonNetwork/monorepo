@@ -4,11 +4,11 @@ import { getPlugins, onPluginsReady } from '../plugins'
 import { IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins/types'
 
 export let filetypes: {[extension: string]: IFileType}
-export let fileViewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent } }
+export let fileViewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent, widthMode: 'full' | 'breakpoints' | 'unset' } }
 export let fileEditors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } }
 
 onPluginsReady(() => {
-    // initialize file type plugins
+    // register file types from plugins
     const filetypePlugins = flatMap((getPlugins('file type') as IFileTypePlugin[]).map(plugin => plugin.fileTypes))
 
     filetypes = {} as { [extension: string]: IFileType }
@@ -18,7 +18,7 @@ onPluginsReady(() => {
         }
     }
 
-    // initialize file viewer plugins
+    // register file viewers from plugins
     const viewerPlugins = getPlugins('file viewer') as IFileViewerPlugin[]
     fileViewers = {}
     for (let plugin of viewerPlugins) {
@@ -26,10 +26,11 @@ onPluginsReady(() => {
             viewer: plugin.viewer,
             name: plugin.name,
             humanName: plugin.humanName,
+            widthMode: plugin.widthMode,
         }
     }
 
-    // initialize file editor plugins
+    // register file editors from plugins
     const editorPlugins = getPlugins('file editor') as IFileEditorPlugin[]
     fileEditors = {}
     for (let plugin of editorPlugins) {

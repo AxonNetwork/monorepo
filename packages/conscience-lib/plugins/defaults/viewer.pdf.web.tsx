@@ -40,4 +40,5 @@ export default {
     name: 'pdf-viewer',
     humanName: 'Default PDF viewer',
     viewer: withStyles(styles)(PDFViewerPlugin),
+    widthMode: 'breakpoints',
 }

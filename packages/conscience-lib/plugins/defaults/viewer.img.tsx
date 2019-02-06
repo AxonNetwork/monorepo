@@ -1,6 +1,6 @@
 import urljoin from 'url-join'
 import React from 'react'
-import { IFileViewerPluginProps } from '../index'
+import { IFileViewerPluginProps } from '../types'
 import { directEmbedPrefix } from 'conscience-components/env-specific'
 
 export default {
@@ -13,4 +13,5 @@ export default {
             <img src={urljoin(directEmbedPrefix(uri), uri.filename || '')} style={{ maxWidth: '100%', display: 'block', margin: '0 auto' }} />
         )
     },
+    widthMode: 'breakpoints',
 }

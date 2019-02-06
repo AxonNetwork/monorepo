@@ -53,4 +53,5 @@ export default {
     name: 'markdown-viewer',
     humanName: 'Default Markdown viewer',
     viewer: withStyles(styles)(MarkdownViewerPlugin),
+    widthMode: 'breakpoints',
 }

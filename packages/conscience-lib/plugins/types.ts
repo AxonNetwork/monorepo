@@ -30,7 +30,10 @@ export interface IFileViewerPlugin {
     name: string
     humanName: string
     viewer: FileViewerComponent
+    widthMode: WidthMode
 }
+
+export type WidthMode = 'full' | 'breakpoints' | 'unset'
 
 export type FileViewerComponent = React.ComponentClass<IFileViewerPluginProps>
 

@@ -103,9 +103,9 @@ const styles = (theme: Theme) => createStyles({
             alignItems: 'center',
         },
     },
-    fileViewer: {
-        maxWidth: 960,
-    },
+    // fileViewer: {
+    //     maxWidth: 960,
+    // },
     createDiscussion: {
         textAlign: 'center',
         marginTop: 32,

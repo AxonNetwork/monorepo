@@ -44,7 +44,6 @@ export function initPlugins() {
     // Load user plugins (@@TODO)
     const userPlugins = [] as IPlugin[]
 
-    console.log('platform specific plugins', platformPlugins)
     const plugins = [...defaultPlugins, ...platformPlugins, ...userPlugins]
 
     pluginRegistry = {

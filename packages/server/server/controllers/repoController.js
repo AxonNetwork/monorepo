@@ -103,16 +103,18 @@ repoController.get = async (req, res, next) => {
 
     const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID })).files || []
 
-    const contents = filesListRaw.map(file => ({
-        name:            file.name,
-        hash:            file.hash ? file.hash.toString('hex') : null,
-        size:            file.size ? file.size.toNumber() : 0,
-        modified:        new Date(file.modified * 1000),
-        type:            fileType(file.name),
-        status:          file.stagedStatus,
-        mergeConflict:   file.mergeConflict,
-        mergeUnresolved: file.mergeUnresolved,
-    }))
+    const contents = filesListRaw
+        .filter(file => file && file.name)
+        .map(file => ({
+            name:            file.name,
+            hash:            file.hash ? file.hash.toString('hex') : null,
+            size:            file.size ? file.size.toNumber() : 0,
+            modified:        new Date(file.modified * 1000),
+            type:            fileType(file.name),
+            status:          file.stagedStatus,
+            mergeConflict:   file.mergeConflict,
+            mergeUnresolved: file.mergeUnresolved,
+        }))
     const files = keyBy(contents, 'name')
 
     res.status(200).json({
