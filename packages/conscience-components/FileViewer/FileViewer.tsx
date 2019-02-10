@@ -218,11 +218,14 @@ const styles = (theme: Theme) => createStyles({
         position: 'relative',
     },
     rootRegularWidth: {
-        [theme.breakpoints.up(1280)]: {
-            maxWidth: 960,
-        },
-        [theme.breakpoints.down(1280)]: {
+        [theme.breakpoints.up(960)]: {
+            // maxWidth: 960,
+            width: 960,
             maxWidth: '100%',
+        },
+        [theme.breakpoints.down(960)]: {
+            // maxWidth: '100%',
+            width: '100%',
         },
     },
     rootFullWidth: {

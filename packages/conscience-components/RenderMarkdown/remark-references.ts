@@ -5,7 +5,7 @@
  * Helpful guide: https://github.com/remarkjs/remark/tree/master/packages/remark-parse#parserinlinetokenizers
  */
 
-const REGEX = /@(\w+):\[([a-zA-Z0-9="',\-:\. \\\/\(\)\{\}\^\n\r\t\s_]+)\]/
+const REGEX = /@(\w+):\[([a-zA-Z0-9="',\-:\. \\\/\(\)\{\}\^\n\r\t\s_\+]+)\]/
 
 export default function shortcodes(this: any) {
     if (isRemarkParser(this.Parser)) {
