@@ -7,9 +7,14 @@ const searchController = {}
 
 searchController.get = async (req, res, next) => {
     const { index, type, id } = req.query
+    console.log('index', index, 'type', type, 'id', id)
 
-    const resp = await elasticsearch.get({ index, type, id })
-    res.json(resp)
+    try {
+        const resp = await elasticsearch.get({ index, type, id })
+        res.json(resp)
+    } catch(err) {
+        console.log('error ~>', err.status)
+    }
 }
 
 searchController.search = async (req, res, next) => {
@@ -52,23 +57,12 @@ searchController.search = async (req, res, next) => {
             _source: [ '_id', '_type', 'repoID', 'discussionID' ],
             body:    {
                 query: {
-                    // match: {
-                    //     // filename: {
-                    //     //     query,
-                    //     //     operator: 'and',
-                    //     // },
-                    //     contents: {
-                    //         query,
-                    //         operator: 'and',
-                    //     },
-                    // },
                     simple_query_string: {
                         query,
                         fields:           [ 'text' ],
                         default_operator: 'or',
                     },
                 },
-                // facets:        { tags: { terms: { field: 'tags' } } },
             },
         })
         const hits = resp.hits.hits.map(x => ({
@@ -79,16 +73,38 @@ searchController.search = async (req, res, next) => {
         return hits
     }
 
+    async function searchUsers(query) {
+        const resp = await elasticsearch.search({
+            index:   'users',
+            _source: [ '_id', '_type' ],
+            body:    {
+                query: {
+                    simple_query_string: {
+                        query,
+                        fields:           [ 'username', 'name', 'bio', 'geolocation', 'orcid', 'university', 'interests' ],
+                        default_operator: 'or',
+                    },
+                },
+            },
+        })
+        const hits = resp.hits.hits.map(x => ({
+            userID: x._id,
+        }))
+        return hits
+    }
+
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0
     const query = req.query.q
 
     const respFiles = await searchFiles(query)
     const respComments = await searchComments(query)
+    const respUsers = await searchUsers(query)
 
     res.json({
         comments: respComments,
         files:    respFiles,
+        users:    respUsers,
     })
 }
 
