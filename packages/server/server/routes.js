@@ -60,16 +60,15 @@ routes.post('/api/unshare-repo', mustAuthenticate, asyncMiddleware(repoControlle
 routes.get('/api/repolist/:username', mustAuthenticate, asyncMiddleware(repoController.getUserRepos))
 routes.post('/api/repo/:repoID/set-public', mustAuthenticate, asyncMiddleware(repoController.setPublic))
 routes.get('/api/repo/:repoID/is-public', mustAuthenticate, asyncMiddleware(repoController.isPublic))
-// routes.get('/api/repo/:repoID/file/:filename*', /* mustAuthenticate, */ asyncMiddleware(repoController.getFileContents))
-// routes.post('/api/repo/:repoID/file/:filename*', /* mustAuthenticate, */ asyncMiddleware(repoController.saveFileContents))
-// routes.get('/api/repo/:repoID/diff/:commit', /* mustAuthenticate, */ asyncMiddleware(repoController.getDiff))
 routes.get('/api/repo/:repoID', tryAuthenticate, asyncMiddleware(repoController.get))
 
+routes.get('/api/comment', mustAuthenticate, asyncMiddleware(commentController.get))
 routes.post('/api/create-comment', mustAuthenticate, asyncMiddleware(commentController.createComment))
 routes.post('/api/delete-comment', mustAuthenticate, asyncMiddleware(commentController.deleteComment))
-routes.get('/api/all-comments', mustAuthenticate, asyncMiddleware(commentController.getAllForDiscussion))
+routes.get('/api/comments-for-discussion', mustAuthenticate, asyncMiddleware(commentController.getAllForDiscussion))
 
-routes.get('/api/discussion', mustAuthenticate, asyncMiddleware(discussionController.getAllForRepo))
+routes.get('/api/discussion', mustAuthenticate, asyncMiddleware(discussionController.get))
+routes.get('/api/discussions-for-repo', mustAuthenticate, asyncMiddleware(discussionController.getAllForRepo))
 routes.post('/api/discussion', mustAuthenticate, asyncMiddleware(discussionController.createDiscussion))
 
 routes.post('/api/create-organization', mustAuthenticate, asyncMiddleware(organizationController.create))

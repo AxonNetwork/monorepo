@@ -9,7 +9,7 @@ import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
 import DiscussionList from '../DiscussionList'
 import { selectDiscussion } from '../navigation'
-import { getDiscussions } from '../redux/discussion/discussionActions'
+import { getDiscussionsForRepo } from '../redux/discussion/discussionActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
 
@@ -57,7 +57,7 @@ class DiscussionPane extends React.Component<Props>
 
     componentWillMount() {
         // @@TODO: intelligent caching
-        this.props.getDiscussions({ uri: this.props.uri })
+        this.props.getDiscussionsForRepo({ uri: this.props.uri })
     }
 
     selectDiscussion(discussionID: string | undefined) {
@@ -77,7 +77,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    getDiscussions: typeof getDiscussions
+    getDiscussionsForRepo: typeof getDiscussionsForRepo
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -121,7 +121,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 }
 
 const mapDispatchToProps = {
-    getDiscussions,
+    getDiscussionsForRepo,
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(

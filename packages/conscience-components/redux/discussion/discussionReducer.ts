@@ -55,6 +55,28 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
         }
 
         case DiscussionActionType.GET_DISCUSSIONS_SUCCESS: {
+            const { discussions } = action.payload
+            return {
+                ...state,
+                discussions: {
+                    ...state.discussions,
+                    ...discussions,
+                },
+            }
+        }
+
+        case DiscussionActionType.GET_COMMENTS_SUCCESS: {
+            const { comments } = action.payload
+            return {
+                ...state,
+                comments: {
+                    ...state.comments,
+                    ...comments,
+                },
+            }
+        }
+
+        case DiscussionActionType.GET_DISCUSSIONS_FOR_REPO_SUCCESS: {
             const { repoID, discussions } = action.payload
             return {
                 ...state,
@@ -117,7 +139,7 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
 const derivedDataReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
     switch (action.type) {
         case DiscussionActionType.CREATE_DISCUSSION_SUCCESS:
-        case DiscussionActionType.GET_DISCUSSIONS_SUCCESS:
+        case DiscussionActionType.GET_DISCUSSIONS_FOR_REPO_SUCCESS:
         case DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS:
         case DiscussionActionType.CREATE_COMMENT_SUCCESS: {
             const newestCommentTimestampPerDiscussion =

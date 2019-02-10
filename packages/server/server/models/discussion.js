@@ -40,6 +40,16 @@ Discussion.create = async ({ repoID, subject, userID, commentText }) => {
     return { discussion, comment }
 }
 
+Discussion.get = async (discussionIDs) => {
+    let fetches = discussionIDs.map(discussionID => dynamo.getAsync({
+        TableName: DiscussionTable,
+        Key:       { discussionID },
+    }))
+
+    let resp = await Promise.all(fetches)
+    return resp.map(row => row.Item)
+}
+
 Discussion.getAllForRepo = async (repoID) => {
     return getAll({
         TableName:                 DiscussionTable,

@@ -3,6 +3,8 @@ import { makeLogic } from '../reduxUtils'
 import {
     DiscussionActionType,
     IGetDiscussionsAction, IGetDiscussionsSuccessAction,
+    IGetCommentsAction, IGetCommentsSuccessAction,
+    IGetDiscussionsForRepoAction, IGetDiscussionsForRepoSuccessAction,
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
     IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction,
     ICreateCommentAction, ICreateCommentSuccessAction,
@@ -18,6 +20,26 @@ import ServerRelay from 'conscience-lib/ServerRelay'
 
 const getDiscussionsLogic = makeLogic<IGetDiscussionsAction, IGetDiscussionsSuccessAction>({
     type: DiscussionActionType.GET_DISCUSSIONS,
+    async process({ action }, dispatch) {
+        const { discussionIDs } = action.payload
+        const discussionsList = await ServerRelay.getDiscussions(discussionIDs)
+        const discussions = keyBy(discussionsList, 'discussionID') as { [discussionID: string]: IDiscussion }
+        return { discussions }
+    },
+})
+
+const getCommentsLogic = makeLogic<IGetCommentsAction, IGetCommentsSuccessAction>({
+    type: DiscussionActionType.GET_COMMENTS,
+    async process({ action }, dispatch) {
+        const { commentIDs } = action.payload
+        const commentsList = await ServerRelay.getComments(commentIDs)
+        const comments = keyBy(commentsList, 'commentID') as { [commentID: string]: IComment }
+        return { comments }
+    },
+})
+
+const getDiscussionsForRepoLogic = makeLogic<IGetDiscussionsForRepoAction, IGetDiscussionsForRepoSuccessAction>({
+    type: DiscussionActionType.GET_DISCUSSIONS_FOR_REPO,
     async process({ action }, dispatch) {
         const { uri } = action.payload
         const repoID = getRepoID(uri)
@@ -80,6 +102,8 @@ const createCommentLogic = makeLogic<ICreateCommentAction, ICreateCommentSuccess
 
 export default [
     getDiscussionsLogic,
+    getCommentsLogic,
+    getDiscussionsForRepoLogic,
     createDiscussionLogic,
     getCommentsForDiscussionLogic,
     createCommentLogic,

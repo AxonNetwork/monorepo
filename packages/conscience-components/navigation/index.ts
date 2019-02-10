@@ -82,16 +82,16 @@ export function selectFile(uri: URI, mode: FileMode) {
     history.push(getFileURL(uri, mode))
 }
 
-export function getDiscussionURL(uri: URI, discussionID: string | undefined) {
+export function getDiscussionURL(uri: URI, discussionID: string | undefined, commentID?: string) {
     if (uri.type === URIType.Local) {
         if (discussionID !== undefined) {
-            return `/local-repo/${getHash(uri.repoRoot)}/discussion/${discussionID}`
+            return `/local-repo/${getHash(uri.repoRoot)}/discussion/${discussionID}` + (commentID ? `#${commentID}` : '')
         } else {
             return `/local-repo/${getHash(uri.repoRoot)}/discussion`
         }
     } else {
         if (discussionID !== undefined) {
-            return `/repo/${uri.repoID}/discussion/${discussionID}`
+            return `/repo/${uri.repoID}/discussion/${discussionID}` + (commentID ? `#${commentID}` : '')
         } else {
             return `/repo/${uri.repoID}/discussion`
         }

@@ -14,6 +14,7 @@ searchController.get = async (req, res, next) => {
         res.json(resp)
     } catch(err) {
         console.log('error ~>', err.status)
+        res.status(500).json({ error: err })
     }
 }
 
@@ -189,7 +190,6 @@ searchController.reindexRepo = async (req, res, next) => {
         throw new HTTPError(400, 'Missing repoID')
     }
 
-    // await elasticsearch.indices.delete({ index: 'repo-files' })
     await reindexFiles(repoID)
 
     res.json({})

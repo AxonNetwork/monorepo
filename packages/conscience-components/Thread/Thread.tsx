@@ -1,4 +1,5 @@
 import React from 'react'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -29,6 +30,7 @@ class Thread extends React.Component<Props, State>
 
     state = {
         createCommentError: undefined,
+        didInitialScroll: false,
     }
 
     componentDidMount() {
@@ -53,6 +55,26 @@ class Thread extends React.Component<Props, State>
         }
         this._intervalID = setInterval(checkSeenComments, 5000)
         checkSeenComments()
+
+        // Scroll to comment if we have a URL hash
+        this.checkURLHashForCommentID()
+    }
+
+    checkURLHashForCommentID() {
+        if (this.props.history.location.hash.length > 0 && !this.state.didInitialScroll) {
+            const commentID = this.props.history.location.hash.slice(1)
+
+            if (this._commentRefs[commentID] && this._commentRefs[commentID].ref) {
+                this._commentRefs[commentID].ref.scrollIntoView()
+                this.setState({ didInitialScroll: true })
+            }
+        }
+    }
+
+    componentDidUpdate() {
+        // Scroll to comment if we have a URL hash.  We continue to do this after componentDidMount
+        // in case the comment doesn't render the first time.
+        this.checkURLHashForCommentID()
     }
 
     componentWillUnmount() {
@@ -87,6 +109,7 @@ class Thread extends React.Component<Props, State>
 
         const discussion = discussions[discussionID] || {}
         const commentsList = values(comments).filter(c => c.discussionID === this.props.discussionID)
+        const selectedCommentID = this.props.history.location.hash.slice(1)
 
         return (
             <div className={classes.threadContainer}>
@@ -106,19 +129,21 @@ class Thread extends React.Component<Props, State>
                         }
                         {commentsList.map(c => {
                             return (
-                                <CommentWrapper
-                                    key={c.created}
-                                    user={users[c.userID]}
-                                    created={c.created}
-                                    showBadge={c.created > this.props.newestViewedCommentTimestamp}
-                                    onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
-                                >
-                                    <div ref={ref => this._commentRefs[c.created] = { ref, created: c.created }}></div>
-                                    <RenderMarkdown
-                                        uri={this.props.uri}
-                                        text={c.text}
-                                    />
-                                </CommentWrapper>
+                                <div ref={ref => this._commentRefs[c.commentID] = { ref, created: c.created }}>
+                                    <CommentWrapper
+                                        key={c.created}
+                                        user={users[c.userID]}
+                                        created={c.created}
+                                        showBadge={c.created > this.props.newestViewedCommentTimestamp}
+                                        onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
+                                        classes={{ commentText: selectedCommentID === c.commentID ? classes.selectedComment : undefined }}
+                                    >
+                                        <RenderMarkdown
+                                            uri={this.props.uri}
+                                            text={c.text}
+                                        />
+                                    </CommentWrapper>
+                                </div>
                             )
                         })}
 
@@ -165,12 +190,7 @@ class Thread extends React.Component<Props, State>
     }
 }
 
-
-interface State {
-    createCommentError: string | undefined
-}
-
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & RouteComponentProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -190,6 +210,11 @@ interface StateProps {
 interface DispatchProps {
     createComment: typeof createComment
     sawComment: typeof sawComment
+}
+
+interface State {
+    createCommentError: string | undefined
+    didInitialScroll: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -227,6 +252,9 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '0.9rem',
         fontWeight: 500,
     },
+    selectedComment: {
+        backgroundColor: '#fff8d4',
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
@@ -249,4 +277,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(Thread))
+)(withStyles(styles)(withRouter(Thread)))

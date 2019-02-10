@@ -1,3 +1,4 @@
+import uniq from 'lodash/uniq'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -11,14 +12,18 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { search } from 'conscience-components/redux/search/searchActions'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
-import { getFileURL, getDiscussionURL } from 'conscience-components/navigation'
-import { ISearchResults, URIType, FileMode } from 'conscience-lib/common'
+import { fetchUserData } from 'conscience-components/redux/user/userActions'
+import { getDiscussions, getComments } from 'conscience-components/redux/discussion/discussionActions'
+import { getFileURL } from 'conscience-components/navigation'
+import { ISearchResults, URIType, FileMode, IUser, IComment, IDiscussion } from 'conscience-lib/common'
+import UserResult from './UserResult'
+import CommentResult from './CommentResult'
 
 
 class SearchPage extends React.Component<Props, State>
 {
     state = {
-        resultType: 'files' as 'files'|'comments',
+        resultType: 'files' as 'files'|'comments'|'users',
     }
 
     render() {
@@ -41,18 +46,25 @@ class SearchPage extends React.Component<Props, State>
                             <CardContent>
                                 <List>
                                     <ListItem
-                                        button
-                                        classes={{ button: classes.listItemHover }}
-                                        onClick={() => this.setState({ resultType: 'files' })}
+                                        button={results.files.length > 0}
+                                        classes={{ button: results.files.length > 0 ? classes.listItemHover : undefined }}
+                                        onClick={results.files.length > 0 ? () => this.setState({ resultType: 'files' }) : undefined}
                                     >
                                         {results.files.length} files
                                     </ListItem>
                                     <ListItem
-                                        button
-                                        classes={{ button: classes.listItemHover }}
-                                        onClick={() => this.setState({ resultType: 'comments' })}
+                                        button={results.comments.length > 0}
+                                        classes={{ button: results.comments.length > 0 ? classes.listItemHover : undefined }}
+                                        onClick={results.comments.length > 0 ? () => this.setState({ resultType: 'comments' }) : undefined}
                                     >
                                         {results.comments.length} comments
+                                    </ListItem>
+                                    <ListItem
+                                        button={results.users.length > 0}
+                                        classes={{ button: results.users.length > 0 ? classes.listItemHover : undefined }}
+                                        onClick={results.users.length > 0 ? () => this.setState({ resultType: 'users' }) : undefined}
+                                    >
+                                        {results.users.length} users
                                     </ListItem>
                                 </List>
                             </CardContent>
@@ -80,13 +92,22 @@ class SearchPage extends React.Component<Props, State>
                                     <React.Fragment>
                                         <H6>Comments</H6>
                                         <List>
-                                            {results.comments.map(comment => (
-                                                <ListItem>
-                                                    <Link to={getDiscussionURL({ type: URIType.Network, repoID: comment.repoID }, comment.discussionID)}>
-                                                        <div>{comment.repoID}</div>
-                                                        <div>{comment.commentID}</div>
-                                                    </Link>
-                                                </ListItem>
+                                            {results.comments.map(({ repoID, discussionID, commentID }) => {
+                                                const comment = this.props.comments[commentID]
+                                                const discussion = this.props.discussions[discussionID]
+                                                const user = comment ? this.props.users[comment.userID] : undefined
+                                                return <CommentResult comment={comment} discussion={discussion} user={user} />
+                                            })}
+                                        </List>
+                                    </React.Fragment>
+                                }
+
+                                {this.state.resultType === 'users' &&
+                                    <React.Fragment>
+                                        <H6>Users</H6>
+                                        <List>
+                                            {results.users.map(({ userID }) => (
+                                                <UserResult user={this.props.users[userID]} />
                                             ))}
                                         </List>
                                     </React.Fragment>
@@ -109,17 +130,42 @@ class SearchPage extends React.Component<Props, State>
         if (query !== prevProps.match.params.query) {
             this.props.search({ query })
         }
+
+        if (this.props.results && this.props.results !== prevProps.results) {
+            const userIDs = uniq(this.props.results.users.map(x => x.userID))
+            if (userIDs.length > 0) {
+                this.props.fetchUserData({ userIDs })
+            }
+
+            const commentIDs = uniq(this.props.results.comments.map(x => x.commentID))
+            const discussionIDs = uniq(this.props.results.comments.map(x => x.discussionID))
+            if (commentIDs.length > 0) {
+                this.props.getComments({ commentIDs })
+            }
+            if (discussionIDs.length > 0) {
+                this.props.getDiscussions({ discussionIDs })
+            }
+        }
     }
 }
 
-type Props = OwnProps & DispatchProps & RouteComponentProps<MatchParams> & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & RouteComponentProps<MatchParams> & { classes: any }
 
 interface OwnProps {
+}
+
+interface StateProps {
     results: ISearchResults | null
+    users: {[userID: string]: IUser}
+    comments: {[commentID: string]: IComment}
+    discussions: {[commentID: string]: IDiscussion}
 }
 
 interface DispatchProps {
     search: typeof search
+    fetchUserData: typeof fetchUserData
+    getDiscussions: typeof getDiscussions
+    getComments: typeof getComments
 }
 
 interface MatchParams {
@@ -127,7 +173,7 @@ interface MatchParams {
 }
 
 interface State {
-    resultType: 'files' | 'comments'
+    resultType: 'files' | 'comments' | 'users'
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -157,16 +203,25 @@ const styles = (theme: Theme) => createStyles({
             backgroundColor: 'rgba(0, 0, 0, 0.05)',
         },
     },
+    userLink: {
+        textDecoration: 'none',
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     return {
         results: state.search.results,
+        users: state.user.users,
+        comments: state.discussion.comments,
+        discussions: state.discussion.discussions,
     }
 }
 
 const mapDispatchToProps = {
     search,
+    fetchUserData,
+    getDiscussions,
+    getComments,
 }
 
 export default connect(

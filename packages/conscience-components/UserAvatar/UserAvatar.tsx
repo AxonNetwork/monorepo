@@ -81,7 +81,6 @@ interface OwnProps {
     noTooltip?: boolean
     disableClick?: boolean
     className?: string
-    classes: any
 }
 
 const styles = () => createStyles({

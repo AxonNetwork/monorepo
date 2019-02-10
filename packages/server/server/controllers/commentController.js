@@ -9,10 +9,26 @@ commentController.createComment = async (req, res, next) => {
 
     if (!text || !discussionID || !repoID) {
         throw new HTTPError(400, 'Missing field.  "text", "discussionID", and "repoID" are all required')
+    } else if (!userID) {
+        throw new HTTPError(403, 'Unauthorized')
     }
 
     const newComment = await Comment.create({ repoID, discussionID, userID, text })
     return res.status(200).json({ newComment })
+}
+
+commentController.get = async (req, res, next) => {
+    let { commentID } = req.query
+    if (!commentID) {
+        throw new HTTPError(400, 'Missing field: commentID')
+    }
+
+    if (typeof commentID === 'string') {
+        commentID = [ commentID ]
+    }
+
+    const comments = await Comment.get(commentID)
+    return res.status(200).json({ comments })
 }
 
 commentController.getAllForDiscussion = async (req, res, next) => {

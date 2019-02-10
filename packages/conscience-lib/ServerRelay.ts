@@ -253,13 +253,31 @@ const ServerRelay = {
         return resp.data
     },
 
+    async getDiscussions(discussionIDs: string[]) {
+        interface IResponse {
+            discussions: IDiscussion[]
+        }
+
+        const response = await axios.get<IResponse>(API_URL + '/discussion?' + querystring.stringify({ discussionID: discussionIDs }))
+        return response.data.discussions
+    },
+
     async getDiscussionsForRepo(repoID: string) {
         interface IResponse {
             discussions: IDiscussion[]
         }
 
-        const response = await axios.get<IResponse>(API_URL + '/discussion?repoID=' + repoID)
+        const response = await axios.get<IResponse>(API_URL + '/discussions-for-repo?repoID=' + repoID)
         return response.data.discussions
+    },
+
+    async getComments(commentIDs: string[]) {
+        interface IResponse {
+            comments: IComment[]
+        }
+
+        const response = await axios.get<IResponse>(API_URL + '/comment?' + querystring.stringify({ commentID: commentIDs }))
+        return response.data.comments
     },
 
     async getCommentsForDiscussion(discussionID: string) {
@@ -267,7 +285,7 @@ const ServerRelay = {
             comments: IComment[]
         }
 
-        const response = await axios.get<IResponse>(API_URL + '/all-comments?discussionID=' + discussionID)
+        const response = await axios.get<IResponse>(API_URL + '/comments-for-discussion?discussionID=' + discussionID)
         return response.data.comments
     },
 

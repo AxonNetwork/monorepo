@@ -203,7 +203,12 @@ export interface ISearchFileResult {
     hash: string
 }
 
+export interface ISearchUserResult {
+    userID: string
+}
+
 export interface ISearchResults {
     comments: ISearchCommentResult[]
     files: ISearchFileResult[]
+    users: ISearchUserResult[]
 }

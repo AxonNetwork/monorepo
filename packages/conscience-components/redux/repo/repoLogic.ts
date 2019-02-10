@@ -8,7 +8,7 @@ import {
     watchRepo,
 } from './repoActions'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
-import { getDiscussions } from 'conscience-components/redux/discussion/discussionActions'
+import { getDiscussionsForRepo } from 'conscience-components/redux/discussion/discussionActions'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { getRepoID } from 'conscience-components/env-specific'
 import { URIType } from 'conscience-lib/common'
@@ -32,7 +32,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
             await Promise.all([
                 dispatch(fetchRepoFiles({ uri })),
                 dispatch(fetchRepoTimeline({ uri })),
-                dispatch(getDiscussions({ uri })),
+                dispatch(getDiscussionsForRepo({ uri })),
                 dispatch(fetchRepoUsersPermissions({ uri })),
                 dispatch(fetchLocalRefs({ uri })),
                 dispatch(fetchRemoteRefs({ uri })),
@@ -56,7 +56,7 @@ const fetchFullRepoFromServerLogic = makeLogic<IFetchFullRepoFromServerAction, I
         }
         const { admins, pushers, pullers } = repo
         const usernames = union(admins, pushers, pullers)
-        await dispatch(getDiscussions({ uri }))
+        await dispatch(getDiscussionsForRepo({ uri }))
         await dispatch(fetchUserDataByUsername({ usernames }))
         return { uri, repo }
     },
