@@ -1,11 +1,12 @@
 import path from 'path'
+import { Link } from 'react-router-dom'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { FileMode, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
-import { selectFile } from 'conscience-components/navigation'
+import { selectFile, getCommitURL } from 'conscience-components/navigation'
 
 
 @autobind
@@ -61,31 +62,37 @@ class Breadcrumbs extends React.Component<Props>
 
         return (
             <Typography className={classes.root}>
-                <span>Location: </span>
-                {basePath && basePath !== '.' &&
-                    <React.Fragment>
-                        {!this.state.showBasePath &&
-                            <span className={classes.crumb} onClick={this.showBasePath}>...</span>
-                        }
-                        {this.state.showBasePath &&
-                            <span>{basePath.substring(1).split('/').join(' / ')}</span>
-                        }
-                        <span> / </span>
-                    </React.Fragment>
-                }
-
-                {parts.map((p, i) => {
-                    return (
-                        <React.Fragment key={p + i}>
-                            <span className={classnames({ [classes.crumb]: i < parts.length - 1 })} onClick={() => this.selectCrumb(i)}>
-                                {p}
-                            </span>
-                            {(i < parts.length - 1) &&
-                                <span> / </span>
+                <div>
+                    {basePath && basePath !== '.' &&
+                        <React.Fragment>
+                            {!this.state.showBasePath &&
+                                <span className={classes.crumb} onClick={this.showBasePath}>...</span>
                             }
+                            {this.state.showBasePath &&
+                                <span>{basePath.substring(1).split('/').join(' / ')}</span>
+                            }
+                            <span> / </span>
                         </React.Fragment>
-                    )
-                })}
+                    }
+
+                    {parts.map((p, i) => {
+                        return (
+                            <React.Fragment key={p + i}>
+                                <span className={classnames({ [classes.crumb]: i < parts.length - 1 })} onClick={() => this.selectCrumb(i)}>
+                                    {p}
+                                </span>
+                                {(i < parts.length - 1) &&
+                                    <span> / </span>
+                                }
+                            </React.Fragment>
+                        )
+                    })}
+                </div>
+                <div>
+                    <Link to={getCommitURL(uri)} className={classes.commitLink}>
+                        <span >{uri.commit}</span>
+                    </Link>
+                </div>
             </Typography>
         )
     }
@@ -104,6 +111,17 @@ const styles = (theme: Theme) => createStyles({
         color: theme.palette.secondary.main,
         textDecoration: 'underline',
         cursor: 'pointer',
+    },
+    commitLink: {
+        fontFamily: 'Consolas, Monaco, "Courier New", Courier, sans-serif',
+        color: theme.palette.primary.main,
+        // transition: theme.transitions.create('color', {
+        //     easing: theme.transitions.easing.sharp,
+        //     duration: theme.transitions.duration.shortest / 10,
+        // }),
+        '&:hover': {
+            color: theme.palette.secondary.main,
+        }
     },
 })
 
