@@ -52,7 +52,7 @@ class UserPage extends React.Component<Props>
                         <div className={classes.orgs}>
                             <H6>Organizations</H6>
 
-                            {user.orgs.map(orgID => {
+                            {(user.orgs || []).map(orgID => {
                                 const org = orgs[orgID]
                                 if (org === undefined) {
                                     return null
@@ -89,15 +89,15 @@ class UserPage extends React.Component<Props>
     }
 
     componentDidUpdate(prevProps: Props) {
-        const username = this.props.match.params.username
-        if (username !== prevProps.match.params.username) {
-            this.props.getRepoList({ username })
+        const userID = (this.props.user || {}).userID
+        if (userID !== (prevProps.user || {}).userID) {
+            this.props.getRepoList({ userID })
         }
     }
 
     componentWillMount() {
-        const username = this.props.match.params.username
-        this.props.getRepoList({ username })
+        const userID = (this.props.user || {}).userID
+        this.props.getRepoList({ userID })
     }
 }
 
@@ -171,9 +171,9 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const username = ownProps.match.params.username
-    const selectedUserID = state.user.usersByUsername[username]
+    const selectedUserID = state.user.usersByUsername[username] || ''
     const user = state.user.users[selectedUserID]
-    const repoList = state.repo.repoListByUser[username]
+    const repoList = state.repo.repoListByUserID[selectedUserID]
     return {
         repoList: repoList,
         user,
