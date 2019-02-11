@@ -219,7 +219,7 @@ class FileList extends React.Component<Props, State>
         const basepath = this.props.uri.filename || '.'
         const fullpath = path.join(basepath, filename)
 
-        selectFile({ ...this.props.uri, filename: fullpath }, FileMode.Edit)
+        selectFile({ ...this.props.uri, filename: fullpath }, FileMode.EditNew)
     }
 
     onClickCancelNewFile() {

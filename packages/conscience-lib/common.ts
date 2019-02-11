@@ -182,6 +182,7 @@ export enum RepoPage {
 export enum FileMode {
     View,
     Edit,
+    EditNew,
     ResolveConflict,
 }
 

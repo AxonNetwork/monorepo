@@ -53,6 +53,7 @@ class RepoPageContainer extends React.Component<Props>
                             <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />
                             <Route path='/local-repo/:repoHash/files/:commit' component={RepoFilesPage} />
                             <Route path='/local-repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
+                            <Route path='/local-repo/:repoHash/new-file/:filename+' component={RepoEditorPage} />
                             <Route path='/local-repo/:repoHash/conflict/:filename+' component={RepoConflictPage} />
                             <Route path='/local-repo/:repoHash/history/:commit' component={RepoHistoryPage} />
                             <Route path='/local-repo/:repoHash/history' component={RepoHistoryPage} />

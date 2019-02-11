@@ -54,6 +54,8 @@ export function getFileURL(uri: URI, mode: FileMode) {
             return `/local-repo/${getHash(repoRoot)}/files/${commit}/${filename}`
         } else if (mode === FileMode.Edit) {
             return `/local-repo/${getHash(repoRoot)}/edit/${filename}`
+        } else if (mode === FileMode.EditNew) {
+            return `/local-repo/${getHash(repoRoot)}/new-file/${filename}`
         } else if (mode === FileMode.ResolveConflict) {
             return `/local-repo/${getHash(repoRoot)}/conflict/${filename}`
         } else {

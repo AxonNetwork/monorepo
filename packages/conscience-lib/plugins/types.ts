@@ -58,6 +58,7 @@ export type FileEditorComponent = React.ComponentClass<IFileEditorPluginProps>
 
 export interface IFileEditorPluginProps {
     uri: URI
+    isNewFile: boolean
     classes?: any
 }
 
