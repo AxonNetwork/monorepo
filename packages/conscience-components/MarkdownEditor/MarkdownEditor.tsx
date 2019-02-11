@@ -52,11 +52,19 @@ class MarkdownEditor extends React.Component<Props, State>
                         <TextField
                             multiline
                             fullWidth
+                            rows={1}
                             variant="outlined"
-                            rows="38"
                             value={this.state.currentContents}
                             onChange={this.onChangeText}
                             inputRef={x => this._inputText = x}
+                            classes={{ root: classes.textareaRoot }}
+                            InputProps={{
+                                margin: 'none',
+                                classes: {
+                                    root: classes.textareaRoot,
+                                    inputMultiline: classes.textareaRoot,
+                                }
+                            }}
                         />
                         <FormattingHelp />
                     </div>
@@ -126,7 +134,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: 'calc(100vh - 192px)',
         paddingBottom: 30,
     },
     toolbar: {
@@ -160,6 +168,10 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         justifyContent: 'center',
         marginTop: 256,
+    },
+
+    textareaRoot: {
+        height: '100%',
     },
 })
 

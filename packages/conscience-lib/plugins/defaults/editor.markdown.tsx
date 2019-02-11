@@ -2,11 +2,12 @@ import isEqual from 'lodash/isEqual'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import autobind from 'conscience-lib/utils/autobind'
-import { URI } from 'conscience-lib/common'
+import { URI, FileMode } from 'conscience-lib/common'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import MarkdownEditor from 'conscience-components/MarkdownEditor'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { getFileContents, saveFileContents } from 'conscience-components/env-specific'
+import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind
@@ -18,7 +19,7 @@ class MarkdownEditorPlugin extends React.Component<Props>
 
     render() {
         const { fileContents } = this.state
-        if (!fileContents) {
+        if (fileContents === null) {
             return <LargeProgressSpinner />
         }
 
@@ -32,11 +33,15 @@ class MarkdownEditorPlugin extends React.Component<Props>
     }
 
     componentDidMount() {
-        this.updateFileContents()
+        if (!this.props.isNewFile) {
+            this.updateFileContents()
+        } else {
+            this.setState({ fileContents: '' })
+        }
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (!isEqual(prevProps.uri, this.props.uri)) {
+        if (!isEqual(prevProps.uri, this.props.uri) && !this.props.isNewFile) {
             this.updateFileContents()
         }
     }
@@ -63,6 +68,9 @@ class MarkdownEditorPlugin extends React.Component<Props>
 
     async saveFileContents(fileContents: string) {
         await saveFileContents(this.props.uri, fileContents)
+        if (this.props.isNewFile) {
+            selectFile(this.props.uri, FileMode.Edit)
+        }
     }
 }
 
@@ -70,6 +78,7 @@ type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
+    isNewFile: boolean
 }
 
 const styles = () => createStyles({

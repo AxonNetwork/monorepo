@@ -22,6 +22,7 @@ class RepoEditorPage extends React.Component<Props>
 
                 <FileEditor
                     uri={this.props.uri}
+                    isNewFile={this.props.isNewFile}
                     showButtons
                     showEditorPicker
                 />
@@ -30,21 +31,19 @@ class RepoEditorPage extends React.Component<Props>
     }
 }
 
-
-type Props = StateProps & DispatchProps & OwnProps & { classes: any }
+type Props = StateProps & OwnProps & { classes: any }
 
 interface MatchParams {
     filename: string
     repoHash: string
 }
 
-interface OwnProps extends RouteComponentProps<MatchParams> { }
+interface OwnProps extends RouteComponentProps<MatchParams> {}
 
 interface StateProps {
     uri: LocalURI
+    isNewFile: boolean
 }
-
-interface DispatchProps { }
 
 const styles = (theme: Theme) => createStyles({
     page: {
@@ -53,17 +52,17 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, props: OwnProps) => {
+    const isNewFile = props.location.pathname.indexOf('/new-file/') > -1
     const repoRoot = state.repo.reposByHash[props.match.params.repoHash]
     const filename = props.match.params.filename
     const uri = { type: URIType.Local, repoRoot, commit: 'working', filename } as LocalURI
     return {
         uri,
+        isNewFile,
     }
 }
 
-const mapDispatchToProps = {}
-
 export default connect(
     mapStateToProps,
-    mapDispatchToProps,
+    null,
 )(withStyles(styles)(RepoEditorPage))

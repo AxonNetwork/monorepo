@@ -115,10 +115,6 @@ const styles = (theme: Theme) => createStyles({
     commitLink: {
         fontFamily: 'Consolas, Monaco, "Courier New", Courier, sans-serif',
         color: theme.palette.primary.main,
-        // transition: theme.transitions.create('color', {
-        //     easing: theme.transitions.easing.sharp,
-        //     duration: theme.transitions.duration.shortest / 10,
-        // }),
         '&:hover': {
             color: theme.palette.secondary.main,
         }

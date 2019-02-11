@@ -84,6 +84,7 @@ class FileEditor extends React.Component<Props, State>
                 <div onMouseEnter={() => this.onHoverEditor(true)} onMouseLeave={() => this.onHoverEditor(false)}>
                     <Editor
                         uri={this.props.uri}
+                        isNewFile={this.props.isNewFile}
                         classes={classes}
                     />
                 </div>
@@ -111,6 +112,7 @@ class FileEditor extends React.Component<Props, State>
 
 interface Props {
     uri: URI
+    isNewFile: boolean
     showEditorPicker?: boolean
     showButtons?: boolean
     classes?: any
