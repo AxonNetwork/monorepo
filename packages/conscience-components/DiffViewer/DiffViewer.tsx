@@ -1,9 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
+import Button from '@material-ui/core/Button'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
@@ -15,6 +17,8 @@ import TextDiff from './TextDiff'
 import BinaryDiff from './BinaryDiff'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { autobind } from 'conscience-lib/utils'
+import { getFileURL } from 'conscience-components/navigation'
+import { FileMode } from 'conscience-lib/common'
 import parse from 'parse-diff'
 
 
@@ -78,6 +82,9 @@ class DiffViewer extends React.Component<Props, State>
                 <ExpansionPanelSummary expandIcon={canExpand ? <ExpandMoreIcon /> : null} classes={{ root: classes.summaryRoot }}>
                     <div className={classes.filename}>{panelTitle}</div>
                     {badge}
+                    <Link to={getFileURL(this.props.uri, FileMode.View)}>
+                        <Button classes={{ text: classes.viewButtonText, root: classes.viewButtonText }}>Open</Button>
+                    </Link>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{ root: classes.detailsRoot }}>
                     {isTextFile && this.state.expanded &&
@@ -152,6 +159,10 @@ const styles = (theme: Theme) => createStyles({
     renameArrow: {
         verticalAlign: 'middle',
         fill: '#cecece',
+    },
+    viewButtonText: {
+        padding: 'unset',
+        minHeight: 'unset',
     },
 })
 
