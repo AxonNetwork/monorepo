@@ -38,7 +38,6 @@ class DiscussionList extends React.Component<Props>
                     const isSelected = selectedID && d.discussionID === selectedID
                     const showBadge = d.lastCommentTime > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
                     const user = this.props.users[d.lastCommentUser || d.userID]
-                    console.log(d)
                     return (
                         <ListItem
                             button

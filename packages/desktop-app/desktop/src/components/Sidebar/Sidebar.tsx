@@ -21,6 +21,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import RepoList from './RepoList'
 import OrgList from './OrgList'
 import UserAvatar from 'conscience-components/UserAvatar'
+import Scrollbar from 'conscience-components/Scrollbar'
 import { createOrg } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectSettings } from 'conscience-components/navigation'
@@ -63,27 +64,28 @@ class Sidebar extends React.Component<Props, State>
 
                 <Divider />
 
-                <List classes={{ root: classes.repoListRoot }} data-simplebar>
-                    <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
-                        <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
-                    </ListItem>
-                    <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
-                        <RepoList selectedRepo={this.props.selectedRepo} />
-                    </Collapse>
+                <Scrollbar variant='light'>
+                    <List classes={{ root: classes.repoListRoot }}>
+                        <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
+                            <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                            {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
+                        </ListItem>
+                        <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
+                            <RepoList selectedRepo={this.props.selectedRepo} />
+                        </Collapse>
 
-                    <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
-                        <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        {this.state.orgOpen ? <ExpandMore /> : <ExpandLess />}
-                    </ListItem>
-                    <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
-                        <OrgList
-                            orgs={this.props.orgs}
-                            createOrg={this.props.createOrg}
-                        />
-                    </Collapse>
-
-                </List>
+                        <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
+                            <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                            {this.state.orgOpen ? <ExpandMore /> : <ExpandLess />}
+                        </ListItem>
+                        <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
+                            <OrgList
+                                orgs={this.props.orgs}
+                                createOrg={this.props.createOrg}
+                            />
+                        </Collapse>
+                    </List>
+                </Scrollbar>
 
                 <div className={classes.sidebarSpacer}></div>
 
@@ -180,9 +182,6 @@ const styles = (theme: Theme) => createStyles({
     },
     repoListRoot: {
         overflowY: 'auto',
-        '& .simplebar-scrollbar:before': {
-            background: '#fff'
-        }
     },
     sidebarSpacer: {
         flexGrow: 1,
