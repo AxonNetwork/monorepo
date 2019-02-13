@@ -5,7 +5,7 @@ import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscienc
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
-    repoListByUser: {},
+    repoListByUserID: {},
     localRepoList: [],
     filesByURI: {},
     commitListsByURI: {},
@@ -20,7 +20,7 @@ export const initialState = {
 }
 
 export interface IRepoState {
-    repoListByUser: { [username: string]: string[] }
+    repoListByUserID: { [userID: string]: string[] }
     localRepoList: LocalURI[]
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
     commitListsByURI: { [uri: string]: string[] }
@@ -37,12 +37,12 @@ export interface IRepoState {
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.GET_REPO_LIST_SUCCESS: {
-            const { username, repoList } = action.payload
+            const { userID, repoList } = action.payload
             return {
                 ...state,
-                repoListByUser: {
-                    ...state.repoListByUser,
-                    [username]: repoList
+                repoListByUserID: {
+                    ...state.repoListByUserID,
+                    [userID]: repoList
                 }
             }
         }
