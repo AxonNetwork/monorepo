@@ -45,12 +45,6 @@ const getDiscussionsForRepoLogic = makeLogic<IGetDiscussionsForRepoAction, IGetD
         const repoID = getRepoID(uri)
         const discussionsList = await ServerRelay.getDiscussionsForRepo(repoID)
         const discussions = keyBy(discussionsList, 'discussionID') as { [discussionID: string]: IDiscussion }
-
-        // @@TODO: do this in the component or something
-        for (let discussionID of Object.keys(discussions)) {
-            dispatch(getCommentsForDiscussion({ discussionID }))
-        }
-
         return { repoID, discussions }
     },
 })

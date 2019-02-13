@@ -1,13 +1,16 @@
 import { dynamo } from '../config/aws'
 import { makeID, getAll } from './utils'
+import Discussion from './discussion'
 
+const DiscussionTable = `${process.env.DYNAMODB_TABLE_PREFIX}_Discussions`
 const CommentTable = `${process.env.DYNAMODB_TABLE_PREFIX}_Comments`
 const CommentTableIndexByDiscussion = 'ByDiscussionSorted'
 const Comment = {}
 
 Comment.create = async ({ repoID, userID, text, discussionID }) => {
+    let newComment
     while (true) {
-        const newComment = {
+        newComment = {
             commentID: makeID(),
             repoID,
             userID,
@@ -23,7 +26,7 @@ Comment.create = async ({ repoID, userID, text, discussionID }) => {
                 ConditionExpression: 'attribute_not_exists(commentID)',
             })
 
-            return newComment
+            break
         } catch (err) {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
@@ -32,15 +35,19 @@ Comment.create = async ({ repoID, userID, text, discussionID }) => {
             throw err
         }
     }
+
+    await Discussion.updateLastComment(discussionID, newComment.userID, newComment.created)
+
+    return newComment
 }
 
 Comment.get = async (commentIDs) => {
-    let fetches = commentIDs.map(commentID => dynamo.getAsync({
+    const fetches = commentIDs.map(commentID => dynamo.getAsync({
         TableName: CommentTable,
         Key:       { commentID },
     }))
 
-    let resp = await Promise.all(fetches)
+    const resp = await Promise.all(fetches)
     return resp.map(row => row.Item)
 }
 

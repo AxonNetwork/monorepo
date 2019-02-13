@@ -1,16 +1,12 @@
 import uniq from 'lodash/uniq'
-import values from 'lodash/values'
-import sortBy from 'lodash/sortBy'
 import { DiscussionActionType, IDiscussionAction } from './discussionActions'
 import { IDiscussion, IComment } from 'conscience-lib/common'
 
 const initialState = {
     discussions: {},
     discussionsByRepo: {},
-    newestCommentTimestampPerDiscussion: {},
     comments: {},
     commentsByDiscussion: {},
-    discussionIDsSortedByNewestComment: {},
 }
 
 export interface IDiscussionState {
@@ -19,9 +15,6 @@ export interface IDiscussionState {
 
     comments: { [commentID: string]: IComment }
     commentsByDiscussion: { [repoID: string]: string[] } // array of commentIDs
-
-    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
-    discussionIDsSortedByNewestComment: { [repoID: string]: string[] }
 }
 
 const discussionReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
@@ -136,46 +129,48 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
     }
 }
 
-const derivedDataReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
-    switch (action.type) {
-        case DiscussionActionType.CREATE_DISCUSSION_SUCCESS:
-        case DiscussionActionType.GET_DISCUSSIONS_FOR_REPO_SUCCESS:
-        case DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS:
-        case DiscussionActionType.CREATE_COMMENT_SUCCESS: {
-            const newestCommentTimestampPerDiscussion =
-                values(state.comments)
-                    .reduce((into, each) => {
-                        if (into[each.discussionID] === undefined || into[each.discussionID] < each.created) {
-                            into[each.discussionID] = each.created
-                        }
-                        return into
-                    }, {} as { [discussionID: string]: number })
+export default discussionReducer
+
+// const derivedDataReducer = (state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState => {
+//     switch (action.type) {
+//         case DiscussionActionType.CREATE_DISCUSSION_SUCCESS:
+//         case DiscussionActionType.GET_DISCUSSIONS_FOR_REPO_SUCCESS:
+//         case DiscussionActionType.GET_COMMENTS_FOR_DISCUSSION_SUCCESS:
+//         case DiscussionActionType.CREATE_COMMENT_SUCCESS: {
+//             const newestCommentTimestampPerDiscussion =
+//                 values(state.comments)
+//                     .reduce((into, each) => {
+//                         if (into[each.discussionID] === undefined || into[each.discussionID] < each.created) {
+//                             into[each.discussionID] = each.created
+//                         }
+//                         return into
+//                     }, {} as { [discussionID: string]: number })
 
 
-            const discussionIDsSortedByNewestComment = {} as { [repoID: string]: string[] }
-            for (let repoID of Object.keys(state.discussionsByRepo)) {
-                let discussionIDs = state.discussionsByRepo[repoID]
-                let pairs = discussionIDs.map(discussionID => ({ discussionID, timestamp: newestCommentTimestampPerDiscussion[discussionID] }))
-                discussionIDsSortedByNewestComment[repoID] =
-                    sortBy(pairs, 'timestamp')
-                        .reverse()
-                        .map(({ discussionID }) => discussionID)
-            }
+//             const discussionIDsSortedByNewestComment = {} as { [repoID: string]: string[] }
+//             for (let repoID of Object.keys(state.discussionsByRepo)) {
+//                 let discussionIDs = state.discussionsByRepo[repoID]
+//                 let pairs = discussionIDs.map(discussionID => ({ discussionID, timestamp: newestCommentTimestampPerDiscussion[discussionID] }))
+//                 discussionIDsSortedByNewestComment[repoID] =
+//                     sortBy(pairs, 'timestamp')
+//                         .reverse()
+//                         .map(({ discussionID }) => discussionID)
+//             }
 
-            return {
-                ...state,
-                newestCommentTimestampPerDiscussion,
-                discussionIDsSortedByNewestComment,
-            }
-        }
+//             return {
+//                 ...state,
+//                 newestCommentTimestampPerDiscussion,
+//                 discussionIDsSortedByNewestComment,
+//             }
+//         }
 
-        default:
-            return state
-    }
-}
+//         default:
+//             return state
+//     }
+// }
 
-export default function(state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState {
-    state = discussionReducer(state, action)
-    state = derivedDataReducer(state, action)
-    return state
-}
+// export default function(state: IDiscussionState = initialState, action: IDiscussionAction): IDiscussionState {
+//     state = discussionReducer(state, action)
+//     state = derivedDataReducer(state, action)
+//     return state
+// }

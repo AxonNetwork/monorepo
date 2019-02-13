@@ -22,11 +22,11 @@ import { autobind } from 'conscience-lib/utils'
 class DiscussionList extends React.Component<Props>
 {
     render() {
-        const { discussions, selectedID, classes } = this.props
+        const { discussions, discussionList, selectedID, classes } = this.props
 
-        const newestComment = this.props.newestCommentTimestampPerDiscussion
+        const order = this.props.order !== undefined ? this.props.order :
+            discussionList.sort((a: string, b: string) => (discussions[a] || {}).lastCommentTime - (discussions[b] || {}).lastCommentTime)
 
-        const order = this.props.order || this.props.discussionIDsSortedByNewestComment
         let discussionsSorted = order.map(id => discussions[id])
         if (this.props.maxLength !== undefined) {
             discussionsSorted = discussionsSorted.slice(0, this.props.maxLength)
@@ -36,8 +36,9 @@ class DiscussionList extends React.Component<Props>
             <List className={classes.list}>
                 {discussionsSorted.map(d => {
                     const isSelected = selectedID && d.discussionID === selectedID
-                    const showBadge = newestComment[d.discussionID] > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
-                    const user = this.props.users[d.userID]
+                    const showBadge = d.lastCommentTime > (this.props.newestViewedCommentTimestamp[d.discussionID] || 0)
+                    const user = this.props.users[d.lastCommentUser || d.userID]
+                    console.log(d)
                     return (
                         <ListItem
                             button
@@ -52,9 +53,11 @@ class DiscussionList extends React.Component<Props>
                                 <Typography className={classes.heading}>
                                     {d.subject}
                                 </Typography>
-                                <Typography className={classes.subheading}>
-                                    {moment(newestComment[d.discussionID]).fromNow()}
-                                </Typography>
+                                {d.lastCommentTime !== undefined &&
+                                    <Typography className={classes.subheading}>
+                                        {moment(d.lastCommentTime).fromNow()}
+                                    </Typography>
+                                }
                             </div>
                             <div className={classes.avatar}>
                                 <UserAvatar user={user} disableClick />
@@ -100,11 +103,10 @@ interface OwnProps {
 }
 
 interface StateProps {
-    discussions: { [discussionID: string]: IDiscussion }
     users: { [email: string]: IUser }
+    discussions: { [discussionID: string]: IDiscussion }
+    discussionList: string[]
     newestViewedCommentTimestamp: { [discussionID: string]: number }
-    newestCommentTimestampPerDiscussion: { [discussionID: string]: number }
-    discussionIDsSortedByNewestComment: string[]
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -175,9 +177,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         users: state.user.users,
         discussions: state.discussion.discussions,
+        discussionList: state.discussion.discussionsByRepo[repoID] || [],
         newestViewedCommentTimestamp: ((state.user.userSettings.newestViewedCommentTimestamp || {})[repoID] || {}),
-        newestCommentTimestampPerDiscussion: state.discussion.newestCommentTimestampPerDiscussion,
-        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
     }
 }
 

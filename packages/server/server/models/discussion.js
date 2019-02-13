@@ -41,12 +41,12 @@ Discussion.create = async ({ repoID, subject, userID, commentText }) => {
 }
 
 Discussion.get = async (discussionIDs) => {
-    let fetches = discussionIDs.map(discussionID => dynamo.getAsync({
+    const fetches = discussionIDs.map(discussionID => dynamo.getAsync({
         TableName: DiscussionTable,
         Key:       { discussionID },
     }))
 
-    let resp = await Promise.all(fetches)
+    const resp = await Promise.all(fetches)
     return resp.map(row => row.Item)
 }
 
@@ -57,6 +57,23 @@ Discussion.getAllForRepo = async (repoID) => {
         KeyConditionExpression:    'repoID = :repoID',
         ExpressionAttributeValues: { ':repoID': repoID },
     })
+}
+
+Discussion.updateLastComment = async (discussionID, userID, commentTime) => {
+    try {
+        await dynamo.updateAsync({
+            TableName:                 DiscussionTable,
+            Key:                       { discussionID },
+            UpdateExpression:          'SET lastCommentTime = :lastTime, lastCommentUser = :lastUser',
+            ExpressionAttributeValues: {
+                ':lastTime': newComment.created,
+                ':lastUser': newComment.userID,
+            },
+        })
+    } catch (err) {
+        console.error('Error in Discussion.updateLastComment ~>', err)
+        throw err
+    }
 }
 
 Discussion.delete = async (discussionID) => {

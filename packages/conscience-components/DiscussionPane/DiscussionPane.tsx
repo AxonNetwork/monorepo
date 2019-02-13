@@ -9,9 +9,8 @@ import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
 import DiscussionList from '../DiscussionList'
 import { selectDiscussion } from '../navigation'
-import { getDiscussionsForRepo } from '../redux/discussion/discussionActions'
+import { getDiscussionsForRepo, getCommentsForDiscussion } from '../redux/discussion/discussionActions'
 import { IGlobalState } from '../redux'
-import { getRepoID } from '../env-specific'
 
 import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -29,7 +28,6 @@ class DiscussionPane extends React.Component<Props>
             <div className={classes.discussionPane}>
                 <DiscussionList
                     uri={this.props.uri}
-                    order={this.props.discussionIDsSortedByNewestComment}
                     selectedID={selectedID}
                     classes={{ list: classes.discussionList }}
                 />
@@ -58,6 +56,15 @@ class DiscussionPane extends React.Component<Props>
     componentWillMount() {
         // @@TODO: intelligent caching
         this.props.getDiscussionsForRepo({ uri: this.props.uri })
+        if (this.props.selectedID) {
+            this.props.getCommentsForDiscussion({ discussionID: this.props.selectedID })
+        }
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.selectedID !== undefined && this.props.selectedID !== prevProps.selectedID) {
+            this.props.getCommentsForDiscussion({ discussionID: this.props.selectedID })
+        }
     }
 
     selectDiscussion(discussionID: string | undefined) {
@@ -65,19 +72,18 @@ class DiscussionPane extends React.Component<Props>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+type Props = OwnProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
     selectedID: string | undefined
 }
 
-interface StateProps {
-    discussionIDsSortedByNewestComment: string[]
-}
+interface StateProps { }
 
 interface DispatchProps {
     getDiscussionsForRepo: typeof getDiscussionsForRepo
+    getCommentsForDiscussion: typeof getCommentsForDiscussion
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -113,15 +119,12 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoID = getRepoID(ownProps.uri)
-
-    return {
-        discussionIDsSortedByNewestComment: (state.discussion.discussionIDsSortedByNewestComment[repoID] || []),
-    }
+    return {}
 }
 
 const mapDispatchToProps = {
     getDiscussionsForRepo,
+    getCommentsForDiscussion,
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
