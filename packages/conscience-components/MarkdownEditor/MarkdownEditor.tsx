@@ -118,7 +118,7 @@ class MarkdownEditor extends React.Component<Props, State>
 interface Props {
     uri: URI
     initialContents: string
-    fileExistsOnDisk?: boolean
+    fileExistsOnDisk: boolean
     saveFileContents: (contents: string) => Promise<void>
     classes: any
 }

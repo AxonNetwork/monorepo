@@ -11,7 +11,17 @@ declare module 'conscience-lib/rpc' {
         cloneRepo: (params: { repoID: string, path?: string, name?: string, email?: string }) => any // emitter for progress stream
         getLocalRepos: any
         getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
-        getRepoFilesAsync: (params: { path: string, repoID?: string }) => Promise<{ files: IRPCFile[] }>
+
+        getRepoFilesAsync: (params:
+            ({ repoRoot: string } | { repoID: string }) &
+            ({ commitHash: string } | { commitRef: string })
+        ) => Promise<{ files: IRPCFile[] }>
+
+        getDiff: (params:
+            ({ repoRoot: string } | { repoID: string }) &
+            ({ commitHash: string } | { commitRef: string })
+        ) => ReadableStream
+
         getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: IRPCCommit[] }>
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
         getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>

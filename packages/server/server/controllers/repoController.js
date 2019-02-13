@@ -101,7 +101,7 @@ repoController.get = async (req, res, next) => {
     const commits = keyBy(timeline, 'commit')
     const commitList = Object.keys(commits)
 
-    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID })).files || []
+    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'HEAD' })).files || []
 
     const contents = filesListRaw
         .filter(file => file && file.name)

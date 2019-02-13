@@ -98,13 +98,16 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
     type: RepoActionType.FETCH_REPO_FILES,
     async process({ action }) {
-        const { uri } = action.payload
+        const { uri, commit } = action.payload
 
         if (uri.type === URIType.Local) {
-            const path = uri.repoRoot
-            const repoID = getRepoID(uri)
+            const { repoRoot, commit } = uri
 
-            const filesListRaw = (await rpc.getClient().getRepoFilesAsync({ path, repoID })).files || []
+            let params = (commit === 'HEAD' || commit === 'working')
+                ? { repoRoot, commitRef: commit }
+                : { repoRoot, commitHash: Buffer.from(commit, 'hex') }
+
+            const filesListRaw = (await rpc.getClient().getRepoFilesAsync(params)).files || []
 
             const filesList = filesListRaw
                 .filter(file => file && file.name)
@@ -254,7 +257,7 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
             await rpc.getClient().checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
             await dispatch(fetchFullRepo({ uri }))
         } else {
-            return new Error("Cannot checkpoint network repo")
+            return new Error('Cannot checkpoint network repo')
         }
         return {}
     },
@@ -264,23 +267,36 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
     type: RepoActionType.GET_DIFF,
     async process({ action, getState }) {
         const { uri, commit } = action.payload
+
+        if (getState().repo.diffsByCommitHash[commit]) {
+            return
+        }
+
         let diffBlob: string
         if (uri.type === URIType.Local) {
-            try {
-                diffBlob = await spawnCmd('git', ['show', commit], uri.repoRoot)
-            } catch (err) {
-                console.log(`ERROR running git show ${commit} ~>`, err)
-                throw err
-            }
+            let params = (commit === 'HEAD' || commit === 'working')
+                ? { repoRoot: uri.repoRoot, commitRef: commit }
+                : { repoRoot: uri.repoRoot, commitHash: Buffer.from(commit, 'hex') }
+
+            let err = new Error()
+            console.log('stack', err.stack)
+            const stream = rpc.getClient().getDiff(params)
+
+            diffBlob = await new Promise((resolve, reject) => {
+                let diffBlob: string
+                stream.on('data', pkt => {
+                    if (pkt.end) { return resolve(diffBlob) }
+                    diffBlob += pkt.data
+                })
+                stream.on('error', reject)
+            })
+
         } else {
-            const state = getState()
-            if (state.repo.diffsByCommitHash[commit]) {
-                return
-            }
             diffBlob = await ServerRelay.getDiff({ repoID: uri.repoID, commit })
         }
+
         const diff = parseDiff(diffBlob)
-        return { commit, diff }
+        return { uri, commit, diff }
     },
 })
 
@@ -369,7 +385,7 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
             const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists
             if (watcher) {
                 watcher.on('file_change', () => {
-                    dispatch(fetchRepoFiles({ uri }))
+                    dispatch(fetchRepoFiles({ uri: { ...uri, commit: 'working' } }))
                 })
                 watcher.on('behind_remote', () => {
                     if (!getState().repo.isBehindRemoteByURI[uriStr]) {

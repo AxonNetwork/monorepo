@@ -143,7 +143,7 @@ searchController.reindexRepo = async (req, res, next) => {
 
     async function reindexFiles(repoID) {
         const rpcClient = noderpc.initClient()
-        const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID })).files || []
+        const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'HEAD' })).files || []
 
         for (const file of filesListRaw) {
             // skip files over 1mb
