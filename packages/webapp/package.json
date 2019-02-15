@@ -95,6 +95,7 @@
     "prismjs": "^1.15.0",
     "progress-bar-webpack-plugin": "^1.11.0",
     "react": "^16.6.3",
+    "react-color": "^2.17.0",
     "react-content-loader": "^3.2.0",
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",
