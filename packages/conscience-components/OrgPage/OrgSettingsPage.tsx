@@ -5,6 +5,7 @@ import { Theme, withStyles, createStyles } from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
+import Divider from '@material-ui/core/Divider'
 import { updateOrg, uploadOrgPicture, uploadOrgBanner, updateOrgColors } from 'conscience-components/redux/org/orgActions'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { IOrganization } from 'conscience-lib/common'
@@ -31,6 +32,7 @@ class OrganizationPage extends React.Component<Props, State>
         console.log(org.picture)
         const hasOrgPicture = org.picture && Object.keys(org.picture).length !== 0
         console.log(hasOrgPicture)
+        console.log(org)
 
         return (
             <div className={classes.settingsPage}>
@@ -38,7 +40,7 @@ class OrganizationPage extends React.Component<Props, State>
                 {/* Change Org Name or Description */}
 
                 <div className={classes.settings}>
-                    <H6 className={classes.header}>Settings</H6>
+                    <H6 className={classes.header}>Organization Settings</H6>
                     <TextField
                         key={org.orgID + ':1'}
                         label="Organization Name"
@@ -66,62 +68,71 @@ class OrganizationPage extends React.Component<Props, State>
                         Update
                     </Button>
                 </div>
+                <div className={classes.colorsAndImages}>
+                    <H6>Showcase Settings</H6>
+                    <div style={{backgroundColor: '#eaeaea82', padding: 32, marginTop: 20,}}>
+                    
+                        {/* Change Org Primary and Secondary Theme Colors */}
 
-                {/* Change Org Primary and Secondary Theme Colors */}
+                        <div className={}>
+                            <div className={classes.colorsSection}>
+                                <div style={{fontSize: 18,}}>
+                                    <Fab size='medium'
+                                        onClick={this.openColorDialog}
+                                        onMouseEnter={() => this.setState({primaryHover: true})} 
+                                        onMouseOut={() => this.setState({primaryHover: false})}
+                                        style={{backgroundColor: `${org.primaryColor}`, boxShadow: this.state.primaryHover ? 
+                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 20 }}>
+                                    </Fab>
+                                    Primary Color
+                                </div>
+                                <div style={{fontSize: 18,}}>
+                                    <Fab size='medium'
+                                        onClick={this.openColorDialog}
+                                        onMouseEnter={() => this.setState({secondaryHover: true})} 
+                                        onMouseOut={() => this.setState({secondaryHover: false})}
+                                        style={{backgroundColor: `${org.secondaryColor}`, boxShadow: this.state.secondaryHover ? 
+                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 20 }}>
+                                    </Fab>
+                                    Secondary Color
+                                </div>
+                            </div>
+                        </div>
+                        <Divider style={{marginBottom: 20}}/>
 
-                <div className={classes.colorsSection}>
-                    <div>
-                        <Fab size='medium'
-                            onClick={this.openColorDialog}
-                            onMouseEnter={() => this.setState({primaryHover: true})} 
-                            onMouseOut={() => this.setState({primaryHover: false})}
-                            style={{backgroundColor: 'pink', boxShadow: this.state.primaryHover ? 
-                            '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'none' }}>
-                        </Fab>
-                        Primary Color
-                    </div>
-                    <div>
-                        <Fab size='medium'
-                            onClick={this.openColorDialog}
-                            onMouseEnter={() => this.setState({secondaryHover: true})} 
-                            onMouseOut={() => this.setState({secondaryHover: false})}
-                            style={{backgroundColor: 'purple', boxShadow: this.state.secondaryHover ? 
-                            '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'none' }}>
-                        </Fab>
-                        Secondary Color
+                        {/* Upload Banner or Profile Pictures */}
+
+                        <div className={classes.images}>
+                            <div className={classes.imageContainer}>
+                                {!hasOrgPicture &&
+                                    <div>No Image Uploaded</div>
+                                }
+                                {hasOrgPicture &&
+                                    <div>
+                                        <div>Current Image:</div>
+                                        <img src={nonCacheImg(org.picture['256x256'])} className={classes.orgPicture} />
+                                    </div>
+                                }
+                                <input type="file" ref={x => this._inputOrgPicture = x} /><br />
+                                <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
+                            </div>
+                            <div className={classes.imageContainer}>
+                                {org.banner.length === 0 &&
+                                    <div>No Banner Uploaded</div>
+                                }
+                                {org.banner.length > 0 &&
+                                    <div>
+                                        <div>Current Banner:</div>
+                                        <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
+                                    </div>
+                                }
+                                <input type="file" ref={x => this._inputBanner = x} /><br />
+                                <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
+                            </div>
+                        </div >
                     </div>
                 </div>
 
-                {/* Upload Banner or Profile Pictures */}
-
-                <div className={classes.images}>
-                    <div className={classes.imageContainer}>
-                        {!hasOrgPicture &&
-                            <div>No Image Uploaded</div>
-                        }
-                        {hasOrgPicture &&
-                            <div>
-                                <div>Current Image:</div>
-                                <img src={nonCacheImg(org.picture['256x256'])} className={classes.orgPicture} />
-                            </div>
-                        }
-                        <input type="file" ref={x => this._inputOrgPicture = x} /><br />
-                        <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadOrgImage}>Upload</Button>
-                    </div>
-                    <div className={classes.imageContainer}>
-                        {org.banner.length === 0 &&
-                            <div>No Banner Uploaded</div>
-                        }
-                        {org.banner.length > 0 &&
-                            <div>
-                                <div>Current Banner:</div>
-                                <img src={nonCacheImg(org.banner)} className={classes.orgPicture} />
-                            </div>
-                        }
-                        <input type="file" ref={x => this._inputBanner = x} /><br />
-                        <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickUploadBanner}>Upload</Button>
-                    </div>
-                </div >
             </div >
         )
     }
@@ -178,21 +189,29 @@ interface DispatchProps {
 const styles = (theme: Theme) => createStyles({
     settingsPage: {
         minWidth: 450,
-        maxWidth: 650,
         display: 'flex',
-        flexDirection: 'column',
+    },
+    settings: {
+        marginRight: 20,
+        marginTop: 20,
+        width: '50%',
+    },
+    colorsAndImages: {
+        marginLeft: 20,
+        marginTop: 20,
+        width: '50%',
+        display: 'flex',
+        flexDirection: 'column'
     },
     colorsSection: {
         display: 'flex',
-        marginTop: 32,
+        marginBottom: 20,
+        justifyContent: 'space-between',
     },
     images: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: '#eaeaea82',
-        padding: 32,
-        marginTop: 32,
     },
     imageContainer: {
         width: '50%',

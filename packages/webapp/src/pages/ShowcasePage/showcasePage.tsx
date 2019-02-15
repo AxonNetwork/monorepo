@@ -48,7 +48,8 @@ class ShowcasePage extends React.Component<Props, State>
         const activeRepoCount = org.repos.length
         const publicRepoCount = 0 // org.repos.filter(id => (repos[id] || {}).isPublic).length
 
-        console.log('333333333333', this.props.org)
+        console.log('primary', this.props.org.primaryColor)
+        console.log('secondary', this.props.org.secondaryColor)
 
         return (
             <div>

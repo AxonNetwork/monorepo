@@ -18,7 +18,7 @@ class SelectRepoDialog extends React.Component<Props>
         return (
             <Dialog onClose={() => this.props.onSelectBanner(null)} open={open}>
                 <DialogTitle>
-                    Change Org Banner
+                    Change Organization Banner
 				</DialogTitle>
                 <DialogContent>
                     <input type="file" ref={x => this._inputBanner = x} /><br />
