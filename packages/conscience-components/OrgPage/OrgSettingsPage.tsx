@@ -10,7 +10,7 @@ import { updateOrg, uploadOrgPicture, uploadOrgBanner, updateOrgColors } from 'c
 import { H6 } from 'conscience-components/Typography/Headers'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
-
+import { SketchPicker } from 'react-color'
 
 @autobind
 class OrganizationPage extends React.Component<Props, State>
@@ -21,19 +21,19 @@ class OrganizationPage extends React.Component<Props, State>
     _inputBanner: HTMLInputElement | null = null
 
     state = {
-        primaryColor: ''|'black',
-        secondaryColor: ''|'black',
+        primaryColor: this.props.org.primaryColor,
+        secondaryColor: this.props.org.secondaryColor,
         primaryHover: false,
-        secondaryHover: false
+        secondaryHover: false,
+        primaryClick: false,
+        secondaryClick: false,
     }
 
     render() {
         const { org, classes } = this.props
-        console.log(org.picture)
+        const { primaryClick, secondaryClick, primaryColor, secondaryColor } = this.state
         const hasOrgPicture = org.picture && Object.keys(org.picture).length !== 0
-        console.log(hasOrgPicture)
         console.log(org)
-
         return (
             <div className={classes.settingsPage}>
 
@@ -76,27 +76,34 @@ class OrganizationPage extends React.Component<Props, State>
 
                         <div className={}>
                             <div className={classes.colorsSection}>
-                                <div style={{fontSize: 18,}}>
-                                    <Fab size='medium'
-                                        onClick={this.openColorDialog}
+                                <div onClick={this.openColorPicker('primary')} >
+                                    <Fab size='small'
                                         onMouseEnter={() => this.setState({primaryHover: true})} 
                                         onMouseOut={() => this.setState({primaryHover: false})}
-                                        style={{backgroundColor: `${org.primaryColor}`, boxShadow: this.state.primaryHover ? 
-                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 20 }}>
+                                        style={{backgroundColor: `${primaryColor}`, boxShadow: this.state.primaryHover ? 
+                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 10 }}>
                                     </Fab>
                                     Primary Color
                                 </div>
-                                <div style={{fontSize: 18,}}>
-                                    <Fab size='medium'
-                                        onClick={this.openColorDialog}
+                                <div>
+                                    <Fab size='small'
+                                        onClick={this.openColorPicker('secondary')}
                                         onMouseEnter={() => this.setState({secondaryHover: true})} 
                                         onMouseOut={() => this.setState({secondaryHover: false})}
-                                        style={{backgroundColor: `${org.secondaryColor}`, boxShadow: this.state.secondaryHover ? 
-                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 20 }}>
+                                        style={{backgroundColor: `${secondaryColor}`, boxShadow: this.state.secondaryHover ? 
+                                        '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 10 }}>
                                     </Fab>
                                     Secondary Color
                                 </div>
+                                <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickSaveColors}>Save</Button>
                             </div>
+                            { primaryClick || secondaryClick ? 
+                                <div style={{zIndex: 2, position: 'absolute', width: secondaryClick ? '30%' : 'auto', display: 'flex', justifyContent: secondaryClick ? 'flex-end' : 'flex-start' }}>
+                                    <Fab size='small' style={{ marginRight: '-24px', marginTop: '-12px', backgroundColor: '#e64a19'}} onClick={this.closeColorPicker}>X</Fab>
+                                    <SketchPicker color={primaryClick ? primaryColor : secondaryColor} onChangeComplete={this.onChangeComplete} />
+                                </div>
+                                : null 
+                            }
                         </div>
                         <Divider style={{marginBottom: 20}}/>
 
@@ -161,6 +168,32 @@ class OrganizationPage extends React.Component<Props, State>
         const orgID = this.props.org.orgID
         this.props.uploadOrgBanner({ fileInput, orgID })
     }
+
+    openColorPicker = (type:string) => (event:any) => {
+        event.preventDefault()
+        type === 'primary' ? this.setState({primaryClick: true}) : this.setState({secondaryClick: true})
+    }
+
+    closeColorPicker = (event:any) => {
+        event.preventDefault()
+        console.log('crozzee')
+        this.setState({primaryClick: false, secondaryClick: false})
+    }   
+
+    onChangeComplete = (color:Element, event:any) => {
+        if (this.state.primaryClick) {
+            this.setState({primaryColor: color.hex})
+        } else if (this.state.secondaryClick) {
+            this.setState({secondaryColor: color.hex})
+        }
+    } 
+
+    onClickSaveColors = () => {
+        const orgID = this.props.org.orgID
+        const pc = this.state.primaryColor
+        const sc = this.state.secondaryColor
+        this.props.updateOrgColors({orgID: orgID, primaryColor: pc, secondaryColor: sc})
+    }
 }
 
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
@@ -170,8 +203,12 @@ interface MatchParams {
 }
 
 interface State {
-    primaryHover: boolean
-    secondaryHover: boolean
+    primaryHover: boolean,
+    secondaryHover: boolean,
+    primaryClick: boolean,
+    secondaryClick: boolean,
+    primaryColor: string,
+    secondaryColor: string
 }
 
 interface OwnProps extends RouteComponentProps<MatchParams> { }
@@ -184,6 +221,7 @@ interface DispatchProps {
     updateOrg: typeof updateOrg
     uploadOrgPicture: typeof uploadOrgPicture
     uploadOrgBanner: typeof uploadOrgBanner
+    updateOrgColors: typeof updateOrgColors
 }
 
 const styles = (theme: Theme) => createStyles({
