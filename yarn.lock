@@ -14211,6 +14211,11 @@ output-file-sync@^2.0.0:
     is-plain-obj "^1.1.0"
     mkdirp "^0.5.1"
 
+overlayscrollbars@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/overlayscrollbars/-/overlayscrollbars-1.6.3.tgz#d3c5f94f9484ed8b023b0457cb6b639274d2e9f3"
+  integrity sha512-IFE8tBMUC+zbxEz+aQIRxzVDqh7kVO6PYiLxQbHDrEsxcfEIQa/T/ThSBh1SKATTFB15A3h4Ea8L8rM7kWHpAA==
+
 p-cancelable@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/p-cancelable/-/p-cancelable-0.3.0.tgz#b9e123800bcebb7ac13a479be195b507b98d30fa"
@@ -18258,19 +18263,6 @@ simple-swizzle@^0.2.2:
   integrity sha1-pNprY1/8zMoz9w0Xy5JZLeleVXo=
   dependencies:
     is-arrayish "^0.3.1"
-
-simplebar@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/simplebar/-/simplebar-3.1.3.tgz#fa6c669d080d1a7514b277b2e27807bba1a6e118"
-  integrity sha512-IjRPRhAgBgKi9fo/lzvdf4q7rRkrgyyQ0lJ/LtqfZhByQPXsgRHCHWtYpTKA5VKEe9NxA5CTUNT7m4piwCucqA==
-  dependencies:
-    can-use-dom "^0.1.0"
-    core-js "^2.6.2"
-    lodash.debounce "^4.0.8"
-    lodash.memoize "^4.1.2"
-    lodash.throttle "^4.1.1"
-    resize-observer-polyfill "^1.5.0"
-    scrollbarwidth "^0.1.3"
 
 simplest-i18n@^1.0.0:
   version "1.0.0"

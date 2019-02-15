@@ -95,6 +95,8 @@ export interface IDiscussion {
     userID: string
     created: number
     subject: string
+    lastCommentUser: string
+    lastCommentTime: number
 }
 
 export interface IUploadedPicture {

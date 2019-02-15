@@ -5,6 +5,7 @@ import { Switch, Route, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
+import Scrollbar from 'conscience-components/Scrollbar'
 import RepoInfo from 'conscience-components/RepoInfo'
 import RepoFilesPage from './components/RepoFilesPage'
 import RepoEditorPage from './components/RepoEditorPage'
@@ -47,37 +48,39 @@ class RepoPageContainer extends React.Component<Props>
                     showButtons
                     repoPage={repoPage}
                 />
-                <div id="hihihi" className={classes.repoPage} data-simplebar> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
-                    <div className={classes.repoPageInner}>
-                        <Switch>
-                            <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />
-                            <Route path='/local-repo/:repoHash/files/:commit' component={RepoFilesPage} />
-                            <Route path='/local-repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
-                            <Route path='/local-repo/:repoHash/new-file/:filename+' component={RepoEditorPage} />
-                            <Route path='/local-repo/:repoHash/conflict/:filename+' component={RepoConflictPage} />
-                            <Route path='/local-repo/:repoHash/history/:commit' component={RepoHistoryPage} />
-                            <Route path='/local-repo/:repoHash/history' component={RepoHistoryPage} />
-                            <Route path='/local-repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
-                            <Route path='/local-repo/:repoHash/discussion' component={RepoDiscussionPage} />
-                            <Route path='/local-repo/:repoHash/team' component={RepoTeamPage} />
-                            <Route path='/local-repo/:repoHash/home' component={RepoHomePage} />
-                            <Route path='/local-repo/:repoHash' component={RepoHomePage} />
+                <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
+                    <Scrollbar>
+                        <div className={classes.repoPageInner}>
+                            <Switch>
+                                <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />
+                                <Route path='/local-repo/:repoHash/files/:commit' component={RepoFilesPage} />
+                                <Route path='/local-repo/:repoHash/edit/:filename+' component={RepoEditorPage} />
+                                <Route path='/local-repo/:repoHash/new-file/:filename+' component={RepoEditorPage} />
+                                <Route path='/local-repo/:repoHash/conflict/:filename+' component={RepoConflictPage} />
+                                <Route path='/local-repo/:repoHash/history/:commit' component={RepoHistoryPage} />
+                                <Route path='/local-repo/:repoHash/history' component={RepoHistoryPage} />
+                                <Route path='/local-repo/:repoHash/discussion/:discussionID' component={RepoDiscussionPage} />
+                                <Route path='/local-repo/:repoHash/discussion' component={RepoDiscussionPage} />
+                                <Route path='/local-repo/:repoHash/team' component={RepoTeamPage} />
+                                <Route path='/local-repo/:repoHash/home' component={RepoHomePage} />
+                                <Route path='/local-repo/:repoHash' component={RepoHomePage} />
 
-                            <Route path='/repo/:repoID/files/:commit/:filename+' component={RepoFilesPage} />
-                            <Route path='/repo/:repoID/files/:commit' component={RepoFilesPage} />
-                            <Route path='/repo/:repoID/edit/:filename+' component={RepoEditorPage} />
-                            <Route path='/repo/:repoID/conflict/:filename+' component={RepoConflictPage} />
-                            <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
-                            <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
-                            <Route path='/repo/:repoID/team' component={RepoTeamPage} />
-                            <Route path='/repo/:repoID/home' component={RepoHomePage} />
-                            <Route path='/repo/:repoID' component={RepoHomePage} />
+                                <Route path='/repo/:repoID/files/:commit/:filename+' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/files/:commit' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/edit/:filename+' component={RepoEditorPage} />
+                                <Route path='/repo/:repoID/conflict/:filename+' component={RepoConflictPage} />
+                                <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
+                                <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
+                                <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
+                                <Route path='/repo/:repoID/discussion' component={RepoDiscussionPage} />
+                                <Route path='/repo/:repoID/team' component={RepoTeamPage} />
+                                <Route path='/repo/:repoID/home' component={RepoHomePage} />
+                                <Route path='/repo/:repoID' component={RepoHomePage} />
 
-                            <Route render={() => null} />
-                        </Switch>
-                    </div>
+                                <Route render={() => null} />
+                            </Switch>
+                        </div>
+                    </Scrollbar>
                 </div>
                 <ErrorSnackbar
                     open={!!this.props.pullError}
@@ -156,16 +159,18 @@ interface Props extends RouteComponentProps<MatchParams> {
 const styles = (theme: Theme) => createStyles({
     main: {
         width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     },
     repoPage: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'auto',
     },
     repoPageInner: {
         marginRight: 60,
-        marginBottom: 96,
+        marginBottom: 64,
     },
 })
 

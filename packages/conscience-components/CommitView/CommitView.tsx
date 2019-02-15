@@ -24,6 +24,7 @@ class CommitView extends React.Component<Props>
     componentDidMount() {
         if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
+            console.log('dispatching getDiff 1')
             this.props.getDiff({
                 uri: this.props.uri,
                 commit: this.props.commit.commit,
@@ -34,6 +35,7 @@ class CommitView extends React.Component<Props>
     componentDidUpdate(_: Props) {
         if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
+            console.log('dispatching getDiff 2')
             this.props.getDiff({
                 uri: this.props.uri,
                 commit: this.props.commit.commit,

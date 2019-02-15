@@ -28,6 +28,7 @@ class MarkdownEditorPlugin extends React.Component<Props>
                 uri={this.props.uri}
                 initialContents={fileContents}
                 saveFileContents={this.saveFileContents}
+                fileExistsOnDisk={!this.props.isNewFile}
             />
         )
     }

@@ -11,8 +11,6 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 import grey from '@material-ui/core/colors/grey'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import 'simplebar'
-import 'simplebar/dist/simplebar.css'
 import './assets/css/App.css'
 
 const theme = createMuiTheme({

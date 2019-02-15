@@ -30,7 +30,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
         const { uri } = action.payload
         if (uri.type === URIType.Local) {
             await Promise.all([
-                dispatch(fetchRepoFiles({ uri })),
+                dispatch(fetchRepoFiles({ uri: { ...uri, commit: 'working' } })),
                 dispatch(fetchRepoTimeline({ uri })),
                 dispatch(getDiscussionsForRepo({ uri })),
                 dispatch(fetchRepoUsersPermissions({ uri })),

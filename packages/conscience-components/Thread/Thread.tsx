@@ -17,6 +17,7 @@ import { autobind, checkVisible } from 'conscience-lib/utils'
 import RenderMarkdown from '../RenderMarkdown'
 import SmartTextarea from '../SmartTextarea'
 import CommentWrapper from '../CommentWrapper'
+import CommentLoader from '../ContentLoaders/CommentLoader'
 import values from 'lodash/values'
 
 
@@ -107,7 +108,10 @@ class Thread extends React.Component<Props, State>
     render() {
         const { discussionID, discussions, comments, users, currentUser, classes } = this.props
 
-        const discussion = discussions[discussionID] || {}
+        const discussion = discussions[discussionID]
+        if (!discussion) {
+            return null
+        }
         const commentsList = values(comments).filter(c => c.discussionID === this.props.discussionID)
         const selectedCommentID = this.props.history.location.hash.slice(1)
 
@@ -122,55 +126,60 @@ class Thread extends React.Component<Props, State>
                     </IconButton>
                 }
                 <Typography variant="title" className={classes.title}>{discussion.subject}</Typography>
-                <div className={classes.thread}>
-                    <div className={classes.comments}>
-                        {commentsList.length === 0 &&
-                            <div className={classes.comment}>No comments yet. Start the discussion!</div>
-                        }
-                        {commentsList.map(c => {
-                            return (
-                                <div ref={ref => this._commentRefs[c.commentID] = { ref, created: c.created }}>
-                                    <CommentWrapper
-                                        key={c.created}
-                                        user={users[c.userID]}
-                                        created={c.created}
-                                        showBadge={c.created > this.props.newestViewedCommentTimestamp}
-                                        onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
-                                        classes={{ commentText: selectedCommentID === c.commentID ? classes.selectedComment : undefined }}
-                                    >
-                                        <RenderMarkdown
-                                            uri={this.props.uri}
-                                            text={c.text}
-                                        />
-                                    </CommentWrapper>
-                                </div>
-                            )
-                        })}
+                {commentsList.length === 0 ?
+                    Array(3).fill(0).map(i => (
+                        <CommentLoader />
+                    )) : null
+                }
+                {commentsList.length > 0 &&
+                    <div className={classes.thread}>
+                        <div className={classes.comments}>
 
-                        {/* Create comment form */}
-                        <CommentWrapper
-                            user={users[currentUser]}
-                            created={"right now"}
-                        >
-                            {this.state.createCommentError &&
-                                <FormHelperText error className={classes.createCommentError}>{this.state.createCommentError}</FormHelperText>
-                            }
-                            <SmartTextarea
-                                uri={this.props.uri}
-                                placeholder="Write your comment"
-                                rows={3}
-                                innerRef={(x: any) => this._inputComment = x}
-                                onSubmit={this.onClickCreateComment}
-                            />
-                            <Button color="secondary" variant="contained" onClick={this.onClickCreateComment}>
-                                Comment
-                            </Button>
-                        </CommentWrapper>
+                            {commentsList.map(c => {
+                                return (
+                                    <div ref={ref => this._commentRefs[c.commentID] = { ref, created: c.created }}>
+                                        <CommentWrapper
+                                            key={c.created}
+                                            user={users[c.userID]}
+                                            created={c.created}
+                                            showBadge={c.created > this.props.newestViewedCommentTimestamp}
+                                            onClickReplyLink={() => this.onClickReplyLink(c.commentID)}
+                                            classes={{ commentText: selectedCommentID === c.commentID ? classes.selectedComment : undefined }}
+                                        >
+                                            <RenderMarkdown
+                                                uri={this.props.uri}
+                                                text={c.text}
+                                            />
+                                        </CommentWrapper>
+                                    </div>
+                                )
+                            })}
 
-                        {/* this div is used for scrolling down to CreateComment when a user clicks 'reply' */}
-                        <div ref={x => this._bottomDiv = x}></div>
+                            {/* Create comment form */}
+                            <CommentWrapper
+                                user={users[currentUser]}
+                                created={"right now"}
+                            >
+                                {this.state.createCommentError &&
+                                    <FormHelperText error className={classes.createCommentError}>{this.state.createCommentError}</FormHelperText>
+                                }
+                                <SmartTextarea
+                                    uri={this.props.uri}
+                                    placeholder="Write your comment"
+                                    rows={3}
+                                    innerRef={(x: any) => this._inputComment = x}
+                                    onSubmit={this.onClickCreateComment}
+                                />
+                                <Button color="secondary" variant="contained" onClick={this.onClickCreateComment}>
+                                    Comment
+                                </Button>
+                            </CommentWrapper>
+
+                            {/* this div is used for scrolling down to CreateComment when a user clicks 'reply' */}
+                            <div ref={x => this._bottomDiv = x}></div>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         )
     }
