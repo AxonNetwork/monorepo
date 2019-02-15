@@ -56,7 +56,12 @@ export enum OrgActionType {
 
     VIEW_ORG_BLOG = 'VIEW_ORG_BLOG',
     VIEW_ORG_BLOG_SUCCESS = 'VIEW_ORG_BLOG_SUCCESS',
-    VIEW_ORG_BLOG_FAILED = 'VIEW_ORG_BLOG_FAILED',    
+    VIEW_ORG_BLOG_FAILED = 'VIEW_ORG_BLOG_FAILED',
+
+    UPDATE_ORG_COLORS = 'UPDATE_ORG_COLORS',
+    UPDATE_ORG_COLORS_SUCCESS = 'UPDATE_ORG_COLORS_SUCCESS',
+    UPDATE_ORG_COLORS_FAILED = 'UPDATE_ORG_COLORS_FAILED'
+
 }
 
 export interface ICreateOrgAction {
@@ -292,6 +297,26 @@ export interface ICreateOrgBlogSuccessAction {
 
 export type ICreateOrgBlogFailedAction = FailedAction<OrgActionType.CREATE_ORG_BLOG_FAILED>
 
+export interface IUpdateOrgColorsAction {
+    type: OrgActionType.UPDATE_ORG_COLORS
+    payload: {
+        orgID: string,
+        primaryColor: string,
+        secondaryColor: string,
+    }
+}
+
+export interface IUpdateOrgColorsSuccessAction {
+    type: OrgActionType.UPDATE_ORG_COLORS_SUCCESS
+    payload: {
+        orgID: string,
+        primaryColor: string,
+        secondaryColor: string,
+    }
+}
+
+export type IUpdateOrgColorsFailedAction = FailedAction<OrgActionType.UPDATE_ORG_COLORS_FAILED>
+
 export type IOrgAction =
     ICreateOrgAction |
     ICreateOrgSuccessAction |
@@ -343,7 +368,11 @@ export type IOrgAction =
 
     ICreateOrgBlogAction |
     ICreateOrgBlogSuccessAction |
-    ICreateOrgBlogFailedAction
+    ICreateOrgBlogFailedAction |
+
+    IUpdateOrgColorsAction |
+    IUpdateOrgColorsSuccessAction |
+    IUpdateOrgColorsFailedAction 
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })
@@ -362,3 +391,5 @@ export const changeOrgFeaturedRepos = (payload: IChangeOrgFeaturedReposAction['p
 
 export const fetchOrgBlogs = (payload: IFetchOrgBlogsAction['payload']): IFetchOrgBlogsAction => ({ type: OrgActionType.FETCH_ORG_BLOGS, payload })
 export const createOrgBlog = (payload: ICreateOrgBlogAction['payload']): ICreateOrgBlogAction => ({ type: OrgActionType.CREATE_ORG_BLOG, payload })
+
+export const updateOrgColors = (payload: IUpdateOrgColorsAction['payload']): IUpdateOrgColorsAction => ({ type: OrgActionType.UPDATE_ORG_COLORS, payload })

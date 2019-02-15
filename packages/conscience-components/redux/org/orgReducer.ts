@@ -194,6 +194,22 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
                 },
             }
         }
+
+        case OrgActionType.UPDATE_ORG_COLORS_SUCCESS: {
+            const { orgID, primaryColor, secondaryColor } = action.payload
+            console.log('22222222222222', action)
+            return {
+                ...state,
+                orgs: {
+                    ...state.orgs,
+                    [orgID]: {
+                        ...state.orgs[orgID],
+                        primaryColor: primaryColor,
+                        secondaryColor: secondaryColor
+                    },
+                }
+            }
+        }
     }
     return state
 }

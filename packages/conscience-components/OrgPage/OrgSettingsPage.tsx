@@ -4,19 +4,27 @@ import { RouteComponentProps } from 'react-router'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import { updateOrg, uploadOrgPicture, uploadOrgBanner } from 'conscience-components/redux/org/orgActions'
+import Fab from '@material-ui/core/Fab'
+import { updateOrg, uploadOrgPicture, uploadOrgBanner, updateOrgColors } from 'conscience-components/redux/org/orgActions'
 import { H6 } from 'conscience-components/Typography/Headers'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind, nonCacheImg } from 'conscience-lib/utils'
 
 
 @autobind
-class OrganizationPage extends React.Component<Props>
+class OrganizationPage extends React.Component<Props, State>
 {
     _inputOrgName: HTMLInputElement | null = null
     _inputDescription: HTMLInputElement | null = null
     _inputOrgPicture: HTMLInputElement | null = null
     _inputBanner: HTMLInputElement | null = null
+
+    state = {
+        primaryColor: ''|'black',
+        secondaryColor: ''|'black',
+        primaryHover: false,
+        secondaryHover: false
+    }
 
     render() {
         const { org, classes } = this.props
@@ -26,6 +34,9 @@ class OrganizationPage extends React.Component<Props>
 
         return (
             <div className={classes.settingsPage}>
+
+                {/* Change Org Name or Description */}
+
                 <div className={classes.settings}>
                     <H6 className={classes.header}>Settings</H6>
                     <TextField
@@ -55,6 +66,34 @@ class OrganizationPage extends React.Component<Props>
                         Update
                     </Button>
                 </div>
+
+                {/* Change Org Primary and Secondary Theme Colors */}
+
+                <div className={classes.colorsSection}>
+                    <div>
+                        <Fab size='medium'
+                            onClick={this.openColorDialog}
+                            onMouseEnter={() => this.setState({primaryHover: true})} 
+                            onMouseOut={() => this.setState({primaryHover: false})}
+                            style={{backgroundColor: 'pink', boxShadow: this.state.primaryHover ? 
+                            '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'none' }}>
+                        </Fab>
+                        Primary Color
+                    </div>
+                    <div>
+                        <Fab size='medium'
+                            onClick={this.openColorDialog}
+                            onMouseEnter={() => this.setState({secondaryHover: true})} 
+                            onMouseOut={() => this.setState({secondaryHover: false})}
+                            style={{backgroundColor: 'purple', boxShadow: this.state.secondaryHover ? 
+                            '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'none' }}>
+                        </Fab>
+                        Secondary Color
+                    </div>
+                </div>
+
+                {/* Upload Banner or Profile Pictures */}
+
                 <div className={classes.images}>
                     <div className={classes.imageContainer}>
                         {!hasOrgPicture &&
@@ -119,6 +158,11 @@ interface MatchParams {
     orgID: string
 }
 
+interface State {
+    primaryHover: boolean
+    secondaryHover: boolean
+}
+
 interface OwnProps extends RouteComponentProps<MatchParams> { }
 
 interface StateProps {
@@ -138,7 +182,9 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
     },
-    settings: {
+    colorsSection: {
+        display: 'flex',
+        marginTop: 32,
     },
     images: {
         display: 'flex',
@@ -197,6 +243,7 @@ const mapDispatchToProps = {
     updateOrg,
     uploadOrgPicture,
     uploadOrgBanner,
+    updateOrgColors
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, IPartialState>(

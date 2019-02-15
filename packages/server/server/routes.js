@@ -81,6 +81,7 @@ routes.post('/api/remove-repo-from-org', mustAuthenticate, asyncMiddleware(organ
 routes.post('/api/org-photo', mustAuthenticate, asyncMiddleware(organizationController.uploadOrgPicture))
 routes.post('/api/org-banner', mustAuthenticate, asyncMiddleware(organizationController.uploadOrgBanner))
 routes.post('/api/org/featured-repos', mustAuthenticate, asyncMiddleware(organizationController.changeOrgFeaturedRepos))
+routes.post('/api/org/:orgID/update-colors', mustAuthenticate, asyncMiddleware(organizationController.updateColors))
 
 routes.get('/api/org/:orgID/blog/:created', asyncMiddleware(organizationBlogsController.get))
 routes.get('/api/org/:orgID/blog', asyncMiddleware(organizationBlogsController.getMany))

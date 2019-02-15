@@ -460,6 +460,14 @@ const ServerRelay = {
         })
     },
 
+    async updateOrgColors(orgID: string, primaryColor: string, secondaryColor: string) {
+        interface IResponse {}
+        await axios.post<IResponse>(API_URL + '/org/' + orgID + '/update-colors', {
+            primaryColor,
+            secondaryColor,
+        })
+    },
+
     async fetchOrgBlogs(orgID: string) {
         type IResponse = IOrgBlog[]
 

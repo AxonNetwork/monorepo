@@ -15,6 +15,7 @@ import {
     IChangeOrgFeaturedReposAction, IChangeOrgFeaturedReposSuccessAction,
     IFetchOrgBlogsAction, IFetchOrgBlogsSuccessAction,
     ICreateOrgBlogAction, ICreateOrgBlogSuccessAction,
+    IUpdateOrgColorsAction, IUpdateOrgColorsSuccessAction
 } from './orgActions'
 import { fetchUserData, addedOrg } from '../user/userActions'
 import { fetchFullRepo } from '../repo/repoActions'
@@ -31,6 +32,8 @@ const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
         const userID = org.members[0]
         const orgID = org.orgID
         await dispatch(addedOrg({ userID, orgID }))
+        org.primaryColor = org.primaryColor||'black'
+        org.secondaryColor = org.secondaryColor||'#fafafa'
         return { org }
     },
 })
@@ -47,6 +50,8 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
         // promises.push(dispatch(fetchUserData({ userIDs: org.members })))
         // await Promise.all(promises)
         await dispatch(fetchUserData({ userIDs: org.members }))
+        org.primaryColor = org.primaryColor||'black'
+        org.secondaryColor = org.secondaryColor||'#fafafa'
         return { org }
     },
 })
@@ -56,6 +61,8 @@ const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
     async process({ action }) {
         const { orgID, name, description, readme } = action.payload
         const org = await ServerRelay.updateOrg(orgID, name, description, readme)
+        org.primaryColor = org.primaryColor||'black'
+        org.secondaryColor = org.secondaryColor||'#fafafa'
         return { org }
     },
 })
@@ -156,6 +163,15 @@ const createOrgBlogLogic = makeLogic<ICreateOrgBlogAction, ICreateOrgBlogSuccess
     },
 })
 
+const updateOrgColorsLogic = makeLogic<IUpdateOrgColorsAction, IUpdateOrgColorsSuccessAction>({
+    type: OrgActionType.UPDATE_ORG_COLORS,
+    async process({ action }, dispatch) {
+        const { orgID, primaryColor, secondaryColor } = action.payload
+        await ServerRelay.updateOrgColors(orgID, primaryColor, secondaryColor)
+        return { orgID, primaryColor, secondaryColor }
+    },
+})
+
 export default [
     createOrgLogic,
     fetchOrgInfoLogic,
@@ -170,4 +186,5 @@ export default [
     changeOrgFeaturedReposLogic,
     fetchOrgBlogsLogic,
     createOrgBlogLogic,
+    updateOrgColorsLogic
 ]

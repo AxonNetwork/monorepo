@@ -69,6 +69,30 @@ Organization.updateField = async (orgID, field, value) => {
     }
 }
 
+Organization.updateColors = async (orgID, primaryColor, secondaryColor) => {
+    const params = {
+        TableName:                 OrganizationTable,
+        Key:                       { orgID },
+        UpdateExpression:          'set #primaryColor = :primaryColor, #secondaryColor = :secondaryColor',
+        ExpressionAttributeNames:  {
+            '#primaryColor': 'primaryColor',
+            '#secondaryColor': 'secondaryColor',
+        },
+        ExpressionAttributeValues: {
+            ':primaryColor': primaryColor,
+            ':secondaryColor': secondaryColor,
+        },
+        ReturnValues: 'UPDATED_NEW',
+    }
+
+    try {
+        await dynamo.updateAsync(params)
+    } catch (err) {
+        console.error('Error in User.shareRepo~>', err)
+        throw err
+    }
+}
+
 Organization.addMember = async (orgID, userID) => {
     const params = {
         TableName:                 OrganizationTable,

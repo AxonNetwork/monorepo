@@ -151,6 +151,8 @@ export interface IOrganization {
     members: string[] //userID[]
     repos: string[] //repoID[]
     featuredRepos: { [repoID: string]: IFeaturedRepo }
+    primaryColor: string
+    secondaryColor: string 
 }
 
 export interface IOrgBlog {

@@ -55,6 +55,22 @@ organizationController.update = async (req, res, next) => {
     return res.status(200).json(org)
 }
 
+organizationController.updateColors = async (req, res, next) => {
+    const { orgID } = req.params
+    const { primaryColor, secondaryColor } = req.body
+    if (!orgID) {
+        throw new HTTPError(400, 'Missing orgID')
+    } else if (!primaryColor) {
+        throw new HTTPError(400, 'Missing primaryColor')
+    } else if (!secondaryColor) {
+        throw new HTTPError(400, 'Missing secondaryColor')
+    }
+
+    await Organization.updateColors(orgID, primaryColor, secondaryColor)
+
+    return res.status(200).json({})
+}
+
 organizationController.addMember = async (req, res, next) => {
     const { orgID, userID } = req.body
     if (!orgID) {
