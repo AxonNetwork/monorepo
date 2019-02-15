@@ -5,7 +5,6 @@ import { RouteComponentProps, Switch, Route } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
-import Avatar from '@material-ui/core/Avatar'
 import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -20,7 +19,7 @@ import UploadPictureDialog from './components/UploadPictureDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
 import FeatResearchAndBlogs from './components/FeatResearchAndBlogs'
 import BlogPage from './components/BlogPage'
-import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos } from 'conscience-components/redux/org/orgActions'
+import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos, updateOrgColors } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -49,6 +48,8 @@ class ShowcasePage extends React.Component<Props, State>
         const activeRepoCount = org.repos.length
         const publicRepoCount = 0 // org.repos.filter(id => (repos[id] || {}).isPublic).length
 
+        console.log('333333333333', this.props.org)
+
         return (
             <div>
                 <Parallax
@@ -75,26 +76,21 @@ class ShowcasePage extends React.Component<Props, State>
                 />
                 <Grid xs={12} container >
                     <Grid item xs={false} sm={4} direction="column" className={classes.gridItem} style={{ backgroundColor: 'white' }}>
+
                         <div className={classes.introContainer}>
-                            <Avatar
-                                onMouseOver={this.handleMouseOver}
-                                onMouseOut={this.handleMouseOut}
-                                alt='conscience-logo'
+                            <div 
                                 className={classes.avatar}
-                                src='https://i.ibb.co/Lt5V2FK/conscience-inverse.png'
+                                style={{backgroundImage: this.state.hover ?`url(https://i.ibb.co/mTdY0W9/showcase-Camera.png)` : `url(${org.picture['256x256']})`}} 
+                                onMouseEnter={this.handleMouseEnter} 
+                                onMouseOut={this.handleMouseOut}
                                 onClick={this.dialogImgOpen}
-                            />
-                            {this.state.hover ?
-                                <div style={{ position: 'absolute', right: 0, color: 'white' }}>
-                                    <PhotoCameraIcon />
-                                </div>
-                                : null
-                            }
-                            <UploadPictureDialog
-                                open={this.state.dialogImgOpen}
-                                onSelectImg={this.onSelectImg}
-                            />
+                            ></div>
                         </div>
+                        <UploadPictureDialog
+                            open={this.state.dialogImgOpen}
+                            onSelectImg={this.onSelectImg}
+                        />
+
                         <div className={classes.statsContainer}>
                             <div className={classnames(classes.stats, classes.orgName)}>
                                 <strong>{this.props.org ? this.props.org.name : 'No Organization Name'}</strong>
@@ -130,6 +126,8 @@ class ShowcasePage extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
+        console.log('11111')
+        this.props.updateOrgColors({ orgID: orgID, primaryColor: '#ff0000', secondaryColor: '#00ff00' })
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
@@ -163,12 +161,14 @@ class ShowcasePage extends React.Component<Props, State>
         this.setState({ dialogImgOpen: false })
     }
 
-    handleMouseOver = () => {
+    handleMouseEnter = (event: any) => {
+        console.log('enter')
         this.setState({ hover: true })
 
     }
 
-    handleMouseOut = () => {
+    handleMouseOut = (event:any) => {
+        console.log('exit')
         this.setState({ hover: false })
     }
 }
@@ -207,7 +207,16 @@ const styles = (theme: Theme) => createStyles({
     avatar: {
         height: 200,
         width: 200,
-        boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+        boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)',
+        backgroundSize: 'cover',
+        borderRadius: '100%',
+        backgroundColor: 'white',
+    },
+    hoveredAvatar: {
+        backgroundColor: 'white',
+        height: 200,
+        width: 200,
+        borderRadius: '100%',
     },
     gridItem: {
         padding: '60px',
@@ -302,6 +311,7 @@ const mapDispatchToProps = {
     uploadOrgBanner,
     uploadOrgPicture,
     changeOrgFeaturedRepos,
+    updateOrgColors
 }
 
 export default connect(
