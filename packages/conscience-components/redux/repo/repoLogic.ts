@@ -3,7 +3,7 @@ import {
     IGetRepoListAction, IGetRepoListSuccessAction,
     IFetchFullRepoAction, IFetchFullRepoSuccessAction,
     IFetchFullRepoFromServerAction, IFetchFullRepoFromServerSuccessAction,
-    fetchRepoFiles, fetchRepoTimeline, fetchRepoUsersPermissions,
+    fetchRepoFiles, fetchRepoTimeline, fetchRefLogs, fetchRepoUsersPermissions,
     fetchLocalRefs, fetchRemoteRefs, fetchFullRepoFromServer,
     watchRepo,
 } from './repoActions'
@@ -32,6 +32,7 @@ const fetchFullRepoLogic = makeLogic<IFetchFullRepoAction, IFetchFullRepoSuccess
             await Promise.all([
                 dispatch(fetchRepoFiles({ uri: { ...uri, commit: 'working' } })),
                 dispatch(fetchRepoTimeline({ uri })),
+                dispatch(fetchRefLogs({ uri })),
                 dispatch(getDiscussionsForRepo({ uri })),
                 dispatch(fetchRepoUsersPermissions({ uri })),
                 dispatch(fetchLocalRefs({ uri })),

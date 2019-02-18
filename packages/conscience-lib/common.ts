@@ -68,16 +68,22 @@ export interface NetworkURI {
     discussionID?: string | undefined
 }
 
-
 export interface ITimelineEvent {
-    version: number
     commit: string
     user: string
-    time: Date
+    time: number
     message: string
     files: string[]
-    verified?: Date
     repoID?: string
+}
+
+export interface IRefLog {
+    commit: string
+    refHash: string
+    repoID: string
+    txHash: string
+    time: number
+    blockNumber: number
 }
 
 export interface IComment {
@@ -154,7 +160,7 @@ export interface IOrganization {
     repos: string[] //repoID[]
     featuredRepos: { [repoID: string]: IFeaturedRepo }
     primaryColor: string
-    secondaryColor: string 
+    secondaryColor: string
 }
 
 export interface IOrgBlog {

@@ -34,7 +34,7 @@ class Timeline extends React.Component<Props, State>
 
         if (!this.props.commitList) {
             return (
-                <div>
+                <div className={classes.loaders}>
                     {Array(rowsPerPage).fill(0).map(i => (
                         <TimelineEventLoader />
                     ))}
@@ -100,6 +100,10 @@ const styles = () => createStyles({
     paginationText: {
         fontSize: '0.85rem',
     },
+    loaders: {
+        display: 'flex',
+        flexDirection: 'column',
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {

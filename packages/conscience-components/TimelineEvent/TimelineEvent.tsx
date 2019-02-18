@@ -11,12 +11,13 @@ import { URI, IUser, ITimelineEvent } from 'conscience-lib/common'
 import { autobind, extractEmail } from 'conscience-lib/utils'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
+import { getRepoID } from 'conscience-components/env-specific'
 
 @autobind
 class TimelineEvent extends React.Component<Props>
 {
     render() {
-        const { event, classes } = this.props
+        const { event, verified, classes } = this.props
         if (!event) {
             return null
         }
@@ -27,9 +28,9 @@ class TimelineEvent extends React.Component<Props>
                 onClick={this.selectCommit}
             >
                 <div className={classes.topline}></div>
-                {event.verified !== undefined &&
+                {verified !== undefined &&
                     <div className={classes.linkIconContainer}>
-                        <Tooltip title={'Secured on blockchain: ' + moment(event.verified).format('MMM Do YYYY, h:mm a')}>
+                        <Tooltip title={'Secured on blockchain: ' + moment(verified).format('MMM Do YYYY, h:mm a')}>
                             <LinkIcon classes={{ root: classes.linkIcon }} />
                         </Tooltip>
                     </div>
@@ -67,6 +68,7 @@ interface OwnProps {
 
 interface StateProps {
     event: ITimelineEvent | undefined
+    verified: number | undefined
     user: IUser | undefined
     userEmail: string | undefined
 }
@@ -150,11 +152,14 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const event = state.repo.commits[ownProps.uri.commit || '']
+    const commit = ownProps.uri.commit || ''
+    const event = state.repo.commits[commit]
+    const verified = (state.repo.refLogsByCommit[commit] || {}).time
     const userEmail = event ? extractEmail(event.user) : undefined
     const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
     return {
         event,
+        verified,
         user,
         userEmail,
     }

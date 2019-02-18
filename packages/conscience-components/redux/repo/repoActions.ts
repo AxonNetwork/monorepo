@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent, IRefLog } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -22,6 +22,10 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
+
+    FETCH_REF_LOGS = 'FETCH_REF_LOGS',
+    FETCH_REF_LOGS_SUCCESS = 'FETCH_REF_LOGS_SUCCESS',
+    FETCH_REF_LOGS_FAILED = 'FETCH_REF_LOGS_FAILED',
 
     FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
     FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
@@ -155,6 +159,22 @@ export interface IFetchRepoTimelineSuccessAction {
 }
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
+
+export interface IFetchRefLogsAction {
+    type: RepoActionType.FETCH_REF_LOGS
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchRefLogsSuccessAction {
+    type: RepoActionType.FETCH_REF_LOGS_SUCCESS
+    payload: {
+        refLogs: { [commit: string]: IRefLog }
+    }
+}
+
+export type IFetchRefLogsFailedAction = FailedAction<RepoActionType.FETCH_REF_LOGS_FAILED>
 
 export interface IFetchLocalRefsAction {
     type: RepoActionType.FETCH_LOCAL_REFS
@@ -411,6 +431,10 @@ export type IRepoAction =
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
 
+    IFetchRefLogsAction |
+    IFetchRefLogsSuccessAction |
+    IFetchRefLogsFailedAction |
+
     IFetchLocalRefsAction |
     IFetchLocalRefsSuccessAction |
     IFetchLocalRefsFailedAction |
@@ -468,6 +492,8 @@ export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): I
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
+export const fetchRefLogs = (payload: IFetchRefLogsAction['payload']): IFetchRefLogsAction => ({ type: RepoActionType.FETCH_REF_LOGS, payload })
+
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })

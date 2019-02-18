@@ -1,14 +1,14 @@
-import path from 'path'
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import once from 'lodash/once'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { IRepoFile, ITimelineEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
+import { IRepoFile, ITimelineEvent, IRefLog, RepoPage, URI, URIType } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetLocalRepoListAction, IGetLocalRepoListSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
+    IFetchRefLogsAction, IFetchRefLogsSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
@@ -37,7 +37,6 @@ import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
 import RepoWatcher from 'lib/RepoWatcher'
-import spawnCmd from 'utils/spawnCmd'
 import { parseDiff, uriToString, retry } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 
@@ -57,7 +56,7 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
         })
         const initPath = resp.path
 
-        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher true, admin: true })
+        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher: true, admin: true })
 
         await ServerRelay.createRepo(repoID)
 
@@ -98,10 +97,10 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
     type: RepoActionType.FETCH_REPO_FILES,
     async process({ action }) {
-        const { uri, commit } = action.payload
+        const { uri } = action.payload
 
         if (uri.type === URIType.Local) {
-            const { repoRoot, commit } = uri
+            const { repoRoot, commit = 'working' } = uri
 
             let params = (commit === 'HEAD' || commit === 'working')
                 ? { repoRoot, commitRef: commit }
@@ -144,23 +143,62 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             const path = uri.repoRoot
             const repoID = getRepoID(uri)
 
-            const history = (await rpc.getClient().getRepoHistoryAsync({ path, repoID, page: 0 })).commits || []
+            const rpcClient = rpc.getClient()
+            let timeline = [] as ITimelineEvent[]
+            let lastCommitFetched = undefined as string | undefined
 
-            const timeline = history.map(event => ({
-                version: 0,
-                commit: event.commitHash,
-                user: event.author,
-                time: new Date(event.timestamp.toNumber() * 1000),
-                message: event.message,
-                files: event.files, // @@TODO: we can fetch these with `git show --name-only --pretty=format:"" HEAD`
-                verified: event.verified !== undefined ? new Date(event.verified.toNumber() * 1000) : undefined,
-            } as ITimelineEvent))
+            while (true) {
+                const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, lastCommitFetched, pageSize: 50 })).commits || []
+                if (history.length === 0) {
+                    break
+                }
+
+                const partialTimeline = history.map(event => ({
+                    commit: event.commitHash,
+                    user: event.author,
+                    time: event.timestamp.toNumber() * 1000,
+                    message: event.message,
+                    files: event.files || [],
+                }))
+
+                timeline = [
+                    ...timeline,
+                    ...partialTimeline
+                ]
+                lastCommitFetched = timeline[timeline.length - 1].commit
+            }
+
             return { uri, timeline }
         }
 
         return { uri, timeline: [] }
     },
 })
+
+const fetchRefLogsLogic = makeLogic<IFetchRefLogsAction, IFetchRefLogsSuccessAction>({
+    type: RepoActionType.FETCH_REF_LOGS,
+    async process({ action }) {
+        const { uri } = action.payload
+        const repoID = getRepoID(uri)
+        if (uri.type == URIType.Local) {
+            const rpcClient = rpc.getClient()
+            const reflogsRPC = (await rpcClient.getRefLogsAsync({ repoID })).refLogs || []
+            const reflogs = reflogsRPC.map(reflog => ({
+                commit: reflog.commit,
+                refHash: reflog.refHash,
+                repoID: reflog.repoID,
+                txHash: reflog.txHash,
+                time: reflog.time.toNumber(),
+                blockNumber: reflog.blockNumber.toNumber(),
+            } as IRefLog))
+
+            const refLogObj = keyBy(reflogs, 'commit')
+            return { refLogs: refLogObj }
+        }
+        return { refLogs: {} }
+    },
+})
+
 
 const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction>({
     type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS,
@@ -411,6 +449,7 @@ export default [
     getLocalRepoListLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
+    fetchRefLogsLogic,
     fetchRepoUsersPermissionsLogic,
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,

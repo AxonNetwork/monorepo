@@ -1,7 +1,7 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoFile, IRepoPermissions, ITimelineEvent, LocalURI } from 'conscience-lib/common'
+import { IRepoFile, IRepoPermissions, ITimelineEvent, IRefLog, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
@@ -10,6 +10,7 @@ export const initialState = {
     filesByURI: {},
     commitListsByURI: {},
     commits: {},
+    refLogsByCommit: {},
     localRefsByURI: {},
     remoteRefsByID: {},
     permissionsByID: {},
@@ -25,6 +26,7 @@ export interface IRepoState {
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
+    refLogsByCommit: { [commit: string]: IRefLog }
     localRefsByURI: { [uri: string]: { [name: string]: string } }
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
@@ -79,6 +81,17 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 commits: {
                     ...state.commits,
                     ...commits
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REF_LOGS_SUCCESS: {
+            const { refLogs } = action.payload
+            return {
+                ...state,
+                refLogsByCommit: {
+                    ...state.refLogsByCommit,
+                    ...refLogs
                 }
             }
         }

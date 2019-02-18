@@ -9,6 +9,7 @@ declare module 'conscience-lib/rpc' {
         checkpointRepoAsync: (params: { path: string, message?: string }) => Promise<{ ok: boolean }>
         pullRepo: (params: { path: string }) => any // emitter for progress stream
         cloneRepo: (params: { repoID: string, path?: string, name?: string, email?: string }) => any // emitter for progress stream
+
         getLocalRepos: any
         getLocalReposAsync: (params?: any) => Promise<ILocalRepo[]>
 
@@ -22,7 +23,9 @@ declare module 'conscience-lib/rpc' {
             ({ commitHash: string } | { commitRef: string })
         ) => ReadableStream
 
-        getRepoHistoryAsync: (params: { path: string, repoID: string, page: number }) => Promise<{ commits: IRPCCommit[] }>
+        getRepoHistoryAsync: (params: { repoID: string, path: string, lastCommitFetched?: string, toCommit?: string, pageSize: number }) => Promise<{ commits: IRPCCommit[] }>
+        getRefLogsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ refLogs: IRPCRefLog[] }>
+
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
         getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
         getAllRemoteRefsAsync: (repoID: string) => Promise<{ [refName: string]: string }>
@@ -62,9 +65,17 @@ declare module 'conscience-lib/rpc' {
         commitHash: string
         author: string
         message: string
+        files: []string
         timestamp: Long
-        files: string[]
-        verified?: Long,
+    }
+
+    export interface IRPCRefLog {
+        commit: string
+        refHash: string
+        repoID: string
+        txHash: string
+        time: Long
+        blockNumber: Long
     }
 
     export function getClient(): IRPCClient;
