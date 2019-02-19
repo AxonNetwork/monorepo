@@ -2,6 +2,7 @@ import Repo from '../models/repo'
 import Discussion from '../models/discussion'
 import Comment from '../models/comment'
 import User from '../models/user'
+import UpdatedRefEvent from '../models/updatedRefEvent'
 import HTTPError from '../util/HTTPError'
 import passportAuthenticateAsync from '../util/passportAuth'
 import { filemodeIsDir, fileType } from '../util'
@@ -63,47 +64,28 @@ repoController.getUserRepos = async (req, res, next) => {
     res.status(200).json({ repoIDs })
 }
 
-repoController.get = async (req, res, next) => {
-    const { repoID, filepath } = req.params
+const checkUserAccess = async (user, repoID) => {
     if (!repoID) {
         throw new HTTPError(400, 'Missing repoID')
-    } if (!localRepos[repoID]) {
-        throw new HTTPError(404, 'Repository does not exist')
     }
 
-    const [ admins, pullers, pushers, isPublicResp, repoRow ] = await Promise.all([
-        rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.ADMIN),
+    const [ pullers, isPublicResp ] = await Promise.all([
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PULLER),
-        rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PUSHER),
         rpcClient.isRepoPublicAsync({ repoID }),
-        defaultOnError(Repo.get(repoID), {}),
     ])
-
-    const isPublic = isPublicResp.isPublic
-    const allUsers = union(admins, pullers, pushers)
-    const hasAccess = req.user !== undefined && allUsers.indexOf(req.user.username) > -1
-    if (!isPublic && !hasAccess) {
+    const canView = isPublicResp.isPublic || (user && user.username && pullers.indexOf(user.username) > -1)
+    if (!canView) {
         throw new HTTPError(403, 'Unauthorized to view this repo')
     }
+}
 
-
-    const history = (await rpcClient.getRepoHistoryAsync({ repoID })).commits || []
-    const timeline = history.map(event => ({
-        version:  0,
-        commit:   event.commitHash,
-        user:     event.author,
-        time:     new Date(event.timestamp.toNumber() * 1000),
-        message:  event.message,
-        files:    event.files,
-        verified: event.verified !== undefined ? new Date(event.verified.toNumber() * 1000) : undefined,
-    }))
-
-    const commits = keyBy(timeline, 'commit')
-    const commitList = Object.keys(commits)
+repoController.getRepoFiles = async (req, res, next) => {
+    const { repoID } = req.params
+    await checkUserAccess(req.user, repoID)
 
     const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'HEAD' })).files || []
 
-    const contents = filesListRaw
+    const fileList = filesListRaw
         .filter(file => file && file.name)
         .map(file => ({
             name:            file.name,
@@ -115,19 +97,49 @@ repoController.get = async (req, res, next) => {
             mergeConflict:   file.mergeConflict,
             mergeUnresolved: file.mergeUnresolved,
         }))
-    const files = keyBy(contents, 'name')
+    const files = keyBy(fileList, 'name')
 
-    res.status(200).json({
-        repoID,
-        admins,
-        pullers,
-        pushers,
-        commits,
-        commitList,
-        files,
-        sharedUsers: repoRow.users,
-        isPublic,
-    })
+    res.status(200).json({ files })
+}
+
+repoController.getRepoTimeline = async (req, res, next) => {
+    const { repoID } = req.params
+    await checkUserAccess(req.user, repoID)
+
+    const history = (await rpcClient.getRepoHistoryAsync({ repoID })).commits || []
+    const timeline = history.map(event => ({
+        version: 0,
+        commit:  event.commitHash,
+        user:    event.author,
+        time:    new Date(event.timestamp.toNumber() * 1000),
+        message: event.message,
+        files:   event.files,
+    }))
+
+    res.status(200).json({ timeline })
+}
+
+repoController.getUpdatedRefEvents = async (req, res, next) => {
+    const { repoID } = req.params
+    await checkUserAccess(req.user, repoID)
+
+    const events = await UpdatedRefEvent.getAllForRepo(repoID)
+    res.status(200).json({ events })
+}
+
+repoController.getRepoUsersPermissions = async (req, res, next) => {
+    const { repoID } = req.params
+    await checkUserAccess(req.user, repoID)
+
+    const [ admins, pullers, pushers, isPublicResp ] = await Promise.all([
+        rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.ADMIN),
+        rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PULLER),
+        rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PUSHER),
+        rpcClient.isRepoPublicAsync({ repoID }),
+    ])
+    const isPublic = isPublicResp.isPublic
+
+    res.status(200).json({ admins, pullers, pushers, isPublic })
 }
 
 repoController.getFileContents = async (req, res, next) => {

@@ -154,7 +154,7 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const commit = ownProps.uri.commit || ''
     const event = state.repo.commits[commit]
-    const verified = (state.repo.refLogsByCommit[commit] || {}).time
+    const verified = (state.repo.updatedRefEventsByCommit[commit] || {}).time
     const userEmail = event ? extractEmail(event.user) : undefined
     const user = userEmail ? state.user.users[state.user.usersByEmail[userEmail] || ''] : undefined
     return {

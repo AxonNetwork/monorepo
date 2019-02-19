@@ -1,7 +1,7 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoFile, IRepoPermissions, ITimelineEvent, IRefLog, LocalURI } from 'conscience-lib/common'
+import { IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
@@ -10,7 +10,7 @@ export const initialState = {
     filesByURI: {},
     commitListsByURI: {},
     commits: {},
-    refLogsByCommit: {},
+    updatedRefEventsByCommit: {},
     localRefsByURI: {},
     remoteRefsByID: {},
     permissionsByID: {},
@@ -26,7 +26,7 @@ export interface IRepoState {
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
-    refLogsByCommit: { [commit: string]: IRefLog }
+    updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
     localRefsByURI: { [uri: string]: { [name: string]: string } }
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
@@ -85,13 +85,13 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        case RepoActionType.FETCH_REF_LOGS_SUCCESS: {
-            const { refLogs } = action.payload
+        case RepoActionType.FETCH_UPDATED_REF_EVENTS_SUCCESS: {
+            const { updatedRefEvents } = action.payload
             return {
                 ...state,
-                refLogsByCommit: {
-                    ...state.refLogsByCommit,
-                    ...refLogs
+                updatedRefEventsByCommit: {
+                    ...state.updatedRefEventsByCommit,
+                    ...updatedRefEvents
                 }
             }
         }
@@ -166,43 +166,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        case RepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS: {
-            const { uri, repo } = action.payload
-            const uriStr = uriToString(uri)
-            if (repo.files) {
-                addFolders(repo.files)
-            }
-
-            return {
-                ...state,
-                filesByURI: {
-                    ...state.filesByURI,
-                    [uriStr]: repo.files || {},
-                },
-                commitListsByURI: {
-                    ...state.commitListsByURI,
-                    [uriStr]: repo.commitList || [],
-                },
-                commits: {
-                    ...state.commits,
-                    ...repo.commits,
-                },
-                permissionsByID: {
-                    ...state.permissionsByID,
-                    [repo.repoID]: {
-                        admins: repo.admins || [],
-                        pushers: repo.pushers || [],
-                        pullers: repo.pullers || [],
-                    }
-                },
-                isPublicByID: {
-                    ...state.isPublicByID,
-                    [repo.repoID]: repo.isPublic || false,
-                }
-            }
-        }
-
-        case RepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED: {
+        case RepoActionType.FETCH_REPO_FILES_FAILED: {
             const { original } = action.payload
             const { uri } = original.payload
             return {

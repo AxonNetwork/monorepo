@@ -24,7 +24,7 @@ declare module 'conscience-lib/rpc' {
         ) => ReadableStream
 
         getRepoHistoryAsync: (params: { repoID: string, path: string, lastCommitFetched?: string, toCommit?: string, pageSize: number }) => Promise<{ commits: IRPCCommit[] }>
-        getRefLogsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ refLogs: IRPCRefLog[] }>
+        getUpdatedRefEventsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ events: IRPCUpdatedRefEvent[] }>
 
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
         getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
@@ -65,13 +65,12 @@ declare module 'conscience-lib/rpc' {
         commitHash: string
         author: string
         message: string
-        files: []string
+        files: string[]
         timestamp: Long
     }
 
-    export interface IRPCRefLog {
+    export interface IRPCUpdatedRefEvent {
         commit: string
-        refHash: string
         repoID: string
         txHash: string
         time: Long

@@ -23,6 +23,12 @@ export function initClient() {
             PUSHER: 2,
         }
 
+        client.EventType = {
+            ADDED_REPO:  0,
+            PULLED_REPO: 1,
+            UPDATED_REF: 2,
+        }
+
         client.getLocalReposAsync = (params) => {
             return new Promise((resolve, reject) => {
                 const emitter = client.getLocalRepos(params)

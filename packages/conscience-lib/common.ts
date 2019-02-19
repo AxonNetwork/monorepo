@@ -77,9 +77,8 @@ export interface ITimelineEvent {
     repoID?: string
 }
 
-export interface IRefLog {
+export interface IUpdatedRefEvent {
     commit: string
-    refHash: string
     repoID: string
     txHash: string
     time: number

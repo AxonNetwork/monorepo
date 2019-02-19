@@ -1,19 +1,19 @@
-import { ITimelineEvent, IRefLog } from '../common'
+import { ITimelineEvent, IUpdatedRefEvent } from '../common'
 
-export function getLastVerifiedEvent(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, refLogsByCommit: { [commitHash: string]: IRefLog }) {
+export function getLastVerifiedEvent(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, updatedRefEventsByCommit: { [commitHash: string]: IUpdatedRefEvent }) {
     for (let i = 0; i < commitList.length; i++) {
         const commitHash = commitList[i]
         const commit = commits[commitHash]
         if (i == 0) {
         }
-        if (refLogsByCommit[commitHash] !== undefined) {
+        if (updatedRefEventsByCommit[commitHash] !== undefined) {
             return commit
         }
     }
     return undefined
 }
 
-export function getLastVerifiedEventFile(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, refLogsByCommit: { [commitHash: string]: IRefLog }, filename: string) {
+export function getLastVerifiedEventFile(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, updatedRefEventsByCommit: { [commitHash: string]: IUpdatedRefEvent }, filename: string) {
     let eventIndex = -1
     for (let i = 0; i < commitList.length; i++) {
         const commit = commits[commitList[i]]
@@ -25,14 +25,14 @@ export function getLastVerifiedEventFile(commitList: string[], commits: { [commi
     for (let i = eventIndex; i >= 0; i--) {
         const commitHash = commitList[i]
         const commit = commits[commitHash]
-        if (refLogsByCommit[commitHash] !== undefined) {
+        if (updatedRefEventsByCommit[commitHash] !== undefined) {
             return commit
         }
     }
     return undefined
 }
 
-export function getLastVerifiedEventCommit(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, refLogsByCommit: { [commitHash: string]: IRefLog }, commitHash: string) {
+export function getLastVerifiedEventCommit(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, updatedRefEventsByCommit: { [commitHash: string]: IUpdatedRefEvent }, commitHash: string) {
     let eventIndex = -1
     for (let i = 0; i < commitList.length; i++) {
         if (commitHash === commitList[i]) {
@@ -43,14 +43,14 @@ export function getLastVerifiedEventCommit(commitList: string[], commits: { [com
     for (let i = eventIndex; i >= 0; i--) {
         const currCommit = commitList[i]
         const commit = commits[currCommit]
-        if (refLogsByCommit[currCommit] !== undefined) {
+        if (updatedRefEventsByCommit[currCommit] !== undefined) {
             return commit
         }
     }
     return undefined
 }
 
-export function getFirstVerifiedEvent(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, refLogsByCommit: { [commitHash: string]: IRefLog }, filename: string | undefined) {
+export function getFirstVerifiedEvent(commitList: string[], commits: { [commitHash: string]: ITimelineEvent }, updatedRefEventsByCommit: { [commitHash: string]: IUpdatedRefEvent }, filename: string | undefined) {
     let foundFile = false
     if (!filename) {
         foundFile = true
@@ -62,7 +62,7 @@ export function getFirstVerifiedEvent(commitList: string[], commits: { [commitHa
         if (!foundFile && commit.files.indexOf(file) > -1) {
             foundFile = true
         }
-        if (foundFile && refLogsByCommit[commitHash] !== undefined) {
+        if (foundFile && updatedRefEventsByCommit[commitHash] !== undefined) {
             return commit
         }
     }

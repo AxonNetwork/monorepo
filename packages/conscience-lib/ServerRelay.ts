@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults } from './common'
+import { IRepoFile, ITimelineEvent, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -188,7 +188,7 @@ const ServerRelay = {
     },
 
     async setRepoPublic(repoID: string, isPublic: boolean) {
-        await axios.post(`${API_URL}/repo/${repoID}/set-public`, { isPublic })
+        await axios.post(`${API_URL}/repo/set-public/${repoID}`, { isPublic })
         return true
     },
 
@@ -196,7 +196,7 @@ const ServerRelay = {
         interface IResponse {
             isPublic: boolean
         }
-        const response = await axios.get<IResponse>(`${API_URL}/repo/${repoID}/is-public`)
+        const response = await axios.get<IResponse>(`${API_URL}/repo/is-public/${repoID}`)
         return response.data.isPublic
     },
 
@@ -208,17 +208,38 @@ const ServerRelay = {
         return response.data.repoIDs
     },
 
-    async getRepo(repoID: string) {
-        let response
-        try {
-            response = await axios.get<IRepo>(API_URL + '/repo/' + repoID)
-        } catch (err) {
-            // repo does not exist
-            if ((err.response || {}).status === 404) {
-                return new Error(err.response.data.error)
-            }
-            throw err.response ? err.response.data.error : err
+    async getRepoFiles(repoID: string) {
+        interface IResponse {
+            files: { [name: string]: IRepoFile }
         }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/files/${repoID}`)
+        return response.data.files
+    },
+
+    async getRepoTimeline(repoID: string) {
+        interface IResponse {
+            timeline: ITimelineEvent[]
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}`)
+        return response.data.timeline
+    },
+
+    async getUpdatedRefEvents(repoID: string) {
+        interface IResponse {
+            events: IUpdatedRefEvent[]
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/updated-ref-events/${repoID}`)
+        return response.data.events
+    },
+
+    async getRepoUsersPermissions(repoID: string) {
+        interface IResponse {
+            admins: string[]
+            pushers: string[]
+            pullers: string[]
+            isPublic: boolean
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/permissions/${repoID}`)
         return response.data
     },
 
@@ -461,7 +482,7 @@ const ServerRelay = {
     },
 
     async updateOrgColors(orgID: string, primaryColor: string, secondaryColor: string) {
-        interface IResponse {}
+        interface IResponse { }
         await axios.post<IResponse>(API_URL + '/org/' + orgID + '/update-colors', {
             primaryColor,
             secondaryColor,

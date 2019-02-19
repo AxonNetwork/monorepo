@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent, IRefLog } from 'conscience-lib/common'
+import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -23,9 +23,9 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
 
-    FETCH_REF_LOGS = 'FETCH_REF_LOGS',
-    FETCH_REF_LOGS_SUCCESS = 'FETCH_REF_LOGS_SUCCESS',
-    FETCH_REF_LOGS_FAILED = 'FETCH_REF_LOGS_FAILED',
+    FETCH_UPDATED_REF_EVENTS = 'FETCH_UPDATED_REF_EVENTS',
+    FETCH_UPDATED_REF_EVENTS_SUCCESS = 'FETCH_UPDATED_REF_EVENTS_SUCCESS',
+    FETCH_UPDATED_REF_EVENTS_FAILED = 'FETCH_UPDATED_REF_EVENTS_FAILED',
 
     FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
     FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
@@ -38,10 +38,6 @@ export enum RepoActionType {
     FETCH_REPO_USERS_PERMISSIONS = 'FETCH_REPO_USERS_PERMISSIONS',
     FETCH_REPO_USERS_PERMISSIONS_SUCCESS = 'FETCH_REPO_USERS_PERMISSIONS_SUCCESS',
     FETCH_REPO_USERS_PERMISSIONS_FAILED = 'FETCH_REPO_USERS_PERMISSIONS_FAILED',
-
-    FETCH_FULL_REPO_FROM_SERVER = 'FETCH_FULL_REPO_FROM_SERVER',
-    FETCH_FULL_REPO_FROM_SERVER_SUCCESS = 'FETCH_FULL_REPO_FROM_SERVER_SUCCESS',
-    FETCH_FULL_REPO_FROM_SERVER_FAILED = 'FETCH_FULL_REPO_FROM_SERVER_FAILED',
 
     GET_DIFF = 'GET_DIFF',
     GET_DIFF_SUCCESS = 'GET_DIFF_SUCCESS',
@@ -160,21 +156,21 @@ export interface IFetchRepoTimelineSuccessAction {
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
 
-export interface IFetchRefLogsAction {
-    type: RepoActionType.FETCH_REF_LOGS
+export interface IFetchUpdatedRefEventsAction {
+    type: RepoActionType.FETCH_UPDATED_REF_EVENTS
     payload: {
         uri: URI
     }
 }
 
-export interface IFetchRefLogsSuccessAction {
-    type: RepoActionType.FETCH_REF_LOGS_SUCCESS
+export interface IFetchUpdatedRefEventsSuccessAction {
+    type: RepoActionType.FETCH_UPDATED_REF_EVENTS_SUCCESS
     payload: {
-        refLogs: { [commit: string]: IRefLog }
+        updatedRefEvents: { [commit: string]: IUpdatedRefEvent }
     }
 }
 
-export type IFetchRefLogsFailedAction = FailedAction<RepoActionType.FETCH_REF_LOGS_FAILED>
+export type IFetchUpdatedRefEventsFailedAction = FailedAction<RepoActionType.FETCH_UPDATED_REF_EVENTS_FAILED>
 
 export interface IFetchLocalRefsAction {
     type: RepoActionType.FETCH_LOCAL_REFS
@@ -229,23 +225,6 @@ export interface IFetchRepoUsersPermissionsSuccessAction {
 }
 
 export type IFetchRepoUsersPermissionsFailedAction = FailedAction<RepoActionType.FETCH_REPO_USERS_PERMISSIONS_FAILED>
-
-export interface IFetchFullRepoFromServerAction {
-    type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER
-    payload: {
-        uri: URI
-    }
-}
-
-export interface IFetchFullRepoFromServerSuccessAction {
-    type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER_SUCCESS
-    payload: {
-        uri: URI
-        repo: IRepo
-    }
-}
-
-export type IFetchFullRepoFromServerFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FROM_SERVER_FAILED>
 
 export interface IGetDiffAction {
     type: RepoActionType.GET_DIFF
@@ -431,9 +410,9 @@ export type IRepoAction =
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
 
-    IFetchRefLogsAction |
-    IFetchRefLogsSuccessAction |
-    IFetchRefLogsFailedAction |
+    IFetchUpdatedRefEventsAction |
+    IFetchUpdatedRefEventsSuccessAction |
+    IFetchUpdatedRefEventsFailedAction |
 
     IFetchLocalRefsAction |
     IFetchLocalRefsSuccessAction |
@@ -446,10 +425,6 @@ export type IRepoAction =
     IFetchRepoUsersPermissionsAction |
     IFetchRepoUsersPermissionsSuccessAction |
     IFetchRepoUsersPermissionsFailedAction |
-
-    IFetchFullRepoFromServerAction |
-    IFetchFullRepoFromServerSuccessAction |
-    IFetchFullRepoFromServerFailedAction |
 
     IGetDiffAction |
     IGetDiffSuccessAction |
@@ -492,12 +467,11 @@ export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): I
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
-export const fetchRefLogs = (payload: IFetchRefLogsAction['payload']): IFetchRefLogsAction => ({ type: RepoActionType.FETCH_REF_LOGS, payload })
+export const fetchUpdatedRefEvents = (payload: IFetchUpdatedRefEventsAction['payload']): IFetchUpdatedRefEventsAction => ({ type: RepoActionType.FETCH_UPDATED_REF_EVENTS, payload })
 
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
 export const fetchRemoteRefs = (payload: IFetchRemoteRefsAction['payload']): IFetchRemoteRefsAction => ({ type: RepoActionType.FETCH_REMOTE_REFS, payload })
-export const fetchFullRepoFromServer = (payload: IFetchFullRepoFromServerAction['payload']): IFetchFullRepoFromServerAction => ({ type: RepoActionType.FETCH_FULL_REPO_FROM_SERVER, payload })
 
 export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => ({ type: RepoActionType.GET_DIFF, payload })
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })

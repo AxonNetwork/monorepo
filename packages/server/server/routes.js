@@ -58,9 +58,13 @@ routes.post('/api/share-repo', mustAuthenticate, asyncMiddleware(repoController.
 routes.post('/api/unshare-repo', mustAuthenticate, asyncMiddleware(repoController.unshareRepo))
 
 routes.get('/api/repolist/:username', mustAuthenticate, asyncMiddleware(repoController.getUserRepos))
-routes.post('/api/repo/:repoID/set-public', mustAuthenticate, asyncMiddleware(repoController.setPublic))
-routes.get('/api/repo/:repoID/is-public', mustAuthenticate, asyncMiddleware(repoController.isPublic))
-routes.get('/api/repo/:repoID', tryAuthenticate, asyncMiddleware(repoController.get))
+routes.post('/api/repo/set-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.setPublic))
+routes.get('/api/repo/is-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.isPublic))
+
+routes.get('/api/repo/files/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoFiles))
+routes.get('/api/repo/timeline/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoTimeline))
+routes.get('/api/repo/updated-ref-events/:repoID', tryAuthenticate, asyncMiddleware(repoController.getUpdatedRefEvents))
+routes.get('/api/repo/permissions/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoUsersPermissions))
 
 routes.get('/api/comment', mustAuthenticate, asyncMiddleware(commentController.get))
 routes.post('/api/create-comment', mustAuthenticate, asyncMiddleware(commentController.createComment))

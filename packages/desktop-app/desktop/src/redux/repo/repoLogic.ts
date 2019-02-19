@@ -2,13 +2,13 @@ import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import once from 'lodash/once'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { IRepoFile, ITimelineEvent, IRefLog, RepoPage, URI, URIType } from 'conscience-lib/common'
+import { IRepoFile, ITimelineEvent, IUpdatedRefEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
 import {
     RepoActionType,
     IGetLocalRepoListAction, IGetLocalRepoListSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
-    IFetchRefLogsAction, IFetchRefLogsSuccessAction,
+    IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
@@ -27,7 +27,6 @@ import {
 import {
     getRepoListLogic,
     fetchFullRepoLogic,
-    fetchFullRepoFromServerLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
@@ -99,6 +98,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
     async process({ action }) {
         const { uri } = action.payload
 
+        let files = {} as { [name: string]: IRepoFile }
         if (uri.type === URIType.Local) {
             const { repoRoot, commit = 'working' } = uri
 
@@ -127,10 +127,14 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
                         mergeUnresolved: file.mergeUnresolved,
                     } as IRepoFile
                 })
-            const files = keyBy(filesList, 'name')
+            files = keyBy(filesList, 'name')
             return { uri, files }
+        } else {
+            const repoID = getRepoID(uri)
+            files = await ServerRelay.getRepoFiles(repoID)
         }
-        return { uri, files: {} }
+
+        return { uri, files }
     },
 })
 
@@ -139,12 +143,12 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     async process({ action }) {
         const { uri } = action.payload
 
+        const repoID = getRepoID(uri)
+        let timeline = [] as ITimelineEvent[]
         if (uri.type === URIType.Local) {
             const path = uri.repoRoot
-            const repoID = getRepoID(uri)
 
             const rpcClient = rpc.getClient()
-            let timeline = [] as ITimelineEvent[]
             let lastCommitFetched = undefined as string | undefined
 
             while (true) {
@@ -167,56 +171,67 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
                 ]
                 lastCommitFetched = timeline[timeline.length - 1].commit
             }
-
-            return { uri, timeline }
+        } else {
+            timeline = await ServerRelay.getRepoTimeline(repoID)
         }
 
-        return { uri, timeline: [] }
+        return { uri, timeline }
     },
 })
 
-const fetchRefLogsLogic = makeLogic<IFetchRefLogsAction, IFetchRefLogsSuccessAction>({
-    type: RepoActionType.FETCH_REF_LOGS,
+const fetchUpdatedRefEventsLogic = makeLogic<IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction>({
+    type: RepoActionType.FETCH_UPDATED_REF_EVENTS,
     async process({ action }) {
         const { uri } = action.payload
         const repoID = getRepoID(uri)
+        let eventsList = [] as IUpdatedRefEvent[]
         if (uri.type == URIType.Local) {
             const rpcClient = rpc.getClient()
-            const reflogsRPC = (await rpcClient.getRefLogsAsync({ repoID })).refLogs || []
-            const reflogs = reflogsRPC.map(reflog => ({
-                commit: reflog.commit,
-                refHash: reflog.refHash,
-                repoID: reflog.repoID,
-                txHash: reflog.txHash,
-                time: reflog.time.toNumber(),
-                blockNumber: reflog.blockNumber.toNumber(),
-            } as IRefLog))
-
-            const refLogObj = keyBy(reflogs, 'commit')
-            return { refLogs: refLogObj }
+            const eventsRaw = (await rpcClient.getUpdatedRefEventsAsync({ repoID })).events || []
+            eventsList = eventsRaw.map(evt => ({
+                commit: evt.commit,
+                repoID: evt.repoID,
+                txHash: evt.txHash,
+                time: evt.time.toNumber(),
+                blockNumber: evt.blockNumber.toNumber(),
+            } as IUpdatedRefEvent))
+        } else {
+            eventsList = await ServerRelay.getUpdatedRefEvents(repoID)
         }
-        return { refLogs: {} }
+        const updatedRefEvents = keyBy(eventsList, 'commit')
+        return { updatedRefEvents }
     },
 })
-
 
 const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction>({
     type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS,
     async process({ action }, dispatch) {
         const { uri } = action.payload
         const repoID = getRepoID(uri)
-        const rpcClient = rpc.getClient()
-        const [admins, pushers, pullers, isPublicResp] = await Promise.all([
-            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
-            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
-            rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER }),
-            rpcClient.isRepoPublicAsync({ repoID })
-        ])
-        const isPublic = isPublicResp.isPublic
+        let permissions = {} as {
+            admins: string[]
+            pushers: string[]
+            pullers: string[]
+            isPublic: boolean
+        }
 
+        if (uri.type == URIType.Local) {
+            const rpcClient = rpc.getClient()
+            const [admins, pushers, pullers, isPublicResp] = await Promise.all([
+                rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.ADMIN }),
+                rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PUSHER }),
+                rpcClient.getAllUsersOfTypeAsync({ repoID, type: rpcClient.UserType.PULLER }),
+                rpcClient.isRepoPublicAsync({ repoID })
+            ])
+            permissions = { admins, pushers, pullers, isPublic: isPublicResp.isPublic }
+        } else {
+            permissions = await ServerRelay.getRepoUsersPermissions(repoID)
+
+        }
+
+        const { admins, pushers, pullers, isPublic } = permissions
         const usernames = union(admins, pushers, pullers)
         await dispatch(fetchUserDataByUsername({ usernames: usernames }))
-
 
         return { repoID, admins, pushers, pullers, isPublic }
     },
@@ -442,14 +457,13 @@ export default [
     // imported from conscience-components
     getRepoListLogic,
     fetchFullRepoLogic,
-    fetchFullRepoFromServerLogic,
 
     // desktop-specific
     initRepoLogic,
     getLocalRepoListLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
-    fetchRefLogsLogic,
+    fetchUpdatedRefEventsLogic,
     fetchRepoUsersPermissionsLogic,
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,

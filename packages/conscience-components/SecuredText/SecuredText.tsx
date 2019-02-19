@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
 import { selectCommit } from '../navigation'
 import { IGlobalState } from '../redux'
-import { URI, ITimelineEvent, IRefLog } from 'conscience-lib/common'
+import { URI, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
 import timelineUtils from 'conscience-lib/utils/timeline'
 import { uriToString } from 'conscience-lib/utils'
 import moment from 'moment'
@@ -33,22 +33,22 @@ class SecuredText extends React.Component<Props, State>
     }
 
     parseCommits() {
-        const { commits, commitList, refLogsByCommit } = this.props
+        const { commits, commitList, updatedRefEventsByCommit } = this.props
         const { filename, commit } = this.props.uri
         if (commit && !filename) {
-            const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, refLogsByCommit, commit)
+            const lastVerified = timelineUtils.getLastVerifiedEventCommit(commitList || [], commits || {}, updatedRefEventsByCommit, commit)
             this.setState({ lastVerified })
             return
         }
         let lastVerified = undefined
         let lastUpdated = undefined
         if (filename) {
-            lastVerified = timelineUtils.getLastVerifiedEventFile(commitList || [], commits || {}, refLogsByCommit, filename)
+            lastVerified = timelineUtils.getLastVerifiedEventFile(commitList || [], commits || {}, updatedRefEventsByCommit, filename)
             lastUpdated = timelineUtils.getLastUpdated(commitList || [], commits || {}, filename)
         } else {
-            lastVerified = timelineUtils.getLastVerifiedEvent(commitList || [], commits || {}, refLogsByCommit)
+            lastVerified = timelineUtils.getLastVerifiedEvent(commitList || [], commits || {}, updatedRefEventsByCommit)
         }
-        const firstVerified = timelineUtils.getFirstVerifiedEvent(commitList || [], commits || {}, refLogsByCommit, filename)
+        const firstVerified = timelineUtils.getFirstVerifiedEvent(commitList || [], commits || {}, updatedRefEventsByCommit, filename)
         this.setState({ lastVerified, firstVerified, lastUpdated })
     }
 
@@ -121,7 +121,7 @@ interface OwnProps {
 interface StateProps {
     commits: { [hash: string]: ITimelineEvent }
     commitList: string[]
-    refLogsByCommit: { [commit: string]: IRefLog }
+    updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -148,7 +148,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         commits: state.repo.commits || {},
         commitList,
-        refLogsByCommit: state.repo.refLogsByCommit,
+        updatedRefEventsByCommit: state.repo.updatedRefEventsByCommit,
     }
 }
 
