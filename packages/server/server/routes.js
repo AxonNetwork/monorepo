@@ -61,6 +61,7 @@ routes.get('/api/repolist/:username', mustAuthenticate, asyncMiddleware(repoCont
 routes.post('/api/repo/set-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.setPublic))
 routes.get('/api/repo/is-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.isPublic))
 
+routes.get('/api/repos/metadata', tryAuthenticate, asyncMiddleware(repoController.getRepoMetadata))
 routes.get('/api/repo/files/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoFiles))
 routes.get('/api/repo/timeline/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoTimeline))
 routes.get('/api/repo/updated-ref-events/:repoID', tryAuthenticate, asyncMiddleware(repoController.getUpdatedRefEvents))

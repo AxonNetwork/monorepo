@@ -13,10 +13,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
 import RepoCardLoader from '../ContentLoaders/RepoCardLoader'
-import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoMetadata } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { getRepoID } from 'conscience-components/env-specific'
-import { URI, IRepoFile, IDiscussion } from 'conscience-lib/common'
+import { IRepoMetadata, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
 
@@ -30,13 +30,16 @@ class RepositoryCards extends React.Component<Props, State>
 
     constructor(props: Props) {
         super(props)
-        this.fetchAllRepos()
+        this.fetchRepoListMetadata()
     }
 
     render() {
-        const { repoList, classes } = this.props
-        const notFailed = (repoList || []).filter(uri => !this.props.failedToFetchByURI[uriToString(uri)])
-        const loading = repoList === undefined || notFailed.some(uri => this.props.filesByURI[uriToString(uri)] === undefined)
+        const { repoList, metadataByURI, classes } = this.props
+        if (repoList === undefined) return null
+
+        const failed = repoList.filter(uri => metadataByURI[uriToString(uri)] === null)
+        const succeeded = repoList.filter(uri => !!metadataByURI[uriToString(uri)])
+        const loading = failed.length + succeeded.length < repoList.length
 
         if (loading) {
             const loaderLength = this.props.repoList !== undefined ? this.props.repoList.length : 4
@@ -54,7 +57,7 @@ class RepositoryCards extends React.Component<Props, State>
         return (
             <React.Fragment>
                 <div className={classes.root}>
-                    {notFailed.map(uri =>
+                    {succeeded.map(uri =>
                         <RepositoryCard
                             key={getRepoID(uri)}
                             uri={uri}
@@ -108,16 +111,16 @@ class RepositoryCards extends React.Component<Props, State>
 
     componentDidUpdate(prevProps: Props) {
         if (!isEqual(this.props.repoList, prevProps.repoList)) {
-            this.fetchAllRepos()
+            this.fetchRepoListMetadata()
         }
     }
 
-    fetchAllRepos() {
+    fetchRepoListMetadata() {
         const repoList = this.props.repoList
         if (repoList === undefined) {
             return
         }
-        repoList.forEach(uri => this.props.fetchFullRepo({ uri }))
+        this.props.fetchRepoMetadata({ repoList })
     }
 
     onClickAddRepo(repoID: string) {
@@ -150,14 +153,11 @@ interface OwnProps {
 }
 
 interface StateProps {
-    filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
-    failedToFetchByURI: { [repoID: string]: boolean }
-    discussions: { [discussionID: string]: IDiscussion }
-    discussionsByRepo: { [repoID: string]: string[] }
+    metadataByURI: { [repoID: string]: IRepoMetadata | null }
 }
 
 interface DispatchProps {
-    fetchFullRepo: typeof fetchFullRepo
+    fetchRepoMetadata: typeof fetchRepoMetadata
 }
 
 interface State {
@@ -203,15 +203,12 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        filesByURI: state.repo.filesByURI,
-        failedToFetchByURI: state.repo.failedToFetchByURI,
-        discussions: state.discussion.discussions,
-        discussionsByRepo: state.discussion.discussionsByRepo,
+        metadataByURI: state.repo.metadataByURI,
     }
 }
 
 const mapDispatchToProps = {
-    fetchFullRepo
+    fetchRepoMetadata
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RepositoryCards))

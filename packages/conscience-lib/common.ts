@@ -33,6 +33,13 @@ export interface ILocalRepo {
     path: string
 }
 
+export interface IRepoMetadata {
+    repoID: string
+    fileCount: number
+    discussionCount: number
+    lastUpdated: number
+}
+
 export interface IRepoFile {
     name: string
     hash: string

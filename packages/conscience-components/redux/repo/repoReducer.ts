@@ -1,12 +1,13 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, LocalURI } from 'conscience-lib/common'
+import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 
 export const initialState = {
     repoListByUserID: {},
     localRepoList: [],
+    metadataByURI: {},
     filesByURI: {},
     commitListsByURI: {},
     commits: {},
@@ -17,12 +18,12 @@ export const initialState = {
     isPublicByID: {},
     diffsByCommitHash: {},
     isBehindRemoteByURI: {},
-    failedToFetchByURI: {},
 }
 
 export interface IRepoState {
     repoListByUserID: { [userID: string]: string[] }
     localRepoList: LocalURI[]
+    metadataByURI: { [uri: string]: IRepoMetadata | null }
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
@@ -33,7 +34,6 @@ export interface IRepoState {
     isPublicByID: { [repoID: string]: boolean }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
     isBehindRemoteByURI: { [uri: string]: boolean }
-    failedToFetchByURI: { [repoID: string]: boolean }
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
@@ -45,6 +45,17 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 repoListByUserID: {
                     ...state.repoListByUserID,
                     [userID]: repoList
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REPO_METADATA_SUCCESS: {
+            const { metadataByURI } = action.payload
+            return {
+                ...state,
+                metadataByURI: {
+                    ...state.metadataByURI,
+                    ...metadataByURI
                 }
             }
         }
@@ -162,18 +173,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 isPublicByID: {
                     ...state.isPublicByID,
                     [repoID]: isPublic
-                }
-            }
-        }
-
-        case RepoActionType.FETCH_REPO_FILES_FAILED: {
-            const { original } = action.payload
-            const { uri } = original.payload
-            return {
-                ...state,
-                failedToFetchByURI: {
-                    ...state.failedToFetchByURI,
-                    [uriToString(uri)]: true
                 }
             }
         }

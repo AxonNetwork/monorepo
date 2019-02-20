@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepoFile, ITimelineEvent, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
+import { IRepoMetadata, IRepoFile, ITimelineEvent, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -208,6 +208,15 @@ const ServerRelay = {
         return response.data.repoIDs
     },
 
+    async getRepoMetadata(repoIDs: string[]) {
+        interface IResponse {
+            [repoID: string]: IRepoMetadata
+        }
+
+        const response = await axios.get<IResponse>(`${API_URL}/repos/metadata?` + querystring.stringify({ repoIDs }))
+        return response.data
+    },
+
     async getRepoFiles(repoID: string) {
         interface IResponse {
             files: { [name: string]: IRepoFile }
@@ -216,11 +225,15 @@ const ServerRelay = {
         return response.data.files
     },
 
-    async getRepoTimeline(repoID: string) {
+    async getRepoTimeline(repoID: string, lastCommitFetched?: string | undefined, toCommit?: string | undefined, pageSize?: number | undefined) {
         interface IResponse {
             timeline: ITimelineEvent[]
         }
-        const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}`)
+        const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}?` + querystring.stringify({
+            lastCommitFetched,
+            toCommit,
+            pageSize,
+        }))
         return response.data.timeline
     },
 

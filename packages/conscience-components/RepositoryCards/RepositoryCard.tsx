@@ -17,7 +17,7 @@ import { selectRepo, getRepoURL } from 'conscience-components/navigation'
 import { cloneRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { getRepoID, getPlatformName } from 'conscience-components/env-specific'
-import { URI, URIType, LocalURI, RepoPage } from 'conscience-lib/common'
+import { IRepoMetadata, URI, URIType, LocalURI, RepoPage } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 import moment from 'moment'
 
@@ -30,7 +30,7 @@ class RepositoryCard extends React.Component<Props, State>
     }
 
     render() {
-        const { repoID, lastUpdated, numFiles, numDiscussions, cloneProgress, classes } = this.props
+        const { repoID, metadata, cloneProgress, classes } = this.props
         const isDownloading = cloneProgress !== undefined
         let percentDownloaded
         if (isDownloading) {
@@ -42,12 +42,12 @@ class RepositoryCard extends React.Component<Props, State>
                 <Card className={classes.root} onClick={this.onClickNavigateRepoHome}>
                     <CardContent>
                         <H6>{repoID}</H6>
-                        {lastUpdated &&
+                        {metadata.lastUpdated &&
                             <div className={classes.lastUpdated}>
-                                {'Last updated ' + moment(lastUpdated).fromNow()}
+                                {'Last updated ' + moment(metadata.lastUpdated).fromNow()}
                             </div>
                         }
-                        {!lastUpdated &&
+                        {!metadata.lastUpdated &&
                             <div className={classes.lastUpdated}>
                                 No commits yet
                             </div>
@@ -55,11 +55,11 @@ class RepositoryCard extends React.Component<Props, State>
                         <div className={classes.statButtons}>
                             <Button onClick={this.onClickNavigateRepoFiles}>
                                 <FolderOpenIcon fontSize="small" />
-                                {numFiles}
+                                {metadata.fileCount}
                             </Button>
                             <Button onClick={this.onClickNavigateRepoDiscussions}>
                                 <CommentIcon fontSize="small" />
-                                {numDiscussions}
+                                {metadata.discussionCount}
                             </Button>
                         </div>
                     </CardContent>
@@ -163,9 +163,7 @@ interface OwnProps {
 
 interface StateProps {
     repoID: string
-    numFiles: number
-    lastUpdated: Date
-    numDiscussions: number
+    metadata: IRepoMetadata
     localRepoList: LocalURI[]
     cloneProgress: { fetched: number, toFetch: number } | undefined
 }
@@ -215,18 +213,10 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uri = ownProps.uri
     const uriStr = uriToString(uri)
     const repoID = getRepoID(uri)
-    const numFiles = Object.keys(state.repo.filesByURI[uriStr] || {}).length
-    const commitList = state.repo.commitListsByURI[uriStr]
-    const lastCommitHash = commitList !== undefined ? commitList[0] : ''
-    const lastCommit = state.repo.commits[lastCommitHash || ''] || {}
-    const lastUpdated = lastCommit.time
-    const numDiscussions = (state.discussion.discussionsByRepo[repoID] || {}).length
     const cloneProgress = state.ui.cloneRepoProgressByID[repoID]
     return {
         repoID,
-        numFiles,
-        lastUpdated,
-        numDiscussions,
+        metadata: state.repo.metadataByURI[uriStr],
         localRepoList: state.repo.localRepoList,
         cloneProgress,
     }

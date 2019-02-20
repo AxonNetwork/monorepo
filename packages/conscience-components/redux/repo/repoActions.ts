@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
+import { URI, NetworkURI, IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -14,6 +14,10 @@ export enum RepoActionType {
     FETCH_FULL_REPO = 'FETCH_FULL_REPO',
     FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
     FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
+
+    FETCH_REPO_METADATA = 'FETCH_REPO_METADATA',
+    FETCH_REPO_METADATA_SUCCESS = 'FETCH_REPO_METADATA_SUCCESS',
+    FETCH_REPO_METADATA_FAILED = 'FETCH_REPO_METADATA_FAILED',
 
     FETCH_REPO_FILES = 'FETCH_REPO_FILES',
     FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
@@ -122,6 +126,22 @@ export interface IFetchFullRepoSuccessAction {
 
 export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
 
+export interface IFetchRepoMetadataAction {
+    type: RepoActionType.FETCH_REPO_METADATA
+    payload: {
+        repoList: URI[]
+    }
+}
+
+export interface IFetchRepoMetadataSuccessAction {
+    type: RepoActionType.FETCH_REPO_METADATA_SUCCESS
+    payload: {
+        metadataByURI: { [uri: string]: IRepoMetadata | null }
+    }
+}
+
+export type IFetchRepoMetadataFailedAction = FailedAction<RepoActionType.FETCH_REPO_METADATA_FAILED>
+
 export interface IFetchRepoFilesAction {
     type: RepoActionType.FETCH_REPO_FILES
     payload: {
@@ -143,6 +163,9 @@ export interface IFetchRepoTimelineAction {
     type: RepoActionType.FETCH_REPO_TIMELINE
     payload: {
         uri: URI
+        lastCommitFetched?: string
+        toCommit?: string
+        pageSize?: number
     }
 }
 
@@ -402,6 +425,10 @@ export type IRepoAction =
     IFetchFullRepoSuccessAction |
     IFetchFullRepoFailedAction |
 
+    IFetchRepoMetadataAction |
+    IFetchRepoMetadataSuccessAction |
+    IFetchRepoMetadataFailedAction |
+
     IFetchRepoFilesAction |
     IFetchRepoFilesSuccessAction |
     IFetchRepoFilesFailedAction |
@@ -465,6 +492,8 @@ export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoLis
 export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
 
 export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
+
+export const fetchRepoMetadata = (payload: IFetchRepoMetadataAction['payload']): IFetchRepoMetadataAction => ({ type: RepoActionType.FETCH_REPO_METADATA, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
 export const fetchUpdatedRefEvents = (payload: IFetchUpdatedRefEventsAction['payload']): IFetchUpdatedRefEventsAction => ({ type: RepoActionType.FETCH_UPDATED_REF_EVENTS, payload })

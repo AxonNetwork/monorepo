@@ -1,6 +1,7 @@
 import parseDiff from 'conscience-lib/utils/parseDiff'
 import {
     RepoActionType,
+    IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
     IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
@@ -19,10 +20,29 @@ import {
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
+import { IRepoMetadata } from 'conscience-lib/common'
+import { uriToString } from 'conscience-lib/utils'
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 
 
+const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction>({
+    type: RepoActionType.FETCH_REPO_METADATA,
+    async process({ action }) {
+        const { repoList = [] } = action.payload
+        const repoIDs = repoList.map(id => getRepoID(id))
+        const metadataByID = await ServerRelay.getRepoMetadata(repoIDs)
+
+        const metadataByURI = {} as { [uri: string]: IRepoMetadata | null }
+        for (let i = 0; i < repoList.length; i++) {
+            const uriStr = uriToString(repoList[i])
+            const metadata = metadataByID[repoIDs[i]] || null
+            metadataByURI[uriStr] = metadata
+        }
+
+        return { metadataByURI }
+    },
+})
 
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
     type: RepoActionType.FETCH_REPO_FILES,
@@ -37,9 +57,9 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,
     async process({ action }) {
-        const { uri } = action.payload
+        const { uri, lastCommitFetched, toCommit, pageSize } = action.payload
         const repoID = getRepoID(uri)
-        const timeline = await ServerRelay.getRepoTimeline(repoID)
+        const timeline = await ServerRelay.getRepoTimeline(repoID, lastCommitFetched, toCommit, pageSize)
         return { uri, timeline }
     },
 })
@@ -112,6 +132,7 @@ export default [
     fetchFullRepoLogic,
 
     // web-specific
+    fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
     fetchUpdatedRefEventsLogic,

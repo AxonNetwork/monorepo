@@ -9,7 +9,7 @@ import { filemodeIsDir, fileType } from '../util'
 import { defaultOnError } from '../util/Promise'
 import spawnCmd from '../util/spawnCmd'
 import * as noderpc from '../noderpc'
-import { union, keyBy } from 'lodash'
+import { union, keyBy, isArray } from 'lodash'
 import path from 'path'
 import fs from 'fs'
 import passport from 'passport'
@@ -79,6 +79,40 @@ const checkUserAccess = async (user, repoID) => {
     }
 }
 
+repoController.getRepoMetadata = async (req, res, next) => {
+    let { repoIDs } = req.query
+    if (!repoIDs) {
+        throw new HTTPError(400, 'Missing repoIDs')
+    }
+    if (!isArray(repoIDs)) {
+        repoIDs = [ repoIDs ]
+    }
+
+    const metadataPromiseList = repoIDs.map(async (id) => {
+        try {
+            await checkUserAccess(req.user, id)
+            return {
+                repoID:          id,
+                fileCount:       200,
+                discussionCount: 10,
+                lastUpdated:     Date.now(),
+            }
+        } catch (err) {
+            return null
+        }
+    })
+    const metadataList = await Promise.all(metadataPromiseList)
+
+    const metadata = {}
+    for (let i = 0; i < repoIDs.length; i++) {
+        if (metadataList[i] !== null) {
+            metadata[repoIDs[i]] = metadataList[i]
+        }
+    }
+
+    res.status(200).json(metadata)
+}
+
 repoController.getRepoFiles = async (req, res, next) => {
     const { repoID } = req.params
     await checkUserAccess(req.user, repoID)
@@ -103,10 +137,10 @@ repoController.getRepoFiles = async (req, res, next) => {
 }
 
 repoController.getRepoTimeline = async (req, res, next) => {
-    const { repoID } = req.params
+    const { repoID, lastCommitFetched, toCommit, pageSize = 10 } = req.params
     await checkUserAccess(req.user, repoID)
 
-    const history = (await rpcClient.getRepoHistoryAsync({ repoID })).commits || []
+    const history = (await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, toCommit, pageSize })).commits || []
     const timeline = history.map(event => ({
         version: 0,
         commit:  event.commitHash,
