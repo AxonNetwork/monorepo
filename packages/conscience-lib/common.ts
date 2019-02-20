@@ -37,6 +37,7 @@ export interface IRepoMetadata {
     repoID: string
     fileCount: number
     discussionCount: number
+    timelineLength: number
     lastUpdated: number
 }
 

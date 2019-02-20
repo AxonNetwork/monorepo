@@ -109,7 +109,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uriStr = uriToString(ownProps.uri)
-    const version = (state.repo.commitListsByURI[uriStr] || []).length
+    const version = (state.repo.metadataByURI[uriStr] || { timelineLength: 0 }).timelineLength
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
         version,

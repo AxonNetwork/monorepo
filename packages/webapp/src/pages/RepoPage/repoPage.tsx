@@ -8,23 +8,15 @@ import RepoFilesPage from './components/RepoFilesPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
-import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoMetadata } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { URI, URIType } from 'conscience-lib/common'
-import { autobind, stringToRepoPage } from 'conscience-lib/utils'
+import { stringToRepoPage } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
 
 
-@autobind
 class RepoPageRoutes extends React.Component<Props>
 {
-    constructor(props: Props) {
-        super(props)
-        if (props.uri) {
-            this.props.fetchFullRepo({ uri: props.uri })
-        }
-    }
-
     render() {
         const { uri, classes } = this.props
 
@@ -56,9 +48,13 @@ class RepoPageRoutes extends React.Component<Props>
         )
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (!isEqual(this.props.uri, prevProps.uri)) {
-            this.props.fetchFullRepo({ uri: this.props.uri })
+    componentDidMount() {
+        this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
+    }
+
+    componendDidUpdate(prevProps: Props) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
+            this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
         }
     }
 }
@@ -70,7 +66,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
     menuLabelsHidden: boolean
-    fetchFullRepo: typeof fetchFullRepo
+    fetchRepoMetadata: typeof fetchRepoMetadata
     classes: any
 }
 
@@ -104,7 +100,7 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
 }
 
 const mapDispatchToProps = {
-    fetchFullRepo
+    fetchRepoMetadata
 }
 
 export default connect(

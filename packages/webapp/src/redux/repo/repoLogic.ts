@@ -4,6 +4,7 @@ import {
     IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
+    IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction,
     IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
@@ -57,10 +58,25 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,
     async process({ action }) {
-        const { uri, lastCommitFetched, toCommit, pageSize } = action.payload
+        const { uri, lastCommitFetched, fromCommit, toCommit, pageSize } = action.payload
         const repoID = getRepoID(uri)
-        const timeline = await ServerRelay.getRepoTimeline(repoID, lastCommitFetched, toCommit, pageSize)
+        const timeline = await ServerRelay.getRepoTimeline({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
         return { uri, timeline }
+    },
+})
+
+const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction>({
+    type: RepoActionType.FETCH_REPO_TIMELINE_EVENT,
+    async process({ action }) {
+        const { uri } = action.payload
+        if (uri.commit === undefined) {
+            throw new Error("Must specify commit to fetch")
+        }
+        const repoID = getRepoID(uri)
+        const fromCommit = uri.commit
+        const timeline = await ServerRelay.getRepoTimeline({ repoID, fromCommit, pageSize: 1 })
+        const event = timeline[0]
+        return { event }
     },
 })
 
@@ -135,6 +151,7 @@ export default [
     fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
+    fetchRepoTimelineEventLogic,
     fetchUpdatedRefEventsLogic,
     fetchRepoUsersPermissionsLogic,
     getDiffLogic,

@@ -8,7 +8,6 @@ import {
     ICreateDiscussionAction, ICreateDiscussionSuccessAction,
     IGetCommentsForDiscussionAction, IGetCommentsForDiscussionSuccessAction,
     ICreateCommentAction, ICreateCommentSuccessAction,
-    getCommentsForDiscussion
 } from './discussionActions'
 import { push as pushToHistory } from 'connected-react-router'
 import { fetchUserData, sawComment } from '../user/userActions'

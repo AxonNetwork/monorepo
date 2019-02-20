@@ -13,7 +13,8 @@ import { URI, ITimelineEvent, IUser } from 'conscience-lib/common'
 import { autobind, extractEmail } from 'conscience-lib/utils'
 import { selectCommit } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
-import { getDiff } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoTimelineEvent, getDiff } from 'conscience-components/redux/repo/repoActions'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
@@ -22,23 +23,29 @@ class CommitView extends React.Component<Props>
     _didFetchDiff = false
 
     componentDidMount() {
-        if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
+        if (!this.props.commit) {
+            this.props.fetchRepoTimelineEvent({ uri: this.props.uri })
+        }
+        if (this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
             console.log('dispatching getDiff 1')
             this.props.getDiff({
                 uri: this.props.uri,
-                commit: this.props.commit.commit,
+                commit: this.props.uri.commit || '',
             })
         }
     }
 
-    componentDidUpdate(_: Props) {
-        if (this.props.commit && this.props.fileDiffs === undefined && !this._didFetchDiff) {
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
+            this.props.fetchRepoTimelineEvent({ uri: this.props.uri })
+        }
+        if (this.props.fileDiffs === undefined && !this._didFetchDiff) {
             this._didFetchDiff = true
             console.log('dispatching getDiff 2')
             this.props.getDiff({
                 uri: this.props.uri,
-                commit: this.props.commit.commit,
+                commit: this.props.uri.commit || '',
             })
         }
     }
@@ -110,6 +117,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+    fetchRepoTimelineEvent: typeof fetchRepoTimelineEvent
     getDiff: typeof getDiff
 }
 
@@ -195,6 +203,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 }
 
 const mapDispatchToProps = {
+    fetchRepoTimelineEvent,
     getDiff,
 }
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import SharedUsers from 'conscience-components/SharedUsers'
+import AccessControlList from 'conscience-components/AccessControlList'
 import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -16,7 +16,7 @@ class RepoTeamPage extends React.Component<Props>
 
         return (
             <div className={classes.page}>
-                <SharedUsers uri={uri} />
+                <AccessControlList uri={uri} />
             </div>
         )
     }

@@ -31,6 +31,8 @@ class RepositoryCard extends React.Component<Props, State>
 
     render() {
         const { repoID, metadata, cloneProgress, classes } = this.props
+        if (metadata === null) return metadata
+
         const isDownloading = cloneProgress !== undefined
         let percentDownloaded
         if (isDownloading) {

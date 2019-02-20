@@ -28,11 +28,6 @@ class RepositoryCards extends React.Component<Props, State>
         dialogOpen: false,
     }
 
-    constructor(props: Props) {
-        super(props)
-        this.fetchRepoListMetadata()
-    }
-
     render() {
         const { repoList, metadataByURI, classes } = this.props
         if (repoList === undefined) return null
@@ -107,6 +102,10 @@ class RepositoryCards extends React.Component<Props, State>
                 }
             </React.Fragment>
         )
+    }
+
+    componentDidMount() {
+        this.fetchRepoListMetadata()
     }
 
     componentDidUpdate(prevProps: Props) {

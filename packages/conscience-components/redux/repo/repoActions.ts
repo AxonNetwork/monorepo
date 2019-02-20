@@ -27,6 +27,10 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
 
+    FETCH_REPO_TIMELINE_EVENT = 'FETCH_REPO_TIMELINE_EVENT',
+    FETCH_REPO_TIMELINE_EVENT_SUCCESS = 'FETCH_REPO_TIMELINE_EVENT_SUCCESS',
+    FETCH_REPO_TIMELINE_EVENT_FAILED = 'FETCH_REPO_TIMELINE_EVENT_FAILED',
+
     FETCH_UPDATED_REF_EVENTS = 'FETCH_UPDATED_REF_EVENTS',
     FETCH_UPDATED_REF_EVENTS_SUCCESS = 'FETCH_UPDATED_REF_EVENTS_SUCCESS',
     FETCH_UPDATED_REF_EVENTS_FAILED = 'FETCH_UPDATED_REF_EVENTS_FAILED',
@@ -164,6 +168,7 @@ export interface IFetchRepoTimelineAction {
     payload: {
         uri: URI
         lastCommitFetched?: string
+        fromCommit?: string
         toCommit?: string
         pageSize?: number
     }
@@ -178,6 +183,22 @@ export interface IFetchRepoTimelineSuccessAction {
 }
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
+
+export interface IFetchRepoTimelineEventAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE_EVENT
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchRepoTimelineEventSuccessAction {
+    type: RepoActionType.FETCH_REPO_TIMELINE_EVENT_SUCCESS
+    payload: {
+        event: ITimelineEvent,
+    }
+}
+
+export type IFetchRepoTimelineEventFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_EVENT_FAILED>
 
 export interface IFetchUpdatedRefEventsAction {
     type: RepoActionType.FETCH_UPDATED_REF_EVENTS
@@ -437,6 +458,10 @@ export type IRepoAction =
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
 
+    IFetchRepoTimelineEventAction |
+    IFetchRepoTimelineEventSuccessAction |
+    IFetchRepoTimelineEventFailedAction |
+
     IFetchUpdatedRefEventsAction |
     IFetchUpdatedRefEventsSuccessAction |
     IFetchUpdatedRefEventsFailedAction |
@@ -496,6 +521,7 @@ export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchF
 export const fetchRepoMetadata = (payload: IFetchRepoMetadataAction['payload']): IFetchRepoMetadataAction => ({ type: RepoActionType.FETCH_REPO_METADATA, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
+export const fetchRepoTimelineEvent = (payload: IFetchRepoTimelineEventAction['payload']): IFetchRepoTimelineEventAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE_EVENT, payload })
 export const fetchUpdatedRefEvents = (payload: IFetchUpdatedRefEventsAction['payload']): IFetchUpdatedRefEventsAction => ({ type: RepoActionType.FETCH_UPDATED_REF_EVENTS, payload })
 
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })

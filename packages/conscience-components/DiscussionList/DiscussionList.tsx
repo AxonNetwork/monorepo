@@ -13,14 +13,17 @@ import Typography from '@material-ui/core/Typography'
 import UserAvatar from '../UserAvatar'
 import { selectDiscussion } from '../navigation'
 import { getRepoID } from '../env-specific'
+import { getDiscussionsForRepo } from '../redux/discussion/discussionActions'
 import { IGlobalState } from '../redux'
 import { IDiscussion, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
 class DiscussionList extends React.Component<Props>
 {
+
     render() {
         const { discussions, discussionList, selectedID, classes } = this.props
 
@@ -87,12 +90,23 @@ class DiscussionList extends React.Component<Props>
         )
     }
 
+
+    componentDidMount() {
+        this.props.getDiscussionsForRepo({ uri: this.props.uri })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.props.getDiscussionsForRepo({ uri: this.props.uri })
+        }
+    }
+
     selectDiscussion(discussionID: string | undefined) {
         selectDiscussion(this.props.uri, discussionID)
     }
 }
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -106,6 +120,10 @@ interface StateProps {
     discussions: { [discussionID: string]: IDiscussion }
     discussionList: string[]
     newestViewedCommentTimestamp: { [discussionID: string]: number }
+}
+
+interface DispatchProps {
+    getDiscussionsForRepo: typeof getDiscussionsForRepo
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -181,9 +199,11 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    getDiscussionsForRepo,
+}
 
-export default connect<StateProps, {}, OwnProps, IGlobalState>(
+export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
     mapStateToProps,
     mapDispatchToProps,
 )(withStyles(styles)(DiscussionList))

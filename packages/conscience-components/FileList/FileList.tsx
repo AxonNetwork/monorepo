@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual'
 import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import values from 'lodash/values'
 import debounce from 'lodash/debounce'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -26,9 +27,11 @@ import { makeTree, sortFiles } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
 import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
-import autobind from 'conscience-lib/utils/autobind'
-import { selectFile } from 'conscience-components/navigation'
+import { autobind, uriToString } from 'conscience-lib/utils'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
+import { selectFile } from 'conscience-components/navigation'
+import { fetchRepoFiles } from 'conscience-components/redux/repo/repoActions'
+import { IGlobalState } from 'conscience-components/redux'
 
 
 @autobind
@@ -46,6 +49,7 @@ class FileList extends React.Component<Props, State>
     _inputQuickNav: HTMLInputElement | null = null
 
     componentDidMount() {
+        this.props.fetchRepoFiles({ uri: this.props.uri })
         if (this.props.files) {
             this.setState({ tree: makeTree(this.props.files) })
         }
@@ -63,6 +67,7 @@ class FileList extends React.Component<Props, State>
         }
 
         if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
             this.setState({ quickNavOpen: false, quickNavQuery: '' })
         }
 
@@ -243,14 +248,21 @@ class FileList extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    files: { [name: string]: IRepoFile }
-    fileExtensionsHidden: boolean | undefined
     openFileIcon?: boolean
     canEditFiles?: boolean
+}
+
+interface StateProps {
+    files: { [name: string]: IRepoFile }
+    fileExtensionsHidden: boolean | undefined
+}
+
+interface DispatchProps {
+    fetchRepoFiles: typeof fetchRepoFiles
 }
 
 interface State {
@@ -318,4 +330,19 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileList)
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    return {
+        files: state.repo.filesByURI[uriToString(ownProps.uri)],
+        fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
+    }
+
+}
+
+const mapDispatchToProps = {
+    fetchRepoFiles,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(FileList))

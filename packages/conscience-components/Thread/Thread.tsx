@@ -8,7 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
-import { createComment } from '../redux/discussion/discussionActions'
+import { createComment, getCommentsForDiscussion } from '../redux/discussion/discussionActions'
 import { sawComment } from '../redux/user/userActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
@@ -35,6 +35,8 @@ class Thread extends React.Component<Props, State>
     }
 
     componentDidMount() {
+        this.props.getCommentsForDiscussion({ discussionID: this.props.discussionID })
+
         // Check each rendered comment to see if it's visible.  If so, and the user hasn't seen it yet, we mark it as seen based on its timestamp.
         // @@TODO: consider doing this with a debounced window.scroll event rather than a naive interval timer
         const checkSeenComments = () => {
@@ -72,7 +74,10 @@ class Thread extends React.Component<Props, State>
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.discussionID != prevProps.discussionID) {
+            this.props.getCommentsForDiscussion({ discussionID: this.props.discussionID })
+        }
         // Scroll to comment if we have a URL hash.  We continue to do this after componentDidMount
         // in case the comment doesn't render the first time.
         this.checkURLHashForCommentID()
@@ -217,6 +222,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+    getCommentsForDiscussion: typeof getCommentsForDiscussion
     createComment: typeof createComment
     sawComment: typeof sawComment
 }
@@ -279,6 +285,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 }
 
 const mapDispatchToProps = {
+    getCommentsForDiscussion,
     createComment,
     sawComment,
 }

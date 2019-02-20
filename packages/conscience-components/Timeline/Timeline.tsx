@@ -4,9 +4,11 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import TablePagination from '@material-ui/core/TablePagination'
 import TimelineEvent from '../TimelineEvent'
 import TimelineEventLoader from '../ContentLoaders/TimelineEventLoader'
+import { fetchRepoTimeline } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
@@ -19,38 +21,54 @@ class Timeline extends React.Component<Props, State>
         this.state = { page, rowsPerPage }
     }
 
-    onChangePage(_: any, page: number) {
-        this.setState({ page })
+    async onChangePage(_: any, page: number) {
+        await this.setState({ page })
+        this.fetchEventsForCurrentPage()
     }
 
-    onChangeRowsPerPage(evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    async onChangeRowsPerPage(evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
         const rowsPerPage = parseInt(evt.target.value, 10)
-        this.setState({ rowsPerPage: rowsPerPage })
+        await this.setState({ rowsPerPage: rowsPerPage })
+        this.fetchEventsForCurrentPage()
+    }
+
+    componentDidMount() {
+        this.fetchEventsForCurrentPage()
+    }
+
+    componentDidUpdate(prevProps: Props, prevState: State) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
+            this.fetchEventsForCurrentPage()
+        }
+    }
+
+    fetchEventsForCurrentPage() {
+        const { page, rowsPerPage } = this.state
+        const { uri, commitList = [] } = this.props
+        const end = (page + 1) * rowsPerPage
+        if (commitList.length < end) {
+            const lastCommitFetched = commitList[commitList.length - 1]
+            const pageSize = end - commitList.length
+            this.props.fetchRepoTimeline({ uri, lastCommitFetched, pageSize })
+        }
     }
 
     render() {
-        const { hidePagination, classes } = this.props
+        const { commitList = [], timelineLength, hidePagination, classes } = this.props
         const { page, rowsPerPage } = this.state
 
-        if (!this.props.commitList) {
-            return (
-                <div className={classes.loaders}>
-                    {Array(rowsPerPage).fill(0).map(i => (
-                        <TimelineEventLoader />
-                    ))}
-                </div>
-            )
-        }
+        const start = page * rowsPerPage
+        const end = Math.min((page + 1) * rowsPerPage, timelineLength)
+        const loaderCount = end - commitList.length
 
-        const commitList = this.props.commitList || []
+        const timelinePage = commitList.slice(start, end)
 
-        const timelinePage = commitList.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
         return (
             <div>
-                {!hidePagination && commitList.length > this.state.rowsPerPage &&
+                {!hidePagination && timelineLength > this.state.rowsPerPage &&
                     <TablePagination
                         component="div"
-                        count={commitList.length}
+                        count={timelineLength}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         backIconButtonProps={{ classes: { root: classes.paginationButton }, 'aria-label': 'Previous Page' }}
@@ -66,12 +84,19 @@ class Timeline extends React.Component<Props, State>
                         <TimelineEvent key={commitHash} uri={{ ...this.props.uri, commit: commitHash }} />
                     ))}
                 </div>
+                {loaderCount > 0 &&
+                    <div className={classes.loaders}>
+                        {Array(loaderCount).fill(0).map(i => (
+                            <TimelineEventLoader />
+                        ))}
+                    </div>
+                }
             </div>
         )
     }
 }
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & Dispatchprops & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -82,6 +107,11 @@ interface OwnProps {
 
 interface StateProps {
     commitList: string[] | undefined
+    timelineLength: number
+}
+
+interface Dispatchprops {
+    fetchRepoTimeline: typeof fetchRepoTimeline
 }
 
 interface State {
@@ -110,8 +140,13 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uriStr = uriToString(ownProps.uri)
     return {
         commitList: state.repo.commitListsByURI[uriStr],
+        timelineLength: (state.repo.metadataByURI[uriStr] || { timelineLength: 0 }).timelineLength,
     }
 }
 
-export default connect(mapStateToProps, null)(withStyles(styles)(Timeline))
+const mapDispatchToProps = {
+    fetchRepoTimeline
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Timeline))
 

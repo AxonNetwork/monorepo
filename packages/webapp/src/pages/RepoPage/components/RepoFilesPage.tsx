@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import FileViewer from 'conscience-components/FileViewer'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
 import { H5 } from 'conscience-components/Typography/Headers'
@@ -21,22 +20,16 @@ class RepoFilesPage extends React.Component<Props>
         const { files, classes } = this.props
         if (!this.props.uri) {
             return null
-        } else if (files === undefined) {
-            return <LargeProgressSpinner />
         }
 
         const { repoID, commit, filename } = this.props.match.params
-        const file = files[filename || '']
+        const file = (files || {})[filename || '']
         const fileURI = { ...this.props.uri, repoID, commit, filename }
 
         if (!filename || !file || file.type === 'folder') {
             return (
                 <div className={classes.fileListContainer}>
-                    <FileList
-                        uri={fileURI}
-                        files={files}
-                        fileExtensionsHidden={this.props.fileExtensionsHidden}
-                    />
+                    <FileList uri={fileURI} />
                 </div>
             )
         }
@@ -77,7 +70,6 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
     files: { [name: string]: IRepoFile } | undefined
-    fileExtensionsHidden: boolean
     classes: any
 }
 
@@ -123,7 +115,6 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
     return {
         uri,
         files,
-        fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
 }
 

@@ -95,6 +95,7 @@ repoController.getRepoMetadata = async (req, res, next) => {
                 repoID:          id,
                 fileCount:       200,
                 discussionCount: 10,
+                timelineLength:  200,
                 lastUpdated:     Date.now(),
             }
         } catch (err) {
@@ -137,12 +138,12 @@ repoController.getRepoFiles = async (req, res, next) => {
 }
 
 repoController.getRepoTimeline = async (req, res, next) => {
-    const { repoID, lastCommitFetched, toCommit, pageSize = 10 } = req.params
+    const { repoID } = req.params
+    const { lastCommitFetched, fromCommit, toCommit, pageSize = 10 } = req.query
     await checkUserAccess(req.user, repoID)
 
-    const history = (await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, toCommit, pageSize })).commits || []
+    const history = (await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })).commits || []
     const timeline = history.map(event => ({
-        version: 0,
         commit:  event.commitHash,
         user:    event.author,
         time:    new Date(event.timestamp.toNumber() * 1000),

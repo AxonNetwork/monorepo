@@ -87,11 +87,25 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 ...state,
                 commitListsByURI: {
                     ...state.commitListsByURI,
-                    [uriStr]: commitList
+                    [uriStr]: [
+                        ...(state.commitListsByURI[uriStr] || []),
+                        ...commitList
+                    ]
                 },
                 commits: {
                     ...state.commits,
                     ...commits
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_REPO_TIMELINE_EVENT_SUCCESS: {
+            const { event } = action.payload
+            return {
+                ...state,
+                commits: {
+                    ...state.commits,
+                    [event.commit]: event
                 }
             }
         }

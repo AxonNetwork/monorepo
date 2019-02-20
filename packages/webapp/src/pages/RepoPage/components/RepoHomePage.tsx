@@ -1,4 +1,3 @@
-import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
@@ -8,14 +7,14 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import FileViewer from 'conscience-components/FileViewer'
-import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import SecuredText from 'conscience-components/SecuredText'
+import SharedUsers from 'conscience-components/SharedUsers'
 import DiscussionList from 'conscience-components/DiscussionList'
 import Timeline from 'conscience-components/Timeline'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectFile } from 'conscience-components/navigation'
-import { IUser, URI, URIType, FileMode } from 'conscience-lib/common'
+import { URI, URIType, FileMode } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -23,7 +22,7 @@ import { autobind, uriToString } from 'conscience-lib/utils'
 class RepoHomePage extends React.Component<Props>
 {
     render() {
-        const { uri, sharedUsers, classes } = this.props
+        const { uri, classes } = this.props
 
         return (
             <div className={classes.main}>
@@ -58,13 +57,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Team</H6>
 
                             <div className={classes.sharedUsersRow}>
-                                {sharedUsers.map(user => {
-                                    if (user !== undefined) {
-                                        return <UserAvatar user={user} />
-                                    } else {
-                                        return null
-                                    }
-                                })}
+                                <SharedUsers uri={uri} />
                             </div>
                         </CardContent>
                     </Card>
@@ -108,7 +101,6 @@ interface MatchParams {
 
 interface StateProps {
     uri: URI
-    sharedUsers: IUser[]
     hasCommits: boolean
     hasReadme: boolean
 }
@@ -169,16 +161,11 @@ const styles = (theme: Theme) => createStyles({
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const repoID = ownProps.match.params.repoID
     const uri = { type: URIType.Network, repoID } as URI
-    const { admins = [], pushers = [], pullers = [] } = state.repo.permissionsByID[repoID] || {}
-    const sharedUsers = union(admins, pushers, pullers)
-        .map(username => state.user.usersByUsername[username])
-        .map(id => state.user.users[id])
     const uriStr = uriToString(uri)
     const hasCommits = (state.repo.commitListsByURI[uriStr] || []).length > 0
     const hasReadme = (state.repo.filesByURI[uriStr] || {})['README.md'] !== undefined
     return {
         uri,
-        sharedUsers,
         hasCommits,
         hasReadme,
     }

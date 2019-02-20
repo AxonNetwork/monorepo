@@ -1,17 +1,12 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import CancelIcon from '@material-ui/icons/Cancel'
-
 import Thread from '../Thread'
 import CreateDiscussion from '../CreateDiscussion'
 import DiscussionList from '../DiscussionList'
 import { selectDiscussion } from '../navigation'
-import { getDiscussionsForRepo, getCommentsForDiscussion } from '../redux/discussion/discussionActions'
-import { IGlobalState } from '../redux'
-
 import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -53,37 +48,16 @@ class DiscussionPane extends React.Component<Props>
         )
     }
 
-    componentWillMount() {
-        // @@TODO: intelligent caching
-        this.props.getDiscussionsForRepo({ uri: this.props.uri })
-        if (this.props.selectedID) {
-            this.props.getCommentsForDiscussion({ discussionID: this.props.selectedID })
-        }
-    }
-
-    componentDidUpdate(prevProps: Props) {
-        if (this.props.selectedID !== undefined && this.props.selectedID !== prevProps.selectedID) {
-            this.props.getCommentsForDiscussion({ discussionID: this.props.selectedID })
-        }
-    }
-
     selectDiscussion(discussionID: string | undefined) {
         selectDiscussion(this.props.uri, discussionID)
     }
 }
 
-type Props = OwnProps & DispatchProps & { classes: any }
 
-interface OwnProps {
+interface Props {
     uri: URI
     selectedID: string | undefined
-}
-
-interface StateProps { }
-
-interface DispatchProps {
-    getDiscussionsForRepo: typeof getDiscussionsForRepo
-    getCommentsForDiscussion: typeof getCommentsForDiscussion
+    classes: any
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -118,16 +92,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    return {}
-}
-
-const mapDispatchToProps = {
-    getDiscussionsForRepo,
-    getCommentsForDiscussion,
-}
-
-export default connect<StateProps, DispatchProps, OwnProps, IGlobalState>(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(DiscussionPane))
+export default withStyles(styles)(DiscussionPane)

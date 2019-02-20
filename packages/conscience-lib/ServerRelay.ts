@@ -225,12 +225,14 @@ const ServerRelay = {
         return response.data.files
     },
 
-    async getRepoTimeline(repoID: string, lastCommitFetched?: string | undefined, toCommit?: string | undefined, pageSize?: number | undefined) {
+    async getRepoTimeline(payload: { repoID: string, lastCommitFetched?: string, fromCommit?: string, toCommit?: string, pageSize?: number }) {
         interface IResponse {
             timeline: ITimelineEvent[]
         }
+        const { repoID, lastCommitFetched, fromCommit, toCommit, pageSize } = payload
         const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}?` + querystring.stringify({
             lastCommitFetched,
+            fromCommit,
             toCommit,
             pageSize,
         }))

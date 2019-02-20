@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import SharedUsers from 'conscience-components/SharedUsers'
+import AccessControlList from 'conscience-components/AccessControlList'
 import { updateUserPermissions } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { getURIFromParams } from 'conscience-components/env-specific'
@@ -19,7 +19,7 @@ class RepoTeamPage extends React.Component<Props>
 
         return (
             <div className={classes.page}>
-                <SharedUsers uri={this.props.uri} />
+                <AccessControlList uri={this.props.uri} />
             </div>
         )
     }
