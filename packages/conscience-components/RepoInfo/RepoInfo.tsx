@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import PushPullButtons from 'conscience-components/PushPullButtons'
 import Tabs from 'conscience-components/Tabs'
 import { H5 } from 'conscience-components/Typography/Headers'
@@ -16,14 +15,12 @@ import { autobind, uriToString } from 'conscience-lib/utils'
 class RepoInfo extends React.Component<Props>
 {
     render() {
-        const { uri, version, showButtons, classes } = this.props
-        const versionStr = version > 0 ? 'v' + version : ''
+        const { uri, showButtons, classes } = this.props
 
         return (
             <div className={classes.repoInfo}>
                 <div className={classes.titleContainer}>
                     <H5 className={classes.headline}>{getRepoID(uri)}</H5>
-                    <Typography className={classes.version}>{versionStr}</Typography>
                     {showButtons && uri.type === URIType.Local &&
                         <PushPullButtons
                             uri={uri as LocalURI}
@@ -64,7 +61,6 @@ interface OwnProps {
 }
 
 interface StateProps {
-    version: number
     menuLabelsHidden: boolean
 }
 
@@ -84,9 +80,6 @@ const styles = (theme: Theme) => createStyles({
         display: 'block',
         fontSize: '2rem',
         color: 'rgba(0, 0, 0, 0.7)',
-    },
-    version: {
-        // display: 'inline-block',
     },
     caption: {
         fontSize: '10pt',
@@ -109,10 +102,8 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uriStr = uriToString(ownProps.uri)
-    const version = (state.repo.metadataByURI[uriStr] || { timelineLength: 0 }).timelineLength
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
-        version,
         menuLabelsHidden,
     }
 }

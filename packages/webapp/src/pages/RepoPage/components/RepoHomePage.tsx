@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import classnames from 'classnames'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
@@ -26,22 +25,22 @@ class RepoHomePage extends React.Component<Props>
 
         return (
             <div className={classes.main}>
-                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !this.props.hasReadme })}>
-                    {this.props.hasReadme &&
-                        <FileViewer
-                            uri={{ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }}
-                            showViewerPicker={false}
-                        />
-                    }
-                    {!this.props.hasReadme &&
-                        <div className={classes.readmeContainerNoReadmeContents}>
-                            <div className={classes.noReadmeText}>
-                                Add a welcome message and instructions to this repository using the Conscience desktop app.
-                            </div>
+                <div className={classes.readmeContainer}>
+                    <FileViewer
+                        uri={{ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }}
+                        showViewerPicker={false}
+                        fallback={(
+                            <div className={classes.readmeContainerNoReadme}>
+                                <div className={classes.readmeContainerNoReadmeContents}>
+                                    <div className={classes.noReadmeText}>
+                                        Add a welcome message and instructions to this repository using the Conscience desktop app.
+                                    </div>
 
-                            <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
-                        </div>
-                    }
+                                    <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
+                                </div>
+                            </div>
+                        )}
+                    />
                 </div>
                 <div className={classes.sidebarComponents}>
                     {this.props.hasCommits &&
@@ -117,12 +116,16 @@ const styles = (theme: Theme) => createStyles({
         minWidth: 0,
     },
     readmeContainerNoReadme: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0,
         backgroundColor: '#f1f1f1',
         borderRadius: 10,
         border: '3px solid #c5c5c5',
         padding: 30,
         textAlign: 'center',
-        flexBasis: 320,
     },
     readmeContainerNoReadmeContents: {
         position: 'relative',

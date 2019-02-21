@@ -118,7 +118,7 @@ repoController.getRepoFiles = async (req, res, next) => {
     const { repoID } = req.params
     await checkUserAccess(req.user, repoID)
 
-    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'HEAD' })).files || []
+    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'working' })).files || []
 
     const fileList = filesListRaw
         .filter(file => file && file.name)
@@ -126,7 +126,7 @@ repoController.getRepoFiles = async (req, res, next) => {
             name:            file.name,
             hash:            file.hash ? file.hash.toString('hex') : null,
             size:            file.size ? file.size.toNumber() : 0,
-            modified:        new Date(file.modified * 1000),
+            modified:        file.modified * 1000,
             type:            fileType(file.name),
             status:          file.stagedStatus,
             mergeConflict:   file.mergeConflict,
@@ -142,8 +142,8 @@ repoController.getRepoTimeline = async (req, res, next) => {
     const { lastCommitFetched, fromCommit, toCommit, pageSize = 10 } = req.query
     await checkUserAccess(req.user, repoID)
 
-    const history = (await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })).commits || []
-    const timeline = history.map(event => ({
+    const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
+    const timeline = commits.map(event => ({
         commit:  event.commitHash,
         user:    event.author,
         time:    new Date(event.timestamp.toNumber() * 1000),
@@ -151,7 +151,7 @@ repoController.getRepoTimeline = async (req, res, next) => {
         files:   event.files,
     }))
 
-    res.status(200).json({ timeline })
+    res.status(200).json({ timeline, isEnd })
 }
 
 repoController.getUpdatedRefEvents = async (req, res, next) => {

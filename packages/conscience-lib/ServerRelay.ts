@@ -228,6 +228,7 @@ const ServerRelay = {
     async getRepoTimeline(payload: { repoID: string, lastCommitFetched?: string, fromCommit?: string, toCommit?: string, pageSize?: number }) {
         interface IResponse {
             timeline: ITimelineEvent[]
+            isEnd: boolean
         }
         const { repoID, lastCommitFetched, fromCommit, toCommit, pageSize } = payload
         const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}?` + querystring.stringify({
@@ -236,7 +237,7 @@ const ServerRelay = {
             toCommit,
             pageSize,
         }))
-        return response.data.timeline
+        return response.data
     },
 
     async getUpdatedRefEvents(repoID: string) {

@@ -73,20 +73,19 @@ Repo.getSharedUsers = async (repoID) => {
     return ((result.Item || {}).users || {}).values || []
 }
 
-Repo.setPublic = async (repoID, isPublic) => {
+Repo.updateField = async (repoID, field, value) => {
     const params = {
         TableName:                 RepoTable,
         Key:                       { repoID },
-        UpdateExpression:          'set #public = :isPublic',
-        ExpressionAttributeNames:  { '#public': 'isPublic' },
-        ExpressionAttributeValues: { ':isPublic': isPublic },
+        UpdateExpression:          'SET #field = :value',
+        ExpressionAttributeNames:  { '#field': field },
+        ExpressionAttributeValues: { ':value': value },
         ReturnValues:              'UPDATED_NEW',
     }
-
     try {
         await dynamo.updateAsync(params)
     } catch (err) {
-        console.error('Error in Repo.setPublic ~>', err)
+        console.error(`Error in Repo.update-${field} ~>`, err)
         throw err
     }
 }

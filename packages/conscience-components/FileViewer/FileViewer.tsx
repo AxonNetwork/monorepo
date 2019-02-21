@@ -35,6 +35,10 @@ class FileViewer extends React.Component<Props, State>
             return null
         }
 
+        if (this.state.error !== undefined && this.props.fallback !== undefined) {
+            return this.props.fallback
+        }
+
         const viewers = filetypes.getViewers(this.props.uri.filename)
         if (viewers.length === 0) {
             return (
@@ -197,6 +201,7 @@ class FileViewer extends React.Component<Props, State>
 
 interface Props {
     uri: URI
+    fallback?: any
     widthMode?: WidthMode
     showViewerPicker?: boolean
     showButtons?: boolean

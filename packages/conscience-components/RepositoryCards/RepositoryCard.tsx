@@ -57,11 +57,9 @@ class RepositoryCard extends React.Component<Props, State>
                         <div className={classes.statButtons}>
                             <Button onClick={this.onClickNavigateRepoFiles}>
                                 <FolderOpenIcon fontSize="small" />
-                                {metadata.fileCount}
                             </Button>
                             <Button onClick={this.onClickNavigateRepoDiscussions}>
                                 <CommentIcon fontSize="small" />
-                                {metadata.discussionCount}
                             </Button>
                         </div>
                     </CardContent>

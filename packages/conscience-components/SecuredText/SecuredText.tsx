@@ -5,6 +5,7 @@ import { Theme, createStyles, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import LinkIcon from '@material-ui/icons/Link'
 import { selectCommit } from '../navigation'
+import { fetchUpdatedRefEvents } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { URI, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
 import timelineUtils from 'conscience-lib/utils/timeline'
@@ -23,11 +24,13 @@ class SecuredText extends React.Component<Props, State>
     }
 
     componentDidMount() {
+        this.props.fetchUpdatedRefEvents({ uri: this.props.uri })
         this.parseCommits()
     }
 
     componentDidUpdate(prevProps: Props) {
         if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchUpdatedRefEvents({ uri: this.props.uri })
             this.parseCommits()
         }
     }
@@ -111,7 +114,7 @@ interface State {
     lastUpdated: ITimelineEvent | undefined
 }
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -122,6 +125,10 @@ interface StateProps {
     commits: { [hash: string]: ITimelineEvent }
     commitList: string[]
     updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
+}
+
+interface DispatchProps {
+    fetchUpdatedRefEvents: typeof fetchUpdatedRefEvents
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -152,7 +159,9 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    fetchUpdatedRefEvents
+}
 
 export default connect(
     mapStateToProps,

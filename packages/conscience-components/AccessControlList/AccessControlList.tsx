@@ -27,6 +27,7 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import LargeProgressSpinner from '../LargeProgressSpinner'
 import UserAvatar from '../UserAvatar'
 import { H6 } from '../Typography/Headers'
 import { fetchRepoUsersPermissions, updateUserPermissions, setRepoPublic } from '../redux/repo/repoActions'
@@ -55,7 +56,9 @@ class AccessControlList extends React.Component<Props, State>
         const { permissions, currentUser, users, usersByUsername, updatingUserPermissions, classes } = this.props
         const { selectedUser } = this.state
 
-        if (permissions === undefined) { return null }
+        if (permissions === undefined) {
+            return <LargeProgressSpinner />
+        }
 
         const { admins = [], pushers = [], pullers = [] } = permissions
         const sharedUsernames = union(admins, pushers, pullers)
@@ -195,7 +198,7 @@ class AccessControlList extends React.Component<Props, State>
                             }
                             {selectedUser !== undefined &&
                                 <Typography>
-                                    <strong>User:</strong>
+                                    <strong>User: </strong>
                                     {selectedUser}
                                 </Typography>
                             }

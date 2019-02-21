@@ -178,7 +178,8 @@ export interface IFetchRepoTimelineSuccessAction {
     type: RepoActionType.FETCH_REPO_TIMELINE_SUCCESS
     payload: {
         uri: URI
-        timeline: ITimelineEvent[],
+        timeline: ITimelineEvent[]
+        isEnd: boolean
     }
 }
 

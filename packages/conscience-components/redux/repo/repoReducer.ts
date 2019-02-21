@@ -75,13 +75,17 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
-            const { uri, timeline } = action.payload
+            const { uri, timeline, isEnd } = action.payload
             const uriStr = uriToString(uri)
             const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
             for (let commit of timeline) {
                 commits[commit.commit] = commit
                 commitList.push(commit.commit)
+            }
+            // terminate commitList with blank string
+            if (isEnd) {
+                commitList.push("")
             }
             return {
                 ...state,

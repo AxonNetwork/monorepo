@@ -60,8 +60,8 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     async process({ action }) {
         const { uri, lastCommitFetched, fromCommit, toCommit, pageSize } = action.payload
         const repoID = getRepoID(uri)
-        const timeline = await ServerRelay.getRepoTimeline({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
-        return { uri, timeline }
+        const { timeline, isEnd } = await ServerRelay.getRepoTimeline({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
+        return { uri, timeline, isEnd }
     },
 })
 
@@ -74,7 +74,7 @@ const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFe
         }
         const repoID = getRepoID(uri)
         const fromCommit = uri.commit
-        const timeline = await ServerRelay.getRepoTimeline({ repoID, fromCommit, pageSize: 1 })
+        const { timeline } = await ServerRelay.getRepoTimeline({ repoID, fromCommit, pageSize: 1 })
         const event = timeline[0]
         return { event }
     },
