@@ -28,7 +28,7 @@ UpdatedRefEvent.create = async (evt) => {
 }
 
 UpdatedRefEvent.getByCommit = async (commit) => {
-    const resp = dynamo.getAsync({
+    const resp = await dynamo.getAsync({
         TableName: UpdatedRefEventTable,
         key:       { commit },
     })
@@ -41,10 +41,6 @@ UpdatedRefEvent.getAllForRepo = async (repoID) => {
         KeyConditionExpression:    'repoID = :repoID',
         ExpressionAttributeValues: { ':repoID': repoID },
     })
-}
-
-UpdatedRefEvent.getCursor = async () => {
-    return 0
 }
 
 export default UpdatedRefEvent

@@ -3,6 +3,7 @@ import Discussion from '../models/discussion'
 import Comment from '../models/comment'
 import User from '../models/user'
 import UpdatedRefEvent from '../models/updatedRefEvent'
+import Commit from '../models/commit'
 import HTTPError from '../util/HTTPError'
 import passportAuthenticateAsync from '../util/passportAuth'
 import { filemodeIsDir, fileType } from '../util'
@@ -142,16 +143,36 @@ repoController.getRepoTimeline = async (req, res, next) => {
     const { lastCommitFetched, fromCommit, toCommit, pageSize = 10 } = req.query
     await checkUserAccess(req.user, repoID)
 
+    // let timeline = await Commit.getPage(repoID, pageSize, lastCommitFetched)
+    // // successfully retrieved from cache
+    // if (timeline.length === pageSize || (timeline.length > 0 && timeline[timeline.length - 1].isEnd)) {
+    //     const isEnd = timeline[timeline.length - 1].isEnd
+    //     return res.status(200).json({ timeline, isEnd })
+    // }
+
+    // // fetch remainder from node
+    // if (timeline.length > 0) {
+    //     lastCommitFetched = timeline[timeline.length - 1].commit
+    //     pageSize = pageSize - timeline.length - 1
+    // }
     const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
-    const timeline = commits.map(event => ({
+    const timeline = commits.map((event, i) => ({
+        repoID,
         commit:  event.commitHash,
+        parent:  i < commits.length - 1 ? commits[i + 1].commitHash : lastCommitFetched,
         user:    event.author,
-        time:    new Date(event.timestamp.toNumber() * 1000),
+        time:    event.timestamp.toNumber(),
         message: event.message,
-        files:   event.files,
     }))
 
+    if (timeline.length > 0 && isEnd) {
+        timeline[timeline.length - 1].isEnd = true
+    }
+
     res.status(200).json({ timeline, isEnd })
+
+    // add missing commits to cache
+    // await Commit.addCommits(timeline)
 }
 
 repoController.getUpdatedRefEvents = async (req, res, next) => {

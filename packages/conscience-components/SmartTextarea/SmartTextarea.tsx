@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormattingHelp from '../FormattingHelp'
+import { fetchRepoFiles } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
 import { IDiscussion, IRepoFile, URI } from 'conscience-lib/common'
@@ -57,6 +58,10 @@ class SmartTextarea extends React.Component<Props, State>
             } else {
                 lastToken = text[i] + lastToken
             }
+        }
+
+        if (lastToken === '@file' || lastToken === '@image') {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
         }
 
         if (lastToken === '@file') {
@@ -162,7 +167,7 @@ class SmartTextarea extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -178,6 +183,10 @@ interface StateProps {
     discussionIDs: string[]
     discussions: { [discussionID: string]: IDiscussion }
     currentHEADCommit: string | undefined
+}
+
+interface DispatchProps {
+    fetchRepoFiles: typeof fetchRepoFiles
 }
 
 interface State {
@@ -220,7 +229,9 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    fetchRepoFiles,
+}
 
 export default connect(
     mapStateToProps,

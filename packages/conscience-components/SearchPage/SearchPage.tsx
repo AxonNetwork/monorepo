@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { search } from 'conscience-components/redux/search/searchActions'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
@@ -23,17 +23,13 @@ import CommentResult from './CommentResult'
 class SearchPage extends React.Component<Props, State>
 {
     state = {
-        resultType: 'files' as 'files'|'comments'|'users',
+        resultType: 'files' as 'files' | 'comments' | 'users',
     }
 
     render() {
         const { results, classes } = this.props
         if (!results) {
-            return (
-                <div className={classes.progressContainer}>
-                    <CircularProgress color="secondary" />
-                </div>
-            )
+            return <LargeProgressSpinner />
         }
 
         return (
@@ -156,9 +152,9 @@ interface OwnProps {
 
 interface StateProps {
     results: ISearchResults | null
-    users: {[userID: string]: IUser}
-    comments: {[commentID: string]: IComment}
-    discussions: {[commentID: string]: IDiscussion}
+    users: { [userID: string]: IUser }
+    comments: { [commentID: string]: IComment }
+    discussions: { [commentID: string]: IDiscussion }
 }
 
 interface DispatchProps {

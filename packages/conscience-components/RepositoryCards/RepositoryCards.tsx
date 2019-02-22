@@ -30,17 +30,20 @@ class RepositoryCards extends React.Component<Props, State>
 
     render() {
         const { repoList, metadataByURI, classes } = this.props
-        if (repoList === undefined) return null
 
-        const failed = repoList.filter(uri => metadataByURI[uriToString(uri)] === null)
-        const succeeded = repoList.filter(uri => !!metadataByURI[uriToString(uri)])
-        const loading = failed.length + succeeded.length < repoList.length
+        let loading = repoList === undefined
+        let failed = [] as URI[]
+        let succeeded = [] as URI[]
+        if (!loading) {
+            failed = (repoList || []).filter(uri => metadataByURI[uriToString(uri)] === null)
+            succeeded = (repoList || []).filter(uri => !!metadataByURI[uriToString(uri)])
+            loading = failed.length + succeeded.length < (repoList || []).length
+        }
 
         if (loading) {
-            const loaderLength = this.props.repoList !== undefined ? this.props.repoList.length : 4
             return (
                 <div className={classes.root}>
-                    {Array(loaderLength).fill(0).map(i => (
+                    {Array(4).fill(0).map(i => (
                         <Card className={classes.repoCard}>
                             <RepoCardLoader />
                         </Card>

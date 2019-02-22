@@ -17,6 +17,7 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         justifyContent: 'center',
         marginTop: 256,
+        marginBottom: 128,
     }
 })
 
