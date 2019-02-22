@@ -110,6 +110,14 @@ const discussionReducer = (state: IDiscussionState = initialState, action: IDisc
             const { commentID, discussionID } = comment
             return {
                 ...state,
+                discussions: {
+                    ...state.discussions,
+                    [discussionID]: {
+                        ...state.discussions[discussionID],
+                        lastCommentUser: comment.userID,
+                        lastCommentTime: comment.created,
+                    }
+                },
                 comments: {
                     ...state.comments,
                     [commentID]: comment,

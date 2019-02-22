@@ -64,10 +64,10 @@ Discussion.updateLastComment = async (discussionID, userID, commentTime) => {
         await dynamo.updateAsync({
             TableName:                 DiscussionTable,
             Key:                       { discussionID },
-            UpdateExpression:          'SET lastCommentTime = :lastTime, lastCommentUser = :lastUser',
+            UpdateExpression:          'SET lastCommentUser = :lastUser, lastCommentTime = :lastTime',
             ExpressionAttributeValues: {
-                ':lastTime': newComment.created,
-                ':lastUser': newComment.userID,
+                ':lastUser': userID,
+                ':lastTime': commentTime,
             },
         })
     } catch (err) {
