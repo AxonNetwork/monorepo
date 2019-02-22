@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { URI, NetworkURI, IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent } from 'conscience-lib/common'
+import { URI, NetworkURI, IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -34,6 +34,10 @@ export enum RepoActionType {
     FETCH_UPDATED_REF_EVENTS = 'FETCH_UPDATED_REF_EVENTS',
     FETCH_UPDATED_REF_EVENTS_SUCCESS = 'FETCH_UPDATED_REF_EVENTS_SUCCESS',
     FETCH_UPDATED_REF_EVENTS_FAILED = 'FETCH_UPDATED_REF_EVENTS_FAILED',
+
+    FETCH_SECURED_FILE_INFO = 'FETCH_SECURED_FILE_INFO',
+    FETCH_SECURED_FILE_INFO_SUCCESS = 'FETCH_SECURED_FILE_INFO_SUCCESS',
+    FETCH_SECURED_FILE_INFO_FAILED = 'FETCH_SECURED_FILE_INFO_FAILED',
 
     FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
     FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
@@ -168,8 +172,6 @@ export interface IFetchRepoTimelineAction {
     payload: {
         uri: URI
         lastCommitFetched?: string
-        fromCommit?: string
-        toCommit?: string
         pageSize?: number
     }
 }
@@ -179,7 +181,6 @@ export interface IFetchRepoTimelineSuccessAction {
     payload: {
         uri: URI
         timeline: ITimelineEvent[]
-        isEnd: boolean
     }
 }
 
@@ -216,6 +217,23 @@ export interface IFetchUpdatedRefEventsSuccessAction {
 }
 
 export type IFetchUpdatedRefEventsFailedAction = FailedAction<RepoActionType.FETCH_UPDATED_REF_EVENTS_FAILED>
+
+export interface IFetchSecuredFileInfoAction {
+    type: RepoActionType.FETCH_SECURED_FILE_INFO
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchSecuredFileInfoSuccessAction {
+    type: RepoActionType.FETCH_SECURED_FILE_INFO_SUCCESS
+    payload: {
+        uri: URI
+        securedFileInfo: ISecuredTextInfo
+    }
+}
+
+export type IFetchSecuredFileInfoFailedAction = FailedAction<RepoActionType.FETCH_SECURED_FILE_INFO_FAILED>
 
 export interface IFetchLocalRefsAction {
     type: RepoActionType.FETCH_LOCAL_REFS
@@ -467,6 +485,10 @@ export type IRepoAction =
     IFetchUpdatedRefEventsSuccessAction |
     IFetchUpdatedRefEventsFailedAction |
 
+    IFetchSecuredFileInfoAction |
+    IFetchSecuredFileInfoSuccessAction |
+    IFetchSecuredFileInfoFailedAction |
+
     IFetchLocalRefsAction |
     IFetchLocalRefsSuccessAction |
     IFetchLocalRefsFailedAction |
@@ -524,6 +546,7 @@ export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetc
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
 export const fetchRepoTimelineEvent = (payload: IFetchRepoTimelineEventAction['payload']): IFetchRepoTimelineEventAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE_EVENT, payload })
 export const fetchUpdatedRefEvents = (payload: IFetchUpdatedRefEventsAction['payload']): IFetchUpdatedRefEventsAction => ({ type: RepoActionType.FETCH_UPDATED_REF_EVENTS, payload })
+export const fetchSecuredFileInfo = (payload: IFetchSecuredFileInfoAction['payload']): IFetchSecuredFileInfoAction => ({ type: RepoActionType.FETCH_SECURED_FILE_INFO, payload })
 
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })

@@ -13,9 +13,14 @@ export function uriToString(uri?: URI) {
     if (!uri) {
         return ''
     }
+    let str = ''
     if (uri.type === URIType.Local) {
-        return "local://" + uri.repoRoot
+        str = "local://" + uri.repoRoot
     } else {
-        return "conscience://" + uri.repoID
+        str = "conscience://" + uri.repoID
     }
+    if (uri.filename) {
+        str += "/" + uri.filename
+    }
+    return str
 }

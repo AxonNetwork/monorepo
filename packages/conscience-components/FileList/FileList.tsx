@@ -30,7 +30,6 @@ import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
-import { fetchRepoFiles } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 
 
@@ -49,7 +48,6 @@ class FileList extends React.Component<Props, State>
     _inputQuickNav: HTMLInputElement | null = null
 
     componentDidMount() {
-        this.props.fetchRepoFiles({ uri: this.props.uri })
         if (this.props.files) {
             this.setState({ tree: makeTree(this.props.files) })
         }
@@ -67,7 +65,6 @@ class FileList extends React.Component<Props, State>
         }
 
         if (!isEqual(this.props.uri, prevProps.uri)) {
-            this.props.fetchRepoFiles({ uri: this.props.uri })
             this.setState({ quickNavOpen: false, quickNavQuery: '' })
         }
 
@@ -248,7 +245,7 @@ class FileList extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
@@ -259,10 +256,6 @@ interface OwnProps {
 interface StateProps {
     files: { [name: string]: IRepoFile }
     fileExtensionsHidden: boolean | undefined
-}
-
-interface DispatchProps {
-    fetchRepoFiles: typeof fetchRepoFiles
 }
 
 interface State {
@@ -338,9 +331,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 
 }
 
-const mapDispatchToProps = {
-    fetchRepoFiles,
-}
+const mapDispatchToProps = {}
 
 export default connect(
     mapStateToProps,

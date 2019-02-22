@@ -2,8 +2,8 @@ import Repo from '../models/repo'
 import Discussion from '../models/discussion'
 import Comment from '../models/comment'
 import User from '../models/user'
-import UpdatedRefEvent from '../models/updatedRefEvent'
 import Commit from '../models/commit'
+import SecuredText from '../models/securedText'
 import HTTPError from '../util/HTTPError'
 import passportAuthenticateAsync from '../util/passportAuth'
 import { filemodeIsDir, fileType } from '../util'
@@ -92,27 +92,18 @@ repoController.getRepoMetadata = async (req, res, next) => {
     const metadataPromiseList = repoIDs.map(async (id) => {
         try {
             await checkUserAccess(req.user, id)
-            return {
-                repoID:          id,
-                fileCount:       200,
-                discussionCount: 10,
-                timelineLength:  200,
-                lastUpdated:     Date.now(),
-            }
+            const repo = await Repo.get(id)
+            return repo
         } catch (err) {
-            return null
+            return {
+                repoID: id,
+                isNull: true,
+            }
         }
     })
-    const metadataList = await Promise.all(metadataPromiseList)
+    const metadata = await Promise.all(metadataPromiseList)
 
-    const metadata = {}
-    for (let i = 0; i < repoIDs.length; i++) {
-        if (metadataList[i] !== null) {
-            metadata[repoIDs[i]] = metadataList[i]
-        }
-    }
-
-    res.status(200).json(metadata)
+    res.status(200).json({ metadata })
 }
 
 repoController.getRepoFiles = async (req, res, next) => {
@@ -140,47 +131,26 @@ repoController.getRepoFiles = async (req, res, next) => {
 
 repoController.getRepoTimeline = async (req, res, next) => {
     const { repoID } = req.params
-    const { lastCommitFetched, fromCommit, toCommit, pageSize = 10 } = req.query
     await checkUserAccess(req.user, repoID)
 
-    // let timeline = await Commit.getPage(repoID, pageSize, lastCommitFetched)
-    // // successfully retrieved from cache
-    // if (timeline.length === pageSize || (timeline.length > 0 && timeline[timeline.length - 1].isEnd)) {
-    //     const isEnd = timeline[timeline.length - 1].isEnd
-    //     return res.status(200).json({ timeline, isEnd })
-    // }
+    // default to undefined (HEAD)
+    const lastCommitFetched = (req.query.lastCommitFetched || '').length > 0 ? req.query.lastCommitFetched : undefined
+    // default to 10
+    const pageSize = (req.query.pageSize || '').length > 0 ? req.query.pageSize : 10
 
-    // // fetch remainder from node
-    // if (timeline.length > 0) {
-    //     lastCommitFetched = timeline[timeline.length - 1].commit
-    //     pageSize = pageSize - timeline.length - 1
-    // }
-    const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
-    const timeline = commits.map((event, i) => ({
-        repoID,
-        commit:  event.commitHash,
-        parent:  i < commits.length - 1 ? commits[i + 1].commitHash : lastCommitFetched,
-        user:    event.author,
-        time:    event.timestamp.toNumber(),
-        message: event.message,
-    }))
+    const timeline = await Commit.getPage(repoID, pageSize, lastCommitFetched)
 
-    if (timeline.length > 0 && isEnd) {
-        timeline[timeline.length - 1].isEnd = true
-    }
-
-    res.status(200).json({ timeline, isEnd })
-
-    // add missing commits to cache
-    // await Commit.addCommits(timeline)
+    res.status(200).json({ timeline })
 }
 
-repoController.getUpdatedRefEvents = async (req, res, next) => {
+repoController.getRepoTimelineEvent = async (req, res, next) => {
     const { repoID } = req.params
+    const { commit } = req.query
     await checkUserAccess(req.user, repoID)
 
-    const events = await UpdatedRefEvent.getAllForRepo(repoID)
-    res.status(200).json({ events })
+    const event = await Commit.get(repoID, commit)
+
+    res.status(200).json({ event })
 }
 
 repoController.getRepoUsersPermissions = async (req, res, next) => {
@@ -196,6 +166,20 @@ repoController.getRepoUsersPermissions = async (req, res, next) => {
     const isPublic = isPublicResp.isPublic
 
     res.status(200).json({ admins, pullers, pushers, isPublic })
+}
+
+repoController.getSecuredFileInfo = async (req, res, next) => {
+    const { repoID } = req.params
+    await checkUserAccess(req.user, repoID)
+
+    const { file } = req.query
+    if (!file || file.length === 0) {
+        throw new HTTPError(400, 'Missing files')
+    }
+
+    const securedFileInfo = await SecuredText.getForFile(repoID, file)
+
+    res.status(200).json({ securedFileInfo })
 }
 
 repoController.getFileContents = async (req, res, next) => {

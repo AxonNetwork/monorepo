@@ -1,8 +1,8 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
-import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, LocalURI } from 'conscience-lib/common'
-import { uriToString } from 'conscience-lib/utils'
+import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo, LocalURI } from 'conscience-lib/common'
+import { uriToString, fileURIToString } from 'conscience-lib/utils'
 
 export const initialState = {
     repoListByUserID: {},
@@ -12,6 +12,7 @@ export const initialState = {
     commitListsByURI: {},
     commits: {},
     updatedRefEventsByCommit: {},
+    securedFileInfoByURI: {},
     localRefsByURI: {},
     remoteRefsByID: {},
     permissionsByID: {},
@@ -28,6 +29,7 @@ export interface IRepoState {
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
     updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
+    securedFileInfoByURI: { [uriStr: string]: ISecuredTextInfo }
     localRefsByURI: { [uri: string]: { [name: string]: string } }
     remoteRefsByID: { [repoID: string]: { [name: string]: string } }
     permissionsByID: { [repoID: string]: IRepoPermissions }
@@ -75,7 +77,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
         }
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
-            const { uri, timeline, isEnd } = action.payload
+            const { uri, timeline } = action.payload
             const uriStr = uriToString(uri)
             const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
@@ -83,8 +85,8 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 commits[commit.commit] = commit
                 commitList.push(commit.commit)
             }
-            // terminate commitList with blank string
-            if (isEnd) {
+            // if end of timeline, terminate commitList with blank string
+            if (timeline.length == 0 || timeline[timeline.length - 1].isInitialCommit) {
                 commitList.push("")
             }
             return {
@@ -121,6 +123,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 updatedRefEventsByCommit: {
                     ...state.updatedRefEventsByCommit,
                     ...updatedRefEvents
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_SECURED_FILE_INFO_SUCCESS: {
+            const { uri, securedFileInfo } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                securedFileInfoByURI: {
+                    ...state.securedFileInfoByURI,
+                    [uriStr]: securedFileInfo
                 }
             }
         }

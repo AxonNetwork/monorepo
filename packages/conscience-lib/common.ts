@@ -35,10 +35,16 @@ export interface ILocalRepo {
 
 export interface IRepoMetadata {
     repoID: string
-    fileCount: number
-    discussionCount: number
-    timelineLength: number
-    lastUpdated: number
+    users: string[]
+    firstVerifiedTime: number
+    firstVerifiedCommit: string
+    lastVerifiedTime: number
+    lastVerifiedCommit: string
+    currentHEAD: string
+}
+
+export interface IMaybeRepoMetadata extends IRepoMetadata {
+    isNull?: boolean
 }
 
 export interface IRepoFile {
@@ -82,6 +88,9 @@ export interface ITimelineEvent {
     time: number
     message: string
     files: string[]
+    lastVerifiedCommit: string
+    lastVerifiedTime: number
+    isInitialCommit?: boolean
     repoID?: string
 }
 
@@ -91,6 +100,15 @@ export interface IUpdatedRefEvent {
     txHash: string
     time: number
     blockNumber: number
+}
+
+export interface ISecuredTextInfo {
+    lastVerifiedCommit?: string
+    lastVerifiedTime?: number
+    firstVerifiedCommit?: string
+    firstVerifiedTime?: number
+    lastModifiedCommit?: string
+    lastModifiedTime?: number
 }
 
 export interface IComment {

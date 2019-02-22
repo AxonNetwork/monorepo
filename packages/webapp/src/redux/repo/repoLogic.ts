@@ -6,6 +6,7 @@ import {
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
     IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction,
     IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
+    IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
@@ -21,7 +22,7 @@ import {
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
-import { IRepoMetadata } from 'conscience-lib/common'
+import { IRepoMetadata, URI, URIType } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
@@ -32,13 +33,14 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
     async process({ action }) {
         const { repoList = [] } = action.payload
         const repoIDs = repoList.map(id => getRepoID(id))
-        const metadataByID = await ServerRelay.getRepoMetadata(repoIDs)
+        const metadataList = await ServerRelay.getRepoMetadata(repoIDs)
 
         const metadataByURI = {} as { [uri: string]: IRepoMetadata | null }
-        for (let i = 0; i < repoList.length; i++) {
-            const uriStr = uriToString(repoList[i])
-            const metadata = metadataByID[repoIDs[i]] || null
-            metadataByURI[uriStr] = metadata
+        for (let i = 0; i < metadataList.length; i++) {
+            const metadata = metadataList[i]
+            const uri = { repoID: metadata.repoID, type: URIType.Network } as URI
+            const uriStr = uriToString(uri)
+            metadataByURI[uriStr] = metadata.isNull ? null : metadata as IRepoMetadata
         }
 
         return { metadataByURI }
@@ -58,10 +60,10 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,
     async process({ action }) {
-        const { uri, lastCommitFetched, fromCommit, toCommit, pageSize } = action.payload
+        const { uri, lastCommitFetched, pageSize } = action.payload
         const repoID = getRepoID(uri)
-        const { timeline, isEnd } = await ServerRelay.getRepoTimeline({ repoID, lastCommitFetched, fromCommit, toCommit, pageSize })
-        return { uri, timeline, isEnd }
+        const timeline = await ServerRelay.getRepoTimeline(repoID, lastCommitFetched, pageSize)
+        return { uri, timeline }
     },
 })
 
@@ -73,9 +75,8 @@ const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFe
             throw new Error("Must specify commit to fetch")
         }
         const repoID = getRepoID(uri)
-        const fromCommit = uri.commit
-        const { timeline } = await ServerRelay.getRepoTimeline({ repoID, fromCommit, pageSize: 1 })
-        const event = timeline[0]
+        const commit = uri.commit
+        const event = await ServerRelay.getRepoTimelineEvent(repoID, commit)
         return { event }
     },
 })
@@ -88,6 +89,20 @@ const fetchUpdatedRefEventsLogic = makeLogic<IFetchUpdatedRefEventsAction, IFetc
         const eventsList = await ServerRelay.getUpdatedRefEvents(repoID)
         const updatedRefEvents = keyBy(eventsList, 'commit')
         return { updatedRefEvents }
+    },
+})
+
+const fetchSecuredFileInfoLogic = makeLogic<IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction>({
+    type: RepoActionType.FETCH_SECURED_FILE_INFO,
+    async process({ action }) {
+        const { uri } = action.payload
+        if (uri.filename === undefined) {
+            throw new Error("Must specify filename to fetch")
+        }
+        const repoID = getRepoID(uri)
+        const securedFileInfo = await ServerRelay.getSecuredFileInfo(repoID, uri.filename)
+        console.log("securedFileInfo: ", securedFileInfo)
+        return { uri, securedFileInfo }
     },
 })
 
@@ -153,6 +168,7 @@ export default [
     fetchRepoTimelineLogic,
     fetchRepoTimelineEventLogic,
     fetchUpdatedRefEventsLogic,
+    fetchSecuredFileInfoLogic,
     fetchRepoUsersPermissionsLogic,
     getDiffLogic,
     updateUserPermissionsLogic,

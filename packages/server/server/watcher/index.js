@@ -1,23 +1,30 @@
-import { dynamo } from '../config/aws'
 import * as noderpc from '../noderpc'
-import UpdatedRefEvent from '../models/updatedRefEvent'
-import Cursors from '../models/cursor'
+import Repo from '../models/repo'
+import { addRepoToCache, updateRepoInCache } from './updateRepoCache'
 
-const watchNode = async (serverID) => {
+const watchNode = async () => {
     const rpcClient = noderpc.initClient()
 
-    const cursors = await Cursors.get(serverID)
-    const updatedRefStart = cursors.refLog !== undefined ? cursors.refLog + 1 : 0
-    const eventTypes = [ rpcClient.EventType.UPDATED_REF ]
+    const updatedRefEvents = []
 
-    const watcher = rpcClient.watch({ eventTypes, updatedRefStart })
+    const eventTypes = [
+        rpcClient.EventType.ADDED_REPO,
+        rpcClient.EventType.PULLED_REPO,
+        rpcClient.EventType.UPDATED_REF,
+    ]
+
+    const watcher = rpcClient.watch({ eventTypes })
     watcher.on('data', async (evt) => {
-    	if (evt.updatedRef) {
-    		const blockNumber = evt.updatedRef.refLog.blockNumber.toNumber()
-    		await Promise.all([
-	    		UpdatedRefEvent.create(evt.updatedRef.refLog),
-	    		Cursors.setRefLogCursor(serverID, blockNumber),
-            ])
+        if (evt.addedRepoEvent) {
+            await addRepoToCache(evt.repoID)
+        }
+        if (evt.pulledRepoEvent) {
+            const updatedRefEventsRev = updatedRefEvents.reverse()
+            const repo = await Repo.get(evt.repoID)
+            await updateRepoInCache(evt.repoID, updatedRefEventsRev, repo.currentHEAD)
+        }
+    	if (evt.updatedRefEvent) {
+            updatedRefEvents.push(evt.updatedRefEvent)
     	}
     })
     watcher.on('error', (err) => {

@@ -58,9 +58,13 @@ Repo.get = async (repoID) => {
     })).Item
 
     return {
-        repoID:   result.repoID,
-        users:    (result.users || {}).values || [],
-        isPublic: !!result.isPublic,
+        repoID:              result.repoID,
+        users:               (result.users || {}).values || [],
+        firstVerifiedTime:   result.firstVerifiedTime,
+        firstVerifiedCommit: result.firstVerifiedCommit,
+        lastVerifiedTime:    result.lastVerifiedTime,
+        lastVerifiedCommit:  result.lastVerifiedCommit,
+        currentHEAD:         result.currentHEAD,
     }
 }
 
@@ -86,6 +90,35 @@ Repo.updateField = async (repoID, field, value) => {
         await dynamo.updateAsync(params)
     } catch (err) {
         console.error(`Error in Repo.update-${field} ~>`, err)
+        throw err
+    }
+}
+
+Repo.updateCacheFields = async (repoID, currentHEAD, lastVerifiedEvent, firstVerifiedEvent) => {
+    let updateExpression = 'SET currentHEAD = :currentHEAD'
+    const expressionAttrVals = { ':currentHEAD': currentHEAD }
+    if (lastVerifiedEvent !== undefined) {
+        updateExpression += ', lastVerifiedTime = :lastVerifiedTime'
+        updateExpression += ', lastVerifiedCommit = :lastVerifiedCommit'
+        expressionAttrVals[':lastVerifiedTime'] = lastVerifiedEvent.time.toNumber() * 1000
+        expressionAttrVals[':lastVerifiedCommit'] = lastVerifiedEvent.commit
+    }
+    if (firstVerifiedEvent !== undefined) {
+        updateExpression += ', firstVerifiedTime = :firstVerifiedTime'
+        updateExpression += ', firstVerifiedCommit = :firstVerifiedCommit'
+        expressionAttrVals[':firstVerifiedTime'] = firstVerifiedEvent.time.toNumber() * 1000
+        expressionAttrVals[':firstVerifiedCommit'] = firstVerifiedEvent.commit
+    }
+    const params = {
+        TableName:                 RepoTable,
+        Key:                       { repoID },
+        UpdateExpression:          updateExpression,
+        ExpressionAttributeValues: expressionAttrVals,
+    }
+    try {
+        await dynamo.updateAsync(params)
+    } catch (err) {
+        console.error('Error in Repo.updateCacheFields ~>', err)
         throw err
     }
 }

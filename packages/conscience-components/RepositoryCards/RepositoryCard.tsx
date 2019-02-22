@@ -44,12 +44,12 @@ class RepositoryCard extends React.Component<Props, State>
                 <Card className={classes.root} onClick={this.onClickNavigateRepoHome}>
                     <CardContent>
                         <H6>{repoID}</H6>
-                        {metadata.lastUpdated &&
+                        {metadata.lastVerifiedTime &&
                             <div className={classes.lastUpdated}>
-                                {'Last updated ' + moment(metadata.lastUpdated).fromNow()}
+                                {'Last updated ' + moment(metadata.lastVerifiedTime).fromNow()}
                             </div>
                         }
-                        {!metadata.lastUpdated &&
+                        {!metadata.lastVerifiedTime &&
                             <div className={classes.lastUpdated}>
                                 No commits yet
                             </div>

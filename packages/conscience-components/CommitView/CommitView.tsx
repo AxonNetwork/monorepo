@@ -59,6 +59,7 @@ class CommitView extends React.Component<Props>
         if (!commit) {
             return <LargeProgressSpinner />
         }
+        const verifiedTime = commit.lastVerifiedCommit === commit.commit ? commit.lastVerifiedTime : undefined
 
         return (
             <div className={classes.root}>
@@ -72,7 +73,7 @@ class CommitView extends React.Component<Props>
                             {commit.message}
                         </Typography>
                         <div className={classes.commitInfo}>
-                            {commit.verified !== undefined &&
+                            {verifiedTime !== undefined &&
                                 <div className={classes.linkIconContainer}>
                                     <LinkIcon classes={{ root: classes.linkIcon }} />
                                 </div>

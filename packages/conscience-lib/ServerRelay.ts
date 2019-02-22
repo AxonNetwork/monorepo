@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepoMetadata, IRepoFile, ITimelineEvent, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
+import { IMaybeRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -210,11 +210,11 @@ const ServerRelay = {
 
     async getRepoMetadata(repoIDs: string[]) {
         interface IResponse {
-            [repoID: string]: IRepoMetadata
+            metadata: IMaybeRepoMetadata[]
         }
 
         const response = await axios.get<IResponse>(`${API_URL}/repos/metadata?` + querystring.stringify({ repoIDs }))
-        return response.data
+        return response.data.metadata
     },
 
     async getRepoFiles(repoID: string) {
@@ -225,19 +225,23 @@ const ServerRelay = {
         return response.data.files
     },
 
-    async getRepoTimeline(payload: { repoID: string, lastCommitFetched?: string, fromCommit?: string, toCommit?: string, pageSize?: number }) {
+    async getRepoTimeline(repoID: string, lastCommitFetched?: string, pageSize?: number) {
         interface IResponse {
             timeline: ITimelineEvent[]
-            isEnd: boolean
         }
-        const { repoID, lastCommitFetched, fromCommit, toCommit, pageSize } = payload
         const response = await axios.get<IResponse>(`${API_URL}/repo/timeline/${repoID}?` + querystring.stringify({
             lastCommitFetched,
-            fromCommit,
-            toCommit,
             pageSize,
         }))
-        return response.data
+        return response.data.timeline
+    },
+
+    async getRepoTimelineEvent(repoID: string, commit: string) {
+        interface IResponse {
+            event: ITimelineEvent
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/timeline-event/${repoID}?` + querystring.stringify({ commit }))
+        return response.data.event
     },
 
     async getUpdatedRefEvents(repoID: string) {
@@ -257,6 +261,14 @@ const ServerRelay = {
         }
         const response = await axios.get<IResponse>(`${API_URL}/repo/permissions/${repoID}`)
         return response.data
+    },
+
+    async getSecuredFileInfo(repoID: string, file: string) {
+        interface IResponse {
+            securedFileInfo: ISecuredTextInfo
+        }
+        const response = await axios.get<IResponse>(`${API_URL}/repo/secured-file/${repoID}?` + querystring.stringify({ file }))
+        return response.data.securedFileInfo
     },
 
     async getFileContents(repoID: string, commit: string, filename: string) {

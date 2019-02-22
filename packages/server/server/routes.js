@@ -64,8 +64,9 @@ routes.get('/api/repo/is-public/:repoID', mustAuthenticate, asyncMiddleware(repo
 routes.get('/api/repos/metadata', tryAuthenticate, asyncMiddleware(repoController.getRepoMetadata))
 routes.get('/api/repo/files/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoFiles))
 routes.get('/api/repo/timeline/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoTimeline))
-routes.get('/api/repo/updated-ref-events/:repoID', tryAuthenticate, asyncMiddleware(repoController.getUpdatedRefEvents))
+routes.get('/api/repo/timeline-event/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoTimelineEvent))
 routes.get('/api/repo/permissions/:repoID', tryAuthenticate, asyncMiddleware(repoController.getRepoUsersPermissions))
+routes.get('/api/repo/secured-file/:repoID', tryAuthenticate, asyncMiddleware(repoController.getSecuredFileInfo))
 
 routes.get('/api/comment', mustAuthenticate, asyncMiddleware(commentController.get))
 routes.post('/api/create-comment', mustAuthenticate, asyncMiddleware(commentController.createComment))

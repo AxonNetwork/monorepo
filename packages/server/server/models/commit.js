@@ -16,14 +16,33 @@ Commit.addCommits = async (commits) => {
     }
 }
 
+Commit.get = async (repoID, commit) => {
+    const params = {
+        TableName: CommitTable,
+        Key:       { repoID, commit },
+    }
+    try {
+        const lastFetchedResp = await dynamo.getAsync(params)
+        return lastFetchedResp.Item
+    } catch (err) {
+        console.error('Error in Commit.get ~>', err)
+        throw err
+    }
+}
+
 Commit.getPage = async (repoID, pageSize, lastCommitFetched) => {
     let timestamp
     if (lastCommitFetched !== undefined) {
-        const lastFetchedResp = await dynamo.getAsync({
-            TableName: CommitTable,
-            Key:       { repoID, commit: lastCommitFetched },
-        })
-        timestamp = lastFetchedResp.Item.time
+        try {
+            const lastFetchedResp = await dynamo.getAsync({
+                TableName: CommitTable,
+                Key:       { repoID, commit: lastCommitFetched },
+            })
+            timestamp = lastFetchedResp.Item.time
+        } catch (err) {
+            console.error('Error in Commit.getPage ~>', err)
+            throw err
+        }
     }
 
     const params = {
@@ -40,8 +59,13 @@ Commit.getPage = async (repoID, pageSize, lastCommitFetched) => {
         params.ExpressionAttributeValues[':time'] = timestamp
     }
 
-    const resp = await dynamo.queryAsync(params)
-    return resp.Items
+    try {
+        const resp = await dynamo.queryAsync(params)
+        return resp.Items
+    } catch (err) {
+        console.error('Error in Commit.getPage ~>', err)
+        throw err
+    }
 }
 
 export default Commit

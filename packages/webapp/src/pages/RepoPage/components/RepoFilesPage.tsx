@@ -8,14 +8,26 @@ import { H5 } from 'conscience-components/Typography/Headers'
 import FileList from 'conscience-components/FileList'
 import SecuredText from 'conscience-components/SecuredText'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
+import { fetchRepoFiles } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { IRepoFile, URI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
+    componentDidMount() {
+        this.props.fetchRepoFiles({ uri: this.props.uri })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
+        }
+    }
+
     render() {
         const { files, classes } = this.props
         if (!this.props.uri) {
@@ -70,6 +82,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri: URI
     files: { [name: string]: IRepoFile } | undefined
+    fetchRepoFiles: typeof fetchRepoFiles
     classes: any
 }
 
@@ -118,7 +131,9 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
     }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+    fetchRepoFiles,
+}
 
 const RepoFilesPageContainer = connect(
     mapStateToProps,
