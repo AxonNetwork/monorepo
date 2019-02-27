@@ -27,7 +27,7 @@ import { makeTree, sortFiles } from './fileListUtils'
 import File from './File'
 import Breadcrumbs from '../Breadcrumbs'
 import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
-import { autobind, uriToString } from 'conscience-lib/utils'
+import { autobind, repoUriToString } from 'conscience-lib/utils'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
@@ -325,7 +325,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
-        files: state.repo.filesByURI[uriToString(ownProps.uri)],
+        files: state.repo.filesByURI[repoUriToString(ownProps.uri)],
         fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
 

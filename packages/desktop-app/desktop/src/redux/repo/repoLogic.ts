@@ -2,20 +2,25 @@ import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 import once from 'lodash/once'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
-import { IRepoFile, ITimelineEvent, IUpdatedRefEvent, RepoPage, URI, URIType } from 'conscience-lib/common'
+import {
+    IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent,
+    ISecuredTextInfo, RepoPage, URI, LocalURI, URIType
+} from 'conscience-lib/common'
 import {
     RepoActionType,
+    IInitRepoAction, IInitRepoSuccessAction,
     IGetLocalRepoListAction, IGetLocalRepoListSuccessAction,
+    IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
     IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
+    IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
     ISetRepoPublicAction, ISetRepoPublicSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
-    IInitRepoAction, IInitRepoSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
@@ -35,6 +40,7 @@ import { selectRepo } from 'conscience-components/navigation'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import * as rpc from 'conscience-lib/rpc'
 
+import LocalCache from 'lib/LocalCache'
 import RepoWatcher from 'lib/RepoWatcher'
 import { parseDiff, uriToString, retry } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
@@ -93,10 +99,43 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
     },
 })
 
+const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction>({
+    type: RepoActionType.FETCH_REPO_METADATA,
+    async process({ action }) {
+        const { repoList = [] } = action.payload
+        let metadataByURI = {} as { [uri: string]: IRepoMetadata | null }
+        if (repoList.length === 0) {
+            return { metadataByURI }
+        } else if (repoList[repoList.length - 1].type === URIType.Local) {
+            // await LocalCache.wipe()
+            const promises = repoList.map(uri => LocalCache.loadMetadata(uri as LocalURI))
+            const metadataList = await Promise.all(promises)
+
+            for (let i = 0; i < metadataList.length; i++) {
+                const uriStr = uriToString(repoList[i])
+                metadataByURI[uriStr] = metadataList[i]
+            }
+        } else {
+            const repoIDs = repoList.map(id => getRepoID(id))
+            const metadataList = await ServerRelay.getRepoMetadata(repoIDs)
+
+            for (let i = 0; i < metadataList.length; i++) {
+                const metadata = metadataList[i]
+                const uri = { repoID: metadata.repoID, type: URIType.Network } as URI
+                const uriStr = uriToString(uri)
+                metadataByURI[uriStr] = metadata.isNull ? null : metadata as IRepoMetadata
+            }
+        }
+
+        return { metadataByURI }
+    },
+})
+
 const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSuccessAction>({
     type: RepoActionType.FETCH_REPO_FILES,
     async process({ action }) {
         const { uri } = action.payload
+        console.log("HERE: ", uri)
 
         let files = {} as { [name: string]: IRepoFile }
         if (uri.type === URIType.Local) {
@@ -141,7 +180,7 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
 const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE,
     async process({ action }) {
-        const { uri } = action.payload
+        const { uri, lastCommitFetched, pageSize } = action.payload
 
         const repoID = getRepoID(uri)
         let timeline = [] as ITimelineEvent[]
@@ -149,27 +188,12 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             const path = uri.repoRoot
 
             const rpcClient = rpc.getClient()
-            let lastCommitFetched = undefined as string | undefined
+            const { commits = [], isEnd } = (await rpcClient.getRepoHistoryAsync({ path, lastCommitFetched, pageSize, onlyHashes: true }))
 
-            while (true) {
-                const history = (await rpcClient.getRepoHistoryAsync({ path, repoID, lastCommitFetched, pageSize: 50 })).commits || []
-                if (history.length === 0) {
-                    break
-                }
-
-                const partialTimeline = history.map(event => ({
-                    commit: event.commitHash,
-                    user: event.author,
-                    time: event.timestamp.toNumber() * 1000,
-                    message: event.message,
-                    files: event.files || [],
-                }))
-
-                timeline = [
-                    ...timeline,
-                    ...partialTimeline
-                ]
-                lastCommitFetched = timeline[timeline.length - 1].commit
+            const hashes = commits.map(c => c.commitHash).slice(0, pageSize)
+            timeline = await LocalCache.loadCommits(uri, hashes)
+            if (isEnd && timeline.length > 0) {
+                timeline[timeline.length - 1].isInitialCommit = true
             }
         } else {
             timeline = await ServerRelay.getRepoTimeline(repoID)
@@ -200,6 +224,25 @@ const fetchUpdatedRefEventsLogic = makeLogic<IFetchUpdatedRefEventsAction, IFetc
         }
         const updatedRefEvents = keyBy(eventsList, 'commit')
         return { updatedRefEvents }
+    },
+})
+
+const fetchSecuredFileInfoLogic = makeLogic<IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction>({
+    type: RepoActionType.FETCH_SECURED_FILE_INFO,
+    async process({ action }) {
+        const { uri } = action.payload
+        if (uri.filename === undefined) {
+            throw new Error("Must specify filename to fetch")
+        }
+        let securedFileInfo = {} as ISecuredTextInfo
+        if (uri.type === URIType.Local) {
+            securedFileInfo = await LocalCache.loadSecuredFileInfo(uri)
+        } else {
+            const repoID = getRepoID(uri)
+            securedFileInfo = await ServerRelay.getSecuredFileInfo(repoID, uri.filename || '')
+        }
+        console.log('securedFileInfo: ', securedFileInfo)
+        return { uri, securedFileInfo }
     },
 })
 
@@ -461,9 +504,11 @@ export default [
     // desktop-specific
     initRepoLogic,
     getLocalRepoListLogic,
+    fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
     fetchUpdatedRefEventsLogic,
+    fetchSecuredFileInfoLogic,
     fetchRepoUsersPermissionsLogic,
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,

@@ -2,18 +2,14 @@ import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
-import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import EditIcon from '@material-ui/icons/Edit'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import SecuredText from 'conscience-components/SecuredText'
+import SharedUsers from 'conscience-components/SharedUsers'
 import FileViewer from 'conscience-components/FileViewer'
 import DiscussionList from 'conscience-components/DiscussionList'
-import UserAvatar from 'conscience-components/UserAvatar'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
 import { selectFile } from 'conscience-components/navigation'
@@ -27,36 +23,28 @@ import { autobind, uriToString } from 'conscience-lib/utils'
 class RepoHomePage extends React.Component<Props>
 {
     render() {
-        const { sharedUsers, classes } = this.props
+        const { classes } = this.props
         if (!this.props.uri) return null
 
         return (
             <div className={classes.main}>
-                <div className={classnames(classes.readmeContainer, { [classes.readmeContainerNoReadme]: !this.props.hasReadme })}>
-                    {this.props.hasReadme &&
-                        <div>
-                            <FileViewer
-                                uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
-                                showViewerPicker={false}
-                                widthMode='unset'
-                            />
-                            <IconButton
-                                onClick={this.onClickEditReadme}
-                                className={classes.editReadmeButton}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        </div>
-                    }
-                    {!this.props.hasReadme &&
-                        <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
-                            <Typography className={classes.noReadmeText}>
-                                Add a welcome message and instructions to this repository using the Conscience Desktop App.
-                            </Typography>
 
-                            <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
-                        </div>
-                    }
+                <div className={classes.readmeContainer}>
+                    <FileViewer
+                        uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
+                        showViewerPicker={false}
+                        fallback={(
+                            <div className={classes.readmeContainerNoReadme}>
+                                <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
+                                    <div className={classes.noReadmeText}>
+                                        Add a welcome message and instructions to this repository using the Conscience desktop app.
+                                    </div>
+
+                                    <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
+                                </div>
+                            </div>
+                        )}
+                    />
                 </div>
                 <div className={classes.sidebarComponents}>
                     {this.props.hasCommits &&
@@ -72,15 +60,7 @@ class RepoHomePage extends React.Component<Props>
                             <H6>Team</H6>
 
                             <div className={classes.sharedUsersRow}>
-                                {sharedUsers.map((user: IUser | undefined) => {
-                                    if (user !== undefined) {
-                                        return (
-                                            <UserAvatar user={user} />
-                                        )
-                                    } else {
-                                        return null
-                                    }
-                                })}
+                                <SharedUsers uri={this.props.uri} />
                             </div>
                         </CardContent>
                     </Card>
@@ -113,7 +93,7 @@ class RepoHomePage extends React.Component<Props>
 
     onClickEditReadme() {
         if (this.props.uri) {
-            selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.Edit)
+            selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.EditNew)
         }
     }
 }

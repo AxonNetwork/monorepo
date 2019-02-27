@@ -9,16 +9,22 @@ export function getConscienceURI(repoID: string, filename?: string) {
     }
 }
 
+export function repoUriToString(uri?: URI) {
+    if (!uri) {
+        return ''
+    }
+    if (uri.type === URIType.Local) {
+        return "local://" + uri.repoRoot
+    } else {
+        return "conscience://" + uri.repoID
+    }
+}
+
 export function uriToString(uri?: URI) {
     if (!uri) {
         return ''
     }
-    let str = ''
-    if (uri.type === URIType.Local) {
-        str = "local://" + uri.repoRoot
-    } else {
-        str = "conscience://" + uri.repoID
-    }
+    let str = repoUriToString(uri)
     if (uri.filename) {
         str += "/" + uri.filename
     }

@@ -17,22 +17,7 @@ import passport from 'passport'
 
 const repoController = {}
 
-const localRepos = {} // [repoID] => filepath
-
 const rpcClient = noderpc.initClient()
-async function setupLocalReposCache() {
-    try {
-        const local = await rpcClient.getLocalReposAsync({})
-        for (let i = 0; i < local.length; i++) {
-            const repo = local[i]
-            localRepos[repo.repoID] = repo.path
-        }
-    } catch (err) {
-        console.error(err)
-    }
-}
-
-setupLocalReposCache()
 
 repoController.getUserRepos = async (req, res, next) => {
     const requesterUsername = req.user.username
@@ -138,7 +123,15 @@ repoController.getRepoTimeline = async (req, res, next) => {
     // default to 10
     const pageSize = (req.query.pageSize || '').length > 0 ? req.query.pageSize : 10
 
-    const timeline = await Commit.getPage(repoID, pageSize, lastCommitFetched)
+    const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, pageSize, onlyHashes: true })
+    const hashes = commits.map(c => c.commitHash)
+    const dynamoCommits = await Commit.get(repoID, hashes)
+    const commitObj = keyBy(dynamoCommits, 'commit')
+
+    const timeline = hashes.map(h => commitObj[h])
+    if (isEnd && timeline.length > 0) {
+        timeline[timeline.length - 1].isInitialCommit = true
+    }
 
     res.status(200).json({ timeline })
 }
@@ -180,48 +173,6 @@ repoController.getSecuredFileInfo = async (req, res, next) => {
     const securedFileInfo = await SecuredText.getForFile(repoID, file)
 
     res.status(200).json({ securedFileInfo })
-}
-
-repoController.getFileContents = async (req, res, next) => {
-    const { repoID } = req.params
-    const repoRoot = localRepos[repoID]
-
-    // with the route /file/filename* (see routes.js),
-    // params.filename = filename and params[0] = *
-    const filename = path.join(req.params.filename, req.params[0])
-    const filepath = path.join(repoRoot, filename)
-
-    res.sendFile(filepath)
-}
-
-repoController.saveFileContents = async (req, res, next) => {
-    const { contents } = req.body
-    if (contents === undefined) {
-        throw new HTTPError(400, 'missing contents')
-    }
-    const { repoID } = req.params
-    const repoRoot = localRepos[repoID]
-
-    // with the route /file/filename* (see routes.js),
-    // params.filename = filename and params[0] = *
-    const filename = path.join(req.params.filename, req.params[0])
-    const filepath = path.join(repoRoot, filename)
-    fs.writeFileSync(filepath, contents)
-
-    res.status(200).json({ contents })
-}
-
-repoController.getDiff = async (req, res, next) => {
-    const { repoID, commit } = req.params
-    const repoRoot = localRepos[repoID]
-    const diff = await spawnCmd('git', [ 'show', commit ], repoRoot)
-
-    res.status(200).json({
-        // repoID,
-        // commit,
-        // diffs,
-        diff,
-    })
 }
 
 repoController.create = async (req, res, next) => {

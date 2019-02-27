@@ -275,6 +275,7 @@ message GetRepoHistoryRequest {
 
     string toCommit = 5;
     uint64 pageSize = 6;
+    bool onlyHashes = 7;
 }
 
 message Commit {

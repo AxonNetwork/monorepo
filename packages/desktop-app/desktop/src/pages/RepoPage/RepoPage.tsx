@@ -14,32 +14,25 @@ import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
-import { fetchFullRepo } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoMetadata } from 'conscience-components/redux/repo/repoActions'
 import { clearPullRepoError, clearCheckpointRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
 import { getURIFromParams } from 'conscience-components/env-specific'
-import { URI, RepoPage } from 'conscience-lib/common'
+import { IRepoMetadata, URI, RepoPage } from 'conscience-lib/common'
 import { autobind, stringToRepoPage, uriToString } from 'conscience-lib/utils'
 
 
 @autobind
 class RepoPageContainer extends React.Component<Props>
 {
-    constructor(props: Props) {
-        super(props)
-        if (props.uri) {
-            this.props.fetchFullRepo({ uri: props.uri })
-        }
-    }
 
     render() {
-        const { uri, classes } = this.props
-        if (uri === undefined) {
+        const { uri, metadata, classes } = this.props
+        if (uri === undefined || metadata === undefined) {
             return <LargeProgressSpinner />
         }
         const repoPage = stringToRepoPage(this.props.location.pathname)
-
 
         return (
             <main className={classes.main}>
@@ -96,14 +89,17 @@ class RepoPageContainer extends React.Component<Props>
         )
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
-            this.props.fetchFullRepo({ uri: this.props.uri })
+    componentDidMount() {
+        if (this.props.uri) {
+            this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
         }
+        document.addEventListener('keydown', this.onKeyDown, false)
     }
 
-    componentDidMount() {
-        document.addEventListener('keydown', this.onKeyDown, false)
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
+        }
     }
 
     onKeyDown(evt: KeyboardEvent) {
@@ -147,10 +143,11 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
+    metadata: IRepoMetadata | null | undefined
     menuLabelsHidden: boolean
     pullError: Error | undefined
     checkpointError: Error | undefined
-    fetchFullRepo: typeof fetchFullRepo
+    fetchRepoMetadata: typeof fetchRepoMetadata
     clearPullRepoError: typeof clearPullRepoError
     clearCheckpointRepoError: typeof clearCheckpointRepoError
     classes: any
@@ -179,6 +176,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     const uriStr = uriToString(uri)
     return {
         uri,
+        metadata: state.repo.metadataByURI[uriStr],
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
         pullError: state.ui.pullRepoErrorByURI[uriStr],
         checkpointError: state.ui.checkpointError,
@@ -186,7 +184,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
 }
 
 const mapDispatchToProps = {
-    fetchFullRepo,
+    fetchRepoMetadata,
     clearPullRepoError,
     clearCheckpointRepoError
 }

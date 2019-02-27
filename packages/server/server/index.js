@@ -1,14 +1,13 @@
 import 'dotenv/config'
 import app from './app'
 import watchNode from './watcher'
-import { addRepoToCache } from './watcher/updateRepoCache'
+import setupRepoCache from './watcher/setupRepoCache'
 
 app.listen(process.env.PORT, () => {
     console.log(`ITS ALIVE ON PORT ${process.env.PORT}`)
 })
 
-watchNode()
-
-// addRepoToCache('datnewnew')
+// setupRepoCache()
+// watchNode()
 
 process.on('SIGINT', () => { console.log('Bye bye!'); process.exit() })

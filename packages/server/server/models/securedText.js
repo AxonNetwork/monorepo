@@ -1,16 +1,18 @@
 import { dynamo } from '../config/aws'
 import { getAll } from './utils'
+import chunk from 'lodash/chunk'
 
 const SecuredTextTable = `${process.env.DYNAMODB_TABLE_PREFIX}_SecuredTextCache`
 
 const SecuredText = {}
 
 SecuredText.addFiles = async (files) => {
-    // console.log(objects)
     const putRequests = files.map(f => ({ PutRequest: { Item: f } }))
-    const params = { RequestItems: { [SecuredTextTable]: putRequests } }
+    const writePromises = chunk(putRequests, 25)
+        .map(req => ({ RequestItems: { [SecuredTextTable]: req } }))
+        .map(params => dynamo.batchWriteAsync(params))
     try {
-        await dynamo.batchWriteAsync(params)
+        await Promise.all(writePromises)
     } catch (err) {
         console.error('Error in SecuredText.addFiles ~>', err)
     }

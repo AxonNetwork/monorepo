@@ -4,31 +4,42 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import FileList from 'conscience-components/FileList'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
-import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { H5 } from 'conscience-components/Typography/Headers'
 import SecuredText from 'conscience-components/SecuredText'
 import FileViewer from 'conscience-components/FileViewer'
 import CreateDiscussion from 'conscience-components/CreateDiscussion'
-import { getDiff } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoFiles } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { getURIFromParams } from 'conscience-components/env-specific'
 import { IRepoFile, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
 class RepoFilesPage extends React.Component<Props>
 {
+
+    componentDidMount() {
+        if (this.props.uri !== undefined) {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
+        }
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.uri !== undefined && !isEqual(this.props.uri, prevProps.uri)) {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
+        }
+    }
+
     render() {
         const { files, classes } = this.props
         if (!this.props.uri) {
             return null
-        } else if (files === undefined) {
-            return <LargeProgressSpinner />
         }
 
         const { commit, filename } = this.props.match.params
-        const file = files[filename || '']
+        const file = (files || {})[filename || '']
         const fileURI = { ...this.props.uri, commit, filename }
 
         if (!filename || !file || file.type === 'folder') {
@@ -36,8 +47,6 @@ class RepoFilesPage extends React.Component<Props>
                 <div className={classes.fileListContainer}>
                     <FileList
                         uri={fileURI}
-                        files={files || {}}
-                        fileExtensionsHidden={this.props.fileExtensionsHidden}
                         canEditFiles
                         openFileIcon
                     />
@@ -79,7 +88,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     files: { [name: string]: IRepoFile } | undefined
-    fileExtensionsHidden: boolean
+    fetchRepoFiles: typeof fetchRepoFiles
     classes: any
 }
 
@@ -133,12 +142,11 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
     return {
         uri,
         files,
-        fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
 }
 
 const mapDispatchToProps = {
-    getDiff,
+    fetchRepoFiles,
 }
 
 export default connect(
