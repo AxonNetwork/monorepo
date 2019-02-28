@@ -3,7 +3,7 @@ import union from 'lodash/union'
 import once from 'lodash/once'
 import { makeLogic, makeContinuousLogic } from 'conscience-components/redux/reduxUtils'
 import {
-    IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent,
+    IRepoMetadata, IRepoFile, ITimelineEvent,
     ISecuredTextInfo, RepoPage, URI, LocalURI, URIType
 } from 'conscience-lib/common'
 import {
@@ -13,8 +13,8 @@ import {
     IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
-    IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
     IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
+    IFetchIsBehindRemoteAction, IFetchIsBehindRemoteSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IFetchLocalRefsAction, IFetchLocalRefsSuccessAction,
     IFetchRemoteRefsAction, IFetchRemoteRefsSuccessAction,
@@ -27,11 +27,10 @@ import {
     IWatchRepoAction,
     cloneRepoProgress, cloneRepoSuccess, cloneRepoFailed,
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
-    fetchFullRepo, fetchRepoFiles, behindRemote,
+    fetchRepoFiles, behindRemote,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
-    fetchFullRepoLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
@@ -203,30 +202,6 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     },
 })
 
-const fetchUpdatedRefEventsLogic = makeLogic<IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction>({
-    type: RepoActionType.FETCH_UPDATED_REF_EVENTS,
-    async process({ action }) {
-        const { uri } = action.payload
-        const repoID = getRepoID(uri)
-        let eventsList = [] as IUpdatedRefEvent[]
-        if (uri.type == URIType.Local) {
-            const rpcClient = rpc.getClient()
-            const eventsRaw = (await rpcClient.getUpdatedRefEventsAsync({ repoID })).events || []
-            eventsList = eventsRaw.map(evt => ({
-                commit: evt.commit,
-                repoID: evt.repoID,
-                txHash: evt.txHash,
-                time: evt.time.toNumber(),
-                blockNumber: evt.blockNumber.toNumber(),
-            } as IUpdatedRefEvent))
-        } else {
-            eventsList = await ServerRelay.getUpdatedRefEvents(repoID)
-        }
-        const updatedRefEvents = keyBy(eventsList, 'commit')
-        return { updatedRefEvents }
-    },
-})
-
 const fetchSecuredFileInfoLogic = makeLogic<IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction>({
     type: RepoActionType.FETCH_SECURED_FILE_INFO,
     async process({ action }) {
@@ -241,8 +216,30 @@ const fetchSecuredFileInfoLogic = makeLogic<IFetchSecuredFileInfoAction, IFetchS
             const repoID = getRepoID(uri)
             securedFileInfo = await ServerRelay.getSecuredFileInfo(repoID, uri.filename || '')
         }
-        console.log('securedFileInfo: ', securedFileInfo)
         return { uri, securedFileInfo }
+    },
+})
+
+const fetchIsBehindRemoteLogic = makeLogic<IFetchIsBehindRemoteAction, IFetchIsBehindRemoteSuccessAction>({
+    type: RepoActionType.FETCH_IS_BEHIND_REMOTE,
+    async process({ action, getState }) {
+        const { uri } = action.payload
+        if (uri.type === URIType.Local) {
+            const repoID = getRepoID(uri)
+            const metadata = (await LocalCache.loadMetadata(uri as LocalURI)) || {}
+            const startBlock = metadata.blockNumber || 0
+            const { events = [] } = await rpc.getClient().getUpdatedRefEventsAsync({ repoID, startBlock })
+            if (events.length === 0) {
+                return { uri, isBehindRemote: false }
+            }
+            const currentRemote = events[events.length - 1].commit
+            const cachedCommit = (await LocalCache.loadCommits(uri as LocalURI, [currentRemote]))[0]
+            if (!cachedCommit) {
+                return { uri, isBehindRemote: true }
+            }
+        }
+
+        return { uri, isBehindRemote: false }
     },
 })
 
@@ -499,7 +496,6 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
 export default [
     // imported from conscience-components
     getRepoListLogic,
-    fetchFullRepoLogic,
 
     // desktop-specific
     initRepoLogic,
@@ -507,8 +503,8 @@ export default [
     fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
-    fetchUpdatedRefEventsLogic,
     fetchSecuredFileInfoLogic,
+    fetchIsBehindRemoteLogic,
     fetchRepoUsersPermissionsLogic,
     fetchLocalRefsLogic,
     fetchRemoteRefsLogic,

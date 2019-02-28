@@ -5,6 +5,9 @@ import { getRepoID } from 'conscience-components/env-specific'
 import * as rpc from 'conscience-lib/rpc'
 import { interpolateTimeline, getSecuredTextStats, getRepoMetadata } from 'conscience-lib/cacheHelpers'
 import { LocalURI, IRepoMetadata, ITimelineEvent, ISecuredTextInfo } from 'conscience-lib/common'
+import flatten from 'lodash/flatten'
+import uniq from 'lodash/uniq'
+import keyBy from 'lodash/keyBy'
 const app = (window as any).require('electron').remote.app
 const appPath = path.join(app.getPath('appData'), 'Conscience')
 
@@ -16,14 +19,10 @@ const db = {
     securedText: bluebird.promisifyAll(securedTextDB, { suffix: 'Async' }) as any,
     commits: bluebird.promisifyAll(commitDB, { suffix: 'Async' }) as any,
 }
-db.metadata.ensureIndexAsync({ fieldName: 'path', unique: true })
-db.securedText.ensureIndexAsync({ fieldName: 'repoID' })
-db.securedText.ensureIndexAsync({ fieldName: 'file' })
-db.commits.ensureIndexAsync({ fieldName: 'commit', unique: true })
-
-// schema = {
-
-// }
+db.metadata.ensureIndex({ fieldName: 'path' })
+db.securedText.ensureIndex({ fieldName: 'repoID' })
+db.securedText.ensureIndex({ fieldName: 'file' })
+db.commits.ensureIndex({ fieldName: 'commit' })
 
 const LocalCache = {
 
@@ -79,7 +78,8 @@ const LocalCache = {
         }
         const path = uri.repoRoot
         let metadata = db.metadata.findOneAsync({ path })
-        const oldHEAD = !!metadata ? metadata.oldHEAD : undefined
+        const oldHEAD = (metadata || {}).oldHEAD
+        const startBlock = (metadata || {}).blockNumber
         const fromInitialCommit = oldHEAD === undefined
 
         const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, toCommit: oldHEAD })
@@ -87,29 +87,39 @@ const LocalCache = {
             return
         }
         const repoID = getRepoID(uri)
-        const { events = [] } = await rpc.getClient().getUpdatedRefEventsAsync({ repoID })
+        const { events = [] } = await rpc.getClient().getUpdatedRefEventsAsync({ repoID, startBlock })
         const refEventsList = events.reverse()
 
         const timeline = interpolateTimeline(repoID, commits, refEventsList)
         const filesByCommit = commits.map(c => c.files)
-        const securedTextStats = getSecuredTextStats(repoID, timeline, filesByCommit, fromInitialCommit)
+        let currentStats = {}
+        if (!fromInitialCommit) {
+            const allFiles = uniq(flatten(filesByCommit)).map(f => { file: f })
+            const stats = db.securedText.findAsync({ $and: [{ repoID }, { $or: allFiles }] })
+            currentStats = keyBy(stats, 'file')
+        }
+        const securedTextStats = getSecuredTextStats(repoID, timeline, filesByCommit, currentStats, fromInitialCommit)
 
-        console.log('timeline: ', timeline)
-        console.log('securedTextStats: ', securedTextStats)
-        const commitPromises = timeline.map(evt => db.commits.updateAsync({ commit: evt.commit }, evt, { upsert: true }))
-        const securedPromises = securedTextStats.map(stat => db.securedText.updateAsync({ repoID: stat.repoID, file: stat.file }, stat, { upsert: true }))
-
-        // add to cache before updating currentHEAD (cursor) in repo table
-        await Promise.all([
-            ...commitPromises,
-            ...securedPromises,
+        const removeTimelineOr = timeline.map(evt => ({ commit: evt.commit }))
+        const removeSecuredOr = securedTextStats.map(stat => ({ repoID: stat.repoID, file: stat.file }))
+        const resp = await Promise.all([
+            await db.commits.removeAsync({ $or: removeTimelineOr }, { multi: true }),
+            await db.securedText.removeAsync({ $or: removeSecuredOr }, { multi: true }),
+            await db.commits.insertAsync(timeline),
+            await db.securedText.insertAsync(securedTextStats),
         ])
+
+        // if large change, compact datafile
+        const numDeleted = resp[0] + resp[2]
+        const numAdded = timeline.length + securedTextStats.length
+        if (numDeleted + numAdded > 100) {
+            db.commits.persistence.compactDatafile()
+            db.securedText.persistence.compactDatafile()
+        }
 
         metadata = getRepoMetadata(repoID, timeline, refEventsList, fromInitialCommit)
         metadata.path = path
         await db.metadata.updateAsync({ path }, metadata, { upsert: true })
-        console.log("SUCCESS")
-
     },
 
 }

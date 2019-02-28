@@ -41,6 +41,7 @@ export interface IRepoMetadata {
     lastVerifiedTime: number
     lastVerifiedCommit: string
     currentHEAD: string
+    blockNumber: number
 }
 
 export interface IMaybeRepoMetadata extends IRepoMetadata {
@@ -103,6 +104,8 @@ export interface IUpdatedRefEvent {
 }
 
 export interface ISecuredTextInfo {
+    repoID: string
+    file: string
     lastVerifiedCommit?: string
     lastVerifiedTime?: number
     firstVerifiedCommit?: string

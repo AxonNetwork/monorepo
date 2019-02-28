@@ -42,17 +42,7 @@ export const interpolateTimeline = function (repoID, commits, refEventsList) {
     return timeline
 }
 
-// stats = {
-//  repoID: string
-// 	file: string
-// 	lastModifiedCommit: number
-// 	lastModifiedTime: number
-// 	firstVerifiedCommit: number
-// 	firstVerifiedTime: number
-// 	lastVerifiedCommit: number
-// 	lastVerifiedTime: number
-// }
-export const getSecuredTextStats = function (repoID, timeline, filesByCommit, fromInitialCommit) {
+export const getSecuredTextStats = function (repoID, timeline, filesByCommit, currentStats, fromInitialCommit) {
     const stats = {}
     for (let i = 0; i < timeline.length; i++) {
         const event = timeline[i]
@@ -82,6 +72,7 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, fromIn
     const metadata = {
         repoID,
         currentHead:        timeline[0].commit,
+        lastBlockNumber:    refEventsList[0].blockNumber,
         lastVerifiedCommit: refEventsList[0].commit,
         lastVerifiedTime:   refEventsList[0].time,
     }

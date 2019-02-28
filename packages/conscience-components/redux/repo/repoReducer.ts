@@ -116,17 +116,6 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
-        case RepoActionType.FETCH_UPDATED_REF_EVENTS_SUCCESS: {
-            const { updatedRefEvents } = action.payload
-            return {
-                ...state,
-                updatedRefEventsByCommit: {
-                    ...state.updatedRefEventsByCommit,
-                    ...updatedRefEvents
-                }
-            }
-        }
-
         case RepoActionType.FETCH_SECURED_FILE_INFO_SUCCESS: {
             const { uri, securedFileInfo } = action.payload
             const uriStr = uriToString(uri)
@@ -135,6 +124,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 securedFileInfoByURI: {
                     ...state.securedFileInfoByURI,
                     [uriStr]: securedFileInfo
+                }
+            }
+        }
+
+        case RepoActionType.FETCH_IS_BEHIND_REMOTE_SUCCESS: {
+            const { uri, isBehindRemote } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                isBehindRemoteByURI: {
+                    ...state.isBehindRemoteByURI,
+                    [uriStr]: isBehindRemote,
                 }
             }
         }

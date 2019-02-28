@@ -5,7 +5,6 @@ import {
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
     IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction,
-    IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction,
     IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
     IGetDiffAction, IGetDiffSuccessAction,
@@ -17,14 +16,12 @@ import {
 } from 'conscience-components/redux/user/userActions'
 import {
     getRepoListLogic,
-    fetchFullRepoLogic,
 } from 'conscience-components/redux/repo/repoLogic'
 import { makeLogic } from 'conscience-components/redux/reduxUtils'
 import { getRepoID } from 'conscience-components/env-specific'
 import ServerRelay from 'conscience-lib/ServerRelay'
 import { IRepoMetadata, URI, URIType } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
-import keyBy from 'lodash/keyBy'
 import union from 'lodash/union'
 
 
@@ -78,17 +75,6 @@ const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFe
         const commit = uri.commit
         const event = await ServerRelay.getRepoTimelineEvent(repoID, commit)
         return { event }
-    },
-})
-
-const fetchUpdatedRefEventsLogic = makeLogic<IFetchUpdatedRefEventsAction, IFetchUpdatedRefEventsSuccessAction>({
-    type: RepoActionType.FETCH_UPDATED_REF_EVENTS,
-    async process({ action }) {
-        const { uri } = action.payload
-        const repoID = getRepoID(uri)
-        const eventsList = await ServerRelay.getUpdatedRefEvents(repoID)
-        const updatedRefEvents = keyBy(eventsList, 'commit')
-        return { updatedRefEvents }
     },
 })
 
@@ -160,14 +146,12 @@ const setRepoPublicLogic = makeLogic<ISetRepoPublicAction, ISetRepoPublicSuccess
 export default [
     // imported from conscience-components
     getRepoListLogic,
-    fetchFullRepoLogic,
 
     // web-specific
     fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
     fetchRepoTimelineEventLogic,
-    fetchUpdatedRefEventsLogic,
     fetchSecuredFileInfoLogic,
     fetchRepoUsersPermissionsLogic,
     getDiffLogic,

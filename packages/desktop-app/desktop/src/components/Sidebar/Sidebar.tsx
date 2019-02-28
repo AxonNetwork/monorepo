@@ -170,7 +170,7 @@ const styles = (theme: Theme) => createStyles({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        overflowX: 'hidden',
+        overflow: 'hidden',
         borderRight: 'none',
     },
     drawerPaperClose: {

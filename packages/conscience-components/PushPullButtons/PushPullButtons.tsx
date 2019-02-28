@@ -17,11 +17,12 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
+import { fetchIsBehindRemote, pullRepo, checkpointRepo } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectFile } from '../navigation'
 import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
@@ -151,6 +152,16 @@ class PushPullButtons extends React.Component<Props, State>
         )
     }
 
+    componentDidMount() {
+        this.props.fetchIsBehindRemote({ uri: this.props.uri })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
+            this.props.fetchIsBehindRemote({ uri: this.props.uri })
+        }
+    }
+
     onClickPull() {
         this.props.pullRepo({ uri: this.props.uri })
     }
@@ -211,6 +222,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+    fetchIsBehindRemote: typeof fetchIsBehindRemote
     pullRepo: typeof pullRepo
     checkpointRepo: typeof checkpointRepo
 }
@@ -251,6 +263,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 }
 
 const mapDispatchToProps = {
+    fetchIsBehindRemote,
     pullRepo,
     checkpointRepo,
 }

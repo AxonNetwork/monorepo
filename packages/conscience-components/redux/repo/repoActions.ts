@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { URI, NetworkURI, IRepoMetadata, IRepoFile, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo } from 'conscience-lib/common'
+import { URI, NetworkURI, IRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -10,10 +10,6 @@ export enum RepoActionType {
     GET_LOCAL_REPO_LIST = 'GET_LOCAL_REPO_LIST',
     GET_LOCAL_REPO_LIST_SUCCESS = 'GET_LOCAL_REPO_LIST_SUCCESS',
     GET_LOCAL_REPO_LIST_FAILED = 'GET_LOCAL_REPO_LIST_FAILED',
-
-    FETCH_FULL_REPO = 'FETCH_FULL_REPO',
-    FETCH_FULL_REPO_SUCCESS = 'FETCH_FULL_REPO_SUCCESS',
-    FETCH_FULL_REPO_FAILED = 'FETCH_FULL_REPO_FAILED',
 
     FETCH_REPO_METADATA = 'FETCH_REPO_METADATA',
     FETCH_REPO_METADATA_SUCCESS = 'FETCH_REPO_METADATA_SUCCESS',
@@ -31,13 +27,13 @@ export enum RepoActionType {
     FETCH_REPO_TIMELINE_EVENT_SUCCESS = 'FETCH_REPO_TIMELINE_EVENT_SUCCESS',
     FETCH_REPO_TIMELINE_EVENT_FAILED = 'FETCH_REPO_TIMELINE_EVENT_FAILED',
 
-    FETCH_UPDATED_REF_EVENTS = 'FETCH_UPDATED_REF_EVENTS',
-    FETCH_UPDATED_REF_EVENTS_SUCCESS = 'FETCH_UPDATED_REF_EVENTS_SUCCESS',
-    FETCH_UPDATED_REF_EVENTS_FAILED = 'FETCH_UPDATED_REF_EVENTS_FAILED',
-
     FETCH_SECURED_FILE_INFO = 'FETCH_SECURED_FILE_INFO',
     FETCH_SECURED_FILE_INFO_SUCCESS = 'FETCH_SECURED_FILE_INFO_SUCCESS',
     FETCH_SECURED_FILE_INFO_FAILED = 'FETCH_SECURED_FILE_INFO_FAILED',
+
+    FETCH_IS_BEHIND_REMOTE = 'FETCH_IS_BEHIND_REMOTE',
+    FETCH_IS_BEHIND_REMOTE_SUCCESS = 'FETCH_IS_BEHIND_REMOTE_SUCCESS',
+    FETCH_IS_BEHIND_REMOTE_FAILED = 'FETCH_IS_BEHIND_REMOTE_FAILED',
 
     FETCH_REMOTE_REFS = 'FETCH_REMOTE_REFS',
     FETCH_REMOTE_REFS_SUCCESS = 'FETCH_REMOTE_REFS_SUCCESS',
@@ -118,22 +114,6 @@ export interface IGetLocalRepoListSuccessAction {
 
 export type IGetLocalRepoListFailedAction = FailedAction<RepoActionType.GET_LOCAL_REPO_LIST_FAILED>
 
-export interface IFetchFullRepoAction {
-    type: RepoActionType.FETCH_FULL_REPO
-    payload: {
-        uri: URI
-    }
-}
-
-export interface IFetchFullRepoSuccessAction {
-    type: RepoActionType.FETCH_FULL_REPO_SUCCESS
-    payload: {
-        uri: URI
-    }
-}
-
-export type IFetchFullRepoFailedAction = FailedAction<RepoActionType.FETCH_FULL_REPO_FAILED>
-
 export interface IFetchRepoMetadataAction {
     type: RepoActionType.FETCH_REPO_METADATA
     payload: {
@@ -202,22 +182,6 @@ export interface IFetchRepoTimelineEventSuccessAction {
 
 export type IFetchRepoTimelineEventFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_EVENT_FAILED>
 
-export interface IFetchUpdatedRefEventsAction {
-    type: RepoActionType.FETCH_UPDATED_REF_EVENTS
-    payload: {
-        uri: URI
-    }
-}
-
-export interface IFetchUpdatedRefEventsSuccessAction {
-    type: RepoActionType.FETCH_UPDATED_REF_EVENTS_SUCCESS
-    payload: {
-        updatedRefEvents: { [commit: string]: IUpdatedRefEvent }
-    }
-}
-
-export type IFetchUpdatedRefEventsFailedAction = FailedAction<RepoActionType.FETCH_UPDATED_REF_EVENTS_FAILED>
-
 export interface IFetchSecuredFileInfoAction {
     type: RepoActionType.FETCH_SECURED_FILE_INFO
     payload: {
@@ -234,6 +198,23 @@ export interface IFetchSecuredFileInfoSuccessAction {
 }
 
 export type IFetchSecuredFileInfoFailedAction = FailedAction<RepoActionType.FETCH_SECURED_FILE_INFO_FAILED>
+
+export interface IFetchIsBehindRemoteAction {
+    type: RepoActionType.FETCH_IS_BEHIND_REMOTE
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IFetchIsBehindRemoteSuccessAction {
+    type: RepoActionType.FETCH_IS_BEHIND_REMOTE_SUCCESS
+    payload: {
+        uri: URI
+        isBehindRemote: boolean
+    }
+}
+
+export type IFetchIsBehindRemoteFailedAction = FailedAction<RepoActionType.FETCH_IS_BEHIND_REMOTE_FAILED>
 
 export interface IFetchLocalRefsAction {
     type: RepoActionType.FETCH_LOCAL_REFS
@@ -461,10 +442,6 @@ export type IRepoAction =
     IGetLocalRepoListSuccessAction |
     IGetLocalRepoListFailedAction |
 
-    IFetchFullRepoAction |
-    IFetchFullRepoSuccessAction |
-    IFetchFullRepoFailedAction |
-
     IFetchRepoMetadataAction |
     IFetchRepoMetadataSuccessAction |
     IFetchRepoMetadataFailedAction |
@@ -481,13 +458,13 @@ export type IRepoAction =
     IFetchRepoTimelineEventSuccessAction |
     IFetchRepoTimelineEventFailedAction |
 
-    IFetchUpdatedRefEventsAction |
-    IFetchUpdatedRefEventsSuccessAction |
-    IFetchUpdatedRefEventsFailedAction |
-
     IFetchSecuredFileInfoAction |
     IFetchSecuredFileInfoSuccessAction |
     IFetchSecuredFileInfoFailedAction |
+
+    IFetchIsBehindRemoteAction |
+    IFetchIsBehindRemoteSuccessAction |
+    IFetchIsBehindRemoteFailedAction |
 
     IFetchLocalRefsAction |
     IFetchLocalRefsSuccessAction |
@@ -539,14 +516,13 @@ export type IRepoAction =
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
 
-export const fetchFullRepo = (payload: IFetchFullRepoAction['payload']): IFetchFullRepoAction => ({ type: RepoActionType.FETCH_FULL_REPO, payload })
 
 export const fetchRepoMetadata = (payload: IFetchRepoMetadataAction['payload']): IFetchRepoMetadataAction => ({ type: RepoActionType.FETCH_REPO_METADATA, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
 export const fetchRepoTimelineEvent = (payload: IFetchRepoTimelineEventAction['payload']): IFetchRepoTimelineEventAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE_EVENT, payload })
-export const fetchUpdatedRefEvents = (payload: IFetchUpdatedRefEventsAction['payload']): IFetchUpdatedRefEventsAction => ({ type: RepoActionType.FETCH_UPDATED_REF_EVENTS, payload })
 export const fetchSecuredFileInfo = (payload: IFetchSecuredFileInfoAction['payload']): IFetchSecuredFileInfoAction => ({ type: RepoActionType.FETCH_SECURED_FILE_INFO, payload })
+export const fetchIsBehindRemote = (payload: IFetchIsBehindRemoteAction['payload']): IFetchIsBehindRemoteAction => ({ type: RepoActionType.FETCH_IS_BEHIND_REMOTE, payload })
 
 export const fetchRepoUsersPermissions = (payload: IFetchRepoUsersPermissionsAction['payload']): IFetchRepoUsersPermissionsAction => ({ type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS, payload })
 export const fetchLocalRefs = (payload: IFetchLocalRefsAction['payload']): IFetchLocalRefsAction => ({ type: RepoActionType.FETCH_LOCAL_REFS, payload })
