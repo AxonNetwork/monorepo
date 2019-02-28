@@ -10,6 +10,7 @@ import App from './App'
 import store from 'redux/store'
 import history from 'conscience-components/redux/history'
 import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
+import { initNodeWatcher } from 'conscience-components/redux/repo/repoActions'
 import * as rpc from 'conscience-lib/rpc'
 import { isProduction } from 'conscience-lib/utils'
 import { initPlugins } from 'conscience-lib/plugins'
@@ -29,6 +30,7 @@ initPlugins()
 store.dispatch(readLocalConfig())
 store.dispatch(checkBalanceAndHitFaucet())
 store.dispatch(checkNodeUser())
+store.dispatch(initNodeWatcher({}))
 
 // Webpack offline plugin
 if (isProduction) {

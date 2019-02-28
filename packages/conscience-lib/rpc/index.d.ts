@@ -1,4 +1,5 @@
 import { ILocalRepo, IRef } from '../common'
+import events from 'events'
 
 declare module 'conscience-lib/rpc' {
     export interface IRPCClient {
@@ -45,6 +46,8 @@ declare module 'conscience-lib/rpc' {
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
         getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
+        watch: (parms: { eventTypes: (0 | 1 | 2)[] }) => events.EventEmitter
+
 
         // @@TODO: convert to enum
         UserType: {
@@ -52,6 +55,13 @@ declare module 'conscience-lib/rpc' {
             PULLER: 1,
             PUSHER: 2,
         }
+
+        EventType: {
+            ADDED_REPO: 0,
+            PULLED_REPO: 1,
+            UPDATED_REF: 2,
+        }
+
     }
 
     export interface IRPCFile {

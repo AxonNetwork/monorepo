@@ -24,6 +24,12 @@ function initClient(protoPath) {
         PUSHER: 2,
     }
 
+    client.EventType = {
+        ADDED_REPO:  0,
+        PULLED_REPO: 1,
+        UPDATED_REF: 2,
+    }
+
     // @@TODO: this invalidates the whole purpose of streaming the response.  redo this later.
     client.getLocalReposAsync = (params) => {
         return new Promise((resolve, reject) => {

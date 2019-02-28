@@ -24,10 +24,11 @@ import {
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
+    IInitNodeWatcherAction,
     IWatchRepoAction,
     cloneRepoProgress, cloneRepoSuccess, cloneRepoFailed,
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
-    fetchRepoFiles, behindRemote,
+    fetchRepoFiles, fetchIsBehindRemote, addRepoToRepoList, watchRepo,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -69,7 +70,6 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
         }
 
         const uri = { type: URIType.Local, repoRoot: initPath } as URI
-        await dispatch(fetchFullRepo({ uri }))
         selectRepo(uri, RepoPage.Home)
 
         return { repoID, path: initPath, orgID }
@@ -100,11 +100,12 @@ const getLocalRepoListLogic = makeLogic<IGetLocalRepoListAction, IGetLocalRepoLi
 
 const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction>({
     type: RepoActionType.FETCH_REPO_METADATA,
-    async process({ action }) {
+    async process({ action }, dispatch) {
         const { repoList = [] } = action.payload
         let metadataByURI = {} as { [uri: string]: IRepoMetadata | null }
         if (repoList.length === 0) {
             return { metadataByURI }
+
         } else if (repoList[repoList.length - 1].type === URIType.Local) {
             // await LocalCache.wipe()
             const promises = repoList.map(uri => LocalCache.loadMetadata(uri as LocalURI))
@@ -114,6 +115,7 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
                 const uriStr = uriToString(repoList[i])
                 metadataByURI[uriStr] = metadataList[i]
             }
+            await Promise.all(repoList.map(uri => dispatch(watchRepo({ uri })))
         } else {
             const repoIDs = repoList.map(id => getRepoID(id))
             const metadataList = await ServerRelay.getRepoMetadata(repoIDs)
@@ -224,6 +226,7 @@ const fetchIsBehindRemoteLogic = makeLogic<IFetchIsBehindRemoteAction, IFetchIsB
     type: RepoActionType.FETCH_IS_BEHIND_REMOTE,
     async process({ action, getState }) {
         const { uri } = action.payload
+        let isBehindRemote = false
         if (uri.type === URIType.Local) {
             const repoID = getRepoID(uri)
             const metadata = (await LocalCache.loadMetadata(uri as LocalURI)) || {}
@@ -233,13 +236,14 @@ const fetchIsBehindRemoteLogic = makeLogic<IFetchIsBehindRemoteAction, IFetchIsB
                 return { uri, isBehindRemote: false }
             }
             const currentRemote = events[events.length - 1].commit
-            const cachedCommit = (await LocalCache.loadCommits(uri as LocalURI, [currentRemote]))[0]
-            if (!cachedCommit) {
-                return { uri, isBehindRemote: true }
+            try {
+                await rpc.getClient().getRepoHistoryAsync({ path: uri.repoRoot, fromCommit: currentRemote, pageSize: 1 })
+            } catch (err) {
+                isBehindRemote = true
             }
         }
 
-        return { uri, isBehindRemote: false }
+        return { uri, isBehindRemote }
     },
 })
 
@@ -426,7 +430,6 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
             if (success) {
                 const uri = { type: URIType.Local, repoRoot: path } as URI
                 await dispatch(cloneRepoSuccess({ repoID }))
-                await dispatch(fetchFullRepo({ uri }))
                 selectRepo(uri, RepoPage.Home)
             }
             done()
@@ -450,7 +453,6 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
                 await dispatch(pullRepoProgress({ uri, fetched, toFetch }))
             })
             stream.on('end', async () => {
-                await dispatch(fetchFullRepo({ uri }))
                 await dispatch(pullRepoSuccess({ uri }))
                 done()
             })
@@ -462,6 +464,25 @@ const pullRepoLogic = makeContinuousLogic<IPullRepoAction>({
             const err = new Error("Cannot pull network repo")
             await dispatch(pullRepoFailed({ error: err, original: action }))
         }
+    },
+})
+
+const initNodeWatcherLogic = makeContinuousLogic<IInitNodeWatcherAction>({
+    type: RepoActionType.INIT_NODE_WATCHER,
+    async process({ action, getState }, dispatch, done) {
+        const nodeWatcher = RepoWatcher.watchNode()
+        nodeWatcher.on('added_repo', (evt) => {
+            const { repoRoot, repoID } = evt
+            dispatch(addRepoToRepoList({ repoRoot, repoID }))
+        })
+        nodeWatcher.on('error', (err) => {
+            console.error('Error in NodeWatcher ~> ', err)
+            done()
+        })
+        nodeWatcher.on('end', () => {
+            console.log('listener stopped')
+            done()
+        })
     },
 })
 
@@ -480,14 +501,19 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
                 watcher.on('file_change', () => {
                     dispatch(fetchRepoFiles({ uri: { ...uri, commit: 'working' } }))
                 })
-                watcher.on('behind_remote', () => {
+                watcher.on('updated_ref', () => {
                     if (!getState().repo.isBehindRemoteByURI[uriStr]) {
-                        dispatch(behindRemote({ uri }))
+                        dispatch(fetchIsBehindRemote({ uri }))
                     }
+                })
+                watcher.on('pulled_repo', () => {
+                    dispatch(fetchIsBehindRemote({ uri }))
                 })
                 watcher.on('end', () => {
                     done()
                 })
+            } else {
+                done()
             }
         }
     },
@@ -514,5 +540,6 @@ export default [
     setRepoPublicLogic,
     cloneRepoLogic,
     pullRepoLogic,
+    initNodeWatcherLogic,
     watchRepoLogic,
 ]

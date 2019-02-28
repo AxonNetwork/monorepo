@@ -30,6 +30,9 @@ const watchNode = async () => {
     watcher.on('error', (err) => {
     	console.error('Node Watcher err ~> ', err)
     })
+    watcher.on('end', () => {
+        console.error('Node Watcher err ~> Connection borken with node')
+    })
 }
 
 export default watchNode

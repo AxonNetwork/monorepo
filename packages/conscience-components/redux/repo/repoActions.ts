@@ -11,6 +11,8 @@ export enum RepoActionType {
     GET_LOCAL_REPO_LIST_SUCCESS = 'GET_LOCAL_REPO_LIST_SUCCESS',
     GET_LOCAL_REPO_LIST_FAILED = 'GET_LOCAL_REPO_LIST_FAILED',
 
+    ADD_REPO_TO_REPO_LIST = 'ADD_REPO_TO_REPO_LIST',
+
     FETCH_REPO_METADATA = 'FETCH_REPO_METADATA',
     FETCH_REPO_METADATA_SUCCESS = 'FETCH_REPO_METADATA_SUCCESS',
     FETCH_REPO_METADATA_FAILED = 'FETCH_REPO_METADATA_FAILED',
@@ -77,10 +79,13 @@ export enum RepoActionType {
     PULL_REPO_SUCCESS = 'PULL_REPO_SUCCESS',
     PULL_REPO_FAILED = 'PULL_REPO_FAILED',
 
+    INIT_NODE_WATCHER = 'INIT_NODE_WATCHER',
+    INIT_NODE_WATCHER_SUCCESS = 'INIT_NODE_WATCHER_SUCCESS',
+
     WATCH_REPO = 'WATCH_REPO',
     WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
 
-    BEHIND_REMOTE = 'BEHIND_REMOTE',
+    SET_IS_BEHIND_REMOTE = 'SET_IS_BEHIND_REMOTE',
 }
 
 export interface IGetRepoListAction {
@@ -113,6 +118,14 @@ export interface IGetLocalRepoListSuccessAction {
 }
 
 export type IGetLocalRepoListFailedAction = FailedAction<RepoActionType.GET_LOCAL_REPO_LIST_FAILED>
+
+export interface IAddRepoToRepoListAction {
+    type: RepoActionType.ADD_REPO_TO_REPO_LIST
+    payload: {
+        repoRoot: string
+        repoID: string
+    }
+}
 
 export interface IFetchRepoMetadataAction {
     type: RepoActionType.FETCH_REPO_METADATA
@@ -414,6 +427,16 @@ export interface IPullRepoSuccessAction {
 
 export type IPullRepoFailedAction = FailedAction<RepoActionType.PULL_REPO_FAILED>
 
+export interface IInitNodeWatcherAction {
+    type: RepoActionType.INIT_NODE_WATCHER
+    payload: {}
+}
+
+export interface IInitNodeWatcherSuccessAction {
+    type: RepoActionType.INIT_NODE_WATCHER_SUCCESS
+    payload: {}
+}
+
 export interface IWatchRepoAction {
     type: RepoActionType.WATCH_REPO
     payload: {
@@ -426,10 +449,11 @@ export interface IWatchRepoSuccessAction {
     payload: {}
 }
 
-export interface IBehindRemoteAction {
-    type: RepoActionType.BEHIND_REMOTE
+export interface ISetIsBehindRemoteAction {
+    type: RepoActionType.SET_IS_BEHIND_REMOTE
     payload: {
         uri: URI
+        isBehindRemote: boolean
     }
 }
 
@@ -441,6 +465,8 @@ export type IRepoAction =
     IGetLocalRepoListAction |
     IGetLocalRepoListSuccessAction |
     IGetLocalRepoListFailedAction |
+
+    IAddRepoToRepoListAction |
 
     IFetchRepoMetadataAction |
     IFetchRepoMetadataSuccessAction |
@@ -508,14 +534,17 @@ export type IRepoAction =
     IPullRepoSuccessAction |
     IPullRepoFailedAction |
 
+    IInitNodeWatcherAction |
+    IInitNodeWatcherSuccessAction |
+
     IWatchRepoAction |
     IWatchRepoSuccessAction |
 
-    IBehindRemoteAction
+    ISetIsBehindRemoteAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
-
+export const addRepoToRepoList = (payload: IAddRepoToRepoListAction['payload']): IAddRepoToRepoListAction => ({ type: RepoActionType.ADD_REPO_TO_REPO_LIST, payload })
 
 export const fetchRepoMetadata = (payload: IFetchRepoMetadataAction['payload']): IFetchRepoMetadataAction => ({ type: RepoActionType.FETCH_REPO_METADATA, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
@@ -546,5 +575,6 @@ export const pullRepoProgress = (payload: IPullRepoProgressAction['payload']): I
 export const pullRepoSuccess = (payload: IPullRepoSuccessAction['payload']): IPullRepoSuccessAction => ({ type: RepoActionType.PULL_REPO_SUCCESS, payload })
 export const pullRepoFailed = (payload: IPullRepoFailedAction['payload']): IPullRepoFailedAction => ({ type: RepoActionType.PULL_REPO_FAILED, payload })
 
+export const initNodeWatcher = (payload: IInitNodeWatcherAction['payload']): IInitNodeWatcherAction => ({ type: RepoActionType.INIT_NODE_WATCHER, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
-export const behindRemote = (payload: IBehindRemoteAction['payload']): IBehindRemoteAction => ({ type: RepoActionType.BEHIND_REMOTE, payload })
+export const setIsBehindRemote = (payload: ISetIsBehindRemoteAction['payload']): ISetIsBehindRemoteAction => ({ type: RepoActionType.SET_IS_BEHIND_REMOTE, payload })
