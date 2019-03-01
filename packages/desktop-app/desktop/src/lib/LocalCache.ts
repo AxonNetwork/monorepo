@@ -65,7 +65,7 @@ const LocalCache = {
         // if most recent is in cache, return
         const repoMetadata = await db.metadata.findOneAsync({ path })
 
-        if (repoMetadata && repoMetadata.currentHead === commits[0].commitHash) {
+        if (repoMetadata && repoMetadata.currentHEAD === commits[0].commitHash) {
             return true
         }
         return false
@@ -78,11 +78,11 @@ const LocalCache = {
         }
         const path = uri.repoRoot
         let metadata = db.metadata.findOneAsync({ path })
-        const oldHEAD = (metadata || {}).oldHEAD
-        const startBlock = (metadata || {}).blockNumber
-        const fromInitialCommit = oldHEAD === undefined
+        const currentHEAD = (metadata || {}).currentHEAD
+        const startBlock = (metadata || {}).lastBlockNumber
+        const fromInitialCommit = currentHEAD === undefined
 
-        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, toCommit: oldHEAD })
+        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, toCommit: currentHEAD })
         if (commits.length === 0) {
             return
         }
@@ -92,6 +92,7 @@ const LocalCache = {
 
         const timeline = interpolateTimeline(repoID, commits, refEventsList)
         const filesByCommit = commits.map(c => c.files)
+
         let currentStats = {}
         if (!fromInitialCommit) {
             const allFiles = uniq(flatten(filesByCommit)).map(f => { file: f })

@@ -7,7 +7,7 @@ app.listen(process.env.PORT, () => {
     console.log(`ITS ALIVE ON PORT ${process.env.PORT}`)
 })
 
-// setupRepoCache()
-// watchNode()
+setupRepoCache()
+watchNode()
 
 process.on('SIGINT', () => { console.log('Bye bye!'); process.exit() })

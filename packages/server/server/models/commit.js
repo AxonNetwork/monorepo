@@ -25,11 +25,11 @@ Commit.get = async (repoID, commits) => {
         commits = [ commits ]
     }
     const keys = commits.map(commit => ({ repoID, commit }))
-    const writePromises = chunk(keys, 25)
+    const readPromises = chunk(keys, 25)
         .map(req => ({ RequestItems: { [CommitTable]: { Keys: keys } } }))
         .map(params => dynamo.batchGetAsync(params))
     try {
-        const resp = (await Promise.all(writePromises))
+        const resp = (await Promise.all(readPromises))
             .map(r => r.Responses[CommitTable])
         const flat = [].concat.apply([], resp)
         return flat

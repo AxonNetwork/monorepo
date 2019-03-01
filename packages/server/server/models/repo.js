@@ -65,6 +65,7 @@ Repo.get = async (repoID) => {
         lastVerifiedTime:    result.lastVerifiedTime,
         lastVerifiedCommit:  result.lastVerifiedCommit,
         currentHEAD:         result.currentHEAD,
+        blockNumber:         result.blockNumber,
     }
 }
 
@@ -94,24 +95,27 @@ Repo.updateField = async (repoID, field, value) => {
     }
 }
 
-Repo.updateCacheFields = async (repoID, currentHEAD, lastVerifiedEvent, firstVerifiedEvent) => {
-    let updateExpression = 'SET currentHEAD = :currentHEAD'
-    const expressionAttrVals = { ':currentHEAD': currentHEAD }
-    if (lastVerifiedEvent !== undefined) {
+Repo.updateCacheFields = async (metadata) => {
+    let updateExpression = 'SET currentHEAD = :currentHEAD, lastBlockNumber = :lastBlockNumber'
+    const expressionAttrVals = {
+        ':currentHEAD':     metadata.currentHEAD,
+        ':lastBlockNumber': metadata.lastBlockNumber.toNumber() * 1000,
+    }
+    if (metadata.lastVerifiedTime !== undefined) {
         updateExpression += ', lastVerifiedTime = :lastVerifiedTime'
         updateExpression += ', lastVerifiedCommit = :lastVerifiedCommit'
-        expressionAttrVals[':lastVerifiedTime'] = lastVerifiedEvent.time.toNumber() * 1000
-        expressionAttrVals[':lastVerifiedCommit'] = lastVerifiedEvent.commit
+        expressionAttrVals[':lastVerifiedTime'] = metadata.lastVerifiedTime.toNumber() * 1000
+        expressionAttrVals[':lastVerifiedCommit'] = metadata.lastVerifiedCommit
     }
-    if (firstVerifiedEvent !== undefined) {
+    if (metadata.firstVerifiedTime !== undefined) {
         updateExpression += ', firstVerifiedTime = :firstVerifiedTime'
         updateExpression += ', firstVerifiedCommit = :firstVerifiedCommit'
-        expressionAttrVals[':firstVerifiedTime'] = firstVerifiedEvent.time.toNumber() * 1000
-        expressionAttrVals[':firstVerifiedCommit'] = firstVerifiedEvent.commit
+        expressionAttrVals[':firstVerifiedTime'] = metadata.firstVerifiedTime.toNumber() * 1000
+        expressionAttrVals[':firstVerifiedCommit'] = metadata.firstVerifiedCommit
     }
     const params = {
         TableName:                 RepoTable,
-        Key:                       { repoID },
+        Key:                       { repoID: metadata.repoID },
         UpdateExpression:          updateExpression,
         ExpressionAttributeValues: expressionAttrVals,
     }

@@ -97,6 +97,10 @@ routes.patch('/api/org/:orgID/blog/:created', mustAuthenticate, asyncMiddleware(
 routes.post('/api/faucet', asyncMiddleware(faucetController.ethFaucet))
 routes.get('/api/balance', asyncMiddleware(faucetController.getBalance))
 
+routes.get('/api/test', (req, res) => {
+    res.status(200).json({})
+})
+
 routes.get('/api/repo/:repoID/object/:objectID', (req, res) => {
     const { repoID, objectID } = req.params
 

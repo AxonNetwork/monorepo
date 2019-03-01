@@ -18,6 +18,25 @@ SecuredText.addFiles = async (files) => {
     }
 }
 
+SecuredText.getFilesForRepo = async (repoID, filesList) => {
+    if (!filesList || filesList.length === 0) {
+        return []
+    }
+    const keys = filesList.map(file => ({ repoID, file }))
+    const readPromises = chunk(keys, 25)
+        .map(req => ({ RequestItems: { [SecuredTextTable]: { Keys: keys } } }))
+        .map(params => dynamo.batchGetAsync(params))
+    try {
+        const resp = (await Promise.all(readPromises))
+            .map(r => r.Responses[SecuredTextTable])
+        const flat = [].concat.apply([], resp)
+        return flat
+    } catch (err) {
+        console.error('Error in SecuredText.getFilesForRepo ~>', err)
+        throw err
+    }
+}
+
 SecuredText.getForFile = async (repoID, file) => {
     const params = {
         TableName: SecuredTextTable,
