@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults } from './common'
+import { IRepo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, ISearchUserResult } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -461,7 +461,7 @@ const ServerRelay = {
     },
 
     async updateOrgColors(orgID: string, primaryColor: string, secondaryColor: string) {
-        interface IResponse {}
+        interface IResponse { }
         await axios.post<IResponse>(API_URL + '/org/' + orgID + '/update-colors', {
             primaryColor,
             secondaryColor,
@@ -487,6 +487,14 @@ const ServerRelay = {
 
         const qs = querystring.stringify({ q: query })
         const resp = await axios.get<IResponse>(API_URL + `/search/search?${qs}`)
+        return resp.data
+    },
+
+    async searchUsers(query: string) {
+        type IResponse = ISearchUserResult[]
+
+        const qs = querystring.stringify({ q: query })
+        const resp = await axios.get<IResponse>(API_URL + `/search/search-users?${qs}`)
         return resp.data
     },
 }

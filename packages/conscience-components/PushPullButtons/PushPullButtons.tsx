@@ -323,7 +323,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         files: state.repo.filesByURI[uriStr] || {},
         isBehindRemote: state.repo.isBehindRemoteByURI[uriStr] || false,
-        userSettings: state.user.userSettings.manualChunking || false,
+        manualChunking: state.user.userSettings.manualChunking || false,
         pullProgress: state.ui.pullRepoProgressByURI[uriStr],
         checkpointLoading: state.ui.checkpointLoading || false,
     }

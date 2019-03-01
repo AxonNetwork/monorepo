@@ -28,11 +28,13 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import UserAvatar from '../UserAvatar'
+import UserSearchResult from '../UserSearchResult'
 import { H6 } from '../Typography/Headers'
 import { updateUserPermissions, setRepoPublic } from '../redux/repo/repoActions'
+import { clearSearch, searchUsers } from '../redux/search/searchActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
-import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
+import { IRepoPermissions, ISearchUserResult, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -46,6 +48,7 @@ class SharedUsers extends React.Component<Props, State>
         readChecked: false,
         writeChecked: false,
         adminChecked: false,
+        searchDialogOpen: false,
     }
 
     _inputUser: HTMLInputElement | null = null
@@ -88,7 +91,7 @@ class SharedUsers extends React.Component<Props, State>
                         }
                         <Button
                             color="secondary"
-                            onClick={() => this.openUserDialog()}
+                            onClick={() => this.openSearchDialog()}
                             disabled={updatingNew}
                         >
                             {updatingNew && <CircularProgress size={24} className={classes.buttonLoading} />}
@@ -177,27 +180,55 @@ class SharedUsers extends React.Component<Props, State>
                         </DialogActions>
                     </Dialog>
 
-                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
-                        {selectedUser === undefined &&
-                            <DialogTitle>Add User</DialogTitle>
-                        }
-                        {selectedUser !== undefined &&
-                            <DialogTitle>Change Permissions</DialogTitle>
-                        }
-                        <DialogContent className={classes.dialog}>
-                            {selectedUser === undefined &&
+                    <Dialog open={this.state.searchDialogOpen} onClose={this.closeSearchDialog}>
+                        <DialogTitle>Add User</DialogTitle>
+                        <form onSubmit={this.searchUser}>
+                            <DialogContent className={classes.dialog}>
+                                <Typography variant='subtitle1'>
+                                    Search:
+                                </Typography>
                                 <TextField
-                                    label="Username"
+                                    label="Name or username"
                                     fullWidth
                                     inputRef={x => this._inputUser = x}
                                 />
-                            }
-                            {selectedUser !== undefined &&
-                                <Typography>
-                                    <strong>User:</strong>
-                                    {selectedUser}
-                                </Typography>
-                            }
+                                {this.props.userResult &&
+                                    <List>
+                                        {this.props.userResult.map(({ userID }) => (
+                                            <UserSearchResult
+                                                user={this.props.users[userID]}
+                                                onClick={this.openUserDialog}
+                                            />
+                                        ))}
+                                    </List>
+                                }
+                            </DialogContent>
+                            <DialogActions>
+                                <Button
+                                    type="submit"
+                                    color="secondary"
+                                    variant='contained'
+                                >
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={this.closeSearchDialog}
+                                    color="secondary"
+                                    variant='outlined'
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
+
+                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
+                        <DialogTitle>Change Permissions</DialogTitle>
+                        <DialogContent className={classes.dialog}>
+                            <Typography>
+                                <strong>User:</strong>
+                                {selectedUser}
+                            </Typography>
                             <List>
                                 <ListItem className={classes.listItem}>
                                     <ListItemText primary='Read' />
@@ -256,10 +287,32 @@ class SharedUsers extends React.Component<Props, State>
         this.setState({ publicDialogOpen: false })
     }
 
+    openSearchDialog() {
+        this.props.clearSearch({})
+        this.setState({ searchDialogOpen: true })
+    }
+
+    closeSearchDialog() {
+        this.setState({ searchDialogOpen: false })
+    }
+
+    searchUser(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        if (this._inputUser === null) {
+            return
+        }
+        const username = this._inputUser.value
+        if (username.length < 1) {
+            return
+        }
+        this.props.searchUsers({ query: username })
+    }
+
     openUserDialog(username?: string) {
         const { admins = [], pushers = [], pullers = [] } = this.props.permissions
         this.setState({
             userDialogOpen: true,
+            searchDialogOpen: false,
             selectedUser: username,
             adminChecked: admins.indexOf(username || '') > -1,
             writeChecked: pushers.indexOf(username || '') > -1,
@@ -279,20 +332,13 @@ class SharedUsers extends React.Component<Props, State>
 
     changePermissions() {
         const { selectedUser, readChecked, writeChecked, adminChecked } = this.state
-        let username = selectedUser as string | undefined
-        if (username === undefined) {
-            if (this._inputUser === null) {
-                return
-            }
-            username = this._inputUser.value
-            if (username.length < 1) {
-                return
-            }
+        if (selectedUser === undefined) {
+            return
         }
         const uri = this.props.uri
         this.props.updateUserPermissions({
             uri,
-            username,
+            username: selectedUser,
             admin: adminChecked,
             pusher: writeChecked,
             puller: readChecked
@@ -323,6 +369,7 @@ interface StateProps {
     permissions: IRepoPermissions
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
+    userResult?: ISearchUserResult[]
     currentUser: string
     updatingUserPermissions: string | undefined
     isPublic: boolean
@@ -331,10 +378,13 @@ interface StateProps {
 interface DispatchProps {
     updateUserPermissions: typeof updateUserPermissions
     setRepoPublic: typeof setRepoPublic
+    searchUsers: typeof searchUsers
+    clearSearch: typeof clearSearch
 }
 
 interface State {
     userDialogOpen: boolean
+    searchDialogOpen: boolean
     publicDialogOpen: boolean
     selectedUser: string | undefined
     readChecked: boolean
@@ -401,6 +451,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         permissions: state.repo.permissionsByID[repoID],
         users: state.user.users,
         usersByUsername: state.user.usersByUsername,
+        userResult: (state.search.results || {}).users,
         currentUser: state.user.currentUser || '',
         updatingUserPermissions: state.ui.updatingUserPermissions,
         isPublic: state.repo.isPublicByID[repoID] || false,
@@ -410,6 +461,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 const mapDispatchToProps = {
     updateUserPermissions,
     setRepoPublic,
+    searchUsers,
+    clearSearch,
 }
 
 export default connect(

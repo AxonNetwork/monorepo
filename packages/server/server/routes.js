@@ -194,6 +194,7 @@ routes.get('/api/repo/:repoID/diff/:commit', (req, res) => {
 
 routes.get('/api/search/get', asyncMiddleware(searchController.get))
 routes.get('/api/search/search', asyncMiddleware(searchController.search))
+routes.get('/api/search/search-users', asyncMiddleware(searchController.searchUsers))
 routes.get('/api/search/refresh', asyncMiddleware(searchController.refresh))
 routes.get('/api/search/reindex-repo', asyncMiddleware(searchController.reindexRepo))
 
