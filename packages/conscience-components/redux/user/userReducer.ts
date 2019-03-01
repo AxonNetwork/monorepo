@@ -14,6 +14,7 @@ export const initialState = {
         codeColorScheme: 'pojoaque',
         menuLabelsHidden: false,
         fileExtensionsHidden: false,
+        manualChunking: false,
         newestViewedCommentTimestamp: {},
     },
 

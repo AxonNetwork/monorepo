@@ -134,6 +134,7 @@ export interface IUserSettings {
     codeColorScheme?: string
     menuLabelsHidden?: boolean
     fileExtensionsHidden?: boolean
+    manualChunking?: boolean
     newestViewedCommentTimestamp?: ICommentTimestamp
 }
 
@@ -154,7 +155,7 @@ export interface IOrganization {
     repos: string[] //repoID[]
     featuredRepos: { [repoID: string]: IFeaturedRepo }
     primaryColor: string
-    secondaryColor: string 
+    secondaryColor: string
 }
 
 export interface IOrgBlog {

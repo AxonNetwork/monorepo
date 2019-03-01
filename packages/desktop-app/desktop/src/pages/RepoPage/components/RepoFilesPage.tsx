@@ -39,7 +39,6 @@ class RepoFilesPage extends React.Component<Props>
                         files={files || {}}
                         fileExtensionsHidden={this.props.fileExtensionsHidden}
                         canEditFiles
-                        openFileIcon
                     />
                 </div>
             )

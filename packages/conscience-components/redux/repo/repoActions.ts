@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { IRepo, URI, NetworkURI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
+import { IRepo, URI, NetworkURI, LocalURI, IRepoFile, ITimelineEvent } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -50,6 +50,10 @@ export enum RepoActionType {
     SET_REPO_PUBLIC = 'SET_REPO_PUBLIC',
     SET_REPO_PUBLIC_SUCCESS = 'SET_REPO_PUBLIC_SUCCESS',
     SET_REPO_PUBLIC_FAILED = 'SET_REPO_PUBLIC_FAILED',
+
+    SET_FILES_CHUNKING = 'SET_FILES_CHUNKING',
+    SET_FILES_CHUNKING_SUCCESS = 'SET_FILES_CHUNKING_SUCCESS',
+    SET_FILES_CHUNKING_FAILED = 'SET_FILES_CHUNKING_FAILED',
 
     INIT_REPO = 'INIT_REPO',
     INIT_REPO_SUCCESS = 'INIT_REPO_SUCCESS',
@@ -286,6 +290,24 @@ export interface ISetRepoPublicSuccessAction {
 
 export type ISetRepoPublicFailedAction = FailedAction<RepoActionType.SET_REPO_PUBLIC_FAILED>
 
+export interface ISetFilesChunkingAction {
+    type: RepoActionType.SET_FILES_CHUNKING
+    payload: {
+        uri: LocalURI
+        shouldChunkByFile: { [file: string]: boolean }
+    }
+}
+
+export interface ISetFilesChunkingSuccessAction {
+    type: RepoActionType.SET_FILES_CHUNKING_SUCCESS
+    payload: {
+        uri: LocalURI
+        shouldChunkByFile: { [file: string]: boolean }
+    }
+}
+
+export type ISetFilesChunkingFailedAction = FailedAction<RepoActionType.SET_FILES_CHUNKING_FAILED>
+
 export interface IInitRepoAction {
     type: RepoActionType.INIT_REPO
     payload: {
@@ -439,6 +461,10 @@ export type IRepoAction =
     ISetRepoPublicSuccessAction |
     ISetRepoPublicFailedAction |
 
+    ISetFilesChunkingAction |
+    ISetFilesChunkingSuccessAction |
+    ISetFilesChunkingFailedAction |
+
     IInitRepoAction |
     IInitRepoSuccessAction |
     IInitRepoFailedAction |
@@ -477,6 +503,7 @@ export const getDiff = (payload: IGetDiffAction['payload']): IGetDiffAction => (
 export const updateUserPermissions = (payload: IUpdateUserPermissionsAction['payload']): IUpdateUserPermissionsAction => ({ type: RepoActionType.UPDATE_USER_PERMISSIONS, payload })
 export const setRepoPublic = (payload: ISetRepoPublicAction['payload']): ISetRepoPublicAction => ({ type: RepoActionType.SET_REPO_PUBLIC, payload })
 
+export const setFilesChunking = (payload: ISetFilesChunkingAction['payload']): ISetFilesChunkingAction => ({ type: RepoActionType.SET_FILES_CHUNKING, payload })
 export const initRepo = (payload: IInitRepoAction['payload']): IInitRepoAction => ({ type: RepoActionType.INIT_REPO, payload })
 
 export const checkpointRepo = (payload: ICheckpointRepoAction['payload']): ICheckpointRepoAction => ({ type: RepoActionType.CHECKPOINT_REPO, payload })

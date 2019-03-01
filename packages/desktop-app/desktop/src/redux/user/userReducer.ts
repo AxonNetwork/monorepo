@@ -90,6 +90,7 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
                     codeColorScheme: config.codeColorScheme || 'pojoaque',
                     menuLabelsHidden: config.menuLabelsHidden || false,
                     fileExtensionsHidden: config.fileExtensionsHidden || false,
+                    manualChunking: config.manualChunking || false,
                     newestViewedCommentTimestamp: config.newestViewedCommentTimestamp || {},
                 },
             }

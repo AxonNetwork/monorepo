@@ -17,7 +17,9 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { pullRepo, checkpointRepo } from '../redux/repo/repoActions'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import Checkbox from '@material-ui/core/Checkbox'
+import { pullRepo, checkpointRepo, setFilesChunking } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectFile } from '../navigation'
 import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
@@ -30,6 +32,8 @@ class PushPullButtons extends React.Component<Props, State>
     state = {
         pushDialogOpen: false,
         mergeConflictDialogOpen: false,
+        chunkingDialogOpen: false,
+        isFileChecked: {} as { [file: string]: boolean },
     }
 
     _inputCommitMessage: HTMLInputElement | null = null
@@ -56,7 +60,9 @@ class PushPullButtons extends React.Component<Props, State>
             return (file.status === 'M' || file.status === '?' || file.status === 'U')
         })
 
-        const mergeConflicts = Object.keys(files).filter(name => files[name].mergeConflict)
+        const mergeConflicts = this.state.mergeConflictDialogOpen ?
+            Object.keys(files).filter(name => files[name].mergeConflict) : undefined
+
         const pullDisabled = !this.props.isBehindRemote || pullLoading
         const pushDisabled = !filesChanged || checkpointLoading
 
@@ -97,14 +103,14 @@ class PushPullButtons extends React.Component<Props, State>
                 </Tooltip>
 
 
-                <Dialog open={this.state.mergeConflictDialogOpen}>
+                <Dialog open={this.state.mergeConflictDialogOpen} onClose={this.onClickCloseMergeConflictDialog}>
                     <DialogTitle>Resolve Merge Conflicts</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             Looks like you have some merge conflicts in the following files. Click on the file to resolve the conflicts before committing your changes.
                         </DialogContentText>
                         <List>
-                            {mergeConflicts.map(file => (
+                            {(mergeConflicts || []).map(file => (
                                 <ListItem button onClick={() => this.onClickOpenMergeConflict(file)}>
                                     <ListItemText primary={file} />
                                 </ListItem>
@@ -116,7 +122,46 @@ class PushPullButtons extends React.Component<Props, State>
                     </DialogActions>
                 </Dialog>
 
-                <Dialog open={this.state.pushDialogOpen}>
+                <Dialog open={this.state.chunkingDialogOpen} onClose={this.onClickCancelPushDialog}>
+                    <DialogTitle>Commit your changes</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Looks like there a are some large files in repository that aren't being chunked. We recommend chunking any file over 10MB.
+                        </DialogContentText>
+                        <DialogContentText>
+                            Enable Chunking:
+                        </DialogContentText>
+                        <List>
+                            {Object.keys(this.state.isFileChecked).map(file => (
+                                <ListItem button onClick={() => this.onClickToggleFile(file)}>
+                                    <ListItemText primary={file} />
+                                    <ListItemSecondaryAction>
+                                        <Checkbox checked={this.state.isFileChecked[file]} />
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={this.onClickConfirmChunking}
+                            color="secondary"
+                            variant="contained"
+                        >
+                            Confirm
+                        </Button>
+                        <Button
+                            onClick={this.onClickCancelPushDialog}
+                            color="secondary"
+                            variant="outlined"
+                            autoFocus
+                        >
+                            Cancel
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog open={this.state.pushDialogOpen} onClose={this.onClickCancelPushDialog}>
                     <DialogTitle>Commit your changes</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
@@ -160,14 +205,25 @@ class PushPullButtons extends React.Component<Props, State>
         const mergeConflict = Object.keys(files).some(name => files[name].mergeConflict)
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
-
         } else {
-            this.setState({ pushDialogOpen: true })
+            const threshold = 1024 * 1024 * 10
+            const largeFileList = Object.keys(files)
+                .filter(name => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U')
+                .filter(name => files[name].size >= threshold)
+            if (!this.props.manualChunking || largeFileList.length === 0) {
+                this.setState({ pushDialogOpen: true })
+            } else {
+                const isFileChecked = largeFileList.reduce((acc, curr) => {
+                    acc[curr] = true
+                    return acc
+                }, {} as { [file: string]: boolean })
+                this.setState({ chunkingDialogOpen: true, isFileChecked })
+            }
         }
     }
 
     onClickCancelPushDialog() {
-        this.setState({ pushDialogOpen: false })
+        this.setState({ pushDialogOpen: false, chunkingDialogOpen: false })
     }
 
     onClickCloseMergeConflictDialog() {
@@ -177,6 +233,24 @@ class PushPullButtons extends React.Component<Props, State>
     onClickOpenMergeConflict(filename: string) {
         this.setState({ mergeConflictDialogOpen: false })
         selectFile({ ...this.props.uri, filename }, FileMode.ResolveConflict)
+    }
+
+    onClickToggleFile(filename: string) {
+        this.setState(prevState => ({
+            ...prevState,
+            isFileChecked: {
+                ...prevState.isFileChecked,
+                [filename]: !prevState.isFileChecked[filename]
+            }
+        }))
+    }
+
+    onClickConfirmChunking() {
+        this.props.setFilesChunking({
+            uri: this.props.uri,
+            shouldChunkByFile: this.state.isFileChecked,
+        })
+        this.setState({ pushDialogOpen: true, chunkingDialogOpen: false, isFileChecked: {} })
     }
 
     onClickPush() {
@@ -206,6 +280,7 @@ interface OwnProps {
 interface StateProps {
     files: { [name: string]: IRepoFile }
     isBehindRemote: boolean
+    manualChunking: boolean
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
 }
@@ -213,11 +288,14 @@ interface StateProps {
 interface DispatchProps {
     pullRepo: typeof pullRepo
     checkpointRepo: typeof checkpointRepo
+    setFilesChunking: typeof setFilesChunking
 }
 
 interface State {
     pushDialogOpen: boolean
     mergeConflictDialogOpen: boolean
+    chunkingDialogOpen: boolean
+    isFileChecked: { [file: string]: boolean }
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -245,6 +323,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     return {
         files: state.repo.filesByURI[uriStr] || {},
         isBehindRemote: state.repo.isBehindRemoteByURI[uriStr] || false,
+        userSettings: state.user.userSettings.manualChunking || false,
         pullProgress: state.ui.pullRepoProgressByURI[uriStr],
         checkpointLoading: state.ui.checkpointLoading || false,
     }
@@ -253,6 +332,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 const mapDispatchToProps = {
     pullRepo,
     checkpointRepo,
+    setFilesChunking,
 }
 
 export default connect(
