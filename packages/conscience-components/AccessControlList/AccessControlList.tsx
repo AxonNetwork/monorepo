@@ -1,7 +1,6 @@
-import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
-import { Theme, withStyles, createStyles } from '@material-ui/core'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
@@ -27,20 +26,24 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import LargeProgressSpinner from '../LargeProgressSpinner'
 import UserAvatar from '../UserAvatar'
+import UserSearchResult from '../UserSearchResult'
 import { H6 } from '../Typography/Headers'
 import { fetchRepoUsersPermissions, updateUserPermissions, setRepoPublic } from '../redux/repo/repoActions'
+import { clearSearch, searchUsers } from '../redux/search/searchActions'
 import { IGlobalState } from '../redux'
 import { getRepoID } from '../env-specific'
-import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
+import { IRepoPermissions, ISearchUserResult, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import union from 'lodash/union'
 import isEqual from 'lodash/isEqual'
 
 
 @autobind
-class AccessControlList extends React.Component<Props, State>
+class SharedUsers extends React.Component<Props, State>
 {
+    _inputUser: HTMLInputElement | null = null
+
     state = {
         userDialogOpen: false,
         publicDialogOpen: false,
@@ -48,17 +51,13 @@ class AccessControlList extends React.Component<Props, State>
         readChecked: false,
         writeChecked: false,
         adminChecked: false,
+        searchDialogOpen: false,
     }
-
-    _inputUser: HTMLInputElement | null = null
 
     render() {
         const { permissions, currentUser, users, usersByUsername, updatingUserPermissions, classes } = this.props
         const { selectedUser } = this.state
-
-        if (permissions === undefined) {
-            return <LargeProgressSpinner />
-        }
+        if (permissions === undefined) { return null }
 
         const { admins = [], pushers = [], pullers = [] } = permissions
         const sharedUsernames = union(admins, pushers, pullers)
@@ -71,8 +70,6 @@ class AccessControlList extends React.Component<Props, State>
 
         const adminIDs = admins.map(username => usersByUsername[username])
         const isAdmin = adminIDs.indexOf(currentUser) > -1
-
-        const updatingNew = updatingUserPermissions !== undefined && sharedUsernames.indexOf(updatingUserPermissions) < 0
 
         return (
             <Card className={classes.root}>
@@ -92,10 +89,8 @@ class AccessControlList extends React.Component<Props, State>
                         }
                         <Button
                             color="secondary"
-                            onClick={() => this.openUserDialog()}
-                            disabled={updatingNew}
+                            onClick={() => this.openSearchDialog()}
                         >
-                            {updatingNew && <CircularProgress size={24} className={classes.buttonLoading} />}
                             <ControlPointIcon className={classes.controlPointIcon} />
                             Add User
                         </Button>
@@ -139,13 +134,8 @@ class AccessControlList extends React.Component<Props, State>
                                     {isAdmin &&
                                         <TableCell className={classes.centered}>
                                             {currentUser !== user.userID &&
-                                                <IconButton onClick={() => this.openUserDialog(user.username)}>
-                                                    {updatingUserPermissions === user.username &&
-                                                        <CircularProgress size={24} className={classes.buttonLoading} />
-                                                    }
-                                                    {updatingUserPermissions !== user.username &&
-                                                        <SettingsIcon />
-                                                    }
+                                                <IconButton onClick={() => this.openUserDialog(user.userID)}>
+                                                    <SettingsIcon />
                                                 </IconButton>
                                             }
                                         </TableCell>
@@ -181,27 +171,56 @@ class AccessControlList extends React.Component<Props, State>
                         </DialogActions>
                     </Dialog>
 
-                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
-                        {selectedUser === undefined &&
-                            <DialogTitle>Add User</DialogTitle>
-                        }
-                        {selectedUser !== undefined &&
-                            <DialogTitle>Change Permissions</DialogTitle>
-                        }
-                        <DialogContent className={classes.dialog}>
-                            {selectedUser === undefined &&
+                    <Dialog open={this.state.searchDialogOpen} onClose={this.closeSearchDialog}>
+                        <DialogTitle className={classes.searchDialogTitle}>Add User</DialogTitle>
+                        <form onSubmit={this.searchUser}>
+                            <DialogContent className={classes.dialog}>
+                                <Typography variant='subtitle1'>
+                                    Search:
+                                </Typography>
                                 <TextField
-                                    label="Username"
+                                    label="Name or username"
                                     fullWidth
                                     inputRef={x => this._inputUser = x}
+                                    autoFocus
                                 />
-                            }
-                            {selectedUser !== undefined &&
-                                <Typography>
-                                    <strong>User: </strong>
-                                    {selectedUser}
-                                </Typography>
-                            }
+                                {this.props.userResult &&
+                                    <List>
+                                        {this.props.userResult.map(({ userID }) => (
+                                            <UserSearchResult
+                                                user={this.props.users[userID]}
+                                                onClick={this.openUserDialog}
+                                            />
+                                        ))}
+                                    </List>
+                                }
+                            </DialogContent>
+                            <DialogActions>
+                                <Button
+                                    type="submit"
+                                    color="secondary"
+                                    variant='contained'
+                                >
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={this.closeSearchDialog}
+                                    color="secondary"
+                                    variant='outlined'
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
+
+                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
+                        <DialogTitle>Change Permissions</DialogTitle>
+                        <DialogContent className={classes.dialog}>
+                            <Typography>
+                                <strong>User:</strong>
+                                {selectedUser}
+                            </Typography>
                             <List>
                                 <ListItem className={classes.listItem}>
                                     <ListItemText primary='Read' />
@@ -219,11 +238,15 @@ class AccessControlList extends React.Component<Props, State>
                         </DialogContent>
                         <DialogActions>
                             <Button
-                                onClick={this.changePermissions}
                                 color="secondary"
-                                variant='contained'
+                                variant="contained"
+                                onClick={this.changePermissions}
+                                disabled={updatingUserPermissions !== undefined}
                             >
-                                Set Permissions
+                                {updatingUserPermissions !== undefined &&
+                                    <CircularProgress size={24} className={classes.buttonLoading} />
+                                }
+                                SetPermissions
                             </Button>
                             <Button
                                 onClick={this.closeUserDialog}
@@ -249,6 +272,9 @@ class AccessControlList extends React.Component<Props, State>
         if (!isEqual(prevProps.uri, this.props.uri)) {
             this.props.fetchRepoUsersPermissions({ uri: this.props.uri })
         }
+        if (prevProps.updatingUserPermissions !== undefined && this.props.updatingUserPermissions === undefined) {
+            this.closeUserDialog()
+        }
     }
 
     togglePublic() {
@@ -270,10 +296,36 @@ class AccessControlList extends React.Component<Props, State>
         this.setState({ publicDialogOpen: false })
     }
 
-    openUserDialog(username?: string) {
-        const { admins = [], pushers = [], pullers = [] } = this.props.permissions
+    openSearchDialog() {
+        this.props.clearSearch({})
+        this.setState({ searchDialogOpen: true })
+    }
+
+    closeSearchDialog() {
+        this.setState({ searchDialogOpen: false })
+    }
+
+    searchUser(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        if (this._inputUser === null) {
+            return
+        }
+        const username = this._inputUser.value
+        if (username.length < 1) {
+            return
+        }
+        this.props.searchUsers({ query: username })
+    }
+
+    openUserDialog(userID: string) {
+        if (!userID || !this.props.users[userID]) {
+            return
+        }
+        const username = this.props.users[userID].username
+        const { admins = [], pushers = [], pullers = [] } = (this.props.permissions) || {}
         this.setState({
             userDialogOpen: true,
+            searchDialogOpen: false,
             selectedUser: username,
             adminChecked: admins.indexOf(username || '') > -1,
             writeChecked: pushers.indexOf(username || '') > -1,
@@ -293,25 +345,17 @@ class AccessControlList extends React.Component<Props, State>
 
     changePermissions() {
         const { selectedUser, readChecked, writeChecked, adminChecked } = this.state
-        let username = selectedUser as string | undefined
-        if (username === undefined) {
-            if (this._inputUser === null) {
-                return
-            }
-            username = this._inputUser.value
-            if (username.length < 1) {
-                return
-            }
+        if (selectedUser === undefined) {
+            return
         }
         const uri = this.props.uri
         this.props.updateUserPermissions({
             uri,
-            username,
+            username: selectedUser,
             admin: adminChecked,
             pusher: writeChecked,
             puller: readChecked
         })
-        this.closeUserDialog()
     }
 
     toggleRead() {
@@ -334,9 +378,10 @@ interface OwnProps {
 }
 
 interface StateProps {
-    permissions: IRepoPermissions
+    permissions: IRepoPermissions | undefined
     users: { [userID: string]: IUser }
     usersByUsername: { [username: string]: string }
+    userResult?: ISearchUserResult[]
     currentUser: string
     updatingUserPermissions: string | undefined
     isPublic: boolean
@@ -346,10 +391,13 @@ interface DispatchProps {
     fetchRepoUsersPermissions: typeof fetchRepoUsersPermissions
     updateUserPermissions: typeof updateUserPermissions
     setRepoPublic: typeof setRepoPublic
+    searchUsers: typeof searchUsers
+    clearSearch: typeof clearSearch
 }
 
 interface State {
     userDialogOpen: boolean
+    searchDialogOpen: boolean
     publicDialogOpen: boolean
     selectedUser: string | undefined
     readChecked: boolean
@@ -408,27 +456,34 @@ const styles = (theme: Theme) => createStyles({
     dialog: {
         minWidth: 350,
     },
+    searchDialogTitle: {
+        paddingBottom: 0
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const repoID = getRepoID(ownProps.uri) || ''
+    const repoID = getRepoID(ownProps.uri)
     return {
         permissions: state.repo.permissionsByID[repoID],
         users: state.user.users,
         usersByUsername: state.user.usersByUsername,
+        userResult: (state.search.results || {}).users,
         currentUser: state.user.currentUser || '',
         updatingUserPermissions: state.ui.updatingUserPermissions,
         isPublic: state.repo.isPublicByID[repoID] || false,
     }
+
 }
 
 const mapDispatchToProps = {
     fetchRepoUsersPermissions,
     updateUserPermissions,
     setRepoPublic,
+    searchUsers,
+    clearSearch,
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(AccessControlList))
+)(withStyles(styles)(SharedUsers))

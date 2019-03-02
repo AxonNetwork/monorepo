@@ -14,10 +14,10 @@ import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
 import { fetchUserData } from 'conscience-components/redux/user/userActions'
 import { getDiscussions, getComments } from 'conscience-components/redux/discussion/discussionActions'
-import { getFileURL } from 'conscience-components/navigation'
+import { selectUser, getFileURL } from 'conscience-components/navigation'
 import { ISearchResults, URIType, FileMode, IUser, IComment, IDiscussion } from 'conscience-lib/common'
-import UserResult from './UserResult'
-import CommentResult from './CommentResult'
+import UserSearchResult from '../UserSearchResult'
+import CommentSearchResult from '../CommentSearchResult'
 
 
 class SearchPage extends React.Component<Props, State>
@@ -92,7 +92,7 @@ class SearchPage extends React.Component<Props, State>
                                                 const comment = this.props.comments[commentID]
                                                 const discussion = this.props.discussions[discussionID]
                                                 const user = comment ? this.props.users[comment.userID] : undefined
-                                                return <CommentResult comment={comment} discussion={discussion} user={user} />
+                                                return <CommentSearchResult comment={comment} discussion={discussion} user={user} />
                                             })}
                                         </List>
                                     </React.Fragment>
@@ -103,7 +103,10 @@ class SearchPage extends React.Component<Props, State>
                                         <H6>Users</H6>
                                         <List>
                                             {results.users.map(({ userID }) => (
-                                                <UserResult user={this.props.users[userID]} />
+                                                <UserSearchResult
+                                                    user={this.props.users[userID]}
+                                                    onClick={this.selectUser}
+                                                />
                                             ))}
                                         </List>
                                     </React.Fragment>
@@ -114,6 +117,13 @@ class SearchPage extends React.Component<Props, State>
                 </main>
             </div>
         )
+    }
+
+    selectUser(userID: string) {
+        const user = this.props.users[userID]
+        if (user && user.username) {
+            selectUser(user.username)
+        }
     }
 
     componentWillMount() {
@@ -206,7 +216,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     return {
-        results: state.search.results,
+        results: state.search.results as ISearchResults,
         users: state.user.users,
         comments: state.discussion.comments,
         discussions: state.discussion.discussions,

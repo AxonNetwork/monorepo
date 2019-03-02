@@ -159,7 +159,6 @@ class FileList extends React.Component<Props, State>
                                             file={file}
                                             key={file.name}
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
-                                            openFileIcon={this.props.openFileIcon}
                                             canEditFiles={this.props.canEditFiles}
                                             showFullPaths={showFullPaths}
                                         />
@@ -235,7 +234,6 @@ class FileList extends React.Component<Props, State>
         return !isEqual(this.props.uri, nextProps.uri) ||
             this.props.files !== nextProps.files ||
             this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
-            this.props.openFileIcon !== nextProps.openFileIcon ||
             this.props.canEditFiles !== nextProps.canEditFiles ||
             this.state.tree !== nextState.tree ||
             this.state.newFileDialogOpen !== nextState.newFileDialogOpen ||
@@ -249,8 +247,6 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    openFileIcon?: boolean
-    canEditFiles?: boolean
 }
 
 interface StateProps {

@@ -118,6 +118,15 @@ class SettingsPage extends React.Component<Props>
                                 />
                             }
                                 label="Hide file extensions" />
+
+                            <FormControlLabel control={
+                                <Checkbox
+                                    checked={userSettings.manualChunking}
+                                    onChange={this.onChangeManualChunking}
+                                    value="manualChunking"
+                                />
+                            }
+                                label="Manual chunking" />
                         </section>
 
 
@@ -144,6 +153,11 @@ class SettingsPage extends React.Component<Props>
     onChangeHideFileExtensions(evt: any) {
         const fileExtensionsHidden = evt.target.checked
         this.props.setLocalConfig({ config: { fileExtensionsHidden } })
+    }
+
+    onChangeManualChunking(evt: any) {
+        const manualChunking = evt.target.checked
+        this.props.setLocalConfig({ config: { manualChunking } })
     }
 
     async uploadUserPicture() {

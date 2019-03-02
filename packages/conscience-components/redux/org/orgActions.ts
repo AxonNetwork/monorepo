@@ -155,7 +155,7 @@ export interface IAddMemberToOrgAction {
     type: OrgActionType.ADD_MEMBER_TO_ORG
     payload: {
         orgID: string
-        email: string,
+        userID: string,
     }
 }
 
@@ -372,7 +372,7 @@ export type IOrgAction =
 
     IUpdateOrgColorsAction |
     IUpdateOrgColorsSuccessAction |
-    IUpdateOrgColorsFailedAction 
+    IUpdateOrgColorsFailedAction
 
 export const createOrg = (payload: ICreateOrgAction['payload']): ICreateOrgAction => ({ type: OrgActionType.CREATE_ORG, payload })
 export const fetchOrgInfo = (payload: IFetchOrgInfoAction['payload']): IFetchOrgInfoAction => ({ type: OrgActionType.FETCH_ORG_INFO, payload })

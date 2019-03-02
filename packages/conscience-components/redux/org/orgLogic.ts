@@ -85,12 +85,7 @@ const uploadOrgBanner = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSucces
 const addMemberToOrgLogic = makeLogic<IAddMemberToOrgAction, IAddMemberToOrgSuccessAction>({
     type: OrgActionType.ADD_MEMBER_TO_ORG,
     async process({ action }) {
-        const { orgID, email } = action.payload
-        const user = (await ServerRelay.fetchUsersByEmail([email]))[0]
-        if (user === undefined) {
-            throw new Error('user does not exist')
-        }
-        const userID = user.userID
+        const { orgID, userID } = action.payload
         await ServerRelay.addMemberToOrg(orgID, userID)
         return { orgID, userID }
     },

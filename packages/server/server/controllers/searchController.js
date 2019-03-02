@@ -12,88 +12,87 @@ searchController.get = async (req, res, next) => {
     try {
         const resp = await elasticsearch.get({ index, type, id })
         res.json(resp)
-    } catch(err) {
+    } catch (err) {
         console.log('error ~>', err.status)
         res.status(500).json({ error: err })
     }
 }
 
+const searchFiles = async function (query) {
+    const resp = await elasticsearch.search({
+        index:   'repo-files',
+        _source: [ '_id', '_type', 'repoID', 'filename' ],
+        body:    {
+            query: {
+                // match: {
+                //     // filename: {
+                //     //     query,
+                //     //     operator: 'and',
+                //     // },
+                //     contents: {
+                //         query,
+                //         operator: 'and',
+                //     },
+                // },
+                simple_query_string: {
+                    query,
+                    fields:           [ 'filename', 'contents' ],
+                    default_operator: 'or',
+                },
+            },
+            // facets:        { tags: { terms: { field: 'tags' } } },
+        },
+    })
+    const hits = resp.hits.hits.map(x => ({
+        repoID:   x._source.repoID,
+        filename: x._source.filename,
+        hash:     x._id,
+    }))
+    return hits
+}
+
+const searchComments = async function (query) {
+    const resp = await elasticsearch.search({
+        index:   'comments',
+        _source: [ '_id', '_type', 'repoID', 'discussionID' ],
+        body:    {
+            query: {
+                simple_query_string: {
+                    query,
+                    fields:           [ 'text' ],
+                    default_operator: 'or',
+                },
+            },
+        },
+    })
+    const hits = resp.hits.hits.map(x => ({
+        commentID:    x._id,
+        repoID:       x._source.repoID,
+        discussionID: x._source.discussionID,
+    }))
+    return hits
+}
+
+const searchUsers = async function (query) {
+    const resp = await elasticsearch.search({
+        index:   'users',
+        _source: [ '_id', '_type' ],
+        body:    {
+            query: {
+                simple_query_string: {
+                    query,
+                    fields:           [ 'username', 'name', 'bio', 'geolocation', 'orcid', 'university', 'interests' ],
+                    default_operator: 'or',
+                },
+            },
+        },
+    })
+    const hits = resp.hits.hits.map(x => ({ userID: x._id }))
+    return hits
+}
+
+
 searchController.search = async (req, res, next) => {
-    async function searchFiles(query) {
-        const resp = await elasticsearch.search({
-            index:   'repo-files',
-            _source: [ '_id', '_type', 'repoID', 'filename' ],
-            body:    {
-                query: {
-                    // match: {
-                    //     // filename: {
-                    //     //     query,
-                    //     //     operator: 'and',
-                    //     // },
-                    //     contents: {
-                    //         query,
-                    //         operator: 'and',
-                    //     },
-                    // },
-                    simple_query_string: {
-                        query,
-                        fields:           [ 'filename', 'contents' ],
-                        default_operator: 'or',
-                    },
-                },
-                // facets:        { tags: { terms: { field: 'tags' } } },
-            },
-        })
-        const hits = resp.hits.hits.map(x => ({
-            repoID:   x._source.repoID,
-            filename: x._source.filename,
-            hash:     x._id,
-        }))
-        return hits
-    }
-
-    async function searchComments(query) {
-        const resp = await elasticsearch.search({
-            index:   'comments',
-            _source: [ '_id', '_type', 'repoID', 'discussionID' ],
-            body:    {
-                query: {
-                    simple_query_string: {
-                        query,
-                        fields:           [ 'text' ],
-                        default_operator: 'or',
-                    },
-                },
-            },
-        })
-        const hits = resp.hits.hits.map(x => ({
-            commentID:    x._id,
-            repoID:       x._source.repoID,
-            discussionID: x._source.discussionID,
-        }))
-        return hits
-    }
-
-    async function searchUsers(query) {
-        const resp = await elasticsearch.search({
-            index:   'users',
-            _source: [ '_id', '_type' ],
-            body:    {
-                query: {
-                    simple_query_string: {
-                        query,
-                        fields:           [ 'username', 'name', 'bio', 'geolocation', 'orcid', 'university', 'interests' ],
-                        default_operator: 'or',
-                    },
-                },
-            },
-        })
-        const hits = resp.hits.hits.map(x => ({
-            userID: x._id,
-        }))
-        return hits
-    }
-
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0
     const query = req.query.q
@@ -107,6 +106,16 @@ searchController.search = async (req, res, next) => {
         files:    respFiles,
         users:    respUsers,
     })
+}
+
+searchController.searchUsers = async (req, res, next) => {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
+    const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0
+    const query = req.query.q
+
+    const users = await searchUsers(query)
+
+    res.json(users)
 }
 
 searchController.refresh = async (req, res, next) => {

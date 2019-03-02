@@ -21,6 +21,7 @@ import {
     IGetDiffAction, IGetDiffSuccessAction,
     ISetRepoPublicAction, ISetRepoPublicSuccessAction,
     IUpdateUserPermissionsAction, IUpdateUserPermissionsSuccessAction,
+    ISetFilesChunkingAction, ISetFilesChunkingSuccessAction,
     ICheckpointRepoAction, ICheckpointRepoSuccessAction,
     ICloneRepoAction,
     IPullRepoAction,
@@ -317,6 +318,14 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
     },
 })
 
+const setFilesChunkingLogic = makeLogic<ISetFilesChunkingAction, ISetFilesChunkingSuccessAction>({
+    type: RepoActionType.SET_FILES_CHUNKING,
+    async process({ action }) {
+        const { uri, shouldChunkByFile } = action.payload
+        return { uri, shouldChunkByFile }
+    },
+})
+
 const fetchLocalRefsLogic = makeLogic<IFetchLocalRefsAction, IFetchLocalRefsSuccessAction>({
     type: RepoActionType.FETCH_LOCAL_REFS,
     async process({ action }) {
@@ -537,6 +546,7 @@ export default [
     checkpointRepoLogic,
     getDiffLogic,
     updateUserPermissionsLogic,
+    setFilesChunkingLogic,
     setRepoPublicLogic,
     cloneRepoLogic,
     pullRepoLogic,

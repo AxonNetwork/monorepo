@@ -5,12 +5,10 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
 import deepOrange from '@material-ui/core/colors/deepOrange'
-import EditIcon from '@material-ui/icons/Edit'
-import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Tooltip from '@material-ui/core/Tooltip'
 import FileIcon from './FileIcon'
+import FileButtons from './FileButtons'
 
 import moment from 'moment'
 import bytes from 'bytes'
@@ -92,22 +90,13 @@ class File extends React.Component<Props>
                 </TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{bytes(file.size)}</TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{moment(file.modified).fromNow()}</TableCell>
-                {isLocal && (this.canQuickEdit() || this.props.openFileIcon) &&
+                {isLocal &&
                     <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellActions)}>
-                        {this.canQuickEdit() &&
-                            <Tooltip title="Quick edit">
-                                <IconButton onClick={this.openEditor} className={classes.editIconButton}>
-                                    <EditIcon />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                        {this.props.openFileIcon &&
-                            <Tooltip title="Open this file with another app">
-                                <IconButton onClick={this.openItemWithSystemEditor} className={classes.editIconButton}>
-                                    <OpenInNewIcon />
-                                </IconButton>
-                            </Tooltip>
-                        }
+                        <FileButtons
+                            uri={this.props.uri}
+                            file={this.props.file}
+                            canEditFiles={this.props.canEditFiles}
+                        />
                     </TableCell>
                 }
             </TableRow>
@@ -127,7 +116,6 @@ class File extends React.Component<Props>
         return !isEqual(this.props.uri, nextProps.uri) ||
             this.props.file.name !== nextProps.file.name ||
             this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
-            this.props.openFileIcon !== nextProps.openFileIcon ||
             this.props.canEditFiles !== nextProps.canEditFiles ||
             this.props.showFullPaths !== nextProps.showFullPaths
     }
@@ -139,7 +127,6 @@ interface OwnProps {
     uri: URI
     file: IRepoFile
     fileExtensionsHidden: boolean | undefined
-    openFileIcon?: boolean
     canEditFiles?: boolean
     showFullPaths?: boolean
 }
@@ -147,9 +134,6 @@ interface OwnProps {
 const styles = createStyles({
     listItem: {
         display: 'flex',
-        padding: 0,
-    },
-    editIconButton: {
         padding: 0,
     },
     filename: {

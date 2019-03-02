@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import UserAvatar from '../UserAvatar'
 import { fetchRepoUsersPermissions } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
-import { getRepoID } from 'conscience-components/env-specific'
-import { IUser, IRepoPermissions, URI } from 'conscience-lib/common'
+import { getRepoID } from '../env-specific'
+import { IRepoPermissions, IUser, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import union from 'lodash/union'
 import isEqual from 'lodash/isEqual'
@@ -42,6 +42,7 @@ class SharedUsers extends React.Component<Props>
             </React.Fragment>
         )
     }
+
 }
 
 type Props = OwnProps & StateProps & DispatchProps

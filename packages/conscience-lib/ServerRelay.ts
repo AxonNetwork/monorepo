@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
 import axios from 'axios'
-import { IMaybeRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, IUpdatedRefEvent } from './common'
+import { IMaybeRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo, IUser, IUserProfile, IComment, IDiscussion, IOrganization, IUserSettings, IFeaturedRepo, IOrgBlog, IUploadedPicture, ISearchResults, ISearchUserResult, IUpdatedRefEvent } from './common'
 
 const API_URL = process.env.API_URL
 
@@ -536,6 +536,14 @@ const ServerRelay = {
 
         const qs = querystring.stringify({ q: query })
         const resp = await axios.get<IResponse>(API_URL + `/search/search?${qs}`)
+        return resp.data
+    },
+
+    async searchUsers(query: string) {
+        type IResponse = ISearchUserResult[]
+
+        const qs = querystring.stringify({ q: query })
+        const resp = await axios.get<IResponse>(API_URL + `/search/search-users?${qs}`)
         return resp.data
     },
 }

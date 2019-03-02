@@ -48,7 +48,6 @@ class RepoFilesPage extends React.Component<Props>
                     <FileList
                         uri={fileURI}
                         canEditFiles
-                        openFileIcon
                     />
                 </div>
             )

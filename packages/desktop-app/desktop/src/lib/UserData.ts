@@ -20,6 +20,7 @@ export interface IUserDataContents {
     codeColorScheme?: string
     menuLabelsHidden?: boolean
     fileExtensionsHidden?: boolean
+    manualChunking?: boolean
     newestViewedCommentTimestamp?: ICommentTimestamp
 }
 

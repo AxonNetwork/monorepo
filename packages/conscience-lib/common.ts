@@ -168,6 +168,7 @@ export interface IUserSettings {
     codeColorScheme?: string
     menuLabelsHidden?: boolean
     fileExtensionsHidden?: boolean
+    manualChunking?: boolean
     newestViewedCommentTimestamp?: ICommentTimestamp
 }
 
