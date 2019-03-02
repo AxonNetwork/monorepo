@@ -15,7 +15,7 @@ class UserSearchResult extends React.Component<Props>
         if (!user) return null
 
         return (
-            <ListItem button={!!user} onClick={() => this.props.onClick(user.username)}>
+            <ListItem button={!!user} onClick={() => this.props.onClick(user.userID)}>
                 {!user &&
                     <div style={{ width: 200, height: 64 }}>
                         <UserResultLoader />
@@ -60,7 +60,7 @@ const UserResultLoader = () => (
 
 interface Props {
     user: IUser | undefined
-    onClick: (username: string) => void
+    onClick: (userID: string) => void
     classes?: any
 }
 

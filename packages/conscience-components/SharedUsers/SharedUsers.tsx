@@ -71,8 +71,6 @@ class SharedUsers extends React.Component<Props, State>
         const adminIDs = admins.map(username => usersByUsername[username])
         const isAdmin = adminIDs.indexOf(currentUser) > -1
 
-        const updatingNew = updatingUserPermissions !== undefined && sharedUsernames.indexOf(updatingUserPermissions) < 0
-
         return (
             <Card className={classes.root}>
                 <CardContent>
@@ -92,9 +90,7 @@ class SharedUsers extends React.Component<Props, State>
                         <Button
                             color="secondary"
                             onClick={() => this.openSearchDialog()}
-                            disabled={updatingNew}
                         >
-                            {updatingNew && <CircularProgress size={24} className={classes.buttonLoading} />}
                             <ControlPointIcon className={classes.controlPointIcon} />
                             Add User
                         </Button>
@@ -138,13 +134,8 @@ class SharedUsers extends React.Component<Props, State>
                                     {isAdmin &&
                                         <TableCell className={classes.centered}>
                                             {currentUser !== user.userID &&
-                                                <IconButton onClick={() => this.openUserDialog(user.username)}>
-                                                    {updatingUserPermissions === user.username &&
-                                                        <CircularProgress size={24} className={classes.buttonLoading} />
-                                                    }
-                                                    {updatingUserPermissions !== user.username &&
-                                                        <SettingsIcon />
-                                                    }
+                                                <IconButton onClick={() => this.openUserDialog(user.userID)}>
+                                                    <SettingsIcon />
                                                 </IconButton>
                                             }
                                         </TableCell>
@@ -181,7 +172,7 @@ class SharedUsers extends React.Component<Props, State>
                     </Dialog>
 
                     <Dialog open={this.state.searchDialogOpen} onClose={this.closeSearchDialog}>
-                        <DialogTitle>Add User</DialogTitle>
+                        <DialogTitle className={classes.searchDialogTitle}>Add User</DialogTitle>
                         <form onSubmit={this.searchUser}>
                             <DialogContent className={classes.dialog}>
                                 <Typography variant='subtitle1'>
@@ -191,6 +182,7 @@ class SharedUsers extends React.Component<Props, State>
                                     label="Name or username"
                                     fullWidth
                                     inputRef={x => this._inputUser = x}
+                                    autoFocus
                                 />
                                 {this.props.userResult &&
                                     <List>
@@ -246,11 +238,15 @@ class SharedUsers extends React.Component<Props, State>
                         </DialogContent>
                         <DialogActions>
                             <Button
-                                onClick={this.changePermissions}
                                 color="secondary"
-                                variant='contained'
+                                variant="contained"
+                                onClick={this.changePermissions}
+                                disabled={updatingUserPermissions !== undefined}
                             >
-                                Set Permissions
+                                {updatingUserPermissions !== undefined &&
+                                    <CircularProgress size={24} className={classes.buttonLoading} />
+                                }
+                                SetPermissions
                             </Button>
                             <Button
                                 onClick={this.closeUserDialog}
@@ -308,7 +304,11 @@ class SharedUsers extends React.Component<Props, State>
         this.props.searchUsers({ query: username })
     }
 
-    openUserDialog(username?: string) {
+    openUserDialog(userID: string) {
+        if (!userID || !this.props.users[userID]) {
+            return
+        }
+        const username = (this.props.users[userID].username
         const { admins = [], pushers = [], pullers = [] } = this.props.permissions
         this.setState({
             userDialogOpen: true,
@@ -343,7 +343,12 @@ class SharedUsers extends React.Component<Props, State>
             pusher: writeChecked,
             puller: readChecked
         })
-        this.closeUserDialog()
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (prevProps.updatingUserPermissions !== undefined && this.props.updatingUserPermissions === undefined) {
+            this.closeUserDialog()
+        }
     }
 
     toggleRead() {
@@ -443,6 +448,9 @@ const styles = (theme: Theme) => createStyles({
     dialog: {
         minWidth: 350,
     },
+    searchDialogTitle: {
+        paddingBottom: 0
+    }
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {

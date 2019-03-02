@@ -109,7 +109,7 @@ class SearchPage extends React.Component<Props, State>
                                             {results.users.map(({ userID }) => (
                                                 <UserSearchResult
                                                     user={this.props.users[userID]}
-                                                    onClick={selectUser}
+                                                    onClick={this.selectUser}
                                                 />
                                             ))}
                                         </List>
@@ -121,6 +121,13 @@ class SearchPage extends React.Component<Props, State>
                 </main>
             </div>
         )
+    }
+
+    selectUser(userID: string) {
+        const user = this.props.users[userID]
+        if (user && user.username) {
+            selectUser(user.username)
+        }
     }
 
     componentWillMount() {

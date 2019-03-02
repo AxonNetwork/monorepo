@@ -32,8 +32,8 @@ const createOrgLogic = makeLogic<ICreateOrgAction, ICreateOrgSuccessAction>({
         const userID = org.members[0]
         const orgID = org.orgID
         await dispatch(addedOrg({ userID, orgID }))
-        org.primaryColor = org.primaryColor||'black'
-        org.secondaryColor = org.secondaryColor||'#fafafa'
+        org.primaryColor = org.primaryColor || 'black'
+        org.secondaryColor = org.secondaryColor || '#fafafa'
         return { org }
     },
 })
@@ -50,8 +50,8 @@ const fetchOrgInfoLogic = makeLogic<IFetchOrgInfoAction, IFetchOrgInfoSuccessAct
         // promises.push(dispatch(fetchUserData({ userIDs: org.members })))
         // await Promise.all(promises)
         await dispatch(fetchUserData({ userIDs: org.members }))
-        org.primaryColor = org.primaryColor||'black'
-        org.secondaryColor = org.secondaryColor||'#fafafa'
+        org.primaryColor = org.primaryColor || 'black'
+        org.secondaryColor = org.secondaryColor || '#fafafa'
         return { org }
     },
 })
@@ -61,8 +61,8 @@ const updateOrgLogic = makeLogic<IUpdateOrgAction, IUpdateOrgSuccessAction>({
     async process({ action }) {
         const { orgID, name, description, readme } = action.payload
         const org = await ServerRelay.updateOrg(orgID, name, description, readme)
-        org.primaryColor = org.primaryColor||'black'
-        org.secondaryColor = org.secondaryColor||'#fafafa'
+        org.primaryColor = org.primaryColor || 'black'
+        org.secondaryColor = org.secondaryColor || '#fafafa'
         return { org }
     },
 })
@@ -89,12 +89,7 @@ const uploadOrgBanner = makeLogic<IUploadOrgBannerAction, IUploadOrgBannerSucces
 const addMemberToOrgLogic = makeLogic<IAddMemberToOrgAction, IAddMemberToOrgSuccessAction>({
     type: OrgActionType.ADD_MEMBER_TO_ORG,
     async process({ action }) {
-        const { orgID, email } = action.payload
-        const user = (await ServerRelay.fetchUsersByEmail([email]))[0]
-        if (user === undefined) {
-            throw new Error('user does not exist')
-        }
-        const userID = user.userID
+        const { orgID, userID } = action.payload
         await ServerRelay.addMemberToOrg(orgID, userID)
         return { orgID, userID }
     },

@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Theme, withStyles, createStyles } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
@@ -10,10 +11,15 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
 import TextField from '@material-ui/core/TextField'
+import List from '@material-ui/core/List'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
-import DeleteIcon from '@material-ui/icons/Delete'
+import ClearIcon from '@material-ui/icons/Clear'
 import UserAvatar from '../UserAvatar'
-import { IUser } from 'conscience-lib/common'
+import UserSearchResult from '../UserSearchResult'
+import { addMemberToOrg, removeMemberFromOrg } from 'conscience-components/redux/org/orgActions'
+import { clearSearch, searchUsers } from 'conscience-components/redux/search/searchActions'
+import { IGlobalState } from 'conscience-components/redux'
+import { IUser, IOrganization, ISearchUserResult } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -24,12 +30,17 @@ class Members extends React.Component<Props, State>
         dialogOpen: false,
     }
 
-    _inputMember: HTMLInputElement | null = null
+    _inputUser: HTMLInputElement | null = null
 
     render() {
-        const { userList, users, currentUser, classes } = this.props
-        const adminList = this.props.adminList || []
+        const { org, users, currentUser, classes } = this.props
+        console.log("HERE: ", this.props)
+        if (org === undefined) { return null }
+
+        const userList = org.members
+        const adminList = org.creator ? [org.creator] : []
         const isAdmin = adminList.indexOf(currentUser) > -1
+
         return (
             <Card>
                 <CardContent className={classes.root}>
@@ -53,7 +64,7 @@ class Members extends React.Component<Props, State>
                                         <IconButton
                                             onClick={() => this.onClickRemoveMember(userID)}
                                         >
-                                            <DeleteIcon fontSize="small" />
+                                            <ClearIcon fontSize="small" />
                                         </IconButton>
                                     }
                                 </div>
@@ -70,39 +81,78 @@ class Members extends React.Component<Props, State>
                     </Button>
 
                     <Dialog open={this.state.dialogOpen} onClose={this.onClickCancelDialog}>
-                        <DialogTitle>Add Member</DialogTitle>
-                        <DialogContent className={classes.dialog}>
-                            <TextField
-                                label="email"
-                                fullWidth
-                                inputRef={x => this._inputMember = x}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.onClickAddMember} color="secondary">Add</Button>
-                            <Button onClick={this.onClickCancelDialog} color="secondary" autoFocus>Cancel</Button>
-                        </DialogActions>
+                        <DialogTitle className={classes.searchDialogTitle}>Add User</DialogTitle>
+                        <form onSubmit={this.searchUser}>
+                            <DialogContent className={classes.dialog}>
+                                <Typography variant='subtitle1'>
+                                    Search:
+                                </Typography>
+                                <TextField
+                                    label="Name or username"
+                                    fullWidth
+                                    inputRef={x => this._inputUser = x}
+                                    autoFocus
+                                />
+                                {this.props.userResult &&
+                                    <List>
+                                        {this.props.userResult.map(({ userID }) => (
+                                            <UserSearchResult
+                                                user={this.props.users[userID]}
+                                                onClick={this.onClickAddMember}
+                                            />
+                                        ))}
+                                    </List>
+                                }
+                            </DialogContent>
+                            <DialogActions>
+                                <Button
+                                    type="submit"
+                                    color="secondary"
+                                    variant='contained'
+                                >
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={this.onClickCancelDialog}
+                                    color="secondary"
+                                    variant='outlined'
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogActions>
+                        </form>
                     </Dialog>
+
                 </CardContent>
             </Card>
         )
     }
 
-    onClickAddMember() {
-        if (this._inputMember === null) {
+    searchUser(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        if (this._inputUser === null) {
             return
-
         }
-        const email = this._inputMember.value
-        this.props.addMember({ email })
+        const username = this._inputUser.value
+        if (username.length < 1) {
+            return
+        }
+        this.props.searchUsers({ query: username })
+    }
+
+    onClickAddMember(userID: string) {
+        const orgID = this.props.orgID
+        this.props.addMemberToOrg({ orgID, userID })
         this.setState({ dialogOpen: false })
     }
 
     onClickRemoveMember(userID: string) {
-        this.props.removeMember({ userID })
+        const orgID = this.props.orgID
+        this.props.removeMemberFromOrg({ orgID, userID })
     }
 
     onClickOpenDialog() {
+        this.props.clearSearch({})
         this.setState({ dialogOpen: true })
     }
 
@@ -111,14 +161,25 @@ class Members extends React.Component<Props, State>
     }
 }
 
-interface Props {
-    userList: string[]
-    adminList?: string[]
+
+type Props = OwnProps & StateProps & DispatchProps & { classes: any }
+
+interface OwnProps {
+    orgID: string
+}
+
+interface StateProps {
+    org: IOrganization | undefined
     users: { [userID: string]: IUser }
+    userResult?: ISearchUserResult[]
     currentUser: string
-    addMember: (payload: { email: string }) => void
-    removeMember: (payload: { userID: string }) => void
-    classes: any
+}
+
+interface DispatchProps {
+    addMemberToOrg: typeof addMemberToOrg
+    removeMemberFromOrg: typeof removeMemberFromOrg
+    clearSearch: typeof clearSearch
+    searchUsers: typeof searchUsers
 }
 
 interface State {
@@ -154,6 +215,29 @@ const styles = (theme: Theme) => createStyles({
     dialog: {
         minWidth: 350,
     },
+    searchDialogTitle: {
+        paddingBottom: 0,
+    }
 })
 
-export default withStyles(styles)(Members)
+
+const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
+    return {
+        org: state.org.orgs[ownProps.orgID],
+        users: state.user.users,
+        userResult: (state.search.results || {}).users,
+        currentUser: state.user.currentUser || '',
+    }
+}
+
+const mapDispatchToProps = {
+    addMemberToOrg,
+    removeMemberFromOrg,
+    clearSearch,
+    searchUsers,
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(Members))
