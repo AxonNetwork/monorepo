@@ -108,7 +108,7 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
             return { metadataByURI }
 
         } else if (repoList[repoList.length - 1].type === URIType.Local) {
-            // await LocalCache.wipe()
+            await LocalCache.wipe()
             const promises = repoList.map(uri => LocalCache.loadMetadata(uri as LocalURI))
             const metadataList = await Promise.all(promises)
 
@@ -116,7 +116,7 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
                 const uriStr = uriToString(repoList[i])
                 metadataByURI[uriStr] = metadataList[i]
             }
-            await Promise.all(repoList.map(uri => dispatch(watchRepo({ uri })))
+            await Promise.all(repoList.map(uri => dispatch(watchRepo({ uri }))))
         } else {
             const repoIDs = repoList.map(id => getRepoID(id))
             const metadataList = await ServerRelay.getRepoMetadata(repoIDs)
@@ -137,7 +137,6 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
     type: RepoActionType.FETCH_REPO_FILES,
     async process({ action }) {
         const { uri } = action.payload
-        console.log("HERE: ", uri)
 
         let files = {} as { [name: string]: IRepoFile }
         if (uri.type === URIType.Local) {
@@ -190,9 +189,10 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             const path = uri.repoRoot
 
             const rpcClient = rpc.getClient()
-            const { commits = [], isEnd } = (await rpcClient.getRepoHistoryAsync({ path, lastCommitFetched, pageSize, onlyHashes: true }))
+            const relRef = lastCommitFetched !== undefined ? lastCommitFetched + "~1" : "HEAD"
+            const { commits = [], isEnd } = (await rpcClient.getRepoHistoryAsync({ path, fromCommitRef: relRef, pageSize, onlyHashes: true }))
 
-            const hashes = commits.map(c => c.commitHash).slice(0, pageSize)
+            const hashes = commits.map(c => c.commitHash)
             timeline = await LocalCache.loadCommits(uri, hashes)
             if (isEnd && timeline.length > 0) {
                 timeline[timeline.length - 1].isInitialCommit = true
@@ -238,7 +238,8 @@ const fetchIsBehindRemoteLogic = makeLogic<IFetchIsBehindRemoteAction, IFetchIsB
             }
             const currentRemote = events[events.length - 1].commit
             try {
-                await rpc.getClient().getRepoHistoryAsync({ path: uri.repoRoot, fromCommit: currentRemote, pageSize: 1 })
+                const commitHash = Buffer.from(currentRemote, 'hex')
+                await rpc.getClient().getRepoHistoryAsync({ path: uri.repoRoot, fromCommitHash: commitHash, pageSize: 1 })
             } catch (err) {
                 isBehindRemote = true
             }

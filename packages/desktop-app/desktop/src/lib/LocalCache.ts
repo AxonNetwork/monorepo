@@ -57,7 +57,7 @@ const LocalCache = {
 
     async isRepoCurrent(uri: LocalURI): Promise<boolean> {
         const path = uri.repoRoot
-        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, pageSize: 1, onlyHashes: true })
+        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, fromCommitRef: "HEAD", pageSize: 1, onlyHashes: true })
         if (commits.length === 0) {
             return true
         }
@@ -80,9 +80,39 @@ const LocalCache = {
         let metadata = db.metadata.findOneAsync({ path })
         const currentHEAD = (metadata || {}).currentHEAD
         const startBlock = (metadata || {}).lastBlockNumber
-        const fromInitialCommit = currentHEAD === undefined
 
-        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, toCommit: currentHEAD })
+        const fromInitialCommit = currentHEAD === undefined
+        // const pageSize = fromInitialCommit ? 50 : 10
+        const pageSize = 10
+        let fromCommitRef = "HEAD"
+        let commits = [] as rpc.IRPCCommit[]
+        while (true) {
+            const resp = await rpc.getClient().getRepoHistoryAsync({ path, fromCommitRef, pageSize })
+
+            if (!resp.commits || resp.commits.length === 0) {
+                break
+            }
+            if (!fromInitialCommit) {
+                const headIndex = resp.commits.findIndex(c => c.commitHash === currentHEAD)
+                if (headIndex > -1) {
+                    const slice = resp.commits.slice(0, headIndex)
+                    commits = [
+                        ...commits,
+                        ...slice
+                    ]
+                    break
+                }
+
+            }
+            commits = [
+                ...commits,
+                ...resp.commits
+            ]
+            if (resp.isEnd) {
+                break
+            }
+            fromCommitRef = commits[commits.length - 1].commitHash + '^'
+        }
         if (commits.length === 0) {
             return
         }

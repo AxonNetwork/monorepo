@@ -16,17 +16,18 @@ declare module 'conscience-lib/rpc' {
 
         getRepoFilesAsync: (params:
             ({ repoRoot: string } | { repoID: string }) &
-            ({ commitHash: string } | { commitRef: string })
+            ({ commitHash: Buffer } | { commitRef: string })
         ) => Promise<{ files: IRPCFile[] }>
 
         getDiff: (params:
             ({ repoRoot: string } | { repoID: string }) &
-            ({ commitHash: string } | { commitRef: string })
+            ({ commitHash: Buffer } | { commitRef: string })
         ) => ReadableStream
 
         getRepoHistoryAsync: (params:
             { repoID: string } | { path: string } &
-            { lastCommitFetched?: string, fromCommit?: string, toCommit?: string, pageSize?: number, onlyHashes?: boolean }
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } &
+            { pageSize: number, onlyHashes?: boolean }
         ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
         getUpdatedRefEventsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ events: IRPCUpdatedRefEvent[] }>
 

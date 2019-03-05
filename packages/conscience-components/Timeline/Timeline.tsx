@@ -6,7 +6,7 @@ import TimelineEvent from '../TimelineEvent'
 import TimelineEventLoader from '../ContentLoaders/TimelineEventLoader'
 import { fetchRepoTimeline } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
-import { URI } from 'conscience-lib/common'
+import { ITimelineEvent, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
 
@@ -74,7 +74,6 @@ class Timeline extends React.Component<Props, State>
         const loading = end > commitList.length
         const timelinePage = commitList.slice(start, end)
 
-
         return (
             <div>
                 {!hidePagination &&
@@ -119,6 +118,7 @@ interface OwnProps {
 
 interface StateProps {
     commitList: string[] | undefined
+    commits: { [commitHash: string]: ITimelineEvent }
 }
 
 interface Dispatchprops {
@@ -145,6 +145,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const uriStr = uriToString(ownProps.uri)
     return {
         commitList: state.repo.commitListsByURI[uriStr],
+        commits: state.repo.commits,
     }
 }
 

@@ -169,7 +169,7 @@ export interface IFetchRepoTimelineAction {
     payload: {
         uri: URI
         lastCommitFetched?: string
-        pageSize?: number
+        pageSize: number
     }
 }
 
