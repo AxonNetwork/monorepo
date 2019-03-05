@@ -1,6 +1,6 @@
 import * as noderpc from '../noderpc'
 import Repo from '../models/repo'
-import { updateRepoInCache } from './updateRepoCache'
+import { updateRepoCache } from './updateRepoCache'
 
 const watchNode = async () => {
     const rpcClient = noderpc.initClient()
@@ -14,10 +14,10 @@ const watchNode = async () => {
     const watcher = rpcClient.watch({ eventTypes })
     watcher.on('data', async (evt) => {
         if (evt.addedRepoEvent) {
-            await updateRepoInCache(evt.repoID)
+            await updateRepoCache(evt.repoID)
         }
         if (evt.pulledRepoEvent) {
-            await updateRepoInCache(evt.repoID)
+            await updateRepoCache(evt.repoID)
         }
     	if (evt.updatedRefEvent) {
             // updatedRefEvents.push(evt.updatedRefEvent)

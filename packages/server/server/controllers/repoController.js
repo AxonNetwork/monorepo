@@ -118,12 +118,12 @@ repoController.getRepoTimeline = async (req, res, next) => {
     const { repoID } = req.params
     await checkUserAccess(req.user, repoID)
 
-    // default to undefined (HEAD)
-    const lastCommitFetched = (req.query.lastCommitFetched || '').length > 0 ? req.query.lastCommitFetched : undefined
+    // default to HEAD
+    const fromCommitRef = (req.query.lastCommitFetched || '').length > 0 ? `${req.query.lastCommitFetched}^` : 'HEAD'
     // default to 10
     const pageSize = (req.query.pageSize || '').length > 0 ? req.query.pageSize : 10
 
-    const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, lastCommitFetched, pageSize, onlyHashes: true })
+    const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, fromCommitRef, pageSize, onlyHashes: true })
     const hashes = commits.map(c => c.commitHash)
     const dynamoCommits = await Commit.get(repoID, hashes)
     const commitObj = keyBy(dynamoCommits, 'commit')

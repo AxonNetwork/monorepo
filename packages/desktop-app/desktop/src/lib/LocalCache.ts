@@ -80,10 +80,9 @@ const LocalCache = {
         let metadata = db.metadata.findOneAsync({ path })
         const currentHEAD = (metadata || {}).currentHEAD
         const startBlock = (metadata || {}).lastBlockNumber
-
         const fromInitialCommit = currentHEAD === undefined
-        // const pageSize = fromInitialCommit ? 50 : 10
-        const pageSize = 10
+
+        const pageSize = fromInitialCommit ? 50 : 10
         let fromCommitRef = "HEAD"
         let commits = [] as rpc.IRPCCommit[]
         while (true) {

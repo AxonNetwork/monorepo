@@ -13,6 +13,7 @@ import {
     IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
+    IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction,
     IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
     IFetchIsBehindRemoteAction, IFetchIsBehindRemoteSuccessAction,
     IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction,
@@ -108,7 +109,7 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
             return { metadataByURI }
 
         } else if (repoList[repoList.length - 1].type === URIType.Local) {
-            await LocalCache.wipe()
+            // await LocalCache.wipe()
             const promises = repoList.map(uri => LocalCache.loadMetadata(uri as LocalURI))
             const metadataList = await Promise.all(promises)
 
@@ -202,6 +203,26 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
         }
 
         return { uri, timeline }
+    },
+})
+
+const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction>({
+    type: RepoActionType.FETCH_REPO_TIMELINE_EVENT,
+    async process({ action }) {
+        const { uri } = action.payload
+        if (uri.commit === undefined) {
+            throw new Error("Must specify commit to fetch")
+        }
+        const commit = uri.commit
+        let event: ITimelineEvent
+        if (uri.type === URIType.Local) {
+            resp = await LocalCache.loadCommits(uri as LocalURI, [commit])
+            event = resp[0]
+        } else {
+            const repoID = getRepoID(uri)
+            event = await ServerRelay.getRepoTimelineEvent(repoID, commit)
+        }
+        return { event }
     },
 })
 
@@ -539,6 +560,7 @@ export default [
     fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
+    fetchRepoTimelineEventLogic,
     fetchSecuredFileInfoLogic,
     fetchIsBehindRemoteLogic,
     fetchRepoUsersPermissionsLogic,

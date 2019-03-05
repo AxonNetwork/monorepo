@@ -14,6 +14,8 @@ service NodeRPC {
   rpc PullRepo(PullRepoRequest) returns (stream PullRepoResponsePacket) {}
   rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
   rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponse) {}
+  rpc FetchChunks(FetchChunksRequest) returns (stream FetchChunksResponse) {}
+
   rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
   rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
   rpc GetLocalRepos(GetLocalReposRequest) returns (stream GetLocalReposResponsePacket) {}
@@ -39,6 +41,7 @@ service NodeRPC {
   rpc GetObject(GetObjectRequest) returns (stream GetObjectResponse) {}
   rpc GetDiff(GetDiffRequest) returns (stream GetDiffResponse) {}
 
+  rpc SetFileChunking(SetFileChunkingRequest) returns (SetFileChunkingResponse) {}
   rpc Watch(WatchRequest) returns (stream WatchResponse) {}
 }
 
@@ -113,11 +116,13 @@ message FetchFromCommitRequest {
     string repoID = 1;
     string path = 2;
     bytes commit = 3;
+    uint64 checkoutType = 4;
 }
 
 message FetchFromCommitResponse {
     message Header {
         int64 uncompressedSize = 1;
+        int64 totalChunks = 2;
     }
 
     message PackfileHeader {
@@ -131,15 +136,34 @@ message FetchFromCommitResponse {
         bool end = 3;
     }
 
+    message Chunk {
+        bytes objectID = 1;
+        bytes data = 2;
+        bool end = 3;
+    }
+
     oneof payload {
         Header header = 1;
         PackfileHeader packfileHeader = 2;
         PackfileData packfileData = 3;
+        Chunk chunk = 4;
     }
 }
 
 message RegisterRepoIDRequest {
     string repoID = 1;
+}
+
+message FetchChunksRequest {
+    string repoID = 1;
+    string path = 2;
+    repeated bytes chunks = 3;
+}
+
+message FetchChunksResponse {
+    bytes objectID = 1;
+    bytes data = 2;
+    bool end = 3;
 }
 
 message RegisterRepoIDResponse {}
@@ -270,12 +294,11 @@ message GetRepoHistoryRequest {
 
     // need one or the other
     // if neither, defaults to HEAD
-    string lastCommitFetched = 3;
-    string fromCommit = 4;
+    bytes fromCommitHash = 3;
+    string fromCommitRef = 4;
+    uint64 pageSize = 5;
 
-    string toCommit = 5;
-    uint64 pageSize = 6;
-    bool onlyHashes = 7;
+    bool onlyHashes = 6;
 }
 
 message Commit {
@@ -326,7 +349,7 @@ message File {
     string unstagedStatus = 6;
     string stagedStatus = 7;
     bool mergeConflict = 8;
-    bool mergeUnresolved = 9;
+    bool isChunked = 9;
 }
 
 message GetRepoFilesResponse {
@@ -394,6 +417,16 @@ message GetDiffResponse {
     bool end = 2;
 }
 
+message SetFileChunkingRequest {
+    string repoID = 1;
+    string repoRoot = 2;
+
+    string filename = 3;
+    bool enabled = 4;
+}
+
+message SetFileChunkingResponse {}
+
 message WatchRequest {
     repeated uint64 eventTypes = 1;
 
@@ -427,4 +460,4 @@ message WatchResponse {
         UpdatedRefEvent updatedRefEvent = 3;
     }
 }
- 
+
