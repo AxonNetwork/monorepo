@@ -70,9 +70,9 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, fromIn
     const metadata = {
         repoID,
         currentHEAD:        timeline[0].commit,
-        lastBlockNumber:    refEventsList[0].blockNumber,
+        lastBlockNumber:    refEventsList[0].blockNumber.toNumber(),
         lastVerifiedCommit: refEventsList[0].commit,
-        lastVerifiedTime:   refEventsList[0].time,
+        lastVerifiedTime:   refEventsList[0].time.toNumber(),
     }
     if (fromInitialCommit) {
         const firstEvent = refEventsList[refEventsList.length - 1]
