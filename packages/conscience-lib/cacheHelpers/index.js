@@ -1,5 +1,5 @@
 
-export const interpolateTimeline = function (repoID, commits, refEventsList) {
+const interpolateTimeline = function (repoID, commits, refEventsList) {
     const timeline = []
     let evtIndex = -1
     let refEvent = {}
@@ -40,7 +40,7 @@ export const interpolateTimeline = function (repoID, commits, refEventsList) {
     return timeline
 }
 
-export const getSecuredTextStats = function (repoID, timeline, filesByCommit, currentStats, fromInitialCommit) {
+const getSecuredTextStats = function (repoID, timeline, filesByCommit, currentStats, fromInitialCommit) {
     const stats = {}
     for (let i = 0; i < timeline.length; i++) {
         const event = timeline[i]
@@ -66,7 +66,7 @@ export const getSecuredTextStats = function (repoID, timeline, filesByCommit, cu
     return Object.values(stats)
 }
 
-export const getRepoMetadata = function (repoID, timeline, refEventsList, currentMetadata, fromInitialCommit) {
+const getRepoMetadata = function (repoID, timeline, refEventsList, currentMetadata, fromInitialCommit) {
     const lastRefEvent = refEventsList.length > 0 ? refEventsList[0] : {}
     const metadata = {
         repoID,
@@ -76,7 +76,7 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, curren
         lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() : undefined,
     }
     if (fromInitialCommit) {
-        if (refEvents.length > 0) {
+        if (refEventsList.length > 0) {
             const firstEvent = refEventsList[refEventsList.length - 1]
             metadata.firstVerifiedCommit = firstEvent.commit
             metadata.firstVerifiedTime = firstEvent.time
@@ -86,4 +86,10 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, curren
         metadata.firstVerifiedTime = currentMetadata.firstVerifiedTime
     }
     return metadata
+}
+
+module.exports = {
+    interpolateTimeline,
+    getSecuredTextStats,
+    getRepoMetadata,
 }

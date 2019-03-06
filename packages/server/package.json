@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run dev",
-    "dev": "nodemon bin/www",
+    "dev": "node bin/www",
     "clean": "rm -rf dist",
     "build": "npm run clean && mkdir dist && babel server -D -d dist --presets es2015,stage-2",
     "production": "npm run -s build && webpack -p --config ./webpack.production.config.js && node bin/production.www"
