@@ -100,7 +100,8 @@ export function initClient() {
 
             return { commits, isEnd }
         }
-    
+    }
+
     return client
 }
 

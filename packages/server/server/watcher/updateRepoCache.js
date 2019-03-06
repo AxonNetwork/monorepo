@@ -20,7 +20,7 @@ export const updateRepoCache = async function (repoID) {
 
     const pageSize = fromInitialCommit ? 50 : 10
     const fromCommitRef = 'HEAD'
-    const { commits = [] } = await rpcClient.getHistoryUpToCommit({ path, fromCommitRef, pageSize, toCommit: currentHEAD })
+    const { commits = [] } = await rpcClient.getHistoryUpToCommit({ repoID, fromCommitRef, pageSize, toCommit: currentHEAD })
     if (commits.length === 0) {
         return
     }
