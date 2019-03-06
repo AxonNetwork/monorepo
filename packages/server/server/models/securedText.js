@@ -9,7 +9,7 @@ const SecuredText = {}
 SecuredText.addFiles = async (files) => {
     const putRequests = files.map(f => ({ PutRequest: { Item: f } }))
     const writePromises = chunk(putRequests, 25)
-        .map(req => ({ RequestItems: { [SecuredTextTable]: req } }))
+        .map(chunk => ({ RequestItems: { [SecuredTextTable]: chunk } }))
         .map(params => dynamo.batchWriteAsync(params))
     try {
         await Promise.all(writePromises)
@@ -24,7 +24,7 @@ SecuredText.getFilesForRepo = async (repoID, filesList) => {
     }
     const keys = filesList.map(file => ({ repoID, file }))
     const readPromises = chunk(keys, 25)
-        .map(req => ({ RequestItems: { [SecuredTextTable]: { Keys: keys } } }))
+        .map(chunk => ({ RequestItems: { [SecuredTextTable]: { Keys: chunk } } }))
         .map(params => dynamo.batchGetAsync(params))
     try {
         const resp = (await Promise.all(readPromises))

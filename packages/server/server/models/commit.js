@@ -11,7 +11,7 @@ const Commit = {}
 Commit.addCommits = async (commits) => {
     const putRequests = commits.map(c => ({ PutRequest: { Item: c } }))
     const writePromises = chunk(putRequests, 25)
-        .map(req => ({ RequestItems: { [CommitTable]: req } }))
+        .map(chunk => ({ RequestItems: { [CommitTable]: chunk } }))
         .map(params => dynamo.batchWriteAsync(params))
     try {
         await Promise.all(writePromises)
@@ -26,7 +26,7 @@ Commit.get = async (repoID, commits) => {
     }
     const keys = commits.map(commit => ({ repoID, commit }))
     const readPromises = chunk(keys, 25)
-        .map(req => ({ RequestItems: { [CommitTable]: { Keys: keys } } }))
+        .map(chunk => ({ RequestItems: { [CommitTable]: { Keys: chunk } } }))
         .map(params => dynamo.batchGetAsync(params))
     try {
         const resp = (await Promise.all(readPromises))

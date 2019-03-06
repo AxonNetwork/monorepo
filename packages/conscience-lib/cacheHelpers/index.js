@@ -30,7 +30,7 @@ const interpolateTimeline = function (repoID, commits, refEventsList) {
             repoID,
             commit:             commit.commitHash,
             user:               commit.author,
-            time:               commit.timestamp.toNumber() * 1000,
+            time:               commit.timestamp !== undefined ? commit.timestamp.toNumber() * 1000 : undefined,
             message:            commit.message,
             lastVerifiedCommit: refEvent.commit,
             lastVerifiedTime:   refEvent.time !== undefined ? refEvent.time.toNumber() * 1000 : undefined,
@@ -73,13 +73,13 @@ const getRepoMetadata = function (repoID, timeline, refEventsList, currentMetada
         currentHEAD:        timeline.length > 0 ? timeline[0].commit : undefined,
         lastBlockNumber:    lastRefEvent.blockNumber ? lastRefEvent.blockNumber.toNumber() : undefined,
         lastVerifiedCommit: lastRefEvent.commit,
-        lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() : undefined,
+        lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() * 1000 : undefined,
     }
     if (fromInitialCommit) {
         if (refEventsList.length > 0) {
             const firstEvent = refEventsList[refEventsList.length - 1]
             metadata.firstVerifiedCommit = firstEvent.commit
-            metadata.firstVerifiedTime = firstEvent.time
+            metadata.firstVerifiedTime = firstEvent.time ? firstEvent.time.toNumber() * 1000 : undefined
         }
     } else {
         metadata.firstVerifiedCommit = currentMetadata.firstVerifiedCommit

@@ -96,21 +96,22 @@ Repo.updateField = async (repoID, field, value) => {
 }
 
 Repo.updateCacheFields = async (metadata) => {
-    let updateExpression = 'SET currentHEAD = :currentHEAD, lastBlockNumber = :lastBlockNumber'
-    const expressionAttrVals = {
-        ':currentHEAD':     metadata.currentHEAD,
-        ':lastBlockNumber': metadata.lastBlockNumber.toNumber() * 1000,
+    let updateExpression = 'SET currentHEAD = :currentHEAD'
+    const expressionAttrVals = { ':currentHEAD': metadata.currentHEAD }
+    if (metadata.lastBlockNumber !== undefined) {
+        updateExpression += ', lastBlockNumber = :lastBlockNumber'
+        expressionAttrVals[':lastBlockNumber'] = metadata.lastBlockNumber
     }
     if (metadata.lastVerifiedTime !== undefined) {
         updateExpression += ', lastVerifiedTime = :lastVerifiedTime'
         updateExpression += ', lastVerifiedCommit = :lastVerifiedCommit'
-        expressionAttrVals[':lastVerifiedTime'] = metadata.lastVerifiedTime.toNumber() * 1000
+        expressionAttrVals[':lastVerifiedTime'] = metadata.lastVerifiedTime
         expressionAttrVals[':lastVerifiedCommit'] = metadata.lastVerifiedCommit
     }
     if (metadata.firstVerifiedTime !== undefined) {
         updateExpression += ', firstVerifiedTime = :firstVerifiedTime'
         updateExpression += ', firstVerifiedCommit = :firstVerifiedCommit'
-        expressionAttrVals[':firstVerifiedTime'] = metadata.firstVerifiedTime.toNumber() * 1000
+        expressionAttrVals[':firstVerifiedTime'] = metadata.firstVerifiedTime
         expressionAttrVals[':firstVerifiedCommit'] = metadata.firstVerifiedCommit
     }
     const params = {
