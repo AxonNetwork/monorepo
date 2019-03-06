@@ -8,20 +8,16 @@ const watchNode = async () => {
     const eventTypes = [
         rpcClient.EventType.ADDED_REPO,
         rpcClient.EventType.PULLED_REPO,
-        rpcClient.EventType.UPDATED_REF,
     ]
 
     const watcher = rpcClient.watch({ eventTypes })
     watcher.on('data', async (evt) => {
         if (evt.addedRepoEvent) {
-            await updateRepoCache(evt.repoID)
+            await updateRepoCache(evt.addedRepoEvent.repoID)
         }
         if (evt.pulledRepoEvent) {
-            await updateRepoCache(evt.repoID)
+            await updateRepoCache(evt.pulledRepoEvent.repoID)
         }
-    	if (evt.updatedRefEvent) {
-            // updatedRefEvents.push(evt.updatedRefEvent)
-    	}
     })
     watcher.on('error', (err) => {
     	console.error('Node Watcher err ~> ', err)

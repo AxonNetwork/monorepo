@@ -128,4 +128,18 @@ Repo.updateCacheFields = async (metadata) => {
     }
 }
 
+Repo.resetCache = async (repoID) => {
+    const params = {
+        TableName:        RepoTable,
+        Key:              { repoID },
+        UpdateExpression: 'REMOVE currentHEAD, firstVerifiedCommit, firstVerifiedTime, lastBlockNumber, lastVerifiedCommit, lastVerifiedTime',
+    }
+    try {
+        await dynamo.updateAsync(params)
+    } catch (err) {
+        console.error('Error in Repo.resetCache ~>', err)
+        throw err
+    }
+}
+
 export default Repo

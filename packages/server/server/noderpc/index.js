@@ -26,7 +26,8 @@ export function initClient() {
         client.EventType = {
             ADDED_REPO:  0,
             PULLED_REPO: 1,
-            UPDATED_REF: 2,
+            PUSHED_REPO: 2,
+            UPDATED_REF: 3,
         }
 
         client.getLocalReposAsync = (params) => {
