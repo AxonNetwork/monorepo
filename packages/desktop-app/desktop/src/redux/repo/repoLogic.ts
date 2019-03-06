@@ -13,6 +13,7 @@ import {
     IFetchRepoMetadataAction, IFetchRepoMetadataSuccessAction,
     IFetchRepoFilesAction, IFetchRepoFilesSuccessAction,
     IFetchRepoTimelineAction, IFetchRepoTimelineSuccessAction,
+    IBringTimelineUpToDateAction, IBringTimelineUpToDateSuccessAction,
     IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction,
     IFetchSecuredFileInfoAction, IFetchSecuredFileInfoSuccessAction,
     IFetchIsBehindRemoteAction, IFetchIsBehindRemoteSuccessAction,
@@ -30,7 +31,8 @@ import {
     IWatchRepoAction,
     cloneRepoProgress, cloneRepoSuccess, cloneRepoFailed,
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
-    fetchRepoFiles, fetchIsBehindRemote, addRepoToRepoList, watchRepo,
+    fetchRepoFiles, fetchIsBehindRemote, addRepoToRepoList, bringTimelineUpToDate,
+    markRepoFilesDirty, watchRepo,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -109,7 +111,6 @@ const fetchRepoMetadataLogic = makeLogic<IFetchRepoMetadataAction, IFetchRepoMet
             return { metadataByURI }
 
         } else if (repoList[repoList.length - 1].type === URIType.Local) {
-            // await LocalCache.wipe()
             const promises = repoList.map(uri => LocalCache.loadMetadata(uri as LocalURI))
             const metadataList = await Promise.all(promises)
 
@@ -206,6 +207,28 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
     },
 })
 
+const bringTimelineUpToDateLogic = makeLogic<IBringTimelineUpToDateAction, IBringTimelineUpToDateSuccessAction>({
+    type: RepoActionType.BRING_TIMELINE_UP_TO_DATE,
+    async process({ action, getState }) {
+        const { uri } = action.payload
+        let toPrepend = [] as ITimelineEvent[]
+        if (uri.type === URIType.Local) {
+            const uriStr = uriToString(uri)
+            const currentTimeline = getState().repo.commitListsByURI[uriStr] || []
+            const currentHEAD = currentTimeline.length > 0 ? currentTimeline[0] : undefined
+            const path = uri.repoRoot
+            const { commits = [], isEnd } = await rpc.getClient().getHistoryUpToCommit({ path, fromCommitRef: "HEAD", pageSize: 5, toCommit: currentHEAD })
+            const hashes = commits.map(c => c.commitHash)
+            toPrepend = await LocalCache.loadCommits(uri, hashes)
+            if (isEnd && toPrepend.length > 0) {
+                toPrepend[toPrepend.length - 1].isInitialCommit = true
+            }
+        }
+
+        return { uri, toPrepend }
+    },
+})
+
 const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFetchRepoTimelineEventSuccessAction>({
     type: RepoActionType.FETCH_REPO_TIMELINE_EVENT,
     async process({ action }) {
@@ -216,7 +239,7 @@ const fetchRepoTimelineEventLogic = makeLogic<IFetchRepoTimelineEventAction, IFe
         const commit = uri.commit
         let event: ITimelineEvent
         if (uri.type === URIType.Local) {
-            resp = await LocalCache.loadCommits(uri as LocalURI, [commit])
+            const resp = await LocalCache.loadCommits(uri as LocalURI, [commit])
             event = resp[0]
         } else {
             const repoID = getRepoID(uri)
@@ -383,7 +406,6 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
         const { uri, message } = action.payload
         if (uri.type === URIType.Local) {
             await rpc.getClient().checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
-            await dispatch(fetchFullRepo({ uri }))
         } else {
             return new Error('Cannot checkpoint network repo')
         }
@@ -530,15 +552,20 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
             const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists
             if (watcher) {
                 watcher.on('file_change', () => {
-                    dispatch(fetchRepoFiles({ uri: { ...uri, commit: 'working' } }))
+                    dispatch(markRepoFilesDirty({ uri }))
+                })
+                watcher.on('pulled_repo', (evt) => {
+                    dispatch(fetchIsBehindRemote({ uri }))
+                    dispatch(bringTimelineUpToDate({ uri }))
+                    dispatch(markRepoFilesDirty({ uri }))
+                })
+                watcher.on('pushed_repo', () => {
+                    dispatch(bringTimelineUpToDate({ uri }))
                 })
                 watcher.on('updated_ref', () => {
                     if (!getState().repo.isBehindRemoteByURI[uriStr]) {
                         dispatch(fetchIsBehindRemote({ uri }))
                     }
-                })
-                watcher.on('pulled_repo', () => {
-                    dispatch(fetchIsBehindRemote({ uri }))
                 })
                 watcher.on('end', () => {
                     done()
@@ -560,6 +587,7 @@ export default [
     fetchRepoMetadataLogic,
     fetchRepoFilesLogic,
     fetchRepoTimelineLogic,
+    bringTimelineUpToDateLogic,
     fetchRepoTimelineEventLogic,
     fetchSecuredFileInfoLogic,
     fetchIsBehindRemoteLogic,

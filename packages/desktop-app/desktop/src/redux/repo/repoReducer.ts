@@ -53,29 +53,40 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
             }
         }
 
-        case RepoActionType.BEHIND_REMOTE: {
-            const { uri } = action.payload
-            const uriStr = uriToString(uri)
+        case RepoActionType.ADD_REPO_TO_REPO_LIST: {
+            console.log("Reducer: ", action)
+            const { repoRoot, repoID } = action.payload
+            const uri = { type: URIType.Local, repoRoot: repoRoot } as LocalURI
+            const repoHash = getHash(repoRoot)
             return {
                 ...state,
-                isBehindRemoteByURI: {
-                    ...state.isBehindRemoteByURI,
-                    [uriStr]: true
+                localRepoList: [
+                    ...state.localRepoList,
+                    uri
+                ],
+                reposByHash: {
+                    ...state.reposByHash,
+                    [repoHash]: repoRoot
+                },
+                repoIDsByPath: {
+                    ...state.repoIDsByPath,
+                    [repoRoot]: repoID
                 }
             }
+
         }
 
-        case RepoActionType.PULL_REPO_SUCCESS: {
-            const { uri } = action.payload
-            const uriStr = uriToString(uri)
-            return {
-                ...state,
-                isBehindRemoteByURI: {
-                    ...state.isBehindRemoteByURI,
-                    [uriStr]: false
-                }
-            }
-        }
+        // case RepoActionType.PULL_REPO_SUCCESS: {
+        //     const { uri } = action.payload
+        //     const uriStr = uriToString(uri)
+        //     return {
+        //         ...state,
+        //         isBehindRemoteByURI: {
+        //             ...state.isBehindRemoteByURI,
+        //             [uriStr]: false
+        //         }
+        //     }
+        // }
 
         default:
             return state

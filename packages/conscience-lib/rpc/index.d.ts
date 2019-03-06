@@ -29,6 +29,13 @@ declare module 'conscience-lib/rpc' {
             { fromCommitHash: Buffer } | { fromCommitRef: string, } &
             { pageSize: number, onlyHashes?: boolean }
         ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
+
+        getHistoryUpToCommit: (params:
+            { repoID: string } | { path: string } &
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } &
+            { toCommit: string | undefined, pageSize: number, onlyHashes?: boolean }
+        ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
+
         getUpdatedRefEventsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ events: IRPCUpdatedRefEvent[] }>
 
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
@@ -47,7 +54,7 @@ declare module 'conscience-lib/rpc' {
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
         getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
-        watch: (parms: { eventTypes: (0 | 1 | 2)[] }) => events.EventEmitter
+        watch: (parms: { eventTypes: (0 | 1 | 2 | 3)[] }) => events.EventEmitter
 
 
         // @@TODO: convert to enum

@@ -78,6 +78,47 @@ function initClient(protoPath) {
         }
         return users
     }
+
+    client.getHistoryUpToCommit = async (params) => {
+        const { repoID, path, fromCommitHash, toCommit, pageSize, onlyHashes } = params
+        let fromCommitRef = params.fromCommitRef
+        let commits = []
+        let isEnd = false
+        while (true) {
+            let resp
+            if (fromCommitRef) {
+                resp = await client.getRepoHistoryAsync({ repoID, path, fromCommitRef, pageSize, onlyHashes })
+            } else {
+                resp = await client.getRepoHistoryAsync({ repoID, path, fromCommitHash, pageSize, onlyHashes })
+            }
+            isEnd = resp.isEnd
+
+            if (!resp.commits || resp.commits.length === 0) {
+                break
+            }
+            if (toCommit) {
+                const headIndex = resp.commits.findIndex(c => c.commitHash === toCommit)
+                if (headIndex > -1) {
+                    const slice = resp.commits.slice(0, headIndex)
+                    commits = [
+                        ...commits,
+                        ...slice,
+                    ]
+                    break
+                }
+            }
+            commits = [
+                ...commits,
+                ...resp.commits,
+            ]
+            if (resp.isEnd) {
+                break
+            }
+            fromCommitRef = `${commits[commits.length - 1].commitHash}^`
+        }
+
+        return { commits, isEnd }
+    }
 }
 
 module.exports = {

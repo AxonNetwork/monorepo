@@ -83,38 +83,12 @@ const LocalCache = {
         const fromInitialCommit = currentHEAD === undefined
 
         const pageSize = fromInitialCommit ? 50 : 10
-        let fromCommitRef = "HEAD"
-        let commits = [] as rpc.IRPCCommit[]
-        while (true) {
-            const resp = await rpc.getClient().getRepoHistoryAsync({ path, fromCommitRef, pageSize })
-
-            if (!resp.commits || resp.commits.length === 0) {
-                break
-            }
-            if (!fromInitialCommit) {
-                const headIndex = resp.commits.findIndex(c => c.commitHash === currentHEAD)
-                if (headIndex > -1) {
-                    const slice = resp.commits.slice(0, headIndex)
-                    commits = [
-                        ...commits,
-                        ...slice
-                    ]
-                    break
-                }
-
-            }
-            commits = [
-                ...commits,
-                ...resp.commits
-            ]
-            if (resp.isEnd) {
-                break
-            }
-            fromCommitRef = commits[commits.length - 1].commitHash + '^'
-        }
+        const fromCommitRef = "HEAD"
+        let { commits = [] } = await rpc.getClient().getHistoryUpToCommit({ path, fromCommitRef, pageSize, toCommit: currentHEAD })
         if (commits.length === 0) {
             return
         }
+
         const repoID = getRepoID(uri)
         const { events = [] } = await rpc.getClient().getUpdatedRefEventsAsync({ repoID, startBlock })
         const refEventsList = events.reverse()

@@ -247,6 +247,7 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
+    canEditFiles?: boolean
 }
 
 interface StateProps {

@@ -9,6 +9,7 @@ export const initialState = {
     localRepoList: [],
     metadataByURI: {},
     filesByURI: {},
+    filesAreDirtyByURI: {},
     commitListsByURI: {},
     commits: {},
     updatedRefEventsByCommit: {},
@@ -26,6 +27,7 @@ export interface IRepoState {
     localRepoList: LocalURI[]
     metadataByURI: { [uri: string]: IRepoMetadata | null }
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
+    filesAreDirtyByURI: { [uri: string]: boolean }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
     updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
@@ -62,6 +64,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.FETCH_REPO_FILES: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                filesAreDirtyByURI: {
+                    ...state.filesAreDirtyByURI,
+                    [uriStr]: false
+                }
+            }
+        }
+
         case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
             const { uri, files } = action.payload
             const uriStr = uriToString(uri)
@@ -72,6 +86,19 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 filesByURI: {
                     ...state.filesByURI,
                     [uriStr]: files
+                }
+            }
+        }
+
+        case RepoActionType.MARK_REPO_FILES_DIRTY: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
+
+            return {
+                ...state,
+                filesAreDirtyByURI: {
+                    ...state.filesAreDirtyByURI,
+                    [uriStr]: true
                 }
             }
         }
@@ -96,6 +123,35 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                     [uriStr]: [
                         ...(state.commitListsByURI[uriStr] || []),
                         ...commitList
+                    ]
+                },
+                commits: {
+                    ...state.commits,
+                    ...commits
+                }
+            }
+        }
+
+        case RepoActionType.BRING_TIMELINE_UP_TO_DATE_SUCCESS: {
+            const { uri, toPrepend } = action.payload
+            const uriStr = uriToString(uri)
+            const commits = {} as { [commit: string]: ITimelineEvent }
+            const commitList = [] as string[]
+            for (let commit of toPrepend) {
+                commits[commit.commit] = commit
+                commitList.push(commit.commit)
+            }
+            // if end of timeline, terminate commitList with blank string
+            if (toPrepend.length == 0 || toPrepend[toPrepend.length - 1].isInitialCommit) {
+                commitList.push("")
+            }
+            return {
+                ...state,
+                commitListsByURI: {
+                    ...state.commitListsByURI,
+                    [uriStr]: [
+                        ...commitList,
+                        ...(state.commitListsByURI[uriStr] || []),
                     ]
                 },
                 commits: {
