@@ -192,6 +192,8 @@ const styles = (theme: Theme) => createStyles({
     },
     lastUpdated: {
         fontStyle: 'italic',
+        fontSize: '0.8rem',
+        color: 'grey',
     },
     statButtons: {
         display: 'flex',
