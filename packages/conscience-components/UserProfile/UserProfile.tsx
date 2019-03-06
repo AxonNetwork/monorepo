@@ -34,9 +34,8 @@ class UserProfile extends React.Component<Props, State>
     }
 
     render() {
-        const { interests } = this.state
         const { user, currentUser, classes } = this.props
-        const { bio = undefined, geolocation = undefined, university = undefined, orcid = undefined } = (user.profile || {})
+        const { bio = undefined, geolocation = undefined, university = undefined, orcid = undefined, interests = undefined } = (user.profile || {})
         const ownProfile = user.userID === currentUser
         if (!this.state.editing) {
             return (
@@ -132,7 +131,7 @@ class UserProfile extends React.Component<Props, State>
                         <Typography>
                             Fields &amp; Interests:
                         </Typography>
-                        {interests && interests.map((interest: string) => (
+                        {this.state.interests && this.state.interests.map((interest: string) => (
                             <Chip
                                 key={interest}
                                 label={interest}
@@ -178,15 +177,13 @@ class UserProfile extends React.Component<Props, State>
         }
     }
 
-    componentDidMount() {
-        if (this.props.user.profile) {
-            const interests = this.props.user.profile.interests
-            this.setState({ interests })
-        }
-    }
-
     toggleEditing() {
-        this.setState({ editing: !this.state.editing })
+        let interests = this.props.user.profile ? this.props.user.profile.interests : [] as string[]
+        this.setState({
+            editing: !this.state.editing,
+            interests,
+            showInterestForm: false,
+        })
     }
 
     toggleInterestForm() {
