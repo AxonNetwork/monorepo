@@ -67,12 +67,14 @@ export const getSecuredTextStats = function (repoID, timeline, filesByCommit, cu
 }
 
 export const getRepoMetadata = function (repoID, timeline, refEventsList, fromInitialCommit) {
+    const lastRefEvent = refEventsList.length > 0 ? refEventsList[0] : {}
     const metadata = {
         repoID,
         currentHEAD:        timeline[0].commit,
         lastBlockNumber:    refEventsList[0].blockNumber.toNumber(),
-        lastVerifiedCommit: refEventsList[0].commit,
-        lastVerifiedTime:   refEventsList[0].time.toNumber(),
+        lastBlockNumber:    lastRefEvent.blockNumber ? lastRefEvent.blockNumber.toNumber() : undefined,
+        lastVerifiedCommit: lastRefEvent.commit,
+        lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() : undefined,
     }
     if (fromInitialCommit) {
         const firstEvent = refEventsList[refEventsList.length - 1]

@@ -52,10 +52,10 @@ class SecuredText extends React.Component<Props, State>
             info.lastVerifiedTime = commit.lastVerifiedTime
         } else if (uri.filename) {
             // if file
-            info = securedFileInfo || {}
+            info = securedFileInfo || {} as ISecuredTextInfo
         }
 
-        if (Object.keys(info).length === 0) {
+        if (!info.lastVerifiedCommit && !info.firstVerifiedCommit && !info.lastModifiedCommit) {
             return null
         }
 
