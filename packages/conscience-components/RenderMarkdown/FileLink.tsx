@@ -39,6 +39,7 @@ class FileLink extends React.Component<Props, State>
                     placement="top"
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
+                    style={{ zIndex: 999, maxHeight: window.innerHeight * 0.8 }}
                     popperOptions={{
                         modifiers: {
                             preventOverflow: { enabled: true, boundariesElement },

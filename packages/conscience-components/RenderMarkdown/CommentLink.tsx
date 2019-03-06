@@ -43,7 +43,7 @@ class CommentLink extends React.Component<Props, State>
                     onMouseEnter={this.showPopper}
                     onMouseLeave={this.hidePopper}
                     className={classes.popper}
-                    style={{ maxHeight: window.innerHeight * 0.8 }}
+                    style={{ zIndex: 999, maxHeight: window.innerHeight * 0.8 }}
                     popperOptions={{
                         modifiers: {
                             preventOverflow: { enabled: true, boundariesElement },
