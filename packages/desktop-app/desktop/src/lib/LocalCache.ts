@@ -147,7 +147,7 @@ const LocalCache = {
             db.securedText.persistence.compactDatafile()
         }
 
-        metadata = getRepoMetadata(repoID, timeline, refEventsList, fromInitialCommit)
+        metadata = getRepoMetadata(repoID, timeline, refEventsList, metadata, fromInitialCommit)
         metadata.path = path
         await db.metadata.updateAsync({ path }, metadata, { upsert: true })
     },

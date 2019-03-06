@@ -66,12 +66,11 @@ export const getSecuredTextStats = function (repoID, timeline, filesByCommit, cu
     return Object.values(stats)
 }
 
-export const getRepoMetadata = function (repoID, timeline, refEventsList, fromInitialCommit) {
+export const getRepoMetadata = function (repoID, timeline, refEventsList, currentMetadata, fromInitialCommit) {
     const lastRefEvent = refEventsList.length > 0 ? refEventsList[0] : {}
     const metadata = {
         repoID,
-        currentHEAD:        timeline[0].commit,
-        lastBlockNumber:    refEventsList[0].blockNumber.toNumber(),
+        currentHEAD:        timeline.length > 0 ? timeline[0].commit : undefined,
         lastBlockNumber:    lastRefEvent.blockNumber ? lastRefEvent.blockNumber.toNumber() : undefined,
         lastVerifiedCommit: lastRefEvent.commit,
         lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() : undefined,
@@ -80,6 +79,9 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, fromIn
         const firstEvent = refEventsList[refEventsList.length - 1]
         metadata.firstVerifiedCommit = firstEvent.commit
         metadata.firstVerifiedTime = firstEvent.time
+    } else {
+        metadata.firstVerifiedCommit = currentMetadata.firstVerifiedCommit
+        metadata.firstVerifiedTime = currentMetadata.firstVerifiedTime
     }
     return metadata
 }

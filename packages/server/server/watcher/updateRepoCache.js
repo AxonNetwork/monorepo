@@ -72,6 +72,6 @@ export const updateRepoCache = async function (repoID) {
     ])
 
     // if repo already exists, don't update firstEvent
-    const metadata = getRepoMetadata(repoID, timeline, refEventsList, fromInitialCommit)
+    const metadata = getRepoMetadata(repoID, timeline, refEventsList, repo, fromInitialCommit)
     await Repo.updateCacheFields(metadata)
 }
