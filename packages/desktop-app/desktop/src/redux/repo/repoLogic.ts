@@ -191,8 +191,8 @@ const fetchRepoTimelineLogic = makeLogic<IFetchRepoTimelineAction, IFetchRepoTim
             const path = uri.repoRoot
 
             const rpcClient = rpc.getClient()
-            const relRef = lastCommitFetched !== undefined ? lastCommitFetched + "~1" : "HEAD"
-            const { commits = [], isEnd } = (await rpcClient.getRepoHistoryAsync({ path, fromCommitRef: relRef, pageSize, onlyHashes: true }))
+            const relRef = lastCommitFetched !== undefined ? lastCommitFetched + "~1" : undefined
+            const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ path, fromCommitRef: relRef, pageSize, onlyHashes: true })
 
             const hashes = commits.map(c => c.commitHash)
             timeline = await LocalCache.loadCommits(uri, hashes)
@@ -217,7 +217,7 @@ const bringTimelineUpToDateLogic = makeLogic<IBringTimelineUpToDateAction, IBrin
             const currentTimeline = getState().repo.commitListsByURI[uriStr] || []
             const currentHEAD = currentTimeline.length > 0 ? currentTimeline[0] : undefined
             const path = uri.repoRoot
-            const { commits = [], isEnd } = await rpc.getClient().getHistoryUpToCommit({ path, fromCommitRef: "HEAD", pageSize: 5, toCommit: currentHEAD })
+            const { commits = [], isEnd } = await rpc.getClient().getHistoryUpToCommit({ path, pageSize: 5, toCommit: currentHEAD })
             const hashes = commits.map(c => c.commitHash)
             toPrepend = await LocalCache.loadCommits(uri, hashes)
             if (isEnd && toPrepend.length > 0) {

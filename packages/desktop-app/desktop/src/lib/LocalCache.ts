@@ -57,7 +57,7 @@ const LocalCache = {
 
     async isRepoCurrent(uri: LocalURI): Promise<boolean> {
         const path = uri.repoRoot
-        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, fromCommitRef: "HEAD", pageSize: 1, onlyHashes: true })
+        const { commits = [] } = await rpc.getClient().getRepoHistoryAsync({ path, pageSize: 1, onlyHashes: true })
         if (commits.length === 0) {
             return true
         }

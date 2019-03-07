@@ -26,13 +26,13 @@ declare module 'conscience-lib/rpc' {
 
         getRepoHistoryAsync: (params:
             { repoID: string } | { path: string } &
-            { fromCommitHash: Buffer } | { fromCommitRef: string, } &
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } | {} & //nothing fetches head of master
             { pageSize: number, onlyHashes?: boolean }
         ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
 
         getHistoryUpToCommit: (params:
             { repoID: string } | { path: string } &
-            { fromCommitHash: Buffer } | { fromCommitRef: string, } &
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } | {} & //nothing fetches head of master
             { toCommit: string | undefined, pageSize: number, onlyHashes?: boolean }
         ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
 
