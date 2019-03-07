@@ -178,6 +178,7 @@ class FileList extends React.Component<Props, State>
                         <DialogTitle>Create new file</DialogTitle>
                         <DialogContent>
                             <TextField
+                                label="File Name"
                                 fullWidth
                                 autoFocus
                                 inputRef={x => this._inputNewFileName = x}

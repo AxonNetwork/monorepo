@@ -424,7 +424,9 @@ export interface ICheckpointRepoAction {
 
 export interface ICheckpointRepoSuccessAction {
     type: RepoActionType.CHECKPOINT_REPO_SUCCESS
-    payload: {}
+    payload: {
+        uri: URI
+    }
 }
 
 export type ICheckpointRepoFailedAction = FailedAction<RepoActionType.CHECKPOINT_REPO_FAILED>

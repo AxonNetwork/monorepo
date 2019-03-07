@@ -517,6 +517,15 @@ const ServerRelay = {
         })
     },
 
+    async fetchShowcaseTimeline(orgID: string) {
+        interface IResponse {
+            timeline: ITimelineEvent[]
+        }
+
+        const resp = await axios.get<IResponse>(API_URL + '/showcase-timeline/' + orgID)
+        return resp.data.timeline
+    },
+
     async fetchOrgBlogs(orgID: string) {
         type IResponse = IOrgBlog[]
 

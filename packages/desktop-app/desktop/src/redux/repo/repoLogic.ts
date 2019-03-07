@@ -31,7 +31,7 @@ import {
     IWatchRepoAction,
     cloneRepoProgress, cloneRepoSuccess, cloneRepoFailed,
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
-    fetchRepoFiles, fetchIsBehindRemote, addRepoToRepoList, bringTimelineUpToDate,
+    fetchIsBehindRemote, addRepoToRepoList, bringTimelineUpToDate,
     markRepoFilesDirty, watchRepo,
 } from 'conscience-components/redux/repo/repoActions'
 import {
@@ -65,7 +65,7 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
         })
         const initPath = resp.path
 
-        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher: true, admin: true })
+        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience-node', puller: true, pusher: true, admin: true })
 
         await ServerRelay.createRepo(repoID)
 
@@ -407,9 +407,9 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
         if (uri.type === URIType.Local) {
             await rpc.getClient().checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
         } else {
-            return new Error('Cannot checkpoint network repo')
+            throw new Error('Cannot checkpoint network repo')
         }
-        return {}
+        return { uri }
     },
 })
 

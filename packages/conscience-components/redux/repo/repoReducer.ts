@@ -1,8 +1,10 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
+import { OrgActionType, IOrgAction } from '../org/orgActions'
 import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
+import keyBy from 'lodash/keyBy'
 
 export const initialState = {
     repoListByUserID: {},
@@ -40,7 +42,7 @@ export interface IRepoState {
     isBehindRemoteByURI: { [uri: string]: boolean }
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
+const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOrgAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.GET_REPO_LIST_SUCCESS: {
             const { userID, repoList } = action.payload
@@ -168,6 +170,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 commits: {
                     ...state.commits,
                     [event.commit]: event
+                }
+            }
+        }
+
+        case OrgActionType.FETCH_SHOWCASE_TIMELINE_SUCCESS: {
+            const { timeline } = action.payload
+            const commits = keyBy(timeline, 'commit')
+            return {
+                ...state,
+                commits: {
+                    ...state.commits,
+                    ...commits
                 }
             }
         }

@@ -171,6 +171,7 @@ class PushPullButtons extends React.Component<Props, State>
                         <TextField
                             fullWidth
                             multiline
+                            autoFocus
                             rows={4}
                             inputRef={x => this._inputCommitMessage = x}
                         />
@@ -187,7 +188,6 @@ class PushPullButtons extends React.Component<Props, State>
                             onClick={this.onClickCancelPushDialog}
                             color="secondary"
                             variant="outlined"
-                            autoFocus
                         >
                             Cancel
                         </Button>

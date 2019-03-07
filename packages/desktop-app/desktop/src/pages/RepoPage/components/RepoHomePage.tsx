@@ -15,7 +15,7 @@ import Timeline from 'conscience-components/Timeline'
 import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
 import { getURIFromParams, getRepoID } from 'conscience-components/env-specific'
-import { FileMode, IUser, URI } from 'conscience-lib/common'
+import { IRepoMetadata, FileMode, IUser, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
 
 
@@ -47,7 +47,7 @@ class RepoHomePage extends React.Component<Props>
                     />
                 </div>
                 <div className={classes.sidebarComponents}>
-                    {this.props.hasCommits &&
+                    {!!this.props.metadata.firstVerifiedCommit &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
                                 <SecuredText uri={this.props.uri} />
@@ -106,7 +106,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     sharedUsers: IUser[]
-    hasCommits: boolean
+    metadata: IRepoMetadata
     hasReadme: boolean
     classes: any
 }
@@ -191,12 +191,12 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
     const uriStr = uriToString(uri)
-    const hasCommits = (state.repo.commitListsByURI[uriStr] || []).length > 0
+    const metadata = state.repo.metadataByURI[uriStr] || {}
     const hasReadme = (state.repo.filesByURI[uriStr] || {})['README.md'] !== undefined
     return {
         uri,
         sharedUsers,
-        hasCommits,
+        metadata,
         hasReadme,
     }
 }

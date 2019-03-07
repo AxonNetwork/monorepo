@@ -13,6 +13,7 @@ import {
     IRemoveRepoFromOrgAction, IRemoveRepoFromOrgSuccessAction,
     IChangeOrgDescriptionAction, IChangeOrgDescriptionSuccessAction,
     IChangeOrgFeaturedReposAction, IChangeOrgFeaturedReposSuccessAction,
+    IFetchShowcaseTimelineAction, IFetchShowcaseTimelineSuccessAction,
     IFetchOrgBlogsAction, IFetchOrgBlogsSuccessAction,
     ICreateOrgBlogAction, ICreateOrgBlogSuccessAction,
     IUpdateOrgColorsAction, IUpdateOrgColorsSuccessAction
@@ -136,6 +137,15 @@ const changeOrgFeaturedReposLogic = makeLogic<IChangeOrgFeaturedReposAction, ICh
     },
 })
 
+const fetchShowcaseTimelineLogic = makeLogic<IFetchShowcaseTimelineAction, IFetchShowcaseTimelineSuccessAction>({
+    type: OrgActionType.FETCH_SHOWCASE_TIMELINE,
+    async process({ action }) {
+        const { orgID } = action.payload
+        const timeline = await ServerRelay.fetchShowcaseTimeline(orgID)
+        return { orgID, timeline }
+    },
+})
+
 const fetchOrgBlogsLogic = makeLogic<IFetchOrgBlogsAction, IFetchOrgBlogsSuccessAction>({
     type: OrgActionType.FETCH_ORG_BLOGS,
     async process({ action }) {
@@ -175,6 +185,7 @@ export default [
     removeRepoFromOrgLogic,
     changeOrgDescriptionLogic,
     changeOrgFeaturedReposLogic,
+    fetchShowcaseTimelineLogic,
     fetchOrgBlogsLogic,
     createOrgBlogLogic,
     updateOrgColorsLogic

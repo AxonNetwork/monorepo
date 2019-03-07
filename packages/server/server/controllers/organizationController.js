@@ -1,5 +1,6 @@
 import Organization from '../models/organization'
 import User from '../models/user'
+import Commit from '../models/commit'
 import HTTPError from '../util/HTTPError'
 import { pipeImageToS3, getUploadedImage, deleteImageFromS3, listS3Objects } from '../util/pictureUtils'
 import path from 'path'
@@ -176,5 +177,40 @@ organizationController.uploadOrgBanner = async (req, res) => {
     res.status(200).json({ banner: resp[0].Location, orgID })
 }
 
+organizationController.getShowcaseTimeline = async (req, res) => {
+    const { orgID } = req.params
+    if (!orgID) {
+        throw new HTTPError(400, 'Missing orgID')
+    }
+    const org = await Organization.get(orgID)
+    const repoIDs = org.repos || []
+    const count = 10
+    const timelines = await Promise.all(repoIDs.map(id => Commit.getMostRecent(id, 10)))
+
+    const showcaseTimeline = []
+    const indexByTimeline = Array(timelines.length).fill(0)
+    let latestTime = 0
+    let latestIndex = -1
+    for (let i = 0; i < count; i++) {
+        for (let j = 0; j < timelines.length; j++) {
+            const timeline = timelines[j]
+            const commit = timeline[indexByTimeline[j]]
+            if (commit.time > latestTime) {
+                if (commit.repoID === 'conscience-drive') {
+                }
+                latestTime = commit.time
+                latestIndex = j
+            }
+        }
+        const timeline = timelines[latestIndex]
+        const commit = timeline[indexByTimeline[latestIndex]]
+        showcaseTimeline.push(commit)
+        indexByTimeline[latestIndex] += 1
+        latestTime = 0
+        latestIndex = -1
+    }
+
+    res.status(200).json({ timeline: showcaseTimeline })
+}
 
 export default organizationController

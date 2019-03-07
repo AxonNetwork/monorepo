@@ -9,7 +9,6 @@ import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
 import PeopleIcon from '@material-ui/icons/People'
-import PhotoCameraIcon from '@material-ui/icons/PhotoCamera'
 import DescriptionIcon from '@material-ui/icons/Description'
 import AssessmentIcon from '@material-ui/icons/Assessment'
 import EditIcon from '@material-ui/icons/Edit'
@@ -19,7 +18,7 @@ import UploadPictureDialog from './components/UploadPictureDialog'
 import ShowcaseTimeline from './components/ShowcaseTimeline'
 import FeatResearchAndBlogs from './components/FeatResearchAndBlogs'
 import BlogPage from './components/BlogPage'
-import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos, updateOrgColors } from 'conscience-components/redux/org/orgActions'
+import { fetchOrgInfo, uploadOrgBanner, uploadOrgPicture, changeOrgFeaturedRepos, updateOrgColors, fetchShowcaseTimeline } from 'conscience-components/redux/org/orgActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { IOrganization, IFeaturedRepo } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -79,10 +78,10 @@ class ShowcasePage extends React.Component<Props, State>
                     <Grid item xs={false} sm={4} direction="column" className={classes.gridItem} style={{ backgroundColor: 'white' }}>
 
                         <div className={classes.introContainer}>
-                            <div 
+                            <div
                                 className={classes.avatar}
-                                style={{backgroundImage: this.state.hover ?`url(https://i.ibb.co/mTdY0W9/showcase-Camera.png)` : `url(${org.picture['256x256']})`}} 
-                                onMouseEnter={this.handleMouseEnter} 
+                                style={{ backgroundImage: this.state.hover ? `url(https://i.ibb.co/mTdY0W9/showcase-Camera.png)` : `url(${org.picture['256x256']})` }}
+                                onMouseEnter={this.handleMouseEnter}
                                 onMouseOut={this.handleMouseOut}
                                 onClick={this.dialogImgOpen}
                             ></div>
@@ -127,8 +126,17 @@ class ShowcasePage extends React.Component<Props, State>
     componentDidMount() {
         const orgID = this.props.match.params.orgID
         this.props.fetchOrgInfo({ orgID })
-        console.log('11111')
         this.props.updateOrgColors({ orgID: orgID, primaryColor: '#ff0000', secondaryColor: '#00ff00' })
+        this.props.fetchShowcaseTimeline({ orgID })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        const orgID = this.props.match.params.orgID
+        if (orgID !== prevProps.match.params.orgID) {
+            this.props.fetchOrgInfo({ orgID })
+            this.props.updateOrgColors({ orgID: orgID, primaryColor: '#ff0000', secondaryColor: '#00ff00' })
+            this.props.fetchShowcaseTimeline({ orgID })
+        }
     }
 
     saveFeaturedRepos(featuredRepos: { [repoID: string]: IFeaturedRepo }) {
@@ -168,7 +176,7 @@ class ShowcasePage extends React.Component<Props, State>
 
     }
 
-    handleMouseOut = (event:any) => {
+    handleMouseOut = (event: any) => {
         console.log('exit')
         this.setState({ hover: false })
     }
@@ -184,6 +192,8 @@ interface Props extends RouteComponentProps<MatchParams> {
     uploadOrgBanner: typeof uploadOrgBanner
     uploadOrgPicture: typeof uploadOrgPicture
     changeOrgFeaturedRepos: typeof changeOrgFeaturedRepos
+    updateOrgColors: typeof updateOrgColors
+    fetchShowcaseTimeline: typeof fetchShowcaseTimeline
     classes: any
 }
 
@@ -312,7 +322,8 @@ const mapDispatchToProps = {
     uploadOrgBanner,
     uploadOrgPicture,
     changeOrgFeaturedRepos,
-    updateOrgColors
+    updateOrgColors,
+    fetchShowcaseTimeline,
 }
 
 export default connect(
