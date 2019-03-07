@@ -172,19 +172,22 @@ class FileList extends React.Component<Props, State>
                 <Dialog
                     fullWidth
                     open={this.state.newFileDialogOpen}
+                    onClose={this.closeNewFileDialog}
                 >
-                    <DialogTitle>Create new file</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            fullWidth
-                            autoFocus
-                            inputRef={x => this._inputNewFileName = x}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button color="secondary" onClick={this.onClickCreateNewFile}>Create</Button>
-                        <Button color="secondary" onClick={this.onClickCancelNewFile}>Cancel</Button>
-                    </DialogActions>
+                    <form onSubmit={this.createNewFile}>
+                        <DialogTitle>Create new file</DialogTitle>
+                        <DialogContent>
+                            <TextField
+                                fullWidth
+                                autoFocus
+                                inputRef={x => this._inputNewFileName = x}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="secondary" variant="contained" type="submit">Create</Button>
+                            <Button color="secondary" variant="outlined" onClick={this.closeNewFileDialog}>Cancel</Button>
+                        </DialogActions>
+                    </form>
                 </Dialog>
             </React.Fragment>
         )
@@ -208,7 +211,8 @@ class FileList extends React.Component<Props, State>
         this.setState({ newFileDialogOpen: true })
     }
 
-    onClickCreateNewFile() {
+    createNewFile(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
         if (!this._inputNewFileName) {
             return
         }
@@ -223,7 +227,7 @@ class FileList extends React.Component<Props, State>
         selectFile({ ...this.props.uri, filename: fullpath }, FileMode.EditNew)
     }
 
-    onClickCancelNewFile() {
+    closeNewFileDialog() {
         if (this._inputNewFileName) {
             this._inputNewFileName.value = ''
         }
