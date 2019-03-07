@@ -195,12 +195,13 @@ organizationController.getShowcaseTimeline = async (req, res) => {
         for (let j = 0; j < timelines.length; j++) {
             const timeline = timelines[j]
             const commit = timeline[indexByTimeline[j]]
-            if (commit.time > latestTime) {
-                if (commit.repoID === 'conscience-drive') {
-                }
+            if (commit && commit.time > latestTime) {
                 latestTime = commit.time
                 latestIndex = j
             }
+        }
+        if (latestIndex < 0) {
+            break
         }
         const timeline = timelines[latestIndex]
         const commit = timeline[indexByTimeline[latestIndex]]
