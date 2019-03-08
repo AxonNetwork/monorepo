@@ -26,9 +26,16 @@ declare module 'conscience-lib/rpc' {
 
         getRepoHistoryAsync: (params:
             { repoID: string } | { path: string } &
-            { fromCommitHash: Buffer } | { fromCommitRef: string, } &
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } | {} & //nothing fetches head of master
             { pageSize: number, onlyHashes?: boolean }
         ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
+
+        getHistoryUpToCommit: (params:
+            { repoID: string } | { path: string } &
+            { fromCommitHash: Buffer } | { fromCommitRef: string, } | {} & //nothing fetches head of master
+            { toCommit: string | undefined, pageSize: number, onlyHashes?: boolean }
+        ) => Promise<{ commits: IRPCCommit[], isEnd: boolean }>
+
         getUpdatedRefEventsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ events: IRPCUpdatedRefEvent[] }>
 
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
@@ -47,7 +54,7 @@ declare module 'conscience-lib/rpc' {
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
         getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
-        watch: (parms: { eventTypes: (0 | 1 | 2)[] }) => events.EventEmitter
+        watch: (parms: { eventTypes: (0 | 1 | 2 | 3)[] }) => events.EventEmitter
 
 
         // @@TODO: convert to enum
@@ -60,7 +67,8 @@ declare module 'conscience-lib/rpc' {
         EventType: {
             ADDED_REPO: 0,
             PULLED_REPO: 1,
-            UPDATED_REF: 2,
+            PUSHED_REPO: 2,
+            UPDATED_REF: 3,
         }
 
     }

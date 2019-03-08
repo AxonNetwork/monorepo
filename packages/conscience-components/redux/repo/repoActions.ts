@@ -21,9 +21,15 @@ export enum RepoActionType {
     FETCH_REPO_FILES_SUCCESS = 'FETCH_REPO_FILES_SUCCESS',
     FETCH_REPO_FILES_FAILED = 'FETCH_REPO_FILES_FAILED',
 
+    MARK_REPO_FILES_DIRTY = 'MARK_REPO_FILES_DIRTY',
+
     FETCH_REPO_TIMELINE = 'FETCH_REPO_TIMELINE',
     FETCH_REPO_TIMELINE_SUCCESS = 'FETCH_REPO_TIMELINE_SUCCESS',
     FETCH_REPO_TIMELINE_FAILED = 'FETCH_REPO_TIMELINE_FAILED',
+
+    BRING_TIMELINE_UP_TO_DATE = 'BRING_TIMELINE_UP_TO_DATE',
+    BRING_TIMELINE_UP_TO_DATE_SUCCESS = 'BRING_TIMELINE_UP_TO_DATE_SUCCESS',
+    BRING_TIMELINE_UP_TO_DATE_FAILED = 'BRING_TIMELINE_UP_TO_DATE_FAILED',
 
     FETCH_REPO_TIMELINE_EVENT = 'FETCH_REPO_TIMELINE_EVENT',
     FETCH_REPO_TIMELINE_EVENT_SUCCESS = 'FETCH_REPO_TIMELINE_EVENT_SUCCESS',
@@ -164,6 +170,13 @@ export interface IFetchRepoFilesSuccessAction {
 
 export type IFetchRepoFilesFailedAction = FailedAction<RepoActionType.FETCH_REPO_FILES_FAILED>
 
+export interface IMarkRepoFilesDirtyAction {
+    type: RepoActionType.MARK_REPO_FILES_DIRTY
+    payload: {
+        uri: URI
+    }
+}
+
 export interface IFetchRepoTimelineAction {
     type: RepoActionType.FETCH_REPO_TIMELINE
     payload: {
@@ -182,6 +195,23 @@ export interface IFetchRepoTimelineSuccessAction {
 }
 
 export type IFetchRepoTimelineFailedAction = FailedAction<RepoActionType.FETCH_REPO_TIMELINE_FAILED>
+
+export interface IBringTimelineUpToDateAction {
+    type: RepoActionType.BRING_TIMELINE_UP_TO_DATE
+    payload: {
+        uri: URI
+    }
+}
+
+export interface IBringTimelineUpToDateSuccessAction {
+    type: RepoActionType.BRING_TIMELINE_UP_TO_DATE_SUCCESS
+    payload: {
+        uri: URI
+        toPrepend: ITimelineEvent[]
+    }
+}
+
+export type IBringTimelineUpToDateFailedAction = FailedAction<RepoActionType.BRING_TIMELINE_UP_TO_DATE_FAILED>
 
 export interface IFetchRepoTimelineEventAction {
     type: RepoActionType.FETCH_REPO_TIMELINE_EVENT
@@ -394,7 +424,9 @@ export interface ICheckpointRepoAction {
 
 export interface ICheckpointRepoSuccessAction {
     type: RepoActionType.CHECKPOINT_REPO_SUCCESS
-    payload: {}
+    payload: {
+        uri: URI
+    }
 }
 
 export type ICheckpointRepoFailedAction = FailedAction<RepoActionType.CHECKPOINT_REPO_FAILED>
@@ -498,9 +530,15 @@ export type IRepoAction =
     IFetchRepoFilesSuccessAction |
     IFetchRepoFilesFailedAction |
 
+    IMarkRepoFilesDirtyAction |
+
     IFetchRepoTimelineAction |
     IFetchRepoTimelineSuccessAction |
     IFetchRepoTimelineFailedAction |
+
+    IBringTimelineUpToDateAction |
+    IBringTimelineUpToDateSuccessAction |
+    IBringTimelineUpToDateFailedAction |
 
     IFetchRepoTimelineEventAction |
     IFetchRepoTimelineEventSuccessAction |
@@ -574,7 +612,9 @@ export const addRepoToRepoList = (payload: IAddRepoToRepoListAction['payload']):
 
 export const fetchRepoMetadata = (payload: IFetchRepoMetadataAction['payload']): IFetchRepoMetadataAction => ({ type: RepoActionType.FETCH_REPO_METADATA, payload })
 export const fetchRepoFiles = (payload: IFetchRepoFilesAction['payload']): IFetchRepoFilesAction => ({ type: RepoActionType.FETCH_REPO_FILES, payload })
+export const markRepoFilesDirty = (payload: IMarkRepoFilesDirtyAction['payload']): IMarkRepoFilesDirtyAction => ({ type: RepoActionType.MARK_REPO_FILES_DIRTY, payload })
 export const fetchRepoTimeline = (payload: IFetchRepoTimelineAction['payload']): IFetchRepoTimelineAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE, payload })
+export const bringTimelineUpToDate = (payload: IBringTimelineUpToDateAction['payload']): IBringTimelineUpToDateAction => ({ type: RepoActionType.BRING_TIMELINE_UP_TO_DATE, payload })
 export const fetchRepoTimelineEvent = (payload: IFetchRepoTimelineEventAction['payload']): IFetchRepoTimelineEventAction => ({ type: RepoActionType.FETCH_REPO_TIMELINE_EVENT, payload })
 export const fetchSecuredFileInfo = (payload: IFetchSecuredFileInfoAction['payload']): IFetchSecuredFileInfoAction => ({ type: RepoActionType.FETCH_SECURED_FILE_INFO, payload })
 export const fetchIsBehindRemote = (payload: IFetchIsBehindRemoteAction['payload']): IFetchIsBehindRemoteAction => ({ type: RepoActionType.FETCH_IS_BEHIND_REMOTE, payload })

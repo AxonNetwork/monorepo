@@ -3,7 +3,7 @@ import flatMap from 'lodash/flatMap'
 import { getPlugins, onPluginsReady } from '../plugins'
 import { IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins/types'
 
-export let filetypes: {[extension: string]: IFileType}
+export let filetypes: { [extension: string]: IFileType }
 export let fileViewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent, widthMode: 'full' | 'breakpoints' | 'unset' } }
 export let fileEditors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } }
 

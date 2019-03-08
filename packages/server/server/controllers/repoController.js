@@ -119,7 +119,7 @@ repoController.getRepoTimeline = async (req, res, next) => {
     await checkUserAccess(req.user, repoID)
 
     // default to HEAD
-    const fromCommitRef = (req.query.lastCommitFetched || '').length > 0 ? `${req.query.lastCommitFetched}^` : 'HEAD'
+    const fromCommitRef = (req.query.lastCommitFetched || '').length > 0 ? `${req.query.lastCommitFetched}^` : undefined
     // default to 10
     const pageSize = (req.query.pageSize || '').length > 0 ? req.query.pageSize : 10
 

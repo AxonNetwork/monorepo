@@ -27,7 +27,9 @@ class RepoFilesPage extends React.Component<Props>
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (this.props.uri !== undefined && !isEqual(this.props.uri, prevProps.uri)) {
+        if (this.props.uri !== undefined &&
+            (this.props.filesAreDirty || !isEqual(this.props.uri, prevProps.uri))
+        ) {
             this.props.fetchRepoFiles({ uri: this.props.uri })
         }
     }
@@ -87,6 +89,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     files: { [name: string]: IRepoFile } | undefined
+    filesAreDirty: boolean
     fetchRepoFiles: typeof fetchRepoFiles
     classes: any
 }
@@ -137,10 +140,11 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<MatchParams>) => {
     const uri = getURIFromParams(ownProps.match.params)
-    const files = state.repo.filesByURI[uriToString(uri)]
+    const uriStr = uriToString(uri)
     return {
         uri,
-        files,
+        files: state.repo.filesByURI[uriStr],
+        filesAreDirty: state.repo.filesAreDirtyByURI[uriStr],
     }
 }
 

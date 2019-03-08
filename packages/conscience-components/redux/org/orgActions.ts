@@ -1,5 +1,5 @@
 import { FailedAction } from '../reduxUtils'
-import { IOrganization, IOrgBlog, IFeaturedRepo, IUploadedPicture } from 'conscience-lib/common'
+import { IOrganization, IOrgBlog, IFeaturedRepo, IUploadedPicture, ITimelineEvent } from 'conscience-lib/common'
 
 export enum OrgActionType {
     CREATE_ORG = 'CREATE_ORG',
@@ -45,6 +45,10 @@ export enum OrgActionType {
     CHANGE_ORG_FEATURED_REPOS = 'CHANGE_ORG_FEATURED_REPOS',
     CHANGE_ORG_FEATURED_REPOS_SUCCESS = 'CHANGE_ORG_FEATURED_REPOS_SUCCESS',
     CHANGE_ORG_FEATURED_REPOS_FAILED = 'CHANGE_ORG_FEATURED_REPOS_FAILED',
+
+    FETCH_SHOWCASE_TIMELINE = 'FETCH_SHOWCASE_TIMELINE',
+    FETCH_SHOWCASE_TIMELINE_SUCCESS = 'FETCH_SHOWCASE_TIMELINE_SUCCESS',
+    FETCH_SHOWCASE_TIMELINE_FAILED = 'FETCH_SHOWCASE_TIMELINE_FAILED',
 
     FETCH_ORG_BLOGS = 'FETCH_ORG_BLOGS',
     FETCH_ORG_BLOGS_SUCCESS = 'FETCH_ORG_BLOGS_SUCCESS',
@@ -259,6 +263,23 @@ export interface IChangeOrgFeaturedReposSuccessAction {
 
 export type IChangeOrgFeaturedReposFailedAction = FailedAction<OrgActionType.CHANGE_ORG_FEATURED_REPOS_FAILED>
 
+export interface IFetchShowcaseTimelineAction {
+    type: OrgActionType.FETCH_SHOWCASE_TIMELINE
+    payload: {
+        orgID: string
+    }
+}
+
+export interface IFetchShowcaseTimelineSuccessAction {
+    type: OrgActionType.FETCH_SHOWCASE_TIMELINE_SUCCESS
+    payload: {
+        orgID: string
+        timeline: ITimelineEvent[]
+    }
+}
+
+export type IFetchShowcaseTimelineFailedAction = FailedAction<OrgActionType.FETCH_SHOWCASE_TIMELINE_FAILED>
+
 export interface IFetchOrgBlogsAction {
     type: OrgActionType.FETCH_ORG_BLOGS
     payload: {
@@ -362,6 +383,10 @@ export type IOrgAction =
     IChangeOrgFeaturedReposSuccessAction |
     IChangeOrgFeaturedReposFailedAction |
 
+    IFetchShowcaseTimelineAction |
+    IFetchShowcaseTimelineSuccessAction |
+    IFetchShowcaseTimelineFailedAction |
+
     IFetchOrgBlogsAction |
     IFetchOrgBlogsSuccessAction |
     IFetchOrgBlogsFailedAction |
@@ -388,6 +413,8 @@ export const removeRepoFromOrg = (payload: IRemoveRepoFromOrgAction['payload']):
 
 export const changeOrgDescription = (payload: IChangeOrgDescriptionAction['payload']): IChangeOrgDescriptionAction => ({ type: OrgActionType.CHANGE_ORG_DESCRIPTION, payload })
 export const changeOrgFeaturedRepos = (payload: IChangeOrgFeaturedReposAction['payload']): IChangeOrgFeaturedReposAction => ({ type: OrgActionType.CHANGE_ORG_FEATURED_REPOS, payload })
+
+export const fetchShowcaseTimeline = (payload: IFetchShowcaseTimelineAction['payload']): IFetchShowcaseTimelineAction => ({ type: OrgActionType.FETCH_SHOWCASE_TIMELINE, payload })
 
 export const fetchOrgBlogs = (payload: IFetchOrgBlogsAction['payload']): IFetchOrgBlogsAction => ({ type: OrgActionType.FETCH_ORG_BLOGS, payload })
 export const createOrgBlog = (payload: ICreateOrgBlogAction['payload']): ICreateOrgBlogAction => ({ type: OrgActionType.CREATE_ORG_BLOG, payload })

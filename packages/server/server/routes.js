@@ -79,6 +79,7 @@ routes.post('/api/discussion', mustAuthenticate, asyncMiddleware(discussionContr
 
 routes.post('/api/create-organization', mustAuthenticate, asyncMiddleware(organizationController.create))
 routes.get('/api/organization/:orgID', asyncMiddleware(organizationController.get))
+routes.get('/api/showcase-timeline/:orgID', asyncMiddleware(organizationController.getShowcaseTimeline))
 routes.post('/api/update-organization', mustAuthenticate, asyncMiddleware(organizationController.update))
 routes.post('/api/add-member-to-org', mustAuthenticate, asyncMiddleware(organizationController.addMember))
 routes.post('/api/remove-member-from-org', mustAuthenticate, asyncMiddleware(organizationController.removeMember))

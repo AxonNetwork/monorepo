@@ -20,7 +20,9 @@ const RepoWatcher = {
 
         nodeWatchStream = rpcClient.watch({
             eventTypes: [
+                rpcClient.EventType.ADDED_REPO,
                 rpcClient.EventType.PULLED_REPO,
+                rpcClient.EventType.PUSHED_REPO,
                 rpcClient.EventType.UPDATED_REF,
             ]
         })
@@ -31,10 +33,14 @@ const RepoWatcher = {
             // forward repo-specific events to relevant repo watchers
             // forward node events to node watcher
             if (evt.addedRepoEvent) {
-                emitter.emit('added_repo', evt)
+                emitter.emit('added_repo', evt.addedRepoEvent)
             } else if (evt.pulledRepoEvent) {
-                if ((watching[evt.pulledRepoEvent.repoRoot || ''] || {}).emitter) {
+                if (RepoWatcher.isWatchingRepo(evt.pulledRepoEvent.repoRoot)) {
                     watching[evt.pulledRepoEvent.repoRoot].emitter.emit('pulled_repo', evt.pulledRepoEvent)
+                }
+            } else if (evt.pushedRepoEvent) {
+                if (RepoWatcher.isWatchingRepo(evt.pushedRepoEvent.repoRoot)) {
+                    watching[evt.pushedRepoEvent.repoRoot].emitter.emit('pushed_repo', evt.pushedRepoEvent)
                 }
             } else if (evt.updatedRefEvent) {
                 const paths = Object.keys(watching)
@@ -89,6 +95,10 @@ const RepoWatcher = {
         }
 
         return emitter
+    },
+
+    isWatchingRepo(path?: string) {
+        return (!!path && !!watching[path] && !!watching[path].emitter)
     },
 
     unwatch(path: string) {

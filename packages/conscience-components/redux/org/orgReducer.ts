@@ -6,6 +6,7 @@ import { IOrganization, IOrgBlog } from 'conscience-lib/common'
 const initialState = {
     orgs: {},
     blogs: {},
+    showcaseTimelines: {},
 }
 
 export interface IOrgState {
@@ -15,8 +16,8 @@ export interface IOrgState {
             map: { [created: string]: IOrgBlog }
             sortedIDs: number[],
         },
-
     }
+    showcaseTimelines: { [orgID: string]: string[] }
 }
 
 const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgState => {
@@ -150,6 +151,18 @@ const orgReducer = (state: IOrgState = initialState, action: IOrgAction): IOrgSt
                         featuredRepos: featuredRepos,
                     },
                 },
+            }
+        }
+
+        case OrgActionType.FETCH_SHOWCASE_TIMELINE_SUCCESS: {
+            const { orgID, timeline } = action.payload
+            const commitList = timeline.map(evt => evt.commit)
+            return {
+                ...state,
+                showcaseTimelines: {
+                    ...state.showcaseTimelines,
+                    [orgID]: commitList
+                }
             }
         }
 

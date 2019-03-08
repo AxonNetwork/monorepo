@@ -1,14 +1,17 @@
 import path from 'path'
 import * as parseDiff from 'parse-diff'
 import { RepoActionType, IRepoAction } from './repoActions'
+import { OrgActionType, IOrgAction } from '../org/orgActions'
 import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
+import keyBy from 'lodash/keyBy'
 
 export const initialState = {
     repoListByUserID: {},
     localRepoList: [],
     metadataByURI: {},
     filesByURI: {},
+    filesAreDirtyByURI: {},
     commitListsByURI: {},
     commits: {},
     updatedRefEventsByCommit: {},
@@ -26,6 +29,7 @@ export interface IRepoState {
     localRepoList: LocalURI[]
     metadataByURI: { [uri: string]: IRepoMetadata | null }
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
+    filesAreDirtyByURI: { [uri: string]: boolean }
     commitListsByURI: { [uri: string]: string[] }
     commits: { [commitHash: string]: ITimelineEvent }
     updatedRefEventsByCommit: { [commit: string]: IUpdatedRefEvent }
@@ -38,7 +42,7 @@ export interface IRepoState {
     isBehindRemoteByURI: { [uri: string]: boolean }
 }
 
-const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRepoState => {
+const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOrgAction): IRepoState => {
     switch (action.type) {
         case RepoActionType.GET_REPO_LIST_SUCCESS: {
             const { userID, repoList } = action.payload
@@ -62,6 +66,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.FETCH_REPO_FILES: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
+            return {
+                ...state,
+                filesAreDirtyByURI: {
+                    ...state.filesAreDirtyByURI,
+                    [uriStr]: false
+                }
+            }
+        }
+
         case RepoActionType.FETCH_REPO_FILES_SUCCESS: {
             const { uri, files } = action.payload
             const uriStr = uriToString(uri)
@@ -72,6 +88,19 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 filesByURI: {
                     ...state.filesByURI,
                     [uriStr]: files
+                }
+            }
+        }
+
+        case RepoActionType.MARK_REPO_FILES_DIRTY: {
+            const { uri } = action.payload
+            const uriStr = uriToString(uri)
+
+            return {
+                ...state,
+                filesAreDirtyByURI: {
+                    ...state.filesAreDirtyByURI,
+                    [uriStr]: true
                 }
             }
         }
@@ -105,6 +134,35 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
             }
         }
 
+        case RepoActionType.BRING_TIMELINE_UP_TO_DATE_SUCCESS: {
+            const { uri, toPrepend } = action.payload
+            const uriStr = uriToString(uri)
+            const commits = {} as { [commit: string]: ITimelineEvent }
+            const commitList = [] as string[]
+            for (let commit of toPrepend) {
+                commits[commit.commit] = commit
+                commitList.push(commit.commit)
+            }
+            // if end of timeline, terminate commitList with blank string
+            if (toPrepend.length == 0 || toPrepend[toPrepend.length - 1].isInitialCommit) {
+                commitList.push("")
+            }
+            return {
+                ...state,
+                commitListsByURI: {
+                    ...state.commitListsByURI,
+                    [uriStr]: [
+                        ...commitList,
+                        ...(state.commitListsByURI[uriStr] || []),
+                    ]
+                },
+                commits: {
+                    ...state.commits,
+                    ...commits
+                }
+            }
+        }
+
         case RepoActionType.FETCH_REPO_TIMELINE_EVENT_SUCCESS: {
             const { event } = action.payload
             return {
@@ -112,6 +170,18 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction): IRe
                 commits: {
                     ...state.commits,
                     [event.commit]: event
+                }
+            }
+        }
+
+        case OrgActionType.FETCH_SHOWCASE_TIMELINE_SUCCESS: {
+            const { timeline } = action.payload
+            const commits = keyBy(timeline, 'commit')
+            return {
+                ...state,
+                commits: {
+                    ...state.commits,
+                    ...commits
                 }
             }
         }

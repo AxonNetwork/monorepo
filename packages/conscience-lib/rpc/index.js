@@ -27,7 +27,8 @@ function initClient(protoPath) {
     client.EventType = {
         ADDED_REPO:  0,
         PULLED_REPO: 1,
-        UPDATED_REF: 2,
+        PUSHED_REPO: 2,
+        UPDATED_REF: 3,
     }
 
     // @@TODO: this invalidates the whole purpose of streaming the response.  redo this later.
@@ -76,6 +77,47 @@ function initClient(protoPath) {
             page++
         }
         return users
+    }
+
+    client.getHistoryUpToCommit = async (params) => {
+        const { repoID, path, fromCommitHash, toCommit, pageSize, onlyHashes } = params
+        let fromCommitRef = params.fromCommitRef
+        let commits = []
+        let isEnd = false
+        while (true) {
+            let resp
+            if (fromCommitRef) {
+                resp = await client.getRepoHistoryAsync({ repoID, path, fromCommitRef, pageSize, onlyHashes })
+            } else {
+                resp = await client.getRepoHistoryAsync({ repoID, path, fromCommitHash, pageSize, onlyHashes })
+            }
+            isEnd = resp.isEnd
+
+            if (!resp.commits || resp.commits.length === 0) {
+                break
+            }
+            if (toCommit) {
+                const headIndex = resp.commits.findIndex(c => c.commitHash === toCommit)
+                if (headIndex > -1) {
+                    const slice = resp.commits.slice(0, headIndex)
+                    commits = [
+                        ...commits,
+                        ...slice,
+                    ]
+                    break
+                }
+            }
+            commits = [
+                ...commits,
+                ...resp.commits,
+            ]
+            if (resp.isEnd) {
+                break
+            }
+            fromCommitRef = `${commits[commits.length - 1].commitHash}^`
+        }
+
+        return { commits, isEnd }
     }
 }
 

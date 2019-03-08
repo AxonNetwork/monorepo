@@ -17,14 +17,15 @@ import { autobind, uriToString } from 'conscience-lib/utils'
 class RepoList extends React.Component<Props>
 {
     render() {
-        const { localRepoList, repoIDsByPath, filesByURI, selectedRepo, classes } = this.props
+        const { localRepoList, repoIDsByPath, filesByURI, filesAreDirtyByURI, selectedRepo, classes } = this.props
         return (
             <List>
                 {sortBy(localRepoList, uri => repoIDsByPath[uri.repoRoot].toLowerCase()).map((uri: LocalURI) => {
                     const repoID = repoIDsByPath[uri.repoRoot]
-                    let isChanged = false
-                    const files = filesByURI[uriToString(uri)]
-                    if (files !== undefined) {
+                    const uriStr = uriToString(uri)
+                    let isChanged = filesAreDirtyByURI[uriStr]
+                    const files = filesByURI[uriStr]
+                    if (files !== undefined && !isChanged) {
                         isChanged = Object.keys(files).some(
                             (name) => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U',
                         )
@@ -66,6 +67,7 @@ interface StateProps {
     localRepoList: LocalURI[]
     repoIDsByPath: { [repoRoot: string]: string }
     filesByURI: { [uri: string]: { [name: string]: IRepoFile } }
+    filesAreDirtyByURI: { [uri: string]: boolean }
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -88,6 +90,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         localRepoList: state.repo.localRepoList,
         repoIDsByPath: state.repo.repoIDsByPath,
         filesByURI: state.repo.filesByURI,
+        filesAreDirtyByURI: state.repo.filesAreDirtyByURI,
     }
 }
 

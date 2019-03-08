@@ -6,7 +6,7 @@ import path from 'path'
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
 import keyBy from 'lodash/keyBy'
-import { interpolateTimeline, getSecuredTextStats, getRepoMetadata } from './cacheHelpers'
+import { interpolateTimeline, getSecuredTextStats, getRepoMetadata } from 'conscience-lib/cacheHelpers'
 
 export const updateRepoCache = async function (repoID) {
     const rpcClient = noderpc.initClient()
@@ -19,34 +19,8 @@ export const updateRepoCache = async function (repoID) {
     const fromInitialCommit = currentHEAD === undefined
 
     const pageSize = fromInitialCommit ? 50 : 10
-    let fromCommitRef = 'HEAD'
-    let commits = []
-    while (true) {
-        const resp = await rpcClient.getRepoHistoryAsync({ repoID, fromCommitRef, pageSize })
-
-        if (!resp.commits || resp.commits.length === 0) {
-            break
-        }
-        if (!fromInitialCommit) {
-            const headIndex = resp.commits.findIndex(c => c.commitHash === currentHEAD)
-            if (headIndex > -1) {
-                const slice = resp.commits.slice(0, headIndex)
-                commits = [
-                    ...commits,
-                    ...slice,
-                ]
-                break
-            }
-        }
-        commits = [
-            ...commits,
-            ...resp.commits,
-        ]
-        if (resp.isEnd) {
-            break
-        }
-        fromCommitRef = `${commits[commits.length - 1].commitHash}^`
-    }
+    const fromCommitRef = 'HEAD'
+    const { commits = [] } = await rpcClient.getHistoryUpToCommit({ repoID, fromCommitRef, pageSize, toCommit: currentHEAD })
     if (commits.length === 0) {
         return
     }
