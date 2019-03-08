@@ -16,7 +16,7 @@ class ShowcaseTimeline extends React.Component<Props>
             <div>
                 {commitList.map(uri => {
                     return (
-                        <TimelineEvent uri={uri} />
+                        <TimelineEvent uri={uri} showRepoID={true} />
                     )
                 })}
             </div>
