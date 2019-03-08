@@ -76,7 +76,7 @@ export const getRepoMetadata = function (repoID, timeline, refEventsList, curren
         lastVerifiedTime:   lastRefEvent.time ? lastRefEvent.time.toNumber() : undefined,
     }
     if (fromInitialCommit) {
-        if (refEvents.length > 0) {
+        if (refEventsList.length > 0) {
             const firstEvent = refEventsList[refEventsList.length - 1]
             metadata.firstVerifiedCommit = firstEvent.commit
             metadata.firstVerifiedTime = firstEvent.time
