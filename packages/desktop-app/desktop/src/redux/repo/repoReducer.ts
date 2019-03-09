@@ -2,7 +2,7 @@ import fromPairs from 'lodash/fromPairs'
 import { URIType, LocalURI } from 'conscience-lib/common'
 import { RepoActionType, IRepoAction } from 'conscience-components/redux/repo/repoActions'
 import repoReducer, { IRepoState, initialState } from 'conscience-components/redux/repo/repoReducer'
-import { getHash, uriToString } from 'conscience-lib/utils'
+import { getHash } from 'conscience-lib/utils'
 
 
 const desktopInitialState = {
@@ -20,25 +20,6 @@ declare module 'conscience-components/redux/repo/repoReducer' {
 
 const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState => {
     switch (action.type) {
-        case RepoActionType.INIT_REPO_SUCCESS: {
-            const { path, repoID } = action.payload
-            const uri = { type: URIType.Local, repoRoot: path } as LocalURI
-            return {
-                ...state,
-                localRepoList: [
-                    ...state.localRepoList,
-                    uri
-                ],
-                reposByHash: {
-                    ...state.reposByHash,
-                    [getHash(path)]: path
-                },
-                repoIDsByPath: {
-                    ...state.repoIDsByPath,
-                    [path]: repoID
-                }
-            }
-        }
 
         case RepoActionType.GET_LOCAL_REPO_LIST_SUCCESS: {
             const { localRepos } = action.payload
@@ -54,7 +35,6 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
         }
 
         case RepoActionType.ADD_REPO_TO_REPO_LIST: {
-            console.log("Reducer: ", action)
             const { repoRoot, repoID } = action.payload
             const uri = { type: URIType.Local, repoRoot: repoRoot } as LocalURI
             const repoHash = getHash(repoRoot)
@@ -75,18 +55,6 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
             }
 
         }
-
-        // case RepoActionType.PULL_REPO_SUCCESS: {
-        //     const { uri } = action.payload
-        //     const uriStr = uriToString(uri)
-        //     return {
-        //         ...state,
-        //         isBehindRemoteByURI: {
-        //             ...state.isBehindRemoteByURI,
-        //             [uriStr]: false
-        //         }
-        //     }
-        // }
 
         default:
             return state

@@ -11,13 +11,14 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
-import Divider from '@material-ui/core/Divider'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import SharedReposList from 'conscience-components/SharedReposList'
 import ImportRepoButton from 'conscience-components/ImportRepoButton'
+import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import { IGlobalState } from 'conscience-components/redux'
 import { initRepo } from 'conscience-components/redux/repo/repoActions'
+import { clearInitRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IOrganization } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 
@@ -103,6 +104,13 @@ class NewRepoPage extends React.Component<Props, State>
                         </div>
                     </div>
                 </div>
+
+                <ErrorSnackbar
+                    open={this.props.initRepoError !== undefined}
+                    onClose={this.closeError}
+                    message={(this.props.initRepoError || {}).message || ''}
+                />
+
             </div>
         )
     }
@@ -129,6 +137,10 @@ class NewRepoPage extends React.Component<Props, State>
         const orgID = this.state.orgID
         this.props.initRepo({ repoID, orgID })
     }
+
+    closeError() {
+        this.props.clearInitRepoError({})
+    }
 }
 
 interface State {
@@ -143,7 +155,9 @@ interface Props extends RouteComponentProps<MatchParams> {
     orgs: { [orgID: string]: IOrganization }
     createRepoLoading: boolean
     importRepoLoading: boolean
+    initRepoError: Error | undefined
     initRepo: typeof initRepo
+    clearInitRepoError: typeof clearInitRepoError
     classes: any
 }
 
@@ -210,11 +224,13 @@ const mapStateToProps = (state: IGlobalState, props: Props) => {
         orgs: state.org.orgs,
         createRepoLoading: state.ui.createRepoLoading,
         importRepoLoading: state.ui.importRepoLoading,
+        initRepoError: state.ui.initRepoError,
     }
 }
 
 const mapDispatchToProps = {
-    initRepo
+    initRepo,
+    clearInitRepoError,
 }
 
 export default connect(

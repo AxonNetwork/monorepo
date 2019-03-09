@@ -57,13 +57,38 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
         const state = getState()
         const { name, emails } = state.user.users[state.user.currentUser || '']
 
-        const resp = await rpc.getClient().initRepoAsync({
-            repoID: repoID,
-            path: path,
-            name: name,
-            email: emails[0],
-        })
-        const initPath = resp.path
+        let initPath = ''
+        let shouldImport = false
+        try {
+            const resp = await rpc.getClient().initRepoAsync({
+                repoID: repoID,
+                path: path,
+                name: name,
+                email: emails[0],
+            })
+            initPath = resp.path
+        } catch (err) {
+            if (path === undefined) {
+                if (err.details === 'repoID already registered') {
+                    return new Error("This repoID is already taken. Please choose a new ID.")
+                } else {
+                    return new Error(`Something went wrong while creating "${repoID}`)
+                }
+            }
+            shouldImport = true
+        }
+        if (shouldImport && path !== undefined) {
+            try {
+                await rpc.getClient().trackLocalRepoAsync({ repoPath: path, forceReload: true })
+                initPath = path
+            } catch (err) {
+                return new Error("This repoID is already taken. Please choose a new ID.")
+            }
+        }
+        if (initPath === '') {
+            // should never reach this
+            throw new Error("Failed to init repo")
+        }
 
         await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience-node', puller: true, pusher: true, admin: true })
 

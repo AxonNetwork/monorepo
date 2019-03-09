@@ -38,6 +38,8 @@ declare module 'conscience-lib/rpc' {
 
         getUpdatedRefEventsAsync: (params: { repoID: string, startBlock?: number, endBlock?: number }) => Promise<{ events: IRPCUpdatedRefEvent[] }>
 
+        trackLocalRepoAsync: (params: { repoPath: string, forceReload: boolean }) => Promise<{}>
+
         getLocalRefsAsync: (params: { repoID: string, path: string }) => Promise<{ path: string, refs?: IRef[] }>
         getRemoteRefsAsync: (params: { repoID: string, pageSize: number, page: number }) => Promise<{ total: Long, refs: IRef[] }>
         getAllRemoteRefsAsync: (repoID: string) => Promise<{ [refName: string]: string }>
