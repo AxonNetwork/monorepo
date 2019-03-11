@@ -116,6 +116,50 @@ class SmartTextarea extends React.Component<Props, State>
         const fileNames = Object.keys(files || {}).sort()
         const discussions = fromPairs((this.props.discussionIDs || []).map(discussionID => [discussionID, this.props.discussions[discussionID]]))
 
+        let menuContent: any = null
+        let emptyMessage: string
+        if (this.state.embedType === '@file') {
+            emptyMessage = 'No files in this repository'
+            menuContent = fileNames.map(filename => (
+                <MenuItem
+                    onClick={() => this.handleClose('@file', this.props.currentHEADCommit + ':' + filename)}
+                    classes={{ root: classes.menuItem }}
+                >
+                    {filename}
+                </MenuItem>
+            ))
+
+        } else if (this.state.embedType === '@image') {
+            emptyMessage = 'No images in this repository'
+            menuContent = fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
+                <MenuItem
+                    onClick={() => this.handleClose('@image', this.props.currentHEADCommit + ':' + filename)}
+                    classes={{ root: classes.menuItem }}
+                >
+                    {filename}
+                </MenuItem>
+            ))
+
+        } else if (this.state.embedType === '@discussion') {
+            emptyMessage = 'No discussions in this repository'
+            menuContent = Object.keys(discussions).map(discussionID => (
+                <MenuItem
+                    onClick={() => this.handleClose('@discussion', discussionID)}
+                    classes={{ root: classes.menuItem }}
+                >
+                    {discussions[discussionID].subject}
+                </MenuItem>
+            ))
+        }
+
+        if (menuContent !== null && menuContent.length === 0) {
+            menuContent = (
+                <MenuItem classes={{ root: classes.menuItem }} disabled>
+                    {emptyMessage}
+                </MenuItem>
+            )
+        }
+
         return (
             <div>
                 <TextField
@@ -137,30 +181,7 @@ class SmartTextarea extends React.Component<Props, State>
                     open={this.state.embedType !== null}
                     onClose={() => this.handleClose()}
                 >
-                    {this.state.embedType === '@file' && fileNames.map(filename => (
-                        <MenuItem
-                            onClick={() => this.handleClose('@file', this.props.currentHEADCommit + ':' + filename)}
-                            classes={{ root: classes.menuItem }}
-                        >
-                            {filename}
-                        </MenuItem>
-                    ))}
-                    {this.state.embedType === '@image' && fileNames.filter(filename => filetypes.getType(filename) === 'image').map(filename => (
-                        <MenuItem
-                            onClick={() => this.handleClose('@image', this.props.currentHEADCommit + ':' + filename)}
-                            classes={{ root: classes.menuItem }}
-                        >
-                            {filename}
-                        </MenuItem>
-                    ))}
-                    {this.state.embedType === '@discussion' && Object.keys(discussions).map(discussionID => (
-                        <MenuItem
-                            onClick={() => this.handleClose('@discussion', discussionID)}
-                            classes={{ root: classes.menuItem }}
-                        >
-                            {discussions[discussionID].subject}
-                        </MenuItem>
-                    ))}
+                    {menuContent}
                 </Menu>
             </div>
         )

@@ -47,7 +47,7 @@ class TimelineEvent extends React.Component<Props>
                 </div>
                 <div className={classes.eventDescription}>
                     <Typography className={classes.commitMessage}>{event.message}</Typography>
-                    {this.props.displayRepoID &&
+                    {event.repoID !== undefined && this.props.showRepoID &&
                         <Typography><em>{event.repoID}</em></Typography>
                     }
                     <Typography className={classes.date}>{moment(event.time).calendar()}</Typography>
@@ -66,7 +66,7 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    displayRepoID?: boolean
+    showRepoID?: boolean
 }
 
 interface StateProps {
