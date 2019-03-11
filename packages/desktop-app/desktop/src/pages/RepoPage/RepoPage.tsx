@@ -14,7 +14,7 @@ import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
 import RepoHomePage from './components/RepoHomePage'
-import { fetchRepoMetadata } from 'conscience-components/redux/repo/repoActions'
+import { fetchRepoMetadata, fetchRepoFiles } from 'conscience-components/redux/repo/repoActions'
 import { clearPullRepoError, clearCheckpointRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectRepo } from 'conscience-components/navigation'
@@ -92,6 +92,7 @@ class RepoPageContainer extends React.Component<Props>
     componentDidMount() {
         if (this.props.uri) {
             this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
+            this.props.fetchRepoFiles({ uri: this.props.uri })
         }
         document.addEventListener('keydown', this.onKeyDown, false)
     }
@@ -99,6 +100,10 @@ class RepoPageContainer extends React.Component<Props>
     componentDidUpdate(prevProps: Props) {
         if (this.props.uri && !isEqual(this.props.uri, prevProps.uri)) {
             this.props.fetchRepoMetadata({ repoList: [this.props.uri] })
+            this.props.fetchRepoFiles({ uri: this.props.uri })
+        }
+        if (this.props.uri && this.props.filesAreDirty) {
+            this.props.fetchRepoFiles({ uri: this.props.uri })
         }
     }
 
@@ -144,10 +149,12 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     metadata: IRepoMetadata | null | undefined
+    filesAreDirty: boolean
     menuLabelsHidden: boolean
     pullError: Error | undefined
     checkpointError: Error | undefined
     fetchRepoMetadata: typeof fetchRepoMetadata
+    fetchRepoFiles: typeof fetchRepoFiles
     clearPullRepoError: typeof clearPullRepoError
     clearCheckpointRepoError: typeof clearCheckpointRepoError
     classes: any
@@ -177,6 +184,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
     return {
         uri,
         metadata: state.repo.metadataByURI[uriStr],
+        filesAreDirty: state.repo.filesAreDirtyByURI[uriStr] || false,
         menuLabelsHidden: state.user.userSettings.menuLabelsHidden || false,
         pullError: state.ui.pullRepoErrorByURI[uriStr],
         checkpointError: state.ui.checkpointError,
@@ -185,6 +193,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: Props) => {
 
 const mapDispatchToProps = {
     fetchRepoMetadata,
+    fetchRepoFiles,
     clearPullRepoError,
     clearCheckpointRepoError
 }

@@ -610,6 +610,7 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
                 })
                 watcher.on('pushed_repo', () => {
                     dispatch(bringTimelineUpToDate({ uri }))
+                    dispatch(markRepoFilesDirty({ uri }))
                 })
                 watcher.on('updated_ref', () => {
                     if (!getState().repo.isBehindRemoteByURI[uriStr]) {

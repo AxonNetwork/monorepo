@@ -179,7 +179,7 @@ class SharedUsers extends React.Component<Props, State>
                                     Search:
                                 </Typography>
                                 <TextField
-                                    label="Name or username"
+                                    label="Name, username, or email"
                                     fullWidth
                                     inputRef={x => this._inputUser = x}
                                     autoFocus

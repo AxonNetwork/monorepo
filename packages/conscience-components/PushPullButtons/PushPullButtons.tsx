@@ -284,7 +284,7 @@ class PushPullButtons extends React.Component<Props, State>
     }
 
     hasMergeConflict(filename: string) {
-        if (this.props.files[filename].mergeConflict) {
+        if (!this.props.files[filename].mergeConflict) {
             return false
         }
         const repoRoot = this.props.uri.repoRoot
