@@ -56,6 +56,12 @@ declare module 'conscience-lib/rpc' {
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
         getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
+
+        setFileChunkingAsync: (params:
+            { repoID: string } | { repoRoot: string } &
+            { filename: string, enabled: boolean }
+        ) => Promise<{}>
+
         watch: (parms: { eventTypes: (0 | 1 | 2 | 3)[] }) => events.EventEmitter
 
 
@@ -82,7 +88,7 @@ declare module 'conscience-lib/rpc' {
         unstagedStatus: string,
         stagedStatus: string,
         mergeConflict: boolean,
-        mergeUnresolved: boolean,
+        isChunked: boolean,
     }
 
     export interface IRPCCommit {

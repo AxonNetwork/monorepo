@@ -23,8 +23,10 @@ import { fetchIsBehindRemote, pullRepo, checkpointRepo, setFilesChunking } from 
 import { IGlobalState } from '../redux'
 import { selectFile } from '../navigation'
 import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
-import { autobind, uriToString } from 'conscience-lib/utils'
+import { autobind, uriToString, parseMergeConflict } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
+import fs from 'fs'
+import path from 'path'
 
 
 @autobind
@@ -213,7 +215,7 @@ class PushPullButtons extends React.Component<Props, State>
 
     onClickOpenPushDialog() {
         const files = this.props.files
-        const mergeConflict = Object.keys(files).some(name => files[name].status === 'U')
+        const mergeConflict = Object.keys(files).some(name => this.hasMergeConflict(name))
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
         } else {
@@ -221,6 +223,7 @@ class PushPullButtons extends React.Component<Props, State>
             const largeFileList = Object.keys(files)
                 .filter(name => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U')
                 .filter(name => files[name].size >= threshold)
+                .filter(name => !files[name].isChunked)
             if (!this.props.manualChunking || largeFileList.length === 0) {
                 this.setState({ pushDialogOpen: true })
             } else {
@@ -278,6 +281,16 @@ class PushPullButtons extends React.Component<Props, State>
             const shell = (window as any).require('electron').shell
             shell.openItem(this.props.uri.repoRoot)
         }
+    }
+
+    hasMergeConflict(filename: string) {
+        if (this.props.files[filename].mergeConflict) {
+            return false
+        }
+        const repoRoot = this.props.uri.repoRoot
+        const fileContents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
+        const chunks = parseMergeConflict(fileContents)
+        return chunks.length > 1
     }
 }
 

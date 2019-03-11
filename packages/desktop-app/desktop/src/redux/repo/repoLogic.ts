@@ -190,8 +190,8 @@ const fetchRepoFilesLogic = makeLogic<IFetchRepoFilesAction, IFetchRepoFilesSucc
                         modified: new Date(file.modified * 1000),
                         type: filetypes.getType(file.name),
                         status: file.unstagedStatus,
-                        mergeConflict: file.mergeConflict,
-                        mergeUnresolved: file.mergeUnresolved,
+                        mergeConflict: file.unstagedStatus === 'U',
+                        isChunked: file.isChunked,
                     } as IRepoFile
                 })
             files = keyBy(filesList, 'name')
@@ -392,6 +392,14 @@ const setFilesChunkingLogic = makeLogic<ISetFilesChunkingAction, ISetFilesChunki
     type: RepoActionType.SET_FILES_CHUNKING,
     async process({ action }) {
         const { uri, shouldChunkByFile } = action.payload
+        const repoRoot = uri.repoRoot
+        const rpcClient = rpc.getClient()
+        const filenames = Object.keys(shouldChunkByFile)
+        for (let i = 0; i < filenames.length; i++) {
+            const filename = filenames[i]
+            await rpcClient.setFileChunkingAsync({ repoRoot, filename, enabled: shouldChunkByFile[filename] })
+        }
+
         return { uri, shouldChunkByFile }
     },
 })
@@ -427,10 +435,26 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
 
 const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSuccessAction>({
     type: RepoActionType.CHECKPOINT_REPO,
-    async process({ action }, dispatch) {
+    async process({ action, getState }, dispatch) {
         const { uri, message } = action.payload
         if (uri.type === URIType.Local) {
-            await rpc.getClient().checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
+            const rpcClient = rpc.getClient()
+            const manualChunking = getState().user.userSettings.manualChunking || false
+            if (!manualChunking) {
+                const threshold = 1024 * 1024 * 10
+                const files = getState().repo.filesByURI[uriToString(uri)] || {}
+                const largeFileList = Object.keys(files)
+                    .filter(name => files[name].status === 'M' || files[name].status === '?' || files[name].status === 'U')
+                    .filter(name => files[name].size >= threshold)
+                    .filter(name => !files[name].isChunked)
+
+                for (let i = 0; i < largeFileList.length; i++) {
+                    const filename = largeFileList[i]
+                    await rpcClient.setFileChunkingAsync({ repoRoot: uri.repoRoot, filename, enabled: true })
+                }
+
+            }
+            await rpcClient.checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
         } else {
             throw new Error('Cannot checkpoint network repo')
         }

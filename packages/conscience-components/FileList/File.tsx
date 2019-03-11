@@ -32,21 +32,22 @@ class File extends React.Component<Props, State>
     componentDidMount() {
         if (this.props.uri.type === URIType.Local) {
             const { repoRoot = '', filename = '' } = this.props.uri
-            fs.readFile(path.join(repoRoot, filename), { encoding: 'utf8' }, (err, contents) => {
-                if (err) {
-                    return
-                }
-                const chunks = parseMergeConflict(contents)
-                if (chunks.length > 1) {
-                    this.setState({ mergeConflict: true })
-                }
-            })
+            if (this.props.file.mergeConflict) {
+                fs.readFile(path.join(repoRoot, filename), { encoding: 'utf8' }, (err, contents) => {
+                    if (err) {
+                        return
+                    }
+                    const chunks = parseMergeConflict(contents)
+                    if (chunks.length > 1) {
+                        this.setState({ mergeConflict: true })
+                    }
+                })
+            }
         }
     }
 
 
     selectFile() {
-        const { file } = this.props
         if (this.state.mergeConflict) {
             selectFile(this.props.uri, FileMode.ResolveConflict)
         } else {
@@ -102,7 +103,7 @@ class File extends React.Component<Props, State>
                 hover
                 onClick={this.selectFile}
                 className={classnames(classes.tableRow, this.state.mergeConflict ? classes.mergeConflict : '')}
-                classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
+                classes={{ hover: this.state.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
             >
                 <TableCell scope="row" className={classes.tableCell}>
                     <div className={classes.listItem}>
@@ -134,12 +135,13 @@ class File extends React.Component<Props, State>
         }
     }
 
-    shouldComponentUpdate(nextProps: Props) {
+    shouldComponentUpdate(nextProps: Props, nextState: State) {
         return !isEqual(this.props.uri, nextProps.uri) ||
             this.props.file.name !== nextProps.file.name ||
             this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
             this.props.canEditFiles !== nextProps.canEditFiles ||
-            this.props.showFullPaths !== nextProps.showFullPaths
+            this.props.showFullPaths !== nextProps.showFullPaths ||
+            this.state.mergeConflict !== nextState.mergeConflict
     }
 }
 

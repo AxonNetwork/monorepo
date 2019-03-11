@@ -31,8 +31,8 @@ class FileButtons extends React.Component<Props, State>
     }
 
     render() {
-        const { manualChunking, classes } = this.props
-        const isChunked = true
+        const { file, manualChunking, classes } = this.props
+        const isChunked = file.isChunked
 
         return (
             <div>

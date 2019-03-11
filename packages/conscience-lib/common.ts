@@ -57,7 +57,7 @@ export interface IRepoFile {
     status: string
     diff: string
     mergeConflict: boolean
-    mergeUnresolved: boolean
+    isChunked: boolean
 }
 
 export enum URIType {
