@@ -246,7 +246,7 @@ class SharedUsers extends React.Component<Props, State>
                                 {updatingUserPermissions !== undefined &&
                                     <CircularProgress size={24} className={classes.buttonLoading} />
                                 }
-                                SetPermissions
+                                Set Permissions
                             </Button>
                             <Button
                                 onClick={this.closeUserDialog}

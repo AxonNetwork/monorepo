@@ -28,13 +28,13 @@ enum LineType {
 }
 
 function getLineType(line: string) {
-    if (line.indexOf('<<<<<<<') > -1) {
+    if (line.indexOf('<<<<<<<') === 0) {
         return LineType.UpstreamStart
     }
-    if (line.indexOf('=======') > -1) {
+    if (line.indexOf('=======') === 0) {
         return LineType.LocalStart
     }
-    if (line.indexOf('>>>>>>>') > -1) {
+    if (line.indexOf('>>>>>>>') === 0) {
         return LineType.ConflictEnd
     }
     return LineType.Normal

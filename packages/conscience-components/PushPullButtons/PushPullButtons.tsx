@@ -62,7 +62,7 @@ class PushPullButtons extends React.Component<Props, State>
         })
 
         const mergeConflicts = this.state.mergeConflictDialogOpen ?
-            Object.keys(files).filter(name => files[name].mergeConflict) : undefined
+            Object.keys(files).filter(name => files[name].status === 'U') : undefined
 
         const pullDisabled = !this.props.isBehindRemote || pullLoading
         const pushDisabled = !filesChanged || checkpointLoading
@@ -213,7 +213,7 @@ class PushPullButtons extends React.Component<Props, State>
 
     onClickOpenPushDialog() {
         const files = this.props.files
-        const mergeConflict = Object.keys(files).some(name => files[name].mergeConflict)
+        const mergeConflict = Object.keys(files).some(name => files[name].status === 'U')
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
         } else {

@@ -13,19 +13,41 @@ import FileButtons from './FileButtons'
 import moment from 'moment'
 import bytes from 'bytes'
 import path from 'path'
+import fs from 'fs'
 
 import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
+import { parseMergeConflict } from 'conscience-lib/utils'
 import autobind from 'conscience-lib/utils/autobind'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind
-class File extends React.Component<Props>
+class File extends React.Component<Props, State>
 {
+    state = {
+        mergeConflict: false
+    }
+
+    componentDidMount() {
+        if (this.props.uri.type === URIType.Local) {
+            const { repoRoot = '', filename = '' } = this.props.uri
+            fs.readFile(path.join(repoRoot, filename), { encoding: 'utf8' }, (err, contents) => {
+                if (err) {
+                    return
+                }
+                const chunks = parseMergeConflict(contents)
+                if (chunks.length > 1) {
+                    this.setState({ mergeConflict: true })
+                }
+            })
+        }
+    }
+
+
     selectFile() {
         const { file } = this.props
-        if (file.mergeConflict) {
+        if (this.state.mergeConflict) {
             selectFile(this.props.uri, FileMode.ResolveConflict)
         } else {
             selectFile(this.props.uri, FileMode.View)
@@ -79,7 +101,7 @@ class File extends React.Component<Props>
             <TableRow
                 hover
                 onClick={this.selectFile}
-                className={classnames(classes.tableRow, file.mergeConflict ? classes.mergeConflict : '')}
+                className={classnames(classes.tableRow, this.state.mergeConflict ? classes.mergeConflict : '')}
                 classes={{ hover: file.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
             >
                 <TableCell scope="row" className={classes.tableCell}>
@@ -101,7 +123,7 @@ class File extends React.Component<Props>
                 }
             </TableRow>
         )
-        if (file.mergeConflict) {
+        if (this.state.mergeConflict) {
             return (
                 <Tooltip title="This file has a merge conflict. Click to resolve.">
                     {fileRow}
@@ -119,6 +141,10 @@ class File extends React.Component<Props>
             this.props.canEditFiles !== nextProps.canEditFiles ||
             this.props.showFullPaths !== nextProps.showFullPaths
     }
+}
+
+interface State {
+    mergeConflict: boolean
 }
 
 type Props = OwnProps & { classes: any }
