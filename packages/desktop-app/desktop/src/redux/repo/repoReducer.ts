@@ -36,6 +36,10 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
 
         case RepoActionType.ADD_REPO_TO_REPO_LIST: {
             const { repoRoot, repoID } = action.payload
+            const alreadyAdded = state.localRepoList.some(uri => uri.repoRoot === repoRoot)
+            if (alreadyAdded) {
+                return state
+            }
             const uri = { type: URIType.Local, repoRoot: repoRoot } as LocalURI
             const repoHash = getHash(repoRoot)
             return {
@@ -53,7 +57,6 @@ const desktopRepoReducer = (state: IRepoState, action: IRepoAction): IRepoState 
                     [repoRoot]: repoID
                 }
             }
-
         }
 
         default:

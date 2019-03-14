@@ -86,6 +86,9 @@ class File extends React.Component<Props, State>
             console.error('file.name is undefined', file)
             return null
         }
+        if (file.status === 'D') {
+            return null
+        }
         const name = this.props.showFullPaths ? file.name : path.basename(file.name)
 
         let displayname: string

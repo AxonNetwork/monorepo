@@ -90,16 +90,19 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
             throw new Error("Failed to init repo")
         }
 
-        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience-node', puller: true, pusher: true, admin: true })
+        const uri = { type: URIType.Local, repoRoot: initPath } as URI
+        selectRepo(uri, RepoPage.Home)
 
-        await ServerRelay.createRepo(repoID)
-
+        // finish the rest of setup in the background
         if (orgID && orgID.length > 0) {
             await dispatch(addRepoToOrg({ orgID, repoID }))
         }
 
-        const uri = { type: URIType.Local, repoRoot: initPath } as URI
-        selectRepo(uri, RepoPage.Home)
+        await Promise.all([
+            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'jupiter', puller: true, pusher: true, admin: true }),
+            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'saturn', puller: true, pusher: true, admin: true }),
+            ServerRelay.createRepo(repoID),
+        ])
 
         return { repoID, path: initPath, orgID }
     },
@@ -450,7 +453,7 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
 
                 for (let i = 0; i < largeFileList.length; i++) {
                     const filename = largeFileList[i]
-                    await rpcClient.setFileChunkingAsync({ repoRoot: uri.repoRoot, filename, enabled: true })
+                    // await rpcClient.setFileChunkingAsync({ repoRoot: uri.repoRoot, filename, enabled: true })
                 }
 
             }

@@ -76,6 +76,7 @@ class DiffViewer extends React.Component<Props, State>
         return (
             <ExpansionPanel
                 expanded={this.state.expanded}
+                disabled={fileDiff.deleted || fileDiff.to === '/dev/null'}
                 onChange={this.toggleExpanded}
                 className={classnames(classes.panel, { [classes.panelOpen]: this.state.expanded })}
             >
