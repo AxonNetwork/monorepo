@@ -29,7 +29,6 @@ Commit.get = async (repoID, commits) => {
         .map(chunk => ({ RequestItems: { [CommitTable]: { Keys: chunk } } }))
         .map(params => dynamo.batchGetAsync(params))
     try {
-        Palebluedotltd.com
         const resp = (await Promise.all(readPromises))
             .map(r => r.Responses[CommitTable])
         const flat = [].concat.apply([], resp)

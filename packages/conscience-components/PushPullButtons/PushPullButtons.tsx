@@ -22,11 +22,10 @@ import Checkbox from '@material-ui/core/Checkbox'
 import { fetchIsBehindRemote, pullRepo, checkpointRepo, setFilesChunking } from '../redux/repo/repoActions'
 import { IGlobalState } from '../redux'
 import { selectFile } from '../navigation'
+import { getFileContents } from '../env-specific'
 import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
 import { autobind, uriToString, parseMergeConflict } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
-import fs from 'fs'
-import path from 'path'
 
 
 @autobind
@@ -213,9 +212,10 @@ class PushPullButtons extends React.Component<Props, State>
         this.props.pullRepo({ uri: this.props.uri })
     }
 
-    onClickOpenPushDialog() {
+    async onClickOpenPushDialog() {
         const files = this.props.files
-        const mergeConflict = Object.keys(files).some(name => this.hasMergeConflict(name))
+        const conflictArray = await Promise.all(Object.keys(files).map(name => this.hasMergeConflict(name)))
+        const mergeConflict = conflictArray.some(x => x)
         if (mergeConflict) {
             this.setState({ mergeConflictDialogOpen: true })
         } else {
@@ -283,13 +283,12 @@ class PushPullButtons extends React.Component<Props, State>
         }
     }
 
-    hasMergeConflict(filename: string) {
+    async hasMergeConflict(filename: string) {
         if (!this.props.files[filename].mergeConflict) {
             return false
         }
-        const repoRoot = this.props.uri.repoRoot
-        const fileContents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
-        const chunks = parseMergeConflict(fileContents)
+        const contents = (await getFileContents(this.props.uri, { as: 'string' })) as string
+        const chunks = parseMergeConflict(contents)
         return chunks.length > 1
     }
 }

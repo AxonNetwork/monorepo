@@ -13,13 +13,13 @@ import FileButtons from './FileButtons'
 import moment from 'moment'
 import bytes from 'bytes'
 import path from 'path'
-import fs from 'fs'
 
 import { IRepoFile, FileMode, URI, URIType } from 'conscience-lib/common'
 import { parseMergeConflict } from 'conscience-lib/utils'
 import autobind from 'conscience-lib/utils/autobind'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { selectFile } from 'conscience-components/navigation'
+import { getFileContents } from 'conscience-components/env-specific'
 
 
 @autobind
@@ -29,23 +29,17 @@ class File extends React.Component<Props, State>
         mergeConflict: false
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         if (this.props.uri.type === URIType.Local) {
-            const { repoRoot = '', filename = '' } = this.props.uri
             if (this.props.file.mergeConflict) {
-                fs.readFile(path.join(repoRoot, filename), { encoding: 'utf8' }, (err, contents) => {
-                    if (err) {
-                        return
-                    }
-                    const chunks = parseMergeConflict(contents)
-                    if (chunks.length > 1) {
-                        this.setState({ mergeConflict: true })
-                    }
-                })
+                const contents = (await getFileContents(this.props.uri, { as: 'string' })) as string
+                const chunks = parseMergeConflict(contents)
+                if (chunks.length > 1) {
+                    this.setState({ mergeConflict: true })
+                }
             }
         }
     }
-
 
     selectFile() {
         if (this.state.mergeConflict) {
