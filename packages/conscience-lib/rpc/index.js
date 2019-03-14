@@ -152,7 +152,6 @@ function initClient(protoPath) {
             })
 
             stream.on('error', (err) => {
-                console.error(`rpc.GetObject( ${repoRoot}, ${commit}, ${filename} ): ${err.toString()}`)
                 reject(err)
             })
         })
