@@ -1,4 +1,4 @@
-# Conscience webapp + server
+# Axon webapp + server
 
 ## Building
 

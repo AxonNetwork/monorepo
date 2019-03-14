@@ -14,7 +14,7 @@ function build_webapp {
 
 function eb_zip {
     cp -R ../webapp/dist/prod/* ./dist/public/
-    local APP_NAME='conscience-app'
+    local APP_NAME='axon-app'
     local APP_VERSION=`git rev-parse --short HEAD`
     zip -x *.git* -x ".awcache/**" -x "node_modules/**" -x ".env" -r "../${APP_NAME}-${APP_VERSION}.zip" .
 }
