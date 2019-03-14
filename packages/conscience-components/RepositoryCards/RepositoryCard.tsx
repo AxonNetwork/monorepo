@@ -31,7 +31,9 @@ class RepositoryCard extends React.Component<Props, State>
 
     render() {
         const { repoID, metadata, cloneProgress, classes } = this.props
-        if (metadata === null) return metadata
+        if (metadata === null) {
+            return null
+        }
 
         const isDownloading = cloneProgress !== undefined
         let percentDownloaded
@@ -163,7 +165,7 @@ interface OwnProps {
 
 interface StateProps {
     repoID: string
-    metadata: IRepoMetadata
+    metadata: IRepoMetadata | null
     localRepoList: LocalURI[]
     cloneProgress: { fetched: number, toFetch: number } | undefined
 }

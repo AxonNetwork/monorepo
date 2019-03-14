@@ -55,7 +55,7 @@ class SearchBar extends React.Component<Props, State>
                 >
                     <MenuItem onClick={this.handleClose}>Search in this repository</MenuItem>
                     <MenuItem onClick={this.handleClose}>Search in this organization</MenuItem>
-                    <MenuItem onClick={this.handleClose}>Search the Conscience network</MenuItem>
+                    <MenuItem onClick={this.handleClose}>Search the Axon network</MenuItem>
                 </Menu>*/}
             </div>
         )

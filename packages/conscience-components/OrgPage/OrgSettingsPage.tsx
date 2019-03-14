@@ -71,16 +71,16 @@ class OrganizationPage extends React.Component<Props, State>
                 <div className={classes.colorsAndImages}>
                     <H6>Showcase Settings</H6>
                     <div style={{backgroundColor: '#eaeaea82', padding: 32, marginTop: 20,}}>
-                    
+
                         {/* Change Org Primary and Secondary Theme Colors */}
 
-                        <div className={}>
+                        <div>
                             <div className={classes.colorsSection}>
                                 <div onClick={this.openColorPicker('primary')} >
                                     <Fab size='small'
-                                        onMouseEnter={() => this.setState({primaryHover: true})} 
+                                        onMouseEnter={() => this.setState({primaryHover: true})}
                                         onMouseOut={() => this.setState({primaryHover: false})}
-                                        style={{backgroundColor: `${primaryColor}`, boxShadow: this.state.primaryHover ? 
+                                        style={{backgroundColor: `${primaryColor}`, boxShadow: this.state.primaryHover ?
                                         '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 10 }}>
                                     </Fab>
                                     Primary Color
@@ -88,21 +88,21 @@ class OrganizationPage extends React.Component<Props, State>
                                 <div>
                                     <Fab size='small'
                                         onClick={this.openColorPicker('secondary')}
-                                        onMouseEnter={() => this.setState({secondaryHover: true})} 
+                                        onMouseEnter={() => this.setState({secondaryHover: true})}
                                         onMouseOut={() => this.setState({secondaryHover: false})}
-                                        style={{backgroundColor: `${secondaryColor}`, boxShadow: this.state.secondaryHover ? 
+                                        style={{backgroundColor: `${secondaryColor}`, boxShadow: this.state.secondaryHover ?
                                         '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)' : 'rgba(0, 0, 0, 0.2) 0px 3px 5px', marginRight: 10 }}>
                                     </Fab>
                                     Secondary Color
                                 </div>
                                 <Button variant="contained" color="secondary" className={classes.button} onClick={this.onClickSaveColors}>Save</Button>
                             </div>
-                            { primaryClick || secondaryClick ? 
+                            { primaryClick || secondaryClick ?
                                 <div style={{zIndex: 2, position: 'absolute', width: secondaryClick ? '30%' : 'auto', display: 'flex', justifyContent: secondaryClick ? 'flex-end' : 'flex-start' }}>
                                     <Fab size='small' style={{ marginRight: '-24px', marginTop: '-12px', backgroundColor: '#e64a19'}} onClick={this.closeColorPicker}>X</Fab>
                                     <SketchPicker color={primaryClick ? primaryColor : secondaryColor} onChangeComplete={this.onChangeComplete} />
                                 </div>
-                                : null 
+                                : null
                             }
                         </div>
                         <Divider style={{marginBottom: 20}}/>
@@ -178,15 +178,15 @@ class OrganizationPage extends React.Component<Props, State>
         event.preventDefault()
         console.log('crozzee')
         this.setState({primaryClick: false, secondaryClick: false})
-    }   
+    }
 
-    onChangeComplete = (color:Element, event:any) => {
+    onChangeComplete = (color:any, event:any) => {
         if (this.state.primaryClick) {
             this.setState({primaryColor: color.hex})
         } else if (this.state.secondaryClick) {
             this.setState({secondaryColor: color.hex})
         }
-    } 
+    }
 
     onClickSaveColors = () => {
         const orgID = this.props.org.orgID

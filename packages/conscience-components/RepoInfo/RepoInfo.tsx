@@ -101,7 +101,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
-    const uriStr = uriToString(ownProps.uri)
+    // const uriStr = uriToString(ownProps.uri)
     const menuLabelsHidden = state.user.userSettings.menuLabelsHidden || false
     return {
         menuLabelsHidden,

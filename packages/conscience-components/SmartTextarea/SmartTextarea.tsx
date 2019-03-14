@@ -150,6 +150,8 @@ class SmartTextarea extends React.Component<Props, State>
                     {discussions[discussionID].subject}
                 </MenuItem>
             ))
+        } else {
+            emptyMessage = null
         }
 
         if (menuContent !== null && menuContent.length === 0) {

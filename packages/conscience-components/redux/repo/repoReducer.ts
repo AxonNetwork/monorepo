@@ -339,6 +339,8 @@ function addFolders(files: { [name: string]: IRepoFile }) {
                     diff: '',
                     mergeConflict: false,
                     mergeUnresolved: false,
+                    hash: '',
+                    isChunked: false,
                 } as IRepoFile
             }
         }
