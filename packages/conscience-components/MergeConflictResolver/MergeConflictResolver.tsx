@@ -7,11 +7,11 @@ import CodeViewer from '../CodeViewer'
 import Conflict from './Conflict'
 import Breadcrumbs from '../Breadcrumbs'
 import { selectFile } from '../navigation'
+import { getFileContents, saveFileContents } from '../env-specific'
 
 import { FileMode, LocalURI } from 'conscience-lib/common'
 import { ChunkType, IChunk, IChunkConflict, IChunkNoConflict, parseMergeConflict, combineChunks } from 'conscience-lib/utils'
 import { autobind } from 'conscience-lib/utils'
-import fs from 'fs'
 import path from 'path'
 
 
@@ -22,10 +22,9 @@ class MergeConflictResolver extends React.Component<Props, State>
         chunks: [] as IChunk[]
     }
 
-    componentDidMount() {
-        const { repoRoot = '', filename = '' } = this.props.uri
-        const fileContents = fs.readFileSync(path.join(repoRoot, filename), { encoding: 'utf8' })
-        const chunks = parseMergeConflict(fileContents)
+    async componentDidMount() {
+        const contents = (await getFileContents(this.props.uri, { as: 'string' })) as string
+        const chunks = parseMergeConflict(contents)
         this.setState({ chunks })
     }
 
@@ -82,7 +81,7 @@ class MergeConflictResolver extends React.Component<Props, State>
         )
     }
 
-    chunkContentAccepted(chunkContent: string, index: number) {
+    async chunkContentAccepted(chunkContent: string, index: number) {
         const chunks = this.state.chunks
         const oldChunk = chunks[index]
         const newChunk = {
@@ -93,10 +92,8 @@ class MergeConflictResolver extends React.Component<Props, State>
         chunks.splice(index, 1, newChunk)
 
         const newContent = combineChunks(chunks)
-        const { repoRoot = '', filename = '' } = this.props.uri
-        const filepath = path.join(repoRoot, filename)
         try {
-            fs.writeFileSync(filepath, newContent, { encoding: 'utf8' })
+            await saveFileContents(this.props.uri, newContent)
         } catch (err) {
             console.error('error saving ~>', err)
         }
