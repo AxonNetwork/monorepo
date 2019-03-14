@@ -93,7 +93,6 @@ class SettingsPage extends React.Component<Props>
                             <CodeViewer
                                 language="go"
                                 fileContents={codeSample}
-                                codeColorScheme={userSettings.codeColorScheme}
                             />
                         </section>
 

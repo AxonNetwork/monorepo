@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
@@ -38,7 +36,7 @@ interface MatchParams {
     repoHash: string
 }
 
-interface OwnProps extends RouteComponentProps<MatchParams> {}
+interface OwnProps extends RouteComponentProps<MatchParams> { }
 
 interface StateProps {
     uri: LocalURI

@@ -119,6 +119,44 @@ function initClient(protoPath) {
 
         return { commits, isEnd }
     }
+
+    client.getDiffAsync = async (params) => {
+        return new Promise((resolve, reject) => {
+            const stream = client.getDiff(params)
+            let diffBlob
+            stream.on('data', (pkt) => {
+                if (pkt.end) { return resolve(diffBlob) }
+                diffBlob += pkt.data
+            })
+            stream.on('error', reject)
+        })
+    }
+
+    client.getObjectAsync = async (params) => {
+        return new Promise((resolve, reject) => {
+            const stream = client.getObject(params)
+            let gotHeader = false
+            let totalSize = 0
+            const buffers = []
+
+            stream.on('data', (pkt) => {
+                if (!gotHeader && pkt.header) {
+                    totalSize = pkt.header.uncompressedSize
+                    gotHeader = true
+                } else if (pkt.data.end) {
+                    const contents = Buffer.concat(buffers, totalSize)
+                    resolve(contents)
+                } else {
+                    buffers.push(pkt.data.data)
+                }
+            })
+
+            stream.on('error', (err) => {
+                console.error(`rpc.GetObject( ${repoRoot}, ${commit}, ${filename} ): ${err.toString()}`)
+                reject(err)
+            })
+        })
+    }
 }
 
 module.exports = {

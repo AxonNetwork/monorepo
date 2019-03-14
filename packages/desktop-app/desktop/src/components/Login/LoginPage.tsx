@@ -199,7 +199,7 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState) => {
     return {
-        error: state.user.error,
+        error: state.user.loginError,
         nodeUsername: state.user.nodeUsername,
         loginLoading: state.ui.loginLoading,
     }

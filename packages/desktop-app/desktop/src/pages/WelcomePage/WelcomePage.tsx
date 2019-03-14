@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { H3 } from 'conscience-components/Typography/Headers'
-import { createRepo } from 'conscience-components/redux/repo/repoActions'
+// import { createRepo } from 'conscience-components/redux/repo/repoActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
 import logo from '../../assets/img/logo.png'
@@ -52,18 +52,18 @@ class NewRepository extends React.Component<Props>
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        if (this._inputRepoID === null) {
-            return
-        }
-        const repoID = this._inputRepoID.value
-        const orgID = ""
-        this.props.createRepo({ repoID, orgID })
+        // if (this._inputRepoID === null) {
+        //     return
+        // }
+        // const repoID = this._inputRepoID.value
+        // const orgID = ""
+        // this.props.createRepo({ repoID, orgID })
     }
 }
 
 interface Props {
     createRepoLoading: boolean
-    createRepo: typeof createRepo
+    // createRepo: typeof createRepo
     classes: any
 }
 
@@ -111,7 +111,7 @@ const mapStateToProps = (state: IGlobalState) => {
 }
 
 const mapDispatchToProps = {
-    createRepo,
+    // createRepo,
 }
 
 export default connect(

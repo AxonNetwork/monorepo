@@ -60,7 +60,6 @@ type Props = OwnProps & StateProps & { classes: any }
 
 interface OwnProps {
     selectedRepo?: string | undefined
-    classes: any
 }
 
 interface StateProps {

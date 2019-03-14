@@ -108,7 +108,7 @@ class NewRepoPage extends React.Component<Props, State>
                 <ErrorSnackbar
                     open={this.props.initRepoError !== undefined}
                     onClose={this.closeError}
-                    message={(this.props.initRepoError || {}).message || ''}
+                    message={(this.props.initRepoError || { message: '' }).message}
                 />
 
             </div>

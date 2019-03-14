@@ -47,7 +47,7 @@ class RepoHomePage extends React.Component<Props>
                     />
                 </div>
                 <div className={classes.sidebarComponents}>
-                    {!!this.props.metadata.firstVerifiedCommit &&
+                    {this.props.metadata && this.props.metadata.firstVerifiedCommit &&
                         <Card className={classes.card}>
                             <CardContent classes={{ root: classes.securedTextCard }}>
                                 <SecuredText uri={this.props.uri} />
@@ -106,7 +106,7 @@ interface MatchParams {
 interface Props extends RouteComponentProps<MatchParams> {
     uri?: URI
     sharedUsers: IUser[]
-    metadata: IRepoMetadata
+    metadata?: IRepoMetadata | null
     hasReadme: boolean
     classes: any
 }
@@ -191,7 +191,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
         .map(username => state.user.usersByUsername[username])
         .map(id => state.user.users[id])
     const uriStr = uriToString(uri)
-    const metadata = state.repo.metadataByURI[uriStr] || {}
+    const metadata = state.repo.metadataByURI[uriStr]
     const hasReadme = (state.repo.filesByURI[uriStr] || {})['README.md'] !== undefined
     return {
         uri,

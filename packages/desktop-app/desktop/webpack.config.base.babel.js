@@ -47,7 +47,7 @@ export default {
                             useCache:    true,
                             silent:      true,
                             reportFiles: [
-                                'src/**/*.{ts,tsx}',
+                                'desktop/src/**/*.{ts,tsx}',
                                 '../../conscience-lib/**/*.{ts,tsx}',
                                 '../../conscience-components/**/*.{ts,tsx}',
                             ],

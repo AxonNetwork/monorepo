@@ -453,7 +453,7 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
 
                 for (let i = 0; i < largeFileList.length; i++) {
                     const filename = largeFileList[i]
-                    // await rpcClient.setFileChunkingAsync({ repoRoot: uri.repoRoot, filename, enabled: true })
+                    await rpcClient.setFileChunkingAsync({ repoRoot: uri.repoRoot, filename, enabled: true })
                 }
 
             }
@@ -480,19 +480,7 @@ const getDiffLogic = makeLogic<IGetDiffAction, IGetDiffSuccessAction>({
                 ? { repoRoot: uri.repoRoot, commitRef: commit }
                 : { repoRoot: uri.repoRoot, commitHash: Buffer.from(commit, 'hex') }
 
-            let err = new Error()
-            console.log('stack', err.stack)
-            const stream = rpc.getClient().getDiff(params)
-
-            diffBlob = await new Promise((resolve, reject) => {
-                let diffBlob: string
-                stream.on('data', pkt => {
-                    if (pkt.end) { return resolve(diffBlob) }
-                    diffBlob += pkt.data
-                })
-                stream.on('error', reject)
-            })
-
+            diffBlob = await rpc.getClient().getDiffAsync(params)
         } else {
             diffBlob = await ServerRelay.getDiff({ repoID: uri.repoID, commit })
         }

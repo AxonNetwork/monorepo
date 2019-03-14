@@ -22,7 +22,12 @@ declare module 'conscience-lib/rpc' {
         getDiff: (params:
             ({ repoRoot: string } | { repoID: string }) &
             ({ commitHash: Buffer } | { commitRef: string })
-        ) => ReadableStream
+        ) => any
+
+        getDiffAsync: (params:
+            ({ repoRoot: string } | { repoID: string }) &
+            ({ commitHash: Buffer } | { commitRef: string })
+        ) => Promise<string>
 
         getRepoHistoryAsync: (params:
             { repoID: string } | { path: string } &
@@ -56,6 +61,7 @@ declare module 'conscience-lib/rpc' {
         getMergeConflictsAsync: (params: { path: string }) => Promise<{ path: string, files: string[] }>
 
         getObject: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => ReadableStream
+        getObjectAsync: (params: { repoID?: string, repoRoot?: string, filename?: string, commitHash?: Buffer, commitRef?: string, maxSize?: number }) => Buffer
 
         setFileChunkingAsync: (params:
             { repoID: string } | { repoRoot: string } &
@@ -80,6 +86,12 @@ declare module 'conscience-lib/rpc' {
         }
 
     }
+
+    export type DiffPacket = { data: string, end: undefined } | { data: undefined, end: boolean }
+
+    type ObjectHeader = { uncompressedSize: number }
+    type ObjectData = { data: string, end: undefined } | { data: undefined, end: boolean }
+    export type ObjectPacket = { header: ObjectHeader } | { data: ObjectData }
 
     export interface IRPCFile {
         name: string,

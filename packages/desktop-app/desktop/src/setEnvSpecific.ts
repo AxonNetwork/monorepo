@@ -15,7 +15,7 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
     ])
 
     envSpecific.init({
-        async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions) {
+        async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions): Promise<string | Buffer> {
             const { commit, filename } = uri
             if (!filename) {
                 throw new Error('must include filename in uri')
@@ -36,44 +36,22 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             } else {
                 const { repoRoot, commit, filename } = uri
 
-                let stream
+                let contents = undefined as Buffer | undefined
                 if (commit && commit.length === 40) {
                     const commitHash = Buffer.from(commit!, 'hex')
                     if (commitHash.length === 20) {
-                        stream = rpc.getClient().getObject({ repoRoot, commitHash, filename, maxSize: 999999999999999 })
+                        contents = await rpc.getClient().getObjectAsync({ repoRoot, commitHash, filename, maxSize: 999999999999999 })
                     }
                 }
-                if (!stream) {
+                if (!contents) {
                     const commitRef = commit || 'working'
-                    stream = rpc.getClient().getObject({ repoRoot, commitRef, filename, maxSize: 999999999999999 })
+                    contents = await rpc.getClient().getObjectAsync({ repoRoot, commitRef, filename, maxSize: 999999999999999 })
                 }
-
-                return new Promise((resolve, reject) => {
-                    let gotHeader = false
-                    let totalSize = 0
-                    let buffers = [] as Buffer[]
-
-                    stream.on('data', pkt => {
-                        if (!gotHeader && pkt.header) {
-                            totalSize = pkt.header.uncompressedSize
-                            gotHeader = true
-                        } else if (pkt.data.end) {
-                            const contents = Buffer.concat(buffers, totalSize)
-                            if (opts && opts.as === 'buffer') {
-                                resolve(contents)
-                            } else {
-                                resolve(contents.toString('utf8'))
-                            }
-                        } else {
-                            buffers.push(pkt.data.data)
-                        }
-                    })
-
-                    stream.on('error', err => {
-                        console.error(`rpc.GetObject( ${repoRoot}, ${commit}, ${filename} ): ${err.toString()}`)
-                        reject(err)
-                    })
-                })
+                if (opts && opts.as === 'buffer') {
+                    return contents
+                } else {
+                    return contents.toString('utf8')
+                }
             }
         },
 

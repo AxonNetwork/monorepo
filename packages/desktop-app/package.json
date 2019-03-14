@@ -253,12 +253,7 @@
         "desktop/build-resources/binaries/darwin/*"
       ],
       "binaries": [
-        "desktop/build-resources/binaries/darwin/conscience",
-        "desktop/build-resources/binaries/darwin/conscience-node",
-        "desktop/build-resources/binaries/darwin/conscience_decode",
-        "desktop/build-resources/binaries/darwin/conscience_encode",
-        "desktop/build-resources/binaries/darwin/conscience_diff",
-        "desktop/build-resources/binaries/darwin/git-remote-conscience"
+        "desktop/build-resources/binaries/darwin/conscience-node"
       ]
     },
     "pkg": {
@@ -268,7 +263,8 @@
     },
     "linux": {
       "target": [
-        "appImage"
+        "appImage",
+        "deb"
       ],
       "extraResources": [
         "desktop/build-resources/binaries/linux/*"
