@@ -11,7 +11,7 @@ const appPath = require('electron').app.getAppPath()
 
 process.env.NODE_RPC = '0.0.0.0:1338'
 const protoPath = process.env.NODE_ENV === 'development'
-    ? path.join(appPath, '..', 'conscience-lib', 'rpc', 'noerpc.proto')
+    ? path.join(appPath, '..', 'conscience-lib', 'rpc', 'noderpc.proto')
     : path.join(appPath, '..', 'desktop', 'dist-bundle', 'prod', 'noderpc.proto')
 
 rpc.initClient(protoPath)
