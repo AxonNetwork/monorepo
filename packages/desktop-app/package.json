@@ -267,14 +267,16 @@
         "deb"
       ],
       "extraResources": [
-        "desktop/build-resources/binaries/linux/*"
+        "desktop/build-resources/binaries/linux/*",
+        "desktop/dist-bundle/prod/noderpc.proto"
       ]
     },
     "win": {
       "target": "nsis",
       "icon": "icons/icon.ico",
       "extraResources": [
-        "desktop/build-resources/binaries/windows/*"
+        "desktop/build-resources/binaries/windows/*",
+        "desktop/dist-bundle/prod/noderpc.proto"
       ]
     },
     "publish": {

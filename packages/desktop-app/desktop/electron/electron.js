@@ -17,7 +17,7 @@ const path = require('path')
 const url = require('url')
 const fork = require('child_process').fork
 const spawn = require('child_process').spawn
-const fileServer = require('./fileServer')
+// const fileServer = require('./fileServer')
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -60,7 +60,7 @@ app.on('ready', () => {
     //     let str = Array.prototype.join.call(arguments, ' ')
     //     // fs.appendFileSync('/tmp/auto-update', str + '\n')
     // }
-    const { autoUpdater } = require('electron-updater')
+    // const { autoUpdater } = require('electron-updater')
     // autoUpdater.logger = {
     //     info: writeLog.bind(null, '[auto-update info]'),
     //     warn: writeLog.bind(null, '[auto-update warn]'),
@@ -72,12 +72,12 @@ app.on('ready', () => {
     // autoUpdater.on('update-not-available', () => {
     //     writeLog('update-not-available :( :( :(')
     // })
-    autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
+    // autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
 
 
     createWindow()
-    fileServer.start()
-    // startNode()
+    // fileServer.start()
+    startNode()
     const app = require('electron').app
     const menu = createMenu(app, shell)
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
