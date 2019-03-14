@@ -17,7 +17,7 @@ const path = require('path')
 const url = require('url')
 const fork = require('child_process').fork
 const spawn = require('child_process').spawn
-// const fileServer = require('./fileServer')
+const fileServer = require('./fileServer')
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -76,7 +76,7 @@ app.on('ready', () => {
 
 
     createWindow()
-    // fileServer.start()
+    fileServer.start()
     startNode()
     const app = require('electron').app
     const menu = createMenu(app, shell)

@@ -9,7 +9,11 @@ const through2 = require('through2')
 
 const appPath = require('electron').app.getAppPath()
 
-const protoPath = path.join(appPath, process.env.PROTO_PATH || '')
+process.env.NODE_RPC = '0.0.0.0:1338'
+const protoPath = process.env.NODE_ENV === 'development'
+    ? path.join(appPath, '..', 'conscience-lib', 'rpc', 'noerpc.proto')
+    : path.join(appPath, '..', 'desktop', 'dist-bundle', 'prod', 'noderpc.proto')
+
 rpc.initClient(protoPath)
 
 const reposByHash = {}
