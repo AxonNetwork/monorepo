@@ -134,7 +134,8 @@ class File extends React.Component<Props, State>
 
     shouldComponentUpdate(nextProps: Props, nextState: State) {
         return !isEqual(this.props.uri, nextProps.uri) ||
-            this.props.file.name !== nextProps.file.name ||
+            !isEqual(this.props.file, nextProps.file) ||
+            this.props.file.status !== nextProps.file.status ||
             this.props.fileExtensionsHidden !== nextProps.fileExtensionsHidden ||
             this.props.canEditFiles !== nextProps.canEditFiles ||
             this.props.showFullPaths !== nextProps.showFullPaths ||
