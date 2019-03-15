@@ -5,8 +5,10 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import ErrorSnackbar from 'conscience-components/ErrorSnackbar'
 import { H3 } from 'conscience-components/Typography/Headers'
-// import { createRepo } from 'conscience-components/redux/repo/repoActions'
+import { initRepo } from 'conscience-components/redux/repo/repoActions'
+import { clearInitRepoError } from 'conscience-components/redux/ui/uiActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
 import logo from '../../assets/img/logo.png'
@@ -21,9 +23,9 @@ class NewRepository extends React.Component<Props>
         const { classes } = this.props
         return (
             <div className={classes.welcomePage}>
-                <img src={logo} alt="Conscience Logo" className={classes.logo} />
+                <img src={logo} alt="Axon Logo" className={classes.logo} />
 
-                <H3>Welcome to Conscience</H3>
+                <H3>Welcome to Axon</H3>
 
                 <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
                     <Typography variant="subtitle1">
@@ -46,24 +48,36 @@ class NewRepository extends React.Component<Props>
                         {this.props.createRepoLoading && <CircularProgress size={24} className={classes.buttonLoading} />}
                     </Button>
                 </form>
+
+                <ErrorSnackbar
+                    open={this.props.initRepoError !== undefined}
+                    onClose={this.closeError}
+                    message={(this.props.initRepoError || { message: '' }).message}
+                />
             </div>
         )
     }
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        // if (this._inputRepoID === null) {
-        //     return
-        // }
-        // const repoID = this._inputRepoID.value
-        // const orgID = ""
-        // this.props.createRepo({ repoID, orgID })
+        if (this._inputRepoID === null) {
+            return
+        }
+        const repoID = this._inputRepoID.value
+        const orgID = ""
+        this.props.initRepo({ repoID, orgID })
+    }
+
+    closeError() {
+        this.props.clearInitRepoError({})
     }
 }
 
 interface Props {
     createRepoLoading: boolean
-    // createRepo: typeof createRepo
+    initRepoError: Error | undefined
+    initRepo: typeof initRepo
+    clearInitRepoError: typeof clearInitRepoError
     classes: any
 }
 
@@ -104,14 +118,15 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const mapStateToProps = (state: IGlobalState) => {
-    const createRepoLoading = state.ui.createRepoLoading
     return {
-        createRepoLoading,
+        createRepoLoading: state.ui.createRepoLoading,
+        initRepoError: state.ui.initRepoError,
     }
 }
 
 const mapDispatchToProps = {
-    // createRepo,
+    initRepo,
+    clearInitRepoError,
 }
 
 export default connect(
