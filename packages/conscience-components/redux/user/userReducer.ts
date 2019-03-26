@@ -62,6 +62,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
                 },
                 currentUser: userID,
                 checkedLoggedIn: true,
+                loginError: undefined,
             }
         }
 
@@ -89,7 +90,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.LOGOUT_SUCCESS: {
+        case UserActionType.LOGOUT: {
             return {
                 ...state,
                 currentUser: undefined,

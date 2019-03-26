@@ -40,9 +40,9 @@ routes.post('/api/login-with-key', asyncMiddleware(userController.loginWithKey))
 routes.post('/api/logout', mustAuthenticate, asyncMiddleware(userController.logout))
 routes.get('/api/shared-repos', mustAuthenticate, asyncMiddleware(userController.getSharedRepos))
 routes.get('/api/organizations', mustAuthenticate, asyncMiddleware(userController.getOrganizations))
-routes.get('/api/users', mustAuthenticate, asyncMiddleware(userController.getUsers))
-routes.get('/api/users-by-email', mustAuthenticate, asyncMiddleware(userController.getUsersByEmail))
-routes.get('/api/users-by-username', mustAuthenticate, asyncMiddleware(userController.getUsersByUsername))
+routes.get('/api/users', asyncMiddleware(userController.getUsers))
+routes.get('/api/users-by-email', asyncMiddleware(userController.getUsersByEmail))
+routes.get('/api/users-by-username', asyncMiddleware(userController.getUsersByUsername))
 
 routes.post('/api/user-photo', mustAuthenticate, asyncMiddleware(userController.uploadProfilePicture))
 routes.post('/api/user/profile', mustAuthenticate, asyncMiddleware(userController.updateUserProfile))
@@ -57,7 +57,7 @@ routes.post('/api/update-user-permissions', mustAuthenticate, asyncMiddleware(re
 routes.post('/api/share-repo', mustAuthenticate, asyncMiddleware(repoController.shareRepo))
 routes.post('/api/unshare-repo', mustAuthenticate, asyncMiddleware(repoController.unshareRepo))
 
-routes.get('/api/repolist/:username', mustAuthenticate, asyncMiddleware(repoController.getUserRepos))
+routes.get('/api/repolist/:username', asyncMiddleware(repoController.getUserRepos))
 routes.post('/api/repo/set-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.setPublic))
 routes.get('/api/repo/is-public/:repoID', mustAuthenticate, asyncMiddleware(repoController.isPublic))
 

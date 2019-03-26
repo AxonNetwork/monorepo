@@ -10,6 +10,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
+import Typography from '@material-ui/core/Typography'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import RepositoryCard from './RepositoryCard'
 import RepoCardLoader from '../ContentLoaders/RepoCardLoader'
@@ -49,6 +50,14 @@ class RepositoryCards extends React.Component<Props, State>
                         </Card>
                     ))}
                 </div>
+            )
+        }
+
+        if (succeeded.length === 0) {
+            return (
+                <Typography className={classes.noneAvailable}>
+                    No available repositories
+                </Typography>
             )
         }
 
@@ -170,6 +179,9 @@ const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
+    },
+    noneAvailable: {
+        fontStyle: 'italic',
     },
     newRepoCard: {
         padding: 0,

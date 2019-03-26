@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, Redirect, withRouter, RouteComponentProps } from 'react-router'
 import { withStyles, createStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 import LoginPage from 'pages/LoginPage'
@@ -15,34 +16,34 @@ import { IGlobalState } from 'conscience-components/redux'
 
 
 function Routes({ loginState, username, history, classes }: Props) {
-    const location = history.location.pathname
     return (
-        <div>
-            {location !== '/login' &&
-                <Header />
-            }
-
-            <Switch>
-                <Route exact path="/login" component={LoginPage} />
-                <PrivateRoute path="/repo/:repoID" component={RepoPage} loginState={loginState} />
-                <PrivateRoute path="/settings" component={SettingsPage} loginState={loginState} />
-                <PrivateRoute path="/org/:orgID" component={OrgPage} loginState={loginState} />
-                <Route path="/showcase/:orgID" component={ShowcasePage} />
-                <Route path="/user/:username" render={props => {
-                    return <UserPage {...props} classes={{ main: classes.constrainedWidth }} />
-                }} />
-                <Route path="/search/:query" component={SearchPage} />
-                <Route render={() => {
-                    if (loginState === LoginState.LoggedIn) {
-                        return <Redirect to={`/user/${username}`} />
-                    } else {
-                        return <Redirect to="/login" />
-                    }
-                }} />
-            </Switch>
-
-            <Footer />
-        </div>
+        <Switch>
+            <Route exact path="/login" component={LoginPage} />
+            <Route render={() => (
+                <Typography>
+                    <Header />
+                    <Switch>
+                        <Route exact path="/login" component={LoginPage} />
+                        <PrivateRoute path="/repo/:repoID" component={RepoPage} loginState={loginState} />
+                        <PrivateRoute path="/settings" component={SettingsPage} loginState={loginState} />
+                        <PrivateRoute path="/org/:orgID" component={OrgPage} loginState={loginState} />
+                        <Route path="/showcase/:orgID" component={ShowcasePage} />
+                        <Route path="/user/:username" render={props => {
+                            return <UserPage {...props} classes={{ main: classes.constrainedWidth }} />
+                        }} />
+                        <Route path="/search/:query" component={SearchPage} />
+                        <Route render={() => {
+                            if (loginState === LoginState.LoggedIn) {
+                                return <Redirect to={`/user/${username}`} />
+                            } else {
+                                return <Redirect to="/login" />
+                            }
+                        }} />
+                    </Switch>
+                    <Footer />
+                </Typography>
+            )} />
+        </Switch>
     )
 }
 

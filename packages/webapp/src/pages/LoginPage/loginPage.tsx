@@ -43,7 +43,7 @@ class LoginPage extends React.Component<Props>
             <div className={classes.background}>
                 <main className={classes.main}>
                     <div className={classes.splash}>
-                        <H3 className={classes.splashText}>Welcome to Conscience</H3>
+                        <H3 className={classes.splashText}>Welcome to Axon</H3>
                         <img src={logo} className={classes.logo} />
                     </div>
                     <Card className={classes.card}>
@@ -74,7 +74,7 @@ class LoginPage extends React.Component<Props>
                                     <FormHelperText error className={classes.errorMessage}>{error.message}</FormHelperText>
                                 }
                                 <FormHelperText className={classes.helperText}>
-                                    Or download the desktop app to create your account
+                                    Or download the desktop app to <strong>create your account</strong>
                                 </FormHelperText>
                                 <Button
                                     color="secondary"

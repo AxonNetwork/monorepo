@@ -11,6 +11,7 @@ import UserImage from 'conscience-components/UserImage'
 import RepositoryCards from 'conscience-components/RepositoryCards'
 import { H5, H6 } from 'conscience-components/Typography/Headers'
 import { getRepoList } from 'conscience-components/redux/repo/repoActions'
+import { fetchUserDataByUsername } from 'conscience-components/redux/user/userActions'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectOrg } from 'conscience-components/navigation'
 import { IUser, IOrganization, URI, URIType } from 'conscience-lib/common'
@@ -89,15 +90,24 @@ class UserPage extends React.Component<Props>
     }
 
     componentDidUpdate(prevProps: Props) {
-        const userID = (this.props.user || {}).userID
-        if (userID !== (prevProps.user || {}).userID) {
-            this.props.getRepoList({ userID })
+        if (this.props.match.params.username !== prevProps.match.params.username) {
+            const username = this.props.match.params.username
+            this.props.fetchUserDataByUsername({ usernames: [username] })
+
+            if (this.props.user) {
+                const userID = this.props.user.userID
+                this.props.getRepoList({ userID })
+            }
         }
     }
 
     componentWillMount() {
-        const userID = (this.props.user || {}).userID
-        this.props.getRepoList({ userID })
+        const username = this.props.match.params.username || ''
+        this.props.fetchUserDataByUsername({ usernames: [username] })
+        if (this.props.user) {
+            const userID = this.props.user.userID
+            this.props.getRepoList({ userID })
+        }
     }
 }
 
@@ -105,12 +115,13 @@ type Props = OwnProps & DispatchProps & RouteComponentProps<MatchParams> & { cla
 
 interface OwnProps {
     repoList: string[] | undefined
-    user: IUser
+    user: IUser | undefined
     orgs: { [orgID: string]: IOrganization }
 }
 
 interface DispatchProps {
     getRepoList: typeof getRepoList
+    fetchUserDataByUsername: typeof fetchUserDataByUsername
 }
 
 interface MatchParams {
@@ -183,6 +194,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: RouteComponentProps<Matc
 
 const mapDispatchToProps = {
     getRepoList,
+    fetchUserDataByUsername,
 }
 
 export default connect(

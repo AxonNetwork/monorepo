@@ -54,17 +54,22 @@ const fetchUserDataByEmailLogic = makeLogic<IFetchUserDataByEmailAction, IFetchU
 })
 
 const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, IFetchUserDataByUsernameSuccessAction>({
-    type: UserActionType.LOGOUT,
-    async process({ action }, getState) {
-        const knownUsernames = getState().user.users.reduce((acc: string[], curr: IUser) => {
-            acc.push(curr.username)
-            return acc
-        }, [])
-        const toFetch = uniq(action.payload.usernames).filter(username => knownUsernames.indexOf(username) > -1)
+    type: UserActionType.FETCH_USER_DATA_BY_USERNAME,
+    async process({ action, getState }) {
+        const state = getState()
+        console.log(state)
+        const usersState = getState().user.users
+        const usersByUsernameState = getState().user.usersByUsername
+        const toFetch = uniq(action.payload.usernames).filter(username => {
+            const userID = usersByUsernameState[username] || ''
+            return usersState[userID] === undefined
+        })
         if (toFetch.length <= 0) {
             return { users: {} }
         }
+        console.log('toFetch: ', toFetch)
         const userList = await ServerRelay.fetchUsersByUsername(toFetch)
+        console.log('userList: ', userList)
 
         // Convert the list into an object
         const users = keyBy(userList, 'userID') as { [userID: string]: IUser }

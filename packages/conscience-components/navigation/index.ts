@@ -152,3 +152,6 @@ export function selectSearch(query: string) {
     history.push(`/search/${encodeURIComponent(query)}`)
 }
 
+export function selectLogin() {
+    history.push('/login')
+}

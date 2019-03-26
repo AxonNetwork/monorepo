@@ -35,7 +35,7 @@ class Header extends React.Component<Props, State>
 
                 <SearchBar classes={{ root: classes.searchBar }} />
 
-                <div style={{flexGrow: 1}}></div>
+                <div style={{ flexGrow: 1 }}></div>
 
                 {user !== undefined &&
                     <div className={classes.avatar}>
@@ -63,6 +63,10 @@ class Header extends React.Component<Props, State>
         this.setState({ anchorEl: event.currentTarget })
     }
 
+    logout() {
+        this.props.logout()
+    }
+
     selectItem(selection?: string) {
         const username = (this.props.user || { username: '' }).username
         this.handleClose()
@@ -74,7 +78,7 @@ class Header extends React.Component<Props, State>
                 selectSettings()
                 return
             case 'logout':
-                this.props.logout()
+                this.logout()
                 return
         }
     }

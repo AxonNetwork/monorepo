@@ -21,6 +21,7 @@ import {
     updateUserProfileLogic,
     fetchUserOrgsLogic,
 } from 'conscience-components/redux/user/userLogic'
+import { selectLogin } from 'conscience-components/navigation'
 
 const whoAmILogic = makeLogic<IWhoAmIAction, IWhoAmISuccessAction>({
     type: UserActionType.WHO_AM_I,
@@ -71,6 +72,7 @@ const logoutLogic = makeLogic<ILogoutAction, ILogoutSuccessAction>({
     async process({ action }, dispatch) {
         localStorage.setItem('jwt', '')
         ServerRelay.setJWT(undefined)
+        selectLogin()
         return {}
     },
 })
