@@ -8,7 +8,7 @@ import { IGlobalState } from '../redux'
 import { selectRepo } from '../navigation'
 import { getRepoID } from '../env-specific'
 import { RepoPage, URI, LocalURI, URIType } from 'conscience-lib/common'
-import { autobind, uriToString } from 'conscience-lib/utils'
+import { autobind } from 'conscience-lib/utils'
 
 
 @autobind

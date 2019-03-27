@@ -16,6 +16,7 @@ import { IGlobalState } from 'conscience-components/redux'
 import { selectOrg } from 'conscience-components/navigation'
 import { IUser, IOrganization, URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import isEqual from 'lodash/isEqual'
 
 
 @autobind
@@ -93,11 +94,10 @@ class UserPage extends React.Component<Props>
         if (this.props.match.params.username !== prevProps.match.params.username) {
             const username = this.props.match.params.username
             this.props.fetchUserDataByUsername({ usernames: [username] })
-
-            if (this.props.user) {
-                const userID = this.props.user.userID
-                this.props.getRepoList({ userID })
-            }
+        }
+        if (this.props.user && !isEqual(this.props.user, prevProps.user)) {
+            const userID = this.props.user.userID
+            this.props.getRepoList({ userID })
         }
     }
 

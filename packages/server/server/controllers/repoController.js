@@ -150,12 +150,17 @@ repoController.getRepoUsersPermissions = async (req, res, next) => {
     const { repoID } = req.params
     await checkUserAccess(req.user, repoID)
 
-    const [ admins, pullers, pushers, isPublicResp ] = await Promise.all([
+    let [ admins, pullers, pushers, isPublicResp ] = await Promise.all([
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.ADMIN),
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PULLER),
         rpcClient.getAllUsersOfTypeAsync(repoID, rpcClient.UserType.PUSHER),
         rpcClient.isRepoPublicAsync({ repoID }),
     ])
+    // @@TODO refactor replicators to a different permission type
+    const replicators = [ 'jupiter', 'saturn', 'conscience', 'conscience-node' ]
+    admins = admins.filter(name => replicators.indexOf(name) < 0)
+    pullers = pullers.filter(name => replicators.indexOf(name) < 0)
+    pushers = pushers.filter(name => replicators.indexOf(name) < 0)
     const isPublic = isPublicResp.isPublic
 
     res.status(200).json({ admins, pullers, pushers, isPublic })

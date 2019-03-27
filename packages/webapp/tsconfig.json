@@ -24,7 +24,8 @@
     "removeComments": true,
     "typeRoots": [
       "../../node_modules/@types",
-      "./src/@types"
+      "./src/@types",
+      "../conscience-components/@types"
     ]
   },
   "exclude": [

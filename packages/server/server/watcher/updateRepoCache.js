@@ -6,7 +6,7 @@ import path from 'path'
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
 import keyBy from 'lodash/keyBy'
-import { interpolateTimeline, getSecuredTextStats, getRepoMetadata } from 'conscience-lib/cacheHelpers'
+import { interpolateTimeline, getSecuredTextStats, getRepoMetadata } from './cacheHelpers'
 
 export const updateRepoCache = async function (repoID) {
     const rpcClient = noderpc.initClient()

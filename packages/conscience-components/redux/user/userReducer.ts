@@ -105,9 +105,11 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             const usersByUsername = {} as { [username: string]: string }
             for (let userID of Object.keys(users)) {
                 const user = users[userID]
-                usersByUsername[user.username] = userID
-                for (let email of (user.emails || [])) {
-                    usersByEmail[email] = userID
+                if (!!user) {
+                    usersByUsername[user.username] = userID
+                    for (let email of (user.emails || [])) {
+                        usersByEmail[email] = userID
+                    }
                 }
             }
 

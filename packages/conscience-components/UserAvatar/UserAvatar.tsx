@@ -43,7 +43,7 @@ class UserAvatar extends React.Component<Props>
                 </Avatar>
             )
         }
-        const name = user !== undefined ? user.name : seedText
+        const name = (!!user) ? user.name : seedText
         if (!noTooltip) {
             avatar = (
                 <Tooltip title={name}>
