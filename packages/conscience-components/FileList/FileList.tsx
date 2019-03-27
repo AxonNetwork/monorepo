@@ -117,6 +117,7 @@ class FileList extends React.Component<Props, State>
         }
 
         const entries = sortFiles(files)
+            .filter(file => file.name !== ".gitattributes")
 
         return (
             <React.Fragment>
