@@ -117,7 +117,7 @@ class SmartTextarea extends React.Component<Props, State>
         const discussions = fromPairs((this.props.discussionIDs || []).map(discussionID => [discussionID, this.props.discussions[discussionID]]))
 
         let menuContent: any = null
-        let emptyMessage: string
+        let emptyMessage: string | null = null
         if (this.state.embedType === '@file') {
             emptyMessage = 'No files in this repository'
             menuContent = fileNames.map(filename => (
@@ -150,8 +150,6 @@ class SmartTextarea extends React.Component<Props, State>
                     {discussions[discussionID].subject}
                 </MenuItem>
             ))
-        } else {
-            emptyMessage = null
         }
 
         if (menuContent !== null && menuContent.length === 0) {
