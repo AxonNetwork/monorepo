@@ -45,7 +45,11 @@ class Breadcrumbs extends React.Component<Props>
         if (this.props.uri.type === URIType.Local) {
             parts = [path.basename(this.props.uri.repoRoot)]
         } else {
-            parts = [this.props.uri.repoID]
+            if (this.props.uri.filename === undefined) {
+                parts = []
+            } else {
+                parts = [this.props.uri.repoID]
+            }
         }
 
         if (this.props.uri.filename !== undefined) {
@@ -88,11 +92,13 @@ class Breadcrumbs extends React.Component<Props>
                         )
                     })}
                 </div>
-                <div>
-                    <Link to={getCommitURL(uri)} className={classes.commitLink}>
-                        <span >{uri.commit}</span>
-                    </Link>
-                </div>
+                {uri.commit !== 'HEAD' && uri.commit !== 'working' &&
+                    <div>
+                        <Link to={getCommitURL(uri)} className={classes.commitLink}>
+                            <span >{uri.commit}</span>
+                        </Link>
+                    </div>
+                }
             </Typography>
         )
     }

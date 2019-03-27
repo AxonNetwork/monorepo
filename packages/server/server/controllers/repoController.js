@@ -125,7 +125,7 @@ repoController.getRepoTimeline = async (req, res, next) => {
 
     const { commits = [], isEnd } = await rpcClient.getRepoHistoryAsync({ repoID, fromCommitRef, pageSize, onlyHashes: true })
     const hashes = commits.map(c => c.commitHash)
-    const dynamoCommits = await Commit.get(repoID, hashes)
+    const dynamoCommits = await Commit.batchGet(repoID, hashes)
     const commitObj = keyBy(dynamoCommits, 'commit')
 
     const timeline = hashes.map(h => commitObj[h])

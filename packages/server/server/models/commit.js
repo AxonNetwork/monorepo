@@ -20,7 +20,20 @@ Commit.addCommits = async (commits) => {
     }
 }
 
-Commit.get = async (repoID, commits) => {
+Commit.get = async (repoID, commit) => {
+    try {
+        const resp = await dynamo.getAsync({
+            TableName: CommitTable,
+            Key:       { repoID, commit },
+        })
+        return resp.Item
+    } catch (err) {
+        console.error('Error in Commit.get ~>', err)
+        throw err
+    }
+}
+
+Commit.batchGet = async (repoID, commits) => {
     if (!isArray(commits)) {
         commits = [ commits ]
     }
@@ -34,7 +47,7 @@ Commit.get = async (repoID, commits) => {
         const flat = [].concat.apply([], resp)
         return flat
     } catch (err) {
-        console.error('Error in Commit.get ~>', err)
+        console.error('Error in Commit.batchGet ~>', err)
         throw err
     }
 }

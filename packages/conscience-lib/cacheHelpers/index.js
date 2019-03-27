@@ -44,7 +44,7 @@ const getSecuredTextStats = function (repoID, timeline, filesByCommit, currentSt
     const stats = {}
     for (let i = 0; i < timeline.length; i++) {
         const event = timeline[i]
-        const files = filesByCommit[i]
+        const files = filesByCommit[i] || []
         files.forEach((file) => {
             if (stats[file] === undefined) {
                 stats[file] = { repoID, file }
