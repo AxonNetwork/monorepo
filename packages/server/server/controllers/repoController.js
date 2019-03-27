@@ -95,7 +95,7 @@ repoController.getRepoFiles = async (req, res, next) => {
     const { repoID } = req.params
     await checkUserAccess(req.user, repoID)
 
-    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'working' })).files || []
+    const filesListRaw = (await rpcClient.getRepoFilesAsync({ repoID, commitRef: 'HEAD' })).files || []
 
     const fileList = filesListRaw
         .filter(file => file && file.name)
