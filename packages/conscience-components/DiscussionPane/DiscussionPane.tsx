@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -24,7 +25,7 @@ class DiscussionPane extends React.Component<Props>
                 <DiscussionList
                     uri={this.props.uri}
                     selectedID={selectedID}
-                    classes={{ list: classes.discussionList }}
+                    classes={{ list: classnames(classes.discussionList, { [classes.discussionOpen]: newDiscussion || (!newDiscussion && selectedID !== undefined) }) }}
                 />
                 {newDiscussion &&
                     <div className={classes.threadPane}>
@@ -64,6 +65,11 @@ const styles = (theme: Theme) => createStyles({
     discussionPane: {
         height: 'calc(100% - 80px)',
         display: 'flex',
+    },
+    discussionOpen: {
+        [theme.breakpoints.down(960)]: {
+            display: 'none',
+        },
     },
     discussionList: {
         height: '100%',
