@@ -30,7 +30,7 @@ class FileViewer extends React.Component<Props, State>
 
     render() {
         const { fileContents } = this.state
-        const { classes, showButtons, showViewerPicker } = this.props
+        const { classes, showViewerPicker } = this.props
         if (!this.props.uri.filename) {
             return null
         }
@@ -71,8 +71,11 @@ class FileViewer extends React.Component<Props, State>
             widthClass = ''
         }
 
-        const canQuickEdit = this.props.uri.type === URIType.Local && filetypes.getEditors(this.props.uri.filename).length > 0
-        const isLocal = this.props.uri.type === URIType.Local
+        const canQuickEdit = this.props.canEdit &&
+            this.props.uri.type === URIType.Local &&
+            filetypes.getEditors(this.props.uri.filename).length > 0
+        const canOpen = this.props.canOpen && this.props.uri.type === URIType.Local
+        const showButtons = showViewerPicker || canQuickEdit || canOpen
 
         return (
             <div className={classnames(classes.root, widthClass)}>
@@ -83,9 +86,9 @@ class FileViewer extends React.Component<Props, State>
                         classes={classes}
                     />
                 </div>
-                {showViewerPicker &&
-                    <div className={classnames(classes.viewerPicker, { [classes.viewerPickerVisible]: this.state.hovering })}>
-                        {showButtons && canQuickEdit &&
+                {showButtons &&
+                    <div className={classnames(classes.buttons, { [classes.buttonsVisible]: this.state.hovering })}>
+                        {canQuickEdit &&
                             <Button color="secondary"
                                 onClick={this.onClickQuickEdit}
                                 onMouseEnter={() => this.onHoverViewer(true)}
@@ -94,7 +97,7 @@ class FileViewer extends React.Component<Props, State>
                                 <EditIcon /> Quick Edit
                             </Button>
                         }
-                        {showButtons && isLocal &&
+                        {canOpen &&
                             <Button color="secondary"
                                 onMouseEnter={() => this.onHoverViewer(true)}
                                 onMouseLeave={() => this.onHoverViewer(false)}
@@ -103,30 +106,32 @@ class FileViewer extends React.Component<Props, State>
                                 <OpenInNewIcon /> Open
                             </Button>
                         }
-                        <Select
-                            value={viewerName}
-                            renderValue={() => (
-                                <Button color="secondary"
-                                    onMouseEnter={() => this.onHoverViewer(true)}
-                                    onMouseLeave={() => this.onHoverViewer(false)}
-                                >
-                                    <SettingsIcon className={classes.viewerPickerIcon} /> Viewer
-                                </Button>
-                            )}
-                            input={<Input disableUnderline={true} />}
-                            onChange={this.onChangeViewer}
-                            onMouseEnter={() => this.onHoverViewer(true)}
-                            onMouseLeave={() => this.onHoverViewer(false)}
-                            className={classes.viewerPickerSelect}
-                            IconComponent={() => null}
-                            classes={{ select: classes.viewerPickerMenu }}
-                        >
-                            {viewers.map(viewer => (
-                                <MenuItem value={viewer.name}>
-                                    {viewer.humanName}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        {showViewerPicker &&
+                            <Select
+                                value={viewerName}
+                                renderValue={() => (
+                                    <Button color="secondary"
+                                        onMouseEnter={() => this.onHoverViewer(true)}
+                                        onMouseLeave={() => this.onHoverViewer(false)}
+                                    >
+                                        <SettingsIcon className={classes.viewerPickerIcon} /> Viewer
+                                    </Button>
+                                )}
+                                input={<Input disableUnderline={true} />}
+                                onChange={this.onChangeViewer}
+                                onMouseEnter={() => this.onHoverViewer(true)}
+                                onMouseLeave={() => this.onHoverViewer(false)}
+                                className={classes.viewerPickerSelect}
+                                IconComponent={() => null}
+                                classes={{ select: classes.viewerPickerMenu }}
+                            >
+                                {viewers.map(viewer => (
+                                    <MenuItem value={viewer.name}>
+                                        {viewer.humanName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        }
                     </div>
                 }
             </div>
@@ -204,7 +209,8 @@ interface Props {
     fallback?: any
     widthMode?: WidthMode
     showViewerPicker?: boolean
-    showButtons?: boolean
+    canEdit?: boolean
+    canOpen?: boolean
     classes?: any
 }
 
@@ -224,33 +230,28 @@ const styles = (theme: Theme) => createStyles({
     },
     rootRegularWidth: {
         [theme.breakpoints.up(960)]: {
-            // maxWidth: 960,
             width: 960,
             maxWidth: '100%',
         },
         [theme.breakpoints.down(960)]: {
-            // maxWidth: '100%',
             width: '100%',
         },
     },
     rootFullWidth: {
         width: '100%',
     },
-    wrapper: {
-        // display: 'flex',
-        // justifyContent: 'center',
-    },
-    viewerPicker: {
+    buttons: {
         width: 'fit-content',
         position: 'absolute',
         right: 0,
+        padding: 4,
         opacity: 0,
         transition: theme.transitions.create('opacity', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
-    viewerPickerVisible: {
+    buttonsVisible: {
         opacity: 1,
         transition: theme.transitions.create('opacity', {
             easing: theme.transitions.easing.sharp,
@@ -264,7 +265,6 @@ const styles = (theme: Theme) => createStyles({
         width: 'fit-content',
     },
     viewerPickerMenu: {
-        paddingRight: 4,
         '&:focus': {
             backgroundColor: 'transparent',
         }

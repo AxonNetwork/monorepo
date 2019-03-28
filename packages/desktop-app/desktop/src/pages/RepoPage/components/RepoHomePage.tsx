@@ -32,7 +32,7 @@ class RepoHomePage extends React.Component<Props>
                 <div className={classes.readmeContainer}>
                     <FileViewer
                         uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
-                        showViewerPicker={false}
+                        canEdit
                         fallback={(
                             <div className={classes.readmeContainerNoReadme}>
                                 <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>

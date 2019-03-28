@@ -48,8 +48,9 @@ class RepoFilesPage extends React.Component<Props>
                 <div className={classes.fileViewerContainer}>
                     <FileViewer
                         uri={fileURI}
-                        showViewerPicker={true}
-                        showButtons
+                        showViewerPicker
+                        canEdit
+                        canOpen
                     />
                     <div className={classes.createDiscussion}>
                         <H5>Start a discussion on {filename}</H5>
