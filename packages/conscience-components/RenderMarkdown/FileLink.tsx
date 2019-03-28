@@ -49,8 +49,6 @@ class FileLink extends React.Component<Props, State>
                 >
                     <FileViewer
                         uri={uri}
-                        showButtons={false}
-                        showViewerPicker={false}
                         classes={{ codeContainer: classes.codeContainer }}
                     />
                 </Popper>
