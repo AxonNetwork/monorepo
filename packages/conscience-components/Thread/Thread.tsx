@@ -197,6 +197,11 @@ class Thread extends React.Component<Props, State>
             this._inputComment.setValue(currentValue + `@comment:[${commentID}] `)
         }
 
+        // move cursor to end of box
+        if (this._inputComment.setSelectionRange) {
+            this._inputComment.setSelectionRange(currentValue.length, currentValue.length)
+        }
+
         if (this._bottomDiv) {
             this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
             setTimeout(() => this._inputComment.focus(), 1000)
