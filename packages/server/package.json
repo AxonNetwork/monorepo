@@ -91,7 +91,6 @@
     "websocket": "^1.0.28"
   },
   "devDependencies": {
-    "conscience-lib": "^1.0.0",
     "css-loader": "^0.28.10",
     "eslint": "^4.18.1",
     "eslint-config-airbnb": "^16.1.0",
