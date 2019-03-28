@@ -100,10 +100,11 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
 
         await Promise.all([
             ServerRelay.createRepo(repoID),
-            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'jupiter', puller: true, pusher: true, admin: true }),
+            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher: true, admin: true }),
         ])
         // @@TODO track nonces in node
         // sent serially so nonce stay in sync
+        await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'jupiter', puller: true, pusher: true, admin: true })
         await rpc.getClient().setUserPermissionsAsync({ repoID, username: 'saturn', puller: true, pusher: true, admin: true })
 
         return { repoID, path: initPath, orgID }
