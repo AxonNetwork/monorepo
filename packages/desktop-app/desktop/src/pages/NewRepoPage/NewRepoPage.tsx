@@ -120,8 +120,14 @@ class NewRepoPage extends React.Component<Props, State>
         console.log(path)
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setState({ orgID: this.props.match.params.orgID || '' })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.match.params.orgID !== prevProps.match.params.orgID) {
+            this.setState({ orgID: this.props.match.params.orgID || '' })
+        }
     }
 
     handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {

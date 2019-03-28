@@ -11,6 +11,7 @@ import { H6 } from 'conscience-components/Typography/Headers'
 import { IGlobalState } from 'conscience-components/redux'
 import { selectOrgShowcase, selectUser } from 'conscience-components/navigation'
 import { IOrganization, URI, URIType } from 'conscience-lib/common'
+import { getRepoList } from 'conscience-components/redux/repo/repoActions'
 import { addRepoToOrg } from 'conscience-components/redux/org/orgActions'
 import { autobind } from 'conscience-lib/utils'
 
@@ -19,11 +20,12 @@ import { autobind } from 'conscience-lib/utils'
 class OrgHomePage extends React.Component<Props>
 {
     render() {
-        const { org, classes } = this.props
+        const { org, repoList, classes } = this.props
         if (org === undefined) {
             return <LargeProgressSpinner />
         }
         const repoURIList = org.repos.map(repoID => ({ type: URIType.Network, repoID }) as URI)
+        const reposToAdd = repoList.filter(repoID => org.repos.indexOf(repoID) < 0)
 
         return (
             <div className={classes.page}>
@@ -36,6 +38,7 @@ class OrgHomePage extends React.Component<Props>
                     <H6 className={classes.repoHeader}>Repositories</H6>
                     <RepositoryCards
                         repoList={repoURIList}
+                        reposToAdd={reposToAdd}
                         addRepo={this.addRepo}
                     />
                 </div>
@@ -54,15 +57,22 @@ class OrgHomePage extends React.Component<Props>
         )
     }
 
+    componentDidMount() {
+        if (this.props.currentUser) {
+            this.props.getRepoList({ userID: this.props.currentUser })
+        }
+    }
+
     onClickEditReadme() {
         const orgID = this.props.match.params.orgID
         this.props.history.push(`/org/${orgID}/editor`)
     }
 
-    addRepo(payload: { repoID: string }) {
-        const repoID = payload.repoID
+    addRepo(repoID: string | undefined) {
         const orgID = this.props.match.params.orgID
-        this.props.addRepoToOrg({ repoID, orgID })
+        if (repoID !== undefined) {
+            this.props.addRepoToOrg({ repoID, orgID })
+        }
     }
 
     selectUser(payload: { username: string }) {
@@ -83,9 +93,12 @@ interface MatchParams {
 
 interface StateProps {
     org: IOrganization
+    repoList: string[]
+    currentUser: string | undefined
 }
 
 interface DispatchProps {
+    getRepoList: typeof getRepoList
     addRepoToOrg: typeof addRepoToOrg
 }
 
@@ -116,12 +129,16 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, props: RouteComponentProps<MatchParams>) => {
     const orgID = props.match.params.orgID
+    const currentUser = state.user.currentUser
     return {
         org: state.org.orgs[orgID],
+        repoList: state.repo.repoListByUserID[currentUser || ''] || [],
+        currentUser,
     }
 }
 
 const mapDispatchToProps = {
+    getRepoList,
     addRepoToOrg,
 }
 

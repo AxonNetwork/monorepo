@@ -34,7 +34,6 @@ class Members extends React.Component<Props, State>
 
     render() {
         const { org, users, currentUser, classes } = this.props
-        console.log("HERE: ", this.props)
         if (org === undefined) { return null }
 
         const userList = org.members

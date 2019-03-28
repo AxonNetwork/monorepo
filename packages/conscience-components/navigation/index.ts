@@ -155,3 +155,11 @@ export function selectSearch(query: string) {
 export function selectLogin() {
     history.push('/login')
 }
+
+export function selectNewRepoPage(orgID: string | undefined) {
+    if (orgID !== undefined) {
+        history.push(`/new-repo/${orgID}`)
+    } else {
+        history.push('/new-repo')
+    }
+}

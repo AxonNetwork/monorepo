@@ -94,14 +94,14 @@ class RepositoryCards extends React.Component<Props, State>
                         <DialogTitle>Add Repo To Organization</DialogTitle>
                         <DialogContent>
                             <List>
-                                {(this.props.reposToAdd || []).map(uri => (
-                                    <ListItem button onClick={() => this.onClickAddRepo(getRepoID(uri))}>
-                                        <ListItemText primary={getRepoID(uri)} />
+                                {(this.props.reposToAdd || []).map(repoID => (
+                                    <ListItem button onClick={() => this.onClickAddRepo(repoID)}>
+                                        <ListItemText primary={repoID} />
                                     </ListItem>
                                 ))}
                                 <ListItem
                                     button
-                                    onClick={this.onClickNewRepo}
+                                    onClick={() => this.onClickAddRepo(undefined)}
                                 >
                                     <ListItemText primary="New Repository" />
                                     <ListItemIcon className={classes.listIcon}>
@@ -134,16 +134,11 @@ class RepositoryCards extends React.Component<Props, State>
         this.props.fetchRepoMetadata({ repoList })
     }
 
-    onClickAddRepo(repoID: string) {
+    onClickAddRepo(repoID: string | undefined) {
         if (this.props.addRepo) {
-            this.props.addRepo({ repoID })
+            this.props.addRepo(repoID)
         }
         this.setState({ dialogOpen: false })
-    }
-
-    onClickNewRepo() {
-        // @@TODO: navigate to /new-repo/:orgID
-        throw new Error('@@TODO: navigate to /new-repo/:orgID')
     }
 
     onClickOpenDialog() {
@@ -159,8 +154,8 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     repoList: URI[] | undefined
-    reposToAdd?: URI[]
-    addRepo?: (payload: { repoID: string }) => void
+    reposToAdd?: string[]
+    addRepo?: (repoID: string | undefined) => void
 }
 
 interface StateProps {
