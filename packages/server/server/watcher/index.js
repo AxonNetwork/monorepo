@@ -2,6 +2,9 @@ import * as noderpc from '../noderpc'
 import Repo from '../models/repo'
 import { updateRepoCache } from './updateRepoCache'
 
+let retried = false
+let watcher
+
 const watchNode = async () => {
     const rpcClient = noderpc.initClient()
 
@@ -10,8 +13,9 @@ const watchNode = async () => {
         rpcClient.EventType.PULLED_REPO,
     ]
 
-    const watcher = rpcClient.watch({ eventTypes })
+    watcher = rpcClient.watch({ eventTypes })
     watcher.on('data', async (evt) => {
+        retried = false
         if (evt.addedRepoEvent) {
             await updateRepoCache(evt.addedRepoEvent.repoID)
         }
@@ -21,6 +25,13 @@ const watchNode = async () => {
     })
     watcher.on('error', (err) => {
     	console.error('Node Watcher err ~> ', err)
+        watcher.destroy()
+        if (retried) {
+            setTimeout(watchNode, 3000)
+        } else {
+            retried = true
+            watchNode()
+        }
     })
     watcher.on('end', () => {
         console.error('Node Watcher err ~> Connection borken with node')
