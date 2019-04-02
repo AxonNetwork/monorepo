@@ -5,12 +5,19 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Dialog from '@material-ui/core/Dialog'
+import Button from '@material-ui/core/Button'
 
+import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import Sidebar from './Sidebar/Sidebar'
 import Routes from '../Routes'
 import Login from './Login/LoginPage'
 import { IGlobalState } from 'conscience-components/redux'
 import { autobind } from 'conscience-lib/utils'
+import { AutoUpdateState } from 'redux/user/userReducer'
+import ElectronRelay from 'lib/ElectronRelay'
 
 @autobind
 class MainUI extends React.Component<Props, State>
@@ -53,6 +60,32 @@ class MainUI extends React.Component<Props, State>
                         <Routes />
                     </div>
                 </main>
+
+                <Dialog open={this.props.autoupdateState !== AutoUpdateState.NoUpdate} aria-labelledby="autoupdate-dialog-title">
+                    <DialogTitle id="autoupdate-dialog-title">Checking for updates</DialogTitle>
+
+                    <div className={classes.autoupdateDialogBody}>
+                        {this.props.autoupdateState === AutoUpdateState.Checking &&
+                            <React.Fragment>
+                                <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
+                                <div className={classes.autoupdateStatus}>Connecting...</div>
+                            </React.Fragment>
+                        }
+                        {this.props.autoupdateState === AutoUpdateState.Downloading &&
+                            <React.Fragment>
+                                <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
+                                <div className={classes.autoupdateStatus}>Downloading...</div>
+                            </React.Fragment>
+                        }
+                        {this.props.autoupdateState === AutoUpdateState.Downloaded &&
+                            <React.Fragment>
+                                <CheckCircleOutlineIcon />
+                                <div className={classes.autoupdateStatus}>Update downloaded.</div>
+                                <Button color="secondary" variant="contained" onClick={ElectronRelay.quitAndInstallUpdate}>Close app and install update</Button>
+                            </React.Fragment>
+                        }
+                    </div>
+                </Dialog>
             </div>
         )
     }
@@ -61,6 +94,7 @@ class MainUI extends React.Component<Props, State>
 interface Props extends RouteComponentProps {
     loggedIn: boolean
     checkedLoggedIn: boolean
+    autoupdateState: AutoUpdateState
     classes: any
 }
 
@@ -110,7 +144,18 @@ const styles = (theme: Theme) => createStyles({
         paddingTop: theme.spacing.unit * 3,
         display: 'flex',
     },
-
+    autoupdateDialogBody: {
+        padding: 24,
+        textAlign: 'center',
+    },
+    autoupdateSpinner: {
+        marginTop: 0,
+        marginBottom: 0,
+        padding: 40,
+    },
+    autoupdateStatus: {
+        padding: '0 0 30px 0',
+    },
 })
 
 const mapStateToProps = (state: IGlobalState) => {
@@ -120,6 +165,7 @@ const mapStateToProps = (state: IGlobalState) => {
     return {
         loggedIn: loggedIn,
         checkedLoggedIn: checkedLoggedIn,
+        autoupdateState: state.user.autoUpdateState,
     }
 }
 

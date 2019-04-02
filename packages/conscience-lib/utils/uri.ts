@@ -3,9 +3,9 @@ import { URI, URIType } from '../common'
 
 export function getConscienceURI(repoID: string, filename?: string) {
     if (filename !== undefined) {
-        return 'conscience://' + path.join(repoID, filename)
+        return 'axon://' + path.join(repoID, filename)
     } else {
-        return 'conscience://' + repoID
+        return 'axon://' + repoID
     }
 }
 
@@ -16,7 +16,7 @@ export function repoUriToString(uri?: URI) {
     if (uri.type === URIType.Local) {
         return "local://" + uri.repoRoot
     } else {
-        return "conscience://" + uri.repoID
+        return "axon://" + uri.repoID
     }
 }
 

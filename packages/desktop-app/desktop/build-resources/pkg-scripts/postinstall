@@ -1,8 +1,8 @@
 #!/bin/sh
 
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/conscience /usr/local/bin/conscience || true
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/conscience-node /usr/local/bin/conscience-node || true
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/conscience_decode /usr/local/bin/conscience_decode || true
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/conscience_diff /usr/local/bin/conscience_diff || true
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/conscience_encode /usr/local/bin/conscience_encode || true
-ln -s $DSTROOT/Conscience.app/Contents/Resources/desktop/build-resources/binaries/git-remote-conscience /usr/local/bin/git-remote-conscience || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon /usr/local/bin/axon || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon-node /usr/local/bin/axon-node || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_decode /usr/local/bin/axon_decode || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_diff /usr/local/bin/axon_diff || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_encode /usr/local/bin/axon_encode || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/git-remote-axon /usr/local/bin/git-remote-axon || true

@@ -48,7 +48,7 @@ class LoginPage extends React.Component<Props, State>
         return (
             <div className={classes.loginContainer}>
                 <div>
-                    <img src={logo} alt="Conscience Logo" />
+                    <img src={logo} alt="Axon Logo" />
 
                     <Typography className={classes.headline} variant="headline">
                         {this.state.displaySignup ? 'Signup' : 'Login'}

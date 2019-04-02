@@ -8,7 +8,7 @@
   "author": "Conscience <hi@conscience.network>",
   "homepage": ".",
   "main": "desktop/electron/electron.js",
-  "license": "Copyright Conscience, Inc., 2018",
+  "license": "Copyright Conscience, Inc., 2019",
   "scripts": {
     "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
     "dll": "cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.dll.babel.js",
@@ -22,10 +22,10 @@
     "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
     "lint": "yarn eslint && yarn tslint",
     "electron-dev": "NODE_ENV=development ELECTRON_START_URL=http://localhost:3004 PROTO_PATH=../conscience-lib/rpc/noderpc.proto NODE_RPC=0.0.0.0:1338 electron .",
-    "electron-build": "build -ml --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
-    "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
-    "electron-build-win": "build -w --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app",
-    "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Conscience' --c.mac.appId=com.conscience.app"
+    "electron-build": "build -ml --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Axon' --c.mac.appId=com.axon.app",
+    "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Axon' --c.mac.appId=com.axon.app",
+    "electron-build-win": "build -w --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Axon' --c.mac.appId=com.axon.app",
+    "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name='Axon' --c.mac.appId=com.axon.app"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -140,6 +140,7 @@
     "redux-logger": "^3.0.6",
     "redux-logic": "^2.0.0",
     "redux-saga": "^0.16.0",
+    "semver": "5.6.0",
     "style-loader": "^0.23.0",
     "through2": "^2.0.3",
     "tinycolor2": "^1.4.1",
@@ -234,8 +235,8 @@
     ]
   },
   "build": {
-    "appId": "com.conscience.app",
-    "productName": "Conscience",
+    "appId": "com.axon.app",
+    "productName": "Axon",
     "asar": true,
     "directories": {
       "buildResources": "desktop/build-resources",
@@ -253,7 +254,7 @@
         "desktop/build-resources/binaries/darwin/*"
       ],
       "binaries": [
-        "desktop/build-resources/binaries/darwin/conscience-node"
+        "desktop/build-resources/binaries/darwin/axon-node"
       ]
     },
     "pkg": {

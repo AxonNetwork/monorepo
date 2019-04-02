@@ -25,8 +25,6 @@ const fileServer = require('./fileServer')
 let mainWindow
 let repoServer
 
-// fs.writeFileSync('/tmp/conscience-version', '0.1.0')
-
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({ resizable: true, titleBarStyle: 'hidden', webPreferences: { webSecurity: false, plugins: true } })
@@ -56,25 +54,6 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    // function writeLog() {
-    //     let str = Array.prototype.join.call(arguments, ' ')
-    //     // fs.appendFileSync('/tmp/auto-update', str + '\n')
-    // }
-    // const { autoUpdater } = require('electron-updater')
-    // autoUpdater.logger = {
-    //     info: writeLog.bind(null, '[auto-update info]'),
-    //     warn: writeLog.bind(null, '[auto-update warn]'),
-    //     error: writeLog.bind(null, '[auto-update error]'),
-    // }
-    // autoUpdater.on('update-available', () => {
-    //     writeLog('update-available :D')
-    // })
-    // autoUpdater.on('update-not-available', () => {
-    //     writeLog('update-not-available :( :( :(')
-    // })
-    // autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
-
-
     createWindow()
     fileServer.start()
     startNode()
@@ -92,7 +71,47 @@ app.on('ready', () => {
             mainWindow.webContents.send('node_killed')
         })
     })
+
+    ipcMain.on('update:check', () => {
+        const updater = doAutoUpdate()
+
+        updater.on('update-available',     () => mainWindow.webContents.send('update:available'))
+        updater.on('update-not-available', () => mainWindow.webContents.send('update:not-available'))
+        updater.on('update-downloaded',    () => mainWindow.webContents.send('update:downloaded'))
+        updater.on('error',                (err) => mainWindow.webContents.send('update:error', err))
+        updater.on('download-progress', (a, b, c, d, e, f) => {
+            console.log('download-progress', a, b, c, d, e, f)
+            mainWindow.webContents.send('update:download-progress', a, b, c, d, e, f)
+        })
+
+        ipcMain.on('update:quit-and-install', () => {
+            updater.quitAndInstall()
+        })
+    })
 })
+
+function doAutoUpdate() {
+    function writeLog() {
+        let str = Array.prototype.join.call(arguments, ' ')
+        fs.appendFileSync('/tmp/axon.auto-update.log', str + '\n')
+    }
+
+    const { autoUpdater } = require('electron-updater')
+    autoUpdater.logger = {
+        info: writeLog.bind(null, '[auto-update info]'),
+        warn: writeLog.bind(null, '[auto-update warn]'),
+        error: writeLog.bind(null, '[auto-update error]'),
+    }
+    // autoUpdater.on('update-available', () => {
+    //     writeLog('update-available :D')
+    // })
+    // autoUpdater.on('update-not-available', () => {
+    //     writeLog('update-not-available :( :( :(')
+    // })
+    autoUpdater.checkForUpdatesAndNotify().then(x => console.log('update ~>', x))
+
+    return autoUpdater
+}
 
 // Redirect <a> tag links to an external browser
 app.on('web-contents-created', (event, webContents) => {
@@ -144,7 +163,7 @@ let isKilled = false
 let nodeProc = null
 function startNode() {
     const env = getEnv()
-    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `conscience-node${getPlatformBinaryExtension()}`)
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `axon-node${getPlatformBinaryExtension()}`)
 
     // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
     // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))

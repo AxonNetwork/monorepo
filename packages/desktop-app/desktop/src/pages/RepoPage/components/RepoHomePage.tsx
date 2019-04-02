@@ -37,7 +37,7 @@ class RepoHomePage extends React.Component<Props>
                             <div className={classes.readmeContainerNoReadme}>
                                 <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
                                     <div className={classes.noReadmeText}>
-                                        Add a welcome message and instructions to this repository using the Conscience desktop app.
+                                        Add a welcome message and instructions to this repository using the Axon desktop app.
                                     </div>
 
                                     <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />

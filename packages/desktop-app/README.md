@@ -4,21 +4,9 @@ hi
 
 ## notes
 
-When running the Mac .pkg installer, sometimes it won't install anything.  You have to run `sudo pkgutil --forget <package id>` and delete the Conscience.app file in the build folder or OSX will simply install on top of it (instead of into /Applications).  See: https://stackoverflow.com/questions/19283889/osx-pkg-installer-sometimes-does-not-install-app-file#19537586
+When running the Mac .pkg installer, sometimes it won't install anything.  You have to run `sudo pkgutil --forget <package id>` and delete the Axon.app file in the build folder or OSX will simply install on top of it (instead of into /Applications).  See: https://stackoverflow.com/questions/19283889/osx-pkg-installer-sometimes-does-not-install-app-file#19537586
 
 The Mac `icon.icns` file isn't working (it thinks it's empty for some reason), and the `icon.ico` file is too small.  Right now we're using `icon.png` as it
 
-Despite it being present in the package.json `build` config, it's still necessary to add the `--c.mac.appId=com.conscience.app` flag to the electron-build command for OSX.  Otherwise, it complains that it can't find Electron.framework.
-
------
-
-**Getting a standalone/portable version of git for OSX:**
-
-1. Grab the official OSX .pkg from here: https://sourceforge.net/projects/git-osx-installer/ (it's a .dmg containing the .pkg)
-2. Extract it per these directions: https://stackoverflow.com/questions/11298855/how-to-unpack-and-pack-pkg-file
-
-```sh
-$ xar -xf ../git.pkg
-$ cat Payload | gunzip -dc |cpio -i
-```
+Despite it being present in the package.json `build` config, it's still necessary to add the `--c.mac.appId=com.axon.app` flag to the electron-build command for OSX.  Otherwise, it complains that it can't find Electron.framework.
 

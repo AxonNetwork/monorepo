@@ -5,8 +5,8 @@ import tomlify from 'tomlify-j0.4'
 const { app } = (window as any).require('electron').remote
 const fs = (window as any).require('fs')
 
-export const CONFIG_PATH = path.join(app.getPath('home'), '.conscience.app.json')
-export const CONSCIENCERC_PATH = path.join(app.getPath('home'), '.consciencerc')
+export const CONFIG_PATH = path.join(app.getPath('home'), '.axon.app.json')
+export const CONSCIENCERC_PATH = path.join(app.getPath('home'), '.axonrc')
 
 interface ICommentTimestamp {
     [repoID: string]: {

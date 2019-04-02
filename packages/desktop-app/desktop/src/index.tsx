@@ -9,13 +9,15 @@ import { AppContainer } from 'react-hot-loader'
 import App from './App'
 import store from 'redux/store'
 import history from 'conscience-components/redux/history'
-import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet } from 'redux/user/userActions'
+import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet, setAutoUpdateState } from 'redux/user/userActions'
+import { AutoUpdateState } from 'redux/user/userReducer'
 import { initNodeWatcher } from 'conscience-components/redux/repo/repoActions'
 import * as rpc from 'conscience-lib/rpc'
 import { isProduction } from 'conscience-lib/utils'
 import { initPlugins } from 'conscience-lib/plugins'
 import setEnvSpecific from './setEnvSpecific'
 import 'typeface-roboto'
+import ElectronRelay from './lib/ElectronRelay'
 
 console.log('app version ~>', process.env.APP_VERSION)
 console.log('env ~>', process.env)
@@ -59,3 +61,12 @@ if (module.hot) {
         render(NextApp)
     })
 }
+
+store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Checking }))
+ElectronRelay.checkForUpdate({
+    updateAvailable:    () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloading })),
+    updateNotAvailable: () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
+    updateDownloaded:   () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloaded })),
+    error:              (err) => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
+})
+

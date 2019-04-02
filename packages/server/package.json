@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Conscience webapp + server",
+  "description": "Axon webapp + server",
   "main": "index.js",
   "scripts": {
     "start": "npm run dev",

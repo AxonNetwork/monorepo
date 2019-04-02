@@ -9,7 +9,7 @@ import flatten from 'lodash/flatten'
 import uniq from 'lodash/uniq'
 import keyBy from 'lodash/keyBy'
 const app = (window as any).require('electron').remote.app
-const appPath = path.join(app.getPath('appData'), 'Conscience')
+const appPath = path.join(app.getPath('appData'), 'Axon')
 
 const metadataDB = new Datastore({ filename: path.join(appPath, 'metadata.db'), autoload: true })
 const securedTextDB = new Datastore({ filename: path.join(appPath, 'secured-text.db'), autoload: true })

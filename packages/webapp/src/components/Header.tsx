@@ -30,7 +30,7 @@ class Header extends React.Component<Props, State>
         return (
             <AppBar position="static" className={classes.appbar}>
                 <Link to={`/user/${username}`}>
-                    <img src={logo} className={classes.img} alt="Conscience Logo" />
+                    <img src={logo} className={classes.img} alt="Axon Logo" />
                 </Link>
 
                 <SearchBar classes={{ root: classes.searchBar }} />

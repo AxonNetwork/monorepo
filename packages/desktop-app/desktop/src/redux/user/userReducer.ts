@@ -4,14 +4,24 @@ import userReducer, { IUserState, initialState } from 'conscience-components/red
 import { UserActionType, IUserAction } from 'conscience-components/redux/user/userActions'
 import { DesktopUserActionType, IDesktopUserAction } from './userActions'
 
+export enum AutoUpdateState {
+    Checking,
+    Downloading,
+    Downloaded,
+    NoUpdate,
+}
+
 const desktopInitialState = {
     ...initialState,
     nodeUsername: undefined,
+
+    autoUpdateState: AutoUpdateState.Checking,
 }
 
 declare module 'conscience-components/redux/user/userReducer' {
     export interface IUserState {
         nodeUsername: string | undefined
+        autoUpdateState: AutoUpdateState
     }
 }
 
@@ -123,6 +133,13 @@ const desktopUserReducer = (state: IUserState, action: IDesktopUserAction): IUse
                 },
             }
 
+        }
+
+        case DesktopUserActionType.SET_AUTOUPDATE_STATE: {
+            return {
+                ...state,
+                autoUpdateState: action.payload.state,
+            }
         }
 
         default:

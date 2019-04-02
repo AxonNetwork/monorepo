@@ -2,6 +2,7 @@ import { ISharedRepoInfo, IUploadedPicture, IUserProfile } from 'conscience-lib/
 import { FailedAction } from 'conscience-components/redux/reduxUtils'
 import { IUserDataContents } from 'lib/UserData'
 import { IUserAction } from 'conscience-components/redux/user/userActions'
+import { AutoUpdateState } from './userReducer'
 
 export enum DesktopUserActionType {
     CHECK_NODE_USER = 'CHECK_NODE_USER',
@@ -33,6 +34,8 @@ export enum DesktopUserActionType {
     SET_LOCAL_CONFIG = 'SET_LOCAL_CONFIG',
     SET_LOCAL_CONFIG_SUCCESS = 'SET_LOCAL_CONFIG_SUCCESS',
     SET_LOCAL_CONFIG_FAILED = 'SET_LOCAL_CONFIG_FAILED',
+
+    SET_AUTOUPDATE_STATE = 'SET_AUTOUPDATE_STATE',
 }
 
 export interface ICheckNodeUserAction {
@@ -156,6 +159,13 @@ export interface ISetLocalConfigSuccessAction {
 
 export type ISetLocalConfigFailedAction = FailedAction<DesktopUserActionType.SET_LOCAL_CONFIG_FAILED>
 
+export interface ISetAutoUpdateStateAction {
+    type: DesktopUserActionType.SET_AUTOUPDATE_STATE
+    payload: {
+        state: AutoUpdateState
+    }
+}
+
 export type IDesktopUserAction =
     IUserAction |
 
@@ -186,7 +196,9 @@ export type IDesktopUserAction =
 
     ISetLocalConfigAction |
     ISetLocalConfigSuccessAction |
-    ISetLocalConfigFailedAction
+    ISetLocalConfigFailedAction |
+
+    ISetAutoUpdateStateAction
 
 export const checkNodeUser = () => ({ type: DesktopUserActionType.CHECK_NODE_USER, payload: {} })
 export const gotNodeUsername = (payload: IGotNodeUsernameAction['payload']) => ({ type: DesktopUserActionType.GOT_NODE_USERNAME, payload })
@@ -199,3 +211,7 @@ export const unshareRepoFromSelf = (payload: IUnshareRepoFromSelfAction['payload
 
 export const readLocalConfig = (payload: IReadLocalConfigAction['payload'] = {}): IReadLocalConfigAction => ({ type: DesktopUserActionType.READ_LOCAL_CONFIG, payload })
 export const setLocalConfig = (payload: ISetLocalConfigAction['payload']): ISetLocalConfigAction => ({ type: DesktopUserActionType.SET_LOCAL_CONFIG, payload })
+
+export const setAutoUpdateState = (payload: ISetAutoUpdateStateAction['payload']): ISetAutoUpdateStateAction => ({ type: DesktopUserActionType.SET_AUTOUPDATE_STATE, payload })
+
+

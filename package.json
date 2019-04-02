@@ -4,7 +4,7 @@
 	"author": "Conscience <hi@conscience.network>",
 	"homepage": ".",
 	"main": "desktop/electron/electron.js",
-	"license": "Copyright Conscience, Inc., 2018",
+	"license": "Copyright Conscience, Inc., 2019",
 	"private": true,
 	"workspaces": [
 		"packages/*"
