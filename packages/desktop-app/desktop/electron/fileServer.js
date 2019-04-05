@@ -51,13 +51,15 @@ function start() {
         const fileIndex = q.indexOf('/', commitIndex + 6)
         const repoHash = q.substring(repoIndex + 6, commitIndex)
         const commit = q.substring(commitIndex + 6, fileIndex)
-        const filename = decodeURI(q.substring(fileIndex + 1))
+        let filename = decodeURI(q.substring(fileIndex + 1))
 
     	if (!repoHash || !commit || !filename) {
     		res.writeHead(400)
     		return res.end('must include repoRoot, commit, and filename as params')
     	}
         const repoRoot = await getRepoForHash(repoHash)
+
+        filename = filename.split('/').join(path.sep)
 
         const client = rpc.getClient()
 

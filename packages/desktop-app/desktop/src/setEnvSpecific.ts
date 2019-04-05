@@ -16,7 +16,7 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
 
     envSpecific.init({
         async getFileContents(uri: URI, opts?: envSpecific.IGetFileContentsOptions): Promise<string | Buffer> {
-            const { commit, filename } = uri
+            let { commit, filename } = uri
             if (!filename) {
                 throw new Error('must include filename in uri')
             }
@@ -34,7 +34,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 return resp.data
 
             } else {
-                const { repoRoot, commit, filename } = uri
+                const { repoRoot, commit } = uri
+                filename = filename.split('/').join(path.sep)
 
                 let contents = undefined as Buffer | undefined
                 if (commit && commit.length === 40) {
