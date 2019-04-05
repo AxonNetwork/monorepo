@@ -1,4 +1,4 @@
-import path from 'path'
+import urljoin from 'url-join'
 import { FileMode, URI, URIType, RepoPage } from 'conscience-lib/common'
 import { getHash } from 'conscience-lib/utils'
 import history from '../redux/history'
@@ -37,7 +37,7 @@ export function getRepoURL(uri: URI, page: RepoPage) {
             break
     }
 
-    const url = '/' + path.join(...parts)
+    const url = '/' + urljoin(...parts)
     return url
 }
 
