@@ -1,0 +1,8 @@
+declare module 'react-parallax'
+declare module 'pluralize'
+declare module 'url-join'
+declare module 'jdenticon'
+declare module 'react-syntax-highlighter/prism'
+declare module 'react-mathjax'
+declare module 'x-data-spreadsheet'
+declare module 'react-color'

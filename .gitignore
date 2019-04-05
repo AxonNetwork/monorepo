@@ -34,16 +34,12 @@ coverage/
 .awcache/
 node_modules/
 dist/
-desktop/dist-app/
-desktop/dist-bundle/
 
 # Redis data
 backend/redis-data/*
 !backend/redis-data/.gitkeep
 
+
+# dotenv
 .env
-
-desktop/build-resources/binaries
-#desktop/build-resources/binaries/git-remote-conscience
-
-
+.env.production

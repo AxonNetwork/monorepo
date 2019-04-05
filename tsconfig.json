@@ -2,20 +2,20 @@
   "compileOnSave": false,
   "compilerOptions": {
     "experimentalDecorators": true,
-    "baseUrl": "desktop/src",
+    "baseUrl": "src",
     "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
     "lib": [
       "dom",
       "dom.iterable",
-      "es2015",
+      "ES2015",
       "ES2016.Array.Include",
     ],
     "jsx": "react",
     "allowSyntheticDefaultImports": true, // FIXME: workaround for immutable.js
     "keyofStringsOnly": true, // FIXME: workaround for immutable.js
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,

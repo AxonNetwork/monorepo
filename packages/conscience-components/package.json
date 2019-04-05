@@ -1,0 +1,34 @@
+{
+  "name": "conscience-components",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "tslint": "tslint -t codeFrame -c tslint.json \"**/*.tsx\" \"**/*.d.ts\""
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.6.1",
+    "@material-ui/icons": "^3.0.1",
+    "@types/classnames": "^2.2.6",
+    "@types/lodash": "^4.14.119",
+    "@types/node": "^10.12.12",
+    "@types/react-redux": "^6.0.10",
+    "@types/react-syntax-highlighter": "^0.0.8",
+    "classnames": "^2.2.6",
+    "conscience-lib": "^1.0.0",
+    "jdenticon": "2.1.1",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
+    "overlayscrollbars": "^1.6.3",
+    "parse-diff": "^0.5.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-markdown": "^3.6.0",
+    "react-redux": "^5.1.1",
+    "react-syntax-highlighter": "^8.0.1",
+    "tinycolor2": "^1.4.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.1",
+    "url-join": "^4.0.0"
+  }
+}

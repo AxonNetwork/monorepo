@@ -1,0 +1,480 @@
+
+syntax = "proto3";
+
+package noderpc;
+
+option go_package = "pb";
+
+service NodeRPC {
+  rpc SetUsername(SetUsernameRequest) returns (SetUsernameResponse) {}
+  rpc GetUsername(GetUsernameRequest) returns (GetUsernameResponse) {}
+
+  rpc InitRepo(InitRepoRequest) returns (InitRepoResponse) {}
+  rpc CheckpointRepo(CheckpointRepoRequest) returns (CheckpointRepoResponse) {}
+  rpc PullRepo(PullRepoRequest) returns (stream PullRepoResponsePacket) {}
+  rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
+  rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponse) {}
+  rpc FetchChunks(FetchChunksRequest) returns (stream FetchChunksResponse) {}
+
+  rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
+  rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
+  rpc GetLocalRepos(GetLocalReposRequest) returns (stream GetLocalReposResponsePacket) {}
+  rpc SetReplicationPolicy(SetReplicationPolicyRequest) returns (SetReplicationPolicyResponse) {}
+  rpc AnnounceRepoContent(AnnounceRepoContentRequest) returns (AnnounceRepoContentResponse) {}
+  rpc GetLocalRefs(GetLocalRefsRequest) returns (GetLocalRefsResponse) {}
+  rpc GetRemoteRefs(GetRemoteRefsRequest) returns (GetRemoteRefsResponse) {}
+  rpc IsBehindRemote(IsBehindRemoteRequest) returns (IsBehindRemoteResponse) {}
+
+  rpc PushRepo(PushRepoRequest) returns (stream ProgressPacket) {}
+  rpc RequestReplication(ReplicationRequest) returns (stream ProgressPacket) {}
+
+  rpc SetRepoPublic(SetRepoPublicRequest) returns (SetRepoPublicResponse) {}
+  rpc IsRepoPublic(IsRepoPublicRequest) returns (IsRepoPublicResponse) {}
+  rpc SetUserPermissions(SetUserPermissionsRequest) returns (SetUserPermissionsResponse) {}
+  rpc GetRepoUsers(GetRepoUsersRequest) returns (GetRepoUsersResponse) {}
+
+  rpc GetRepoHistory(GetRepoHistoryRequest) returns (GetRepoHistoryResponse) {}
+  rpc GetUpdatedRefEvents(GetUpdatedRefEventsRequest) returns (GetUpdatedRefEventsResponse) {}
+  rpc GetRepoFiles(GetRepoFilesRequest) returns (GetRepoFilesResponse) {}
+  rpc SignMessage(SignMessageRequest) returns (SignMessageResponse) {}
+  rpc EthAddress(EthAddressRequest) returns (EthAddressResponse) {}
+
+  rpc GetObject(GetObjectRequest) returns (stream GetObjectResponse) {}
+  rpc GetDiff(GetDiffRequest) returns (stream GetDiffResponse) {}
+
+  rpc SetFileChunking(SetFileChunkingRequest) returns (SetFileChunkingResponse) {}
+  rpc Watch(WatchRequest) returns (stream WatchResponse) {}
+}
+
+message SetUsernameRequest {
+    string username = 1;
+}
+
+message SetUsernameResponse {
+    bytes signature = 2;
+}
+
+message GetUsernameRequest {}
+
+message GetUsernameResponse {
+    string username = 1;
+    bytes signature = 2;
+}
+
+message InitRepoRequest {
+    string repoID = 1;
+    string path = 2;
+    string name = 3;
+    string email = 4;
+}
+
+message InitRepoResponse {
+    string path = 1;
+}
+
+message CheckpointRepoRequest {
+    string path = 1;
+    string message = 2;
+}
+
+message CheckpointRepoResponse {
+    bool ok = 1;
+}
+
+message PullRepoRequest {
+    string path = 1;
+}
+
+message PullRepoResponsePacket {
+    int64 toFetch = 1;
+    int64 fetched = 2;
+}
+
+message CloneRepoRequest {
+    string repoID = 1;
+    string path = 2;
+    string name = 3;
+    string email = 4;
+}
+
+message CloneRepoResponsePacket {
+    message Progress {
+        int64 toFetch = 1;
+        int64 fetched = 2;
+    }
+
+    message Success {
+        string path = 1;
+    }
+
+    oneof payload {
+        Progress progress = 1;
+        Success success = 2;
+    }
+}
+
+message FetchFromCommitRequest {
+    string repoID = 1;
+    string path = 2;
+    bytes commit = 3;
+    uint64 checkoutType = 4;
+}
+
+message FetchFromCommitResponse {
+    message Header {
+        int64 uncompressedSize = 1;
+        int64 totalChunks = 2;
+    }
+
+    message PackfileHeader {
+        bytes packfileID = 1;
+        int64 uncompressedSize = 2;
+    }
+
+    message PackfileData {
+        bytes packfileID = 1;
+        bytes data = 2;
+        bool end = 3;
+    }
+
+    message Chunk {
+        bytes objectID = 1;
+        bytes data = 2;
+        bool end = 3;
+    }
+
+    oneof payload {
+        Header header = 1;
+        PackfileHeader packfileHeader = 2;
+        PackfileData packfileData = 3;
+        Chunk chunk = 4;
+    }
+}
+
+message RegisterRepoIDRequest {
+    string repoID = 1;
+}
+
+message FetchChunksRequest {
+    string repoID = 1;
+    string path = 2;
+    repeated bytes chunks = 3;
+}
+
+message FetchChunksResponse {
+    bytes objectID = 1;
+    bytes data = 2;
+    bool end = 3;
+}
+
+message RegisterRepoIDResponse {}
+
+message TrackLocalRepoRequest {
+    string repoPath = 1;
+    bool forceReload = 2;
+}
+
+message TrackLocalRepoResponse {}
+
+message GetLocalReposRequest {}
+
+message GetLocalReposResponsePacket {
+    string repoID = 1;
+    string path = 2;
+}
+
+message SetReplicationPolicyRequest {
+    string repoID = 1;
+    bool shouldReplicate = 2;
+}
+
+message SetReplicationPolicyResponse {}
+
+message AnnounceRepoContentRequest {
+    string repoID = 1;
+}
+
+message AnnounceRepoContentResponse {}
+
+message Ref {
+    string refName = 1;
+    string commitHash = 2;
+}
+
+message GetLocalRefsRequest {
+    string repoID = 1;
+    string path = 2;
+}
+
+message GetLocalRefsResponse {
+    repeated Ref refs = 1;
+}
+
+message GetRemoteRefsRequest {
+    string repoID = 1;
+    uint64 pageSize = 2;
+    uint64 page = 3;
+}
+
+message GetRemoteRefsResponse {
+    uint64 total = 1;
+    repeated Ref refs = 2;
+}
+
+message IsBehindRemoteRequest {
+    string repoID = 1;
+    string path = 2;
+}
+
+message IsBehindRemoteResponse {
+    string repoID = 1;
+    bool isBehindRemote = 2;
+}
+
+message PushRepoRequest {
+    string repoRoot = 1;
+    string branchName = 2;
+    bool force = 3;
+}
+
+message ProgressPacket {
+    uint64 current = 1;
+    uint64 total = 2;
+    bool done = 3;
+}
+
+message UpdateRefRequest {
+    string repoID = 1;
+    string refName = 2;
+    string commitHash = 3;
+}
+
+message UpdateRefResponse {}
+
+message ReplicationRequest {
+    string repoID = 1;
+}
+
+message SetRepoPublicRequest {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message SetRepoPublicResponse {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message IsRepoPublicRequest {
+    string repoID = 1;
+}
+
+message IsRepoPublicResponse {
+    string repoID = 1;
+    bool isPublic = 2;
+}
+
+message GetRepoUsersRequest {
+    string repoID = 1;
+    uint64 type = 2;
+    uint64 pageSize = 3;
+    uint64 page = 4;
+}
+
+message GetRepoUsersResponse {
+    uint64 total = 1;
+    repeated string users = 2;
+}
+
+message SetUserPermissionsRequest {
+    string repoID = 1;
+    string username = 2;
+    bool puller = 3;
+    bool pusher = 4;
+    bool admin = 5;
+}
+
+message SetUserPermissionsResponse {}
+
+message GetRepoHistoryRequest {
+    // need one or the other
+    string repoID = 1;
+    string path = 2;
+
+    // need one or the other
+    // if neither, defaults to HEAD
+    bytes fromCommitHash = 3;
+    string fromCommitRef = 4;
+    uint64 pageSize = 5;
+
+    bool onlyHashes = 6;
+}
+
+message Commit {
+    string commitHash = 1;
+    string author = 2;
+    string message = 3;
+    repeated string files = 4;
+    uint64 timestamp = 5;
+}
+
+message GetRepoHistoryResponse {
+    repeated Commit commits = 1;
+    bool isEnd = 2;
+}
+
+message GetUpdatedRefEventsRequest {
+    string repoID = 1;
+    uint64 startBlock = 2;
+    uint64 endBlock = 3;
+}
+
+message UpdatedRefEvent {
+    string commit = 1;
+    string repoID = 2;
+    string txHash = 3;
+    uint64 time = 4;
+    uint64 blockNumber = 5;
+}
+
+message GetUpdatedRefEventsResponse {
+    repeated UpdatedRefEvent events = 1;
+}
+
+message GetRepoFilesRequest {
+    string repoID = 1;
+    string repoRoot = 2;
+
+    bytes commitHash = 3;
+    string commitRef = 4;
+}
+
+message File {
+    string name = 1;
+    bytes hash = 2;
+    uint32 mode = 3;
+    uint64 size = 4;
+    uint32 modified = 5;
+    string unstagedStatus = 6;
+    string stagedStatus = 7;
+    bool mergeConflict = 8;
+    bool isChunked = 9;
+}
+
+message GetRepoFilesResponse {
+    repeated File files = 1;
+}
+
+message SignMessageRequest {
+    bytes message = 1;
+}
+
+message SignMessageResponse {
+    bytes signature = 1;
+}
+
+message EthAddressRequest {}
+
+message EthAddressResponse {
+    string address = 1;
+}
+
+message GetObjectRequest {
+    // need one or the other
+    string repoID = 1;
+    string repoRoot = 2;
+
+    // need objectID -or-
+    //  (filename -and-
+    //     (commitHash -or- commitRef)
+    //  )
+    // @@TODO: unfuck this
+    bytes objectID = 3;
+    string filename = 4;
+    bytes commitHash = 5;
+    string commitRef = 6;
+    uint64 maxSize = 7;
+}
+
+message GetObjectResponse {
+    message Header {
+        uint64 uncompressedSize = 1;
+    }
+
+    message Data {
+        bytes data = 1;
+        bool end = 2;
+    }
+
+    oneof payload {
+        Header header = 1;
+        Data data = 2;
+    }
+}
+
+message GetDiffRequest {
+    // need one or the other
+    string repoID = 1;
+    string repoRoot = 2;
+
+    bytes commitHash = 3;
+    string commitRef = 4;
+}
+
+message GetDiffResponse {
+    bytes data = 1;
+    bool end = 2;
+}
+
+message SetFileChunkingRequest {
+    string repoID = 1;
+    string repoRoot = 2;
+
+    string filename = 3;
+    bool enabled = 4;
+}
+
+message SetFileChunkingResponse {}
+
+message WatchRequest {
+    repeated uint64 eventTypes = 1;
+
+    uint64 updatedRefStart = 2;
+}
+
+message WatchResponse {
+
+    message AddedRepoEvent {
+        string repoID = 1;
+        string repoRoot = 2;
+    }
+
+    message PulledRepoEvent {
+        string repoID = 1;
+        string repoRoot = 2;
+        repeated string updatedRefs = 3;
+    }
+
+    message PushedRepoEvent {
+        string repoID = 1;
+        string repoRoot = 2;
+        string branchName = 3;
+        string commit = 4;
+    }
+
+    message UpdatedRefEvent {
+        string commit = 1;
+        string repoID = 2;
+        string txHash = 3;
+        uint64 time = 4;
+        uint64 blockNumber = 5;
+    }
+
+    oneof payload {
+        AddedRepoEvent addedRepoEvent = 1;
+        PulledRepoEvent pulledRepoEvent = 2;
+        PushedRepoEvent pushedRepoEvent = 3;
+        UpdatedRefEvent updatedRefEvent = 4;
+    }
+}
+

@@ -1,0 +1,288 @@
+{
+  "name": "desktop-app",
+  "version": "0.0.5",
+  "repository": {
+    "type": "git",
+    "url": "conscience://desktop-app"
+  },
+  "author": "Conscience <hi@conscience.network>",
+  "homepage": ".",
+  "main": "desktop/electron/electron.js",
+  "license": "Copyright Conscience, Inc., 2019",
+  "scripts": {
+    "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
+    "dll": "cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.dll.babel.js",
+    "dev": "yarn clean && yarn dll && yarn dev-client",
+    "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config ./desktop/webpack.config.dev.babel.js",
+    "prod": "yarn build && yarn serve",
+    "build": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.prod.babel.js",
+    "serve": "cross-env NODE_ENV=production nodemon --exec babel-node backend/server.js",
+    "profile": "yarn clean && yarn dll && cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.profile.babel.js",
+    "eslint": "eslint -f codeframe \"**/*.js\"",
+    "tslint": "tslint -t codeFrame \"**/*.tsx\" \"**/*.d.ts\" -e \"node_modules/**\" -e \"**/__tests__/**\"",
+    "lint": "yarn eslint && yarn tslint",
+    "electron-dev": "NODE_ENV=development ELECTRON_START_URL=http://localhost:3004 PROTO_PATH=../conscience-lib/rpc/noderpc.proto NODE_RPC=0.0.0.0:1338 electron .",
+    "electron-build": "build -ml --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
+    "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
+    "electron-build-win": "build -w --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
+    "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
+    "clean-windows": "rm -rf ~/.axonrc ~/.axon.key ~/axon/ /c/Users/bryn/.axonrc /c/Users/bryn/.axon.app.json  /c/Users/bryn/.axon.key /c/Users/bryn/axon /c/Users/bryn/AppData/Roaming/desktop-app /c/Users/bryn/AppData/Roaming/Axon"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@grpc/proto-loader": "^0.3.0",
+    "@material-ui/core": "^3.6.1",
+    "@material-ui/icons": "^3.0.1",
+    "@types/bluebird": "^3.5.24",
+    "@types/bytes": "^3.0.0",
+    "@types/classnames": "^2.2.6",
+    "@types/i18next": "^8.4.5",
+    "@types/i18next-browser-languagedetector": "^2.0.1",
+    "@types/lodash": "^4.5.4",
+    "@types/lodash.uniq": "^4.5.4",
+    "@types/long": "^4.0.0",
+    "@types/nedb": "^1.8.7",
+    "@types/prismjs": "^1.9.0",
+    "@types/quill": "1.3.6",
+    "@types/react": "^16.4.18",
+    "@types/react-content-loader": "^3.1.3",
+    "@types/react-dom": "^16.0.9",
+    "@types/react-i18next": "^7.8.2",
+    "@types/react-loadable": "^5.4.1",
+    "@types/react-redux": "^6.0.9",
+    "@types/react-router": "^4.0.31",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/react-syntax-highlighter": "^0.0.6",
+    "@types/redux-logger": "^3.0.6",
+    "@types/tinycolor2": "^1.4.1",
+    "@types/uuid": "^3.4.4",
+    "@types/webpack-env": "^1.13.6",
+    "add-asset-html-webpack-plugin": "^3.0.1",
+    "await-to-js": "^2.0.1",
+    "awesome-typescript-loader": "^5.2.1",
+    "axios": "^0.18.0",
+    "babel-loader": "^8.0.2",
+    "babel-plugin-prismjs": "^1.0.2",
+    "body-parser": "^1.18.3",
+    "bugsnag-js": "^4.7.3",
+    "bugsnag-react": "^1.1.1",
+    "bytes": "^3.0.0",
+    "chokidar": "^2.0.4",
+    "colors": "^1.3.2",
+    "compression": "^1.7.3",
+    "concurrently": "^4.0.1",
+    "connect-redis": "^3.3.3",
+    "connected-react-router": "^4.4.1",
+    "conscience-components": "^1.0.0",
+    "conscience-lib": "^1.0.0",
+    "cookie-parser": "^1.4.3",
+    "copy-webpack-plugin": "^4.5.2",
+    "cross-env": "^5.2.0",
+    "css-loader": "^1.0.0",
+    "cssnano": "^4.1.0",
+    "dotenv-webpack": "^1.5.7",
+    "duplicate-package-checker-webpack-plugin": "^3.0.0",
+    "electron-devtools-installer": "^2.2.4",
+    "electron-updater": "^3.2.0",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "file-loader": "^2.0.0",
+    "fix-path": "^2.1.0",
+    "grpc": "^1.15.1",
+    "helmet": "^3.13.0",
+    "highlighter": "^0.1.0",
+    "history": "^4.7.2",
+    "html-webpack-plugin": "^3.2.0",
+    "http-status": "^1.2.0",
+    "i18next": "^11.9.0",
+    "i18next-browser-languagedetector": "^2.2.3",
+    "image-webpack-loader": "^4.3.1",
+    "immutable": "4.0.0-rc.9",
+    "isomorphic-git": "^0.35.4",
+    "klaw": "^3.0.0",
+    "lodash": "^4.5.4",
+    "mime-types": "^2.1.21",
+    "mini-css-extract-plugin": "^0.4.2",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.22.2",
+    "morgan": "^1.9.1",
+    "nedb": "^1.8.0",
+    "nodemon": "^1.18.4",
+    "offline-plugin": "^5.0.5",
+    "parse-diff": "^0.4.2",
+    "pg": "^7.4.3",
+    "postcss": "^7.0.2",
+    "postcss-import": "^12.0.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^5.3.0",
+    "prismjs": "^1.15.0",
+    "progress-bar-webpack-plugin": "^1.11.0",
+    "ps-tree": "^1.1.0",
+    "quill": "^1.3.6",
+    "react": "^16.6.3",
+    "react-content-loader": "^3.1.2",
+    "react-dom": "^16.6.3",
+    "react-hot-loader": "^4.3.8",
+    "react-i18next": "^7.12.0",
+    "react-loadable": "^5.5.0",
+    "react-markdown": "^3.6.0",
+    "react-pdf": "^4.0.2",
+    "react-quill": "^1.3.1",
+    "react-redux": "^5.1.1",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-syntax": "^0.0.1",
+    "react-syntax-highlighter": "^8.0.1",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-logic": "^2.0.0",
+    "redux-saga": "^0.16.0",
+    "semver": "5.6.0",
+    "style-loader": "^0.23.0",
+    "through2": "^2.0.3",
+    "tinycolor2": "^1.4.1",
+    "toiletdb": "^1.4.1",
+    "toml-j0.4": "^1.1.1",
+    "tomlify-j0.4": "^3.0.0",
+    "trash-cli": "^1.4.0",
+    "ts-loader": "^5.1.1",
+    "typeface-roboto": "^0.0.54",
+    "typescript": "^3.0.3",
+    "url-loader": "^1.1.1",
+    "uuid": "^3.3.2",
+    "webpack": "^4.19.0",
+    "webpack-bundle-analyzer": "^3.0.2",
+    "webpack-cli": "^3.1.0",
+    "webpack-merge": "^4.1.4",
+    "webpack-pwa-manifest": "^3.7.1"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.0.0",
+    "@types/jest": "^23.3.2",
+    "@types/react-test-renderer": "^16.0.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "commitlint": "^7.1.2",
+    "commitlint-config-armour": "^1.2.1",
+    "coveralls": "^3.0.2",
+    "dotenv": "^6.0.0",
+    "electron": "^3.0.4",
+    "electron-builder": "20.33.0",
+    "electron-builder-squirrel-windows": "20.33.0",
+    "eslint": "^5.6.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-import-resolver-webpack": "^0.10.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
+    "husky": "1.0.0-rc.14",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^23.6.0",
+    "react-test-renderer": "^16.5.1",
+    "stylelint": "^9.5.0",
+    "stylelint-config-standard": "^18.2.0",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "tslint-react": "^3.6.0",
+    "webpack-dev-server": "^3.1.8"
+  },
+  "resolutions": {
+    "@types/quill": "1.3.6"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ],
+  "nodemonConfig": {
+    "watch": [
+      "backend/controllers/",
+      "backend/routes/",
+      "backend/db/",
+      "backend/config.json",
+      "backend/server.js"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(js|jsx|ts|tsx)$",
+    "testPathIgnorePatterns": [
+      "node_modules"
+    ],
+    "coveragePathIgnorePatterns": [
+      "node_modules"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.tsx",
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    },
+    "moduleDirectories": [
+      "node_modules",
+      "desktop/src",
+      "backend"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ]
+  },
+  "build": {
+    "appId": "com.axon.app",
+    "productName": "Axon",
+    "asar": true,
+    "directories": {
+      "buildResources": "desktop/build-resources",
+      "output": "desktop/dist-app"
+    },
+    "files": [
+      "desktop/electron/**/*",
+      "desktop/dist-bundle/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "financial",
+      "icon": "icons/icon.png",
+      "extraResources": [
+        "desktop/build-resources/binaries/darwin/*"
+      ],
+      "binaries": [
+        "desktop/build-resources/binaries/darwin/axon-node"
+      ]
+    },
+    "pkg": {
+      "allowRootDirectory": true,
+      "allowAnywhere": true,
+      "scripts": "pkg-scripts"
+    },
+    "linux": {
+      "target": [
+        "appImage",
+        "deb"
+      ],
+      "extraResources": [
+        "desktop/build-resources/binaries/linux/*",
+        "desktop/dist-bundle/prod/noderpc.proto"
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icons/icon.ico",
+      "extraResources": [
+        "desktop/build-resources/binaries/windows/*",
+        "desktop/dist-bundle/prod/noderpc.proto"
+      ]
+    },
+    "publish": {
+      "provider": "s3",
+      "bucket": "conscience-app-releases"
+    }
+  }
+}
