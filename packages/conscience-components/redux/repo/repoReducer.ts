@@ -106,10 +106,13 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOr
         }
 
         case RepoActionType.FETCH_REPO_TIMELINE_SUCCESS: {
-            const { uri, timeline } = action.payload
+            let { uri, timeline } = action.payload
+
             const uriStr = uriToString(uri)
             const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
+
+            timeline = timeline.filter(e => !!e) // @@TODO: why do timeline events come back null sometimes? 
             for (let commit of timeline) {
                 commits[commit.commit] = commit
                 commitList.push(commit.commit)

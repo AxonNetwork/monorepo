@@ -33,7 +33,7 @@ import {
     ISetLocalConfigAction, ISetLocalConfigSuccessAction,
     getSharedRepos, gotNodeUsername,
 } from './userActions'
-import { getLocalRepoList } from 'conscience-components/redux/repo/repoActions'
+import { getLocalRepoList, initNodeWatcher } from 'conscience-components/redux/repo/repoActions'
 import UserData from '../../lib/UserData'
 import ElectronRelay from '../../lib/ElectronRelay'
 
@@ -99,6 +99,7 @@ const loginLogic = makeLogic<ILoginAction, ILoginSuccessAction>({
         dispatch(getSharedRepos({ userID }))
         dispatch(fetchUserOrgs({ userID }))
         dispatch(getLocalRepoList({}))
+        dispatch(initNodeWatcher({}))
 
         return { userID, emails, name, username, picture, orgs, profile }
     },

@@ -138,10 +138,16 @@ const UserData = {
         let parsed = toml.parse(contents.toString()) as any
         parsed.node.EthereumBIP39Seed = mnemonic
         var updated = tomlify.toToml(parsed, {
-            space: 2,
+            space: 0,
             replace: function(key: string, value: any) {
-                // prevent tomlify from turning port number into a floating point
-                if (key === 'P2PListenPort') {
+                // prevent tomlify from turning integers into floats
+                const context = this
+                const keypath = tomlify.toKey(context.path)
+                const integerFields = [
+                    'node.P2PListenPort',
+                    'node.MaxConcurrentPeers',
+                ]
+                if (integerFields.indexOf(keypath) > -1) {
                     return value.toFixed(0)
                 }
                 return false

@@ -99,7 +99,6 @@ export default {
                             plugins:   () => [ postcssImport, postcssPresetEnv, cssnano ],
                         },
                     },
-                    { loader: 'sass-loader', options: { sourceMap: true } },
                 ],
             },
             // Use a list of loaders to load less files
