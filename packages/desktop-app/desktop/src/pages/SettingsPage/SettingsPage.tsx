@@ -60,7 +60,7 @@ class SettingsPage extends React.Component<Props>
                                 <div>
                                     <Typography variant="subtitle1"><strong>Email addresses</strong></Typography>
                                     <List dense classes={{ root: classes.emailList }}>
-                                        {user.emails.map(email => (
+                                        {(user.emails || []).map(email => (
                                             <ListItem classes={{ root: classes.emailListItem }}>
                                                 <ListItemText primary={email} />
                                                 <ListItemSecondaryAction>
