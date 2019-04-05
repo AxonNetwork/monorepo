@@ -33,6 +33,7 @@ import {
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
     fetchIsBehindRemote, addRepoToRepoList, bringTimelineUpToDate,
     markRepoFilesDirty, watchRepo,
+    fetchRepoMetadata,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -525,6 +526,7 @@ const cloneRepoLogic = makeContinuousLogic<ICloneRepoAction>({
         stream.on('end', async () => {
             if (success) {
                 const uri = { type: URIType.Local, repoRoot: path } as URI
+                dispatch(fetchRepoMetadata({ repoList: [uri] }))
                 await dispatch(cloneRepoSuccess({ repoID }))
                 selectRepo(uri, RepoPage.Home)
             }
