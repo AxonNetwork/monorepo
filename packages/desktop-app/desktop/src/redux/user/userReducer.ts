@@ -15,7 +15,7 @@ const desktopInitialState = {
     ...initialState,
     nodeUsername: undefined,
 
-    autoUpdateState: AutoUpdateState.Checking,
+    autoUpdateState: process.env.NODE_ENV === 'production' ? AutoUpdateState.Checking : AutoUpdateState.NoUpdate,
 }
 
 declare module 'conscience-components/redux/user/userReducer' {
