@@ -32,7 +32,9 @@ initPlugins()
 store.dispatch(readLocalConfig())
 store.dispatch(checkBalanceAndHitFaucet())
 store.dispatch(checkNodeUser())
-store.dispatch(initNodeWatcher({}))
+store.dispatch(initNodeWatcher({}));
+
+(window as any).getState = () => store.getState()
 
 // Webpack offline plugin
 if (isProduction) {
@@ -62,11 +64,13 @@ if (module.hot) {
     })
 }
 
-store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Checking }))
-ElectronRelay.checkForUpdate({
-    updateAvailable:    () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloading })),
-    updateNotAvailable: () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
-    updateDownloaded:   () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloaded })),
-    error:              (err) => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
-})
+if (process.env.NODE_ENV === 'production') {
+    store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Checking }))
+    ElectronRelay.checkForUpdate({
+        updateAvailable:    () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloading })),
+        updateNotAvailable: () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
+        updateDownloaded:   () => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.Downloaded })),
+        error:              (err) => store.dispatch(setAutoUpdateState({ state: AutoUpdateState.NoUpdate })),
+    })
+}
 
