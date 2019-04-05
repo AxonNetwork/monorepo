@@ -91,16 +91,11 @@ app.on('ready', () => {
 })
 
 function doAutoUpdate() {
-    function writeLog() {
-        let str = Array.prototype.join.call(arguments, ' ')
-        fs.appendFileSync('/tmp/axon.auto-update.log', str + '\n')
-    }
-
     const { autoUpdater } = require('electron-updater')
     autoUpdater.logger = {
-        info: writeLog.bind(null, '[auto-update info]'),
-        warn: writeLog.bind(null, '[auto-update warn]'),
-        error: writeLog.bind(null, '[auto-update error]'),
+        info: msg => log('axon.auto-update', 'info', msg),
+        warn: msg => log('axon.auto-update', 'warn', msg),
+        error: msg => log('axon.auto-update', 'error', msg),
     }
     // autoUpdater.on('update-available', () => {
     //     writeLog('update-available :D')
@@ -159,46 +154,73 @@ function getEnv() {
     return env
 }
 
+function log(file, label, msg) {
+    const logDir = app.getPath('logs')
+    fs.appendFileSync(path.join(logDir, file + '.log', '[' + label + '] ' + msg + '\n')
+}
+
 let isKilled = false
 let nodeProc = null
 function startNode() {
     const env = getEnv()
     const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `axon-node${getPlatformBinaryExtension()}`)
 
-    // fs.writeFileSync('/tmp/conscience-app-env.json', JSON.stringify(process.env))
-    // fs.writeFileSync('/tmp/conscience-electron-env.json', JSON.stringify(env))
-    // fs.writeFileSync('/tmp/conscience-electron-nodePath', nodePath)
+    // fs.writeFileSync('c:\\Users\\bryn\\Desktop\\conscience-app-env.json', JSON.stringify(process.env))
+    // fs.writeFileSync('c:\\Users\\bryn\\Desktop\\conscience-electron-env.json', JSON.stringify(env))
+    // fs.writeFileSync('c:\\Users\\bryn\\Desktop\\conscience-electron-nodePath', nodePath)
+
+    log('axon.node', 'info', 'spawning node process...')
 
     nodeProc = spawn(nodePath, [], { env })
-    // nodeProc.stdout.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stdout.txt', data) })
-    // nodeProc.stderr.on('data', data => { fs.appendFileSync('c:\\Users\\Daniel\\conscience-stderr.txt', data) })
+    nodeProc.on('error', err => { log('axon.node', 'error', err) })
+    nodeProc.stdout.on('data', data => { log('axon.node', 'stdout', data) })
+    nodeProc.stderr.on('data', data => { log('axon.node', 'stderr', data) })
+
+    isKilled = false
+
+    log('axon.node', 'info', 'done spawning node process...')
 }
 
 function killNode(cb) {
+    log('axon.node', 'info', `killing node process (pid: ${nodeProc.pid})...`)
     if (isKilled) {
-        cb()
+        log('axon.node', 'info', 'node process already killed')
+        return cb()
     }
     if (nodeProc) {
         psTree(nodeProc.pid, (err, children) => {
-            if (err) { return console.log('err', err) }
+            if (err) {
+                log('axon.node', 'error', 'error killing node process: error calling psTree: ' + err.toString())
+                return console.log('err', err)
+            }
             children.map(c => parseInt(c.PID, 10)).forEach((pid) => {
+                log('axon.node', 'info', `psTree found pid ${pid}`)
                 try {
                     process.kill(pid)
-                } catch (err) { console.log('err killing child', err) }
+                } catch (err) {
+                    console.log('err killing child', err)
+                    log('axon.node', 'error', 'error killing node process: error calling process.kill: ' + err.toString())
+                }
             })
             try {
                 process.kill(nodeProc.pid)
-            } catch (err) { console.log('err killing parent', err) }
+            } catch (err) {
+                console.log('err killing parent', err)
+                log('axon.node', 'error', 'error killing node process: error killing parent: ' + err.toString())
+            }
             isKilled = true
+            log('axon.node', 'info', 'done killing node process')
             cb()
         })
     } else {
         isKilled = true
+        log('axon.node', 'info', 'done killing node process (but weird state)')
         cb()
     }
 }
 
 app.on('before-quit', (event) => {
+    log('axon.node', 'info', `received "before-quit" event, attempting to kill node... (isKilled = ${isKilled})`)
     if (!isKilled) {
         event.preventDefault()
         killNode(() => {
