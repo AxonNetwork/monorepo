@@ -7,11 +7,6 @@ import debounce from 'lodash/debounce'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import Dialog from '@material-ui/core/Dialog'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogActions from '@material-ui/core/DialogActions'
-import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
 import SearchIcon from '@material-ui/icons/Search'
 import Input from '@material-ui/core/Input'
@@ -31,6 +26,8 @@ import { autobind, repoUriToString } from 'conscience-lib/utils'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
 import { IGlobalState } from 'conscience-components/redux'
+import NewFileDialog from './NewFileDialog'
+
 
 
 @autobind
@@ -44,7 +41,6 @@ class FileList extends React.Component<Props, State>
         quickNavFileList: [],
     }
 
-    _inputNewFileName: HTMLInputElement | null = null
     _inputQuickNav: HTMLInputElement | null = null
 
     componentDidMount() {
@@ -170,27 +166,12 @@ class FileList extends React.Component<Props, State>
                     </Card>
                 }
 
-                <Dialog
-                    fullWidth
+                <NewFileDialog
                     open={this.state.newFileDialogOpen}
-                    onClose={this.closeNewFileDialog}
-                >
-                    <form onSubmit={this.createNewFile}>
-                        <DialogTitle>Create new file</DialogTitle>
-                        <DialogContent>
-                            <TextField
-                                label="File Name"
-                                fullWidth
-                                autoFocus
-                                inputRef={x => this._inputNewFileName = x}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button color="secondary" variant="contained" type="submit">Create</Button>
-                            <Button color="secondary" variant="outlined" onClick={this.closeNewFileDialog}>Cancel</Button>
-                        </DialogActions>
-                    </form>
-                </Dialog>
+                    onClickCancel={this.closeNewFileDialog}
+                    onClickCreate={this.createNewFile}
+                />
+
             </React.Fragment>
         )
     }
@@ -209,16 +190,12 @@ class FileList extends React.Component<Props, State>
         this.setState({ quickNavFileList })
     }, 300)
 
-    onClickNewFile() {
-        this.setState({ newFileDialogOpen: true })
-    }
+    onClickNewFile     = () => this.setState({ newFileDialogOpen: true })
+    closeNewFileDialog = () => this.setState({ newFileDialogOpen: false })
 
-    createNewFile(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        if (!this._inputNewFileName) {
-            return
-        }
-        const filename = this._inputNewFileName.value.trim()
+    createNewFile(filename: string) {
+        this.closeNewFileDialog()
+
         if (filename.length === 0) {
             return
         }
@@ -227,13 +204,6 @@ class FileList extends React.Component<Props, State>
         const fullpath = path.join(basepath, filename)
 
         selectFile({ ...this.props.uri, filename: fullpath }, FileMode.EditNew)
-    }
-
-    closeNewFileDialog() {
-        if (this._inputNewFileName) {
-            this._inputNewFileName.value = ''
-        }
-        this.setState({ newFileDialogOpen: false })
     }
 
     shouldComponentUpdate(nextProps: Props, nextState: State) {
@@ -331,7 +301,6 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         files: state.repo.filesByURI[repoUriToString(ownProps.uri)],
         fileExtensionsHidden: state.user.userSettings.fileExtensionsHidden || false,
     }
-
 }
 
 const mapDispatchToProps = {}
