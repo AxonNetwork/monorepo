@@ -1,8 +1,10 @@
+import omit from 'lodash/omit'
 import fromPairs from 'lodash/fromPairs'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
+import { InputProps } from '@material-ui/core/Input'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormattingHelp from '../FormattingHelp'
@@ -17,11 +19,15 @@ import * as filetypes from 'conscience-lib/utils/fileTypes'
 @autobind
 class SmartTextarea extends React.Component<Props, State>
 {
-    state = {
-        comment: '',
-        anchorEl: null,
-        embedType: null,
-        position: 0,
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            comment: props.initialContents || '',
+            anchorEl: null,
+            embedType: null,
+            position: 0,
+            textareaScrollTop: 0,
+        }
     }
 
     _inputTextarea: HTMLTextAreaElement | null = null
@@ -41,7 +47,7 @@ class SmartTextarea extends React.Component<Props, State>
     }
 
     handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
-        if (event.key === 'Enter' && event.shiftKey) {
+        if (event.key === 'Enter' && event.shiftKey && !!this.props.onSubmit) {
             this.props.onSubmit()
             return
         }
@@ -52,8 +58,8 @@ class SmartTextarea extends React.Component<Props, State>
         const cursor = event.target.selectionStart
 
         let lastToken = ''
-        for (let i = text.length - 1; i >= 0; i--) {
-            if (text[i] === ' ') {
+        for (let i = cursor - 1; i >= 0; i--) {
+            if (text[i] === ' ' || text[i] === '\n' || text[i] === '\r' || text[i] === '\t') {
                 break
             } else {
                 lastToken = text[i] + lastToken
@@ -64,38 +70,52 @@ class SmartTextarea extends React.Component<Props, State>
             this.props.fetchRepoFiles({ uri: this.props.uri })
         }
 
+        const anchorEl = event.target
+        const comment = event.target.value
+        const textareaScrollTop = this._inputTextarea ? this._inputTextarea.scrollTop : 0
+
         if (lastToken === '@file') {
             this.setState({
-                anchorEl: event.target,
-                comment: event.target.value,
+                anchorEl,
+                comment,
                 position: cursor - 5,
                 embedType: '@file',
+                textareaScrollTop,
             })
         } else if (lastToken === '@image') {
             this.setState({
-                anchorEl: event.target,
-                comment: event.target.value,
+                anchorEl,
+                comment,
                 position: cursor - 6,
                 embedType: '@image',
+                textareaScrollTop,
             })
         } else if (lastToken === '@discussion') {
             this.setState({
-                anchorEl: event.target,
-                comment: event.target.value,
+                anchorEl,
+                comment,
                 position: cursor - 11,
                 embedType: '@discussion',
+                textareaScrollTop,
             })
         } else {
             this.setState({
                 anchorEl: null,
-                comment: event.target.value,
+                comment,
                 position: 0,
                 embedType: null,
+                textareaScrollTop: 0,
             })
+        }
+
+        if (this.props.onChange) {
+            this.props.onChange(event.target.value)
         }
     }
 
     handleClose(embedType?: string, refTarget?: string) {
+        const { textareaScrollTop } = this.state
+
         this.setState({
             anchorEl: null,
             position: 0,
@@ -108,7 +128,14 @@ class SmartTextarea extends React.Component<Props, State>
         const position = this.state.position
         let comment = this.state.comment
         comment = comment.substring(0, position) + ref + comment.substring(position + embedType.length)
-        this.setState({ comment: comment })
+        this.setState({ comment: comment }, () => {
+            this._inputTextarea.setSelectionRange(position + ref.length, position + ref.length)
+            this._inputTextarea.scrollTop = textareaScrollTop
+        })
+
+        if (this.props.onChange) {
+            this.props.onChange(comment)
+        }
     }
 
     render() {
@@ -160,19 +187,24 @@ class SmartTextarea extends React.Component<Props, State>
             )
         }
 
+        const rowsMax = this.props.rowsMax === false ? undefined : (this.props.rowsMax || 8)
+
         return (
-            <div>
+            <div className={classes.root}>
                 <TextField
                     value={this.state.comment}
                     placeholder={this.props.placeholder}
                     fullWidth
                     multiline
+                    variant={this.props.variant || 'standard'}
                     rows={this.props.rows || 3}
-                    rowsMax={this.props.rowsMax || 8}
+                    rowsMax={rowsMax}
                     onChange={this.handleChange}
                     onKeyUp={this.handleKeyPress}
                     className={classes.textField}
+                    classes={this.props.textFieldClasses}
                     inputRef={x => this._inputTextarea = x}
+                    InputProps={this.props.InputProps}
                 />
                 <FormattingHelp />
 
@@ -192,11 +224,15 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    onSubmit: () => void
-
+    onChange?: (value: string) => void
+    onSubmit?: () => void
+    initialContents?: string
     rows?: number
-    rowsMax?: number
+    rowsMax?: number|false
     placeholder?: string
+    variant?: 'filled'|'standard'|'outlined'
+    InputProps?: InputProps
+    textFieldClasses?: any
 }
 
 interface StateProps {
@@ -215,9 +251,11 @@ interface State {
     anchorEl: any
     position: number
     embedType: string | null
+    textareaScrollTop: number
 }
 
 const styles = (theme: Theme) => createStyles({
+    root: {}, // for overriding
     textField: {
         flexGrow: 1,
         padding: theme.spacing.unit,
@@ -237,13 +275,17 @@ const styles = (theme: Theme) => createStyles({
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
     const repoID = getRepoID(ownProps.uri)
-    const uriStr = uriToString(ownProps.uri)
+    const repoURIStr = uriToString(
+        omit(ownProps.uri, 'filename') as URI
+    )
 
-    const commitList = state.repo.commitListsByURI[uriStr] || []
+    console.log('STA', {commitListsByURI: state.repo.commitListsByURI, repoURIStr, uri: ownProps.uri})
+
+    const commitList = state.repo.commitListsByURI[repoURIStr] || []
     const currentHEADCommit = commitList.length > 0 ? commitList[0] : undefined
 
     return {
-        files: state.repo.filesByURI[uriStr],
+        files: state.repo.filesByURI[repoURIStr],
         discussionIDs: state.discussion.discussionsByRepo[repoID],
         discussions: state.discussion.discussions,
         currentHEADCommit,

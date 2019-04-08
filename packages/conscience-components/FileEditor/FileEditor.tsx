@@ -1,3 +1,4 @@
+import omit from 'lodash/omit'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
@@ -48,6 +49,8 @@ class FileEditor extends React.Component<Props, State>
             Editor = editors[0].editor
         }
 
+        const pluginClasses = omit(classes, 'root', 'toolbar', 'editorPicker', 'editorPickerVisible', 'editorPickerIcon', 'editorPickerSelect', 'editorPickerMenu')
+
         return (
             <div className={classes.root}>
                 <div className={classes.toolbar}>
@@ -85,7 +88,7 @@ class FileEditor extends React.Component<Props, State>
                     <Editor
                         uri={this.props.uri}
                         isNewFile={this.props.isNewFile}
-                        classes={classes}
+                        classes={pluginClasses}
                     />
                 </div>
             </div>
@@ -132,6 +135,7 @@ const styles = (theme: Theme) => createStyles({
     },
     toolbar: {
         display: 'flex',
+        height: 50,
     },
     breadcrumbs: {
         flexGrow: 1,

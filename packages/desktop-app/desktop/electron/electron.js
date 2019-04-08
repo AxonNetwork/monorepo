@@ -155,8 +155,13 @@ function getEnv() {
 }
 
 function log(file, label, msg) {
-    const logDir = app.getPath('logs')
-    fs.appendFileSync(path.join(logDir, file + '.log', '[' + label + '] ' + msg + '\n')
+    let logDir
+    try {
+        logDir = app.getPath('logs')
+    } catch (err) {
+        logDir = app.getPath('home')
+    }
+    fs.appendFileSync(path.join(logDir, file) + '.log', '[' + label + '] ' + msg + '\n')
 }
 
 let isKilled = false

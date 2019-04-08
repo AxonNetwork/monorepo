@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'conscience-components/RenderMarkdown'
 import FormattingHelp from 'conscience-components/FormattingHelp'
+import SmartTextarea from 'conscience-components/SmartTextarea'
 import { selectFile } from 'conscience-components/navigation'
 import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
@@ -26,8 +27,6 @@ class MarkdownEditor extends React.Component<Props, State>
             error: undefined,
         }
     }
-
-    _inputText: HTMLTextAreaElement | null = null
 
     render() {
         const { classes } = this.props
@@ -49,15 +48,13 @@ class MarkdownEditor extends React.Component<Props, State>
 
                 <div className={classes.columnContainer}>
                     <div className={classes.textareaWrapper}>
-                        <TextField
-                            multiline
-                            fullWidth
+                        <SmartTextarea
+                            uri={this.props.uri}
+                            initialContents={this.props.initialContents}
                             rows={1}
+                            rowsMax={false}
                             variant="outlined"
-                            value={this.state.currentContents}
                             onChange={this.onChangeText}
-                            inputRef={x => this._inputText = x}
-                            classes={{ root: classes.textareaRoot }}
                             InputProps={{
                                 margin: 'none',
                                 classes: {
@@ -65,8 +62,9 @@ class MarkdownEditor extends React.Component<Props, State>
                                     inputMultiline: classes.textareaRoot,
                                 }
                             }}
+                            classes={{ root: classes.textareaRoot }}
+                            textFieldClasses={{ root: classes.textareaRoot }}
                         />
-                        <FormattingHelp />
                     </div>
 
                     <div className={classes.renderedWrapper}>
@@ -107,11 +105,8 @@ class MarkdownEditor extends React.Component<Props, State>
         selectFile(uri, FileMode.View)
     }
 
-    onChangeText() {
-        if (!this._inputText) {
-            return
-        }
-        this.setState({ currentContents: this._inputText.value })
+    onChangeText(value: string) {
+        this.setState({ currentContents: value })
     }
 }
 
@@ -134,7 +129,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100vh - 192px)',
+        height: 'calc(100vh - 222px)',
         paddingBottom: 30,
     },
     toolbar: {
