@@ -1,15 +1,16 @@
 
 # v0.0.5
 
-- webapp
-- researcher profile pages
-- organization pages
-- organization showcase pages
+- Webapp
+- Researcher profile pages
+- Organizations
+- Organization showcase pages
 - Git is now built-in
-- transfers are much faster
-- full-text search
-- "large file" mode
-- plugins
-- spreadsheet editing
+- Transfers are much faster
+- Full-text search
+- "Large file" mode (more efficient version control + transfer for huge files)
+- Plugins
+- Spreadsheet editing
+- Kanban/Trello boards
 
 
