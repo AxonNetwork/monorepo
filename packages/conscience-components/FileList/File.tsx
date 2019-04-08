@@ -45,7 +45,15 @@ class File extends React.Component<Props, State>
         if (this.state.mergeConflict) {
             selectFile(this.props.uri, FileMode.ResolveConflict)
         } else {
-            selectFile(this.props.uri, FileMode.View)
+            // If we have one or more editors, but no viewers (like with a Kanban board), automatically
+            // navigate to the editor.
+            const numViewers = filetypes.getViewers(this.props.uri.filename!).length
+            const numEditors = filetypes.getEditors(this.props.uri.filename!).length
+            if (numViewers === 0 && numEditors > 0) {
+                selectFile(this.props.uri, FileMode.Edit)
+            } else {
+                selectFile(this.props.uri, FileMode.View)
+            }
         }
     }
 

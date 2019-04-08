@@ -45,7 +45,7 @@ onPluginsReady(() => {
 
 // Get the normalized extension for the given filename
 export function ext(filename: string) {
-    return path.extname(filename).toLowerCase().substring(1)
+    return path.extname(filename || '').toLowerCase().substring(1)
 }
 
 export function getType(filename: string) {

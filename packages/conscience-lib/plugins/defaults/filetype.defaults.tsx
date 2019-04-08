@@ -4,6 +4,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment'
 import SubjectIcon from '@material-ui/icons/Subject'
 import ImageIcon from '@material-ui/icons/Image'
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile'
+import ViewWeekIcon from '@material-ui/icons/ViewWeek'
 
 function AssessmentIconColored() {
     return <AssessmentIcon style={{ fill: '#61a961' }} />
@@ -48,5 +49,7 @@ export default {
         { extensions: ['tif', 'tiff'], type: 'image', iconComponent: ImageIconColored, isTextFile: false, viewers: ['img-viewer'], editors: [] },
 
         { extensions: ['pdf'], type: 'pdf', iconComponent: InsertDriveFileIconColored, isTextFile: false, viewers: ['pdf-viewer'], editors: [] },
+
+        { extensions: ['kanban'], type: 'kanban', iconComponent: ViewWeekIcon, isTextFile: true, viewers: [], editors: ['kanban-editor'] },
     ]
 }
