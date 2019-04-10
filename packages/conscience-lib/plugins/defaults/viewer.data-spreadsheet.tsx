@@ -17,49 +17,65 @@ class SpreadsheetViewerPlugin extends React.Component<Props, State>
         const data = await getFileContents(uri, { as: 'buffer' })
         const workbook = XLSX.read(data, { type: 'buffer' })
         const sheet = workbook.Sheets[Object.keys(workbook.Sheets)[0]]
-        let j = XLSX.utils.sheet_to_json(sheet, { header: 1 })
-        j = j.map((row: any) => {
-            return row.map((cell: string) => {
-                return { text: cell }
-            })
-        })
-        console.log('json sheet', j)
 
+        const dataAsArray = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any
 
-        new Spreadsheet(this._container).loadData({
-            // freeze: [2, 2],
+        const rows = {} as any
+        for (let i = 0; i < dataAsArray.length; i++) {
+            const cells = {} as any
+            for (let j = 0; j < dataAsArray[i].length; j++) {
+                cells[j] = { text: dataAsArray[i][j] }
+            }
+
+            rows[i] = { cells }
+        }
+
+        new Spreadsheet(this._container, {
+            showToolbar: false,
+            showGrid: true,
+            view: {
+                height: () => this._container.clientHeight,
+                width: () => this._container.clientWidth,
+            },
+            // row: {
+            //     len: 100,
+            //     height: 25,
+            // },
+            // col: {
+            //     len: 26,
+            //     width: 100,
+            //     indexWidth: 60,
+            //     minWidth: 60,
+            // },
+            style: {
+                bgcolor: '#ffffff',
+                align: 'left',
+                valign: 'middle',
+                textwrap: false,
+                strike: false,
+                underline: false,
+                color: '#0a0a0a',
+                font: {
+                    name: 'Helvetica',
+                    size: 10,
+                    bold: false,
+                    italic: false,
+                },
+            },
+        }).loadData({
             borders: [
                 ['thin', '#0366d6'],
             ],
             styles: [
                 { bgcolor: '#f4f5f8', wrapText: true, color: '#900b09', bbi: 0, bti: 0, bri: 0, bli: 0 },
             ],
-            // merges: [
-            //     [[2, 2], [3, 3]],
-            // ],
-            cellmm: j,
-            // {
-            //     1: {
-            //         0: { text: 'testingtesttestetst' },
-            //         2: { text: 'testing' },
-            //     },
-            //     2: {
-            //         0: { text: 'render', si: 0 },
-            //         1: { text: 'Hello' },
-            //         2: { text: 'haha', merge: [1, 1] },
-            //         3: { text: 'overlayerll' },
-            //     },
-            //     8: {
-            //         8: { text: 'border test', si: 0 },
-            //     },
-            // },
+            rows,
         })
     }
 
     render() {
-        // const extension = this.props.uri.filename ? filetypes.ext(this.props.uri.filename) : 'csv'
         return (
-            <div ref={x => this._container = x}></div>
+            <div ref={x => this._container = x} style={{ height: 'calc(100vh - 230px)' }}></div>
         )
     }
 }
