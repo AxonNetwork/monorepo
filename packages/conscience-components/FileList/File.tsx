@@ -49,10 +49,12 @@ class File extends React.Component<Props, State>
             // navigate to the editor.
             const numViewers = filetypes.getViewers(this.props.uri.filename!).length
             const numEditors = filetypes.getEditors(this.props.uri.filename!).length
-            if (numViewers === 0 && numEditors > 0) {
-                selectFile(this.props.uri, FileMode.Edit)
-            } else {
+            if (this.props.file.type === 'folder') {
                 selectFile(this.props.uri, FileMode.View)
+            } else if (numEditors === 0 && numViewers > 0) {
+                selectFile(this.props.uri, FileMode.View)
+            } else {
+                selectFile(this.props.uri, FileMode.Edit)
             }
         }
     }
