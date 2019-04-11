@@ -4,10 +4,10 @@ import { connect } from 'react-redux'
 import { RouteComponentProps } from 'react-router'
 import FileList from 'conscience-components/FileList'
 import Breadcrumbs from 'conscience-components/Breadcrumbs'
-import { H5 } from 'conscience-components/Typography/Headers'
+// import { H5 } from 'conscience-components/Typography/Headers'
 import SecuredText from 'conscience-components/SecuredText'
 import FileViewer from 'conscience-components/FileViewer'
-import CreateDiscussion from 'conscience-components/CreateDiscussion'
+// import CreateDiscussion from 'conscience-components/CreateDiscussion'
 import { IGlobalState } from 'conscience-components/redux'
 import { getURIFromParams } from 'conscience-components/env-specific'
 import { IRepoFile, URI } from 'conscience-lib/common'
@@ -52,13 +52,13 @@ class RepoFilesPage extends React.Component<Props>
                         canEdit
                         canOpen
                     />
-                    <div className={classes.createDiscussion}>
+                    {/*<div className={classes.createDiscussion}>
                         <H5>Start a discussion on {filename}</H5>
                         <CreateDiscussion
                             uri={fileURI}
                             attachedTo={filename}
                         />
-                    </div>
+                    </div>*/}
                 </div>
             </div>
         )
