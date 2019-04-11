@@ -16,6 +16,7 @@ import { IUser, URI } from 'conscience-lib/common'
 class CreateDiscussion extends React.Component<Props, State>
 {
     state = {
+        newCommentText: '',
         error: '',
     }
 
@@ -40,6 +41,10 @@ class CreateDiscussion extends React.Component<Props, State>
         }
     }
 
+    onChangeNewCommentText = (newCommentText: string) => {
+        this.setState({ newCommentText })
+    }
+
     render() {
         const { user, classes } = this.props
 
@@ -60,8 +65,9 @@ class CreateDiscussion extends React.Component<Props, State>
                     <SmartTextarea
                         uri={this.props.uri}
                         placeholder="Start the discussion"
+                        value={this.state.newCommentText}
                         rows={3}
-                        innerRef={(x: any) => this._inputComment = x}
+                        onChange={this.onChangeNewCommentText}
                         onSubmit={this.onSubmit}
                     />
                     <Button color="secondary" variant="contained" onClick={this.onSubmit}>
@@ -75,6 +81,7 @@ class CreateDiscussion extends React.Component<Props, State>
 }
 
 interface State {
+    newCommentText: string
     error: string
 }
 

@@ -11,7 +11,7 @@ import { selectFile } from 'conscience-components/navigation'
 
 
 @autobind
-class MarkdownEditorPlugin extends React.Component<Props>
+class MarkdownEditorPlugin extends React.Component<Props, State>
 {
     state = {
         fileContents: null,
@@ -26,11 +26,15 @@ class MarkdownEditorPlugin extends React.Component<Props>
         return (
             <MarkdownEditor
                 uri={this.props.uri}
-                initialContents={fileContents}
-                saveFileContents={this.saveFileContents}
-                fileExistsOnDisk={!this.props.isNewFile}
+                value={fileContents}
+                onChange={this.onChange}
             />
         )
+    }
+
+    onChange = (value: string) => {
+        this.setState({ fileContents: value })
+        this.props.setFileModified(true)
     }
 
     componentDidMount() {
@@ -60,7 +64,7 @@ class MarkdownEditorPlugin extends React.Component<Props>
         }
 
         try {
-            const fileContents = await getFileContents(this.props.uri)
+            const fileContents = (await getFileContents(this.props.uri)) as string
             this.setState({ fileContents })
         } catch (error) {
             this.setState({ fileContents: null, error })
@@ -73,6 +77,13 @@ class MarkdownEditorPlugin extends React.Component<Props>
             selectFile(this.props.uri, FileMode.Edit)
         }
     }
+
+    onClickSave = () => {
+        console.log('markdown editor onClickSave', this.state.fileContents)
+        if (this.state.fileContents) {
+            this.saveFileContents(this.state.fileContents)
+        }
+    }
 }
 
 type Props = OwnProps & { classes: any }
@@ -80,6 +91,11 @@ type Props = OwnProps & { classes: any }
 interface OwnProps {
     uri: URI
     isNewFile: boolean
+    setFileModified: (modified: boolean) => void
+}
+
+interface State {
+    fileContents: string|null
 }
 
 const styles = () => createStyles({
@@ -88,6 +104,7 @@ const styles = () => createStyles({
 export default {
     pluginType: 'file editor',
     name: 'markdown-editor',
-    humanName: 'Default Markdown editor',
+    humanName: 'Markdown editor',
     editor: withStyles(styles)(MarkdownEditorPlugin),
+    showSaveButton: true,
 }

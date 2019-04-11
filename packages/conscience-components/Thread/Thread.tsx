@@ -26,12 +26,16 @@ class Thread extends React.Component<Props, State>
 {
     _intervalID: any | undefined // Timer ID, can't get Typescript to accept this
     _commentRefs = {} as { [commentID: string]: { created: number, ref: any } }
-    _inputComment!: any
+    _inputComment: {
+        setSelectionRange(start: number, end: number): void
+        focus(): void
+    } | null = null
     _bottomDiv: HTMLDivElement | null = null
 
     state = {
         createCommentError: undefined,
         didInitialScroll: false,
+        newCommentText: '',
     }
 
     componentDidMount() {
@@ -91,20 +95,19 @@ class Thread extends React.Component<Props, State>
     }
 
     async onClickCreateComment() {
-        const comment = this._inputComment.getValue()
-        if (comment.length === 0) {
+        if (this.state.newCommentText.length === 0) {
             return
         }
+
         await this.props.createComment({
             uri: this.props.uri,
             discussionID: this.props.discussionID,
-            text: comment,
+            text: this.state.newCommentText,
             callback: (err?: Error) => {
                 if (err) {
                     this.setState({ createCommentError: err.toString() })
                 } else {
-                    this._inputComment.setValue('')
-                    this.setState({ createCommentError: undefined })
+                    this.setState({ newCommentText: '', createCommentError: undefined })
                 }
             },
         })
@@ -171,6 +174,8 @@ class Thread extends React.Component<Props, State>
                                 <SmartTextarea
                                     uri={this.props.uri}
                                     placeholder="Write your comment"
+                                    value={this.state.newCommentText}
+                                    onChange={this.onChangeNewCommentText}
                                     rows={3}
                                     innerRef={(x: any) => this._inputComment = x}
                                     onSubmit={this.onClickCreateComment}
@@ -189,23 +194,33 @@ class Thread extends React.Component<Props, State>
         )
     }
 
+    onChangeNewCommentText = (newCommentText: string) => {
+        this.setState({ newCommentText })
+    }
+
     onClickReplyLink(commentID: string) {
-        const currentValue = this._inputComment.getValue()
-        if (currentValue.trim().length > 0) {
-            this._inputComment.setValue(currentValue + ` @comment:[${commentID}] `)
-        } else {
-            this._inputComment.setValue(currentValue + `@comment:[${commentID}] `)
+        if (!this._inputComment) {
+            return
         }
 
-        // move cursor to end of box
-        if (this._inputComment.setSelectionRange) {
-            this._inputComment.setSelectionRange(currentValue.length, currentValue.length)
-        }
+        const currentValue = this.state.newCommentText
+        const newValue = currentValue.trim().length > 0
+            ? currentValue + ` @comment:[${commentID}] `
+            : currentValue + `@comment:[${commentID}] `
 
-        if (this._bottomDiv) {
-            this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
-            setTimeout(() => this._inputComment.focus(), 1000)
-        }
+        this.setState({ newCommentText: newValue }, () => {
+            setTimeout(() => {
+                // move cursor to end of box
+                if (this._inputComment.setSelectionRange) {
+                    this._inputComment.setSelectionRange(newValue.length, newValue.length)
+                }
+
+                if (this._bottomDiv) {
+                    this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
+                    setTimeout(() => this._inputComment.focus(), 1000)
+                }
+            }, 0)
+        })
     }
 }
 
@@ -235,6 +250,7 @@ interface DispatchProps {
 interface State {
     createCommentError: string | undefined
     didInitialScroll: boolean
+    newCommentText: string
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -262,11 +278,14 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        alignItems: 'center',
     },
     comments: {
         overflow: 'auto',
         flexGrow: 1,
         backgroundColor: '#f7f7f76b',
+        maxWidth: 660,
+        width: '100%',
     },
     createCommentError: {
         fontSize: '0.9rem',

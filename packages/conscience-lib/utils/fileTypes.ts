@@ -1,11 +1,11 @@
 import path from 'path'
 import flatMap from 'lodash/flatMap'
 import { getPlugins, onPluginsReady } from '../plugins'
-import { IFileType, FileViewerComponent, IFileTypePlugin, IFileViewerPlugin, FileEditorComponent, IFileEditorPlugin } from '../plugins/types'
+import { IFileType, IFileTypePlugin, IFileViewerPlugin, IFileEditorPlugin } from '../plugins/types'
 
 export let filetypes: { [extension: string]: IFileType }
-export let fileViewers: { [name: string]: { humanName: string, name: string, viewer: FileViewerComponent, widthMode: 'full' | 'breakpoints' | 'unset' } }
-export let fileEditors: { [name: string]: { humanName: string, name: string, editor: FileEditorComponent } }
+export let fileViewers: { [name: string]: IFileViewerPlugin }
+export let fileEditors: { [name: string]: IFileEditorPlugin }
 
 onPluginsReady(() => {
     // register file types from plugins
@@ -22,23 +22,14 @@ onPluginsReady(() => {
     const viewerPlugins = getPlugins('file viewer') as IFileViewerPlugin[]
     fileViewers = {}
     for (let plugin of viewerPlugins) {
-        fileViewers[plugin.name] = {
-            viewer: plugin.viewer,
-            name: plugin.name,
-            humanName: plugin.humanName,
-            widthMode: plugin.widthMode,
-        }
+        fileViewers[plugin.name] = { ...plugin }
     }
 
     // register file editors from plugins
     const editorPlugins = getPlugins('file editor') as IFileEditorPlugin[]
     fileEditors = {}
     for (let plugin of editorPlugins) {
-        fileEditors[plugin.name] = {
-            editor: plugin.editor,
-            name: plugin.name,
-            humanName: plugin.humanName,
-        }
+        fileEditors[plugin.name] = { ...plugin }
     }
 })
 

@@ -1,4 +1,5 @@
 import omit from 'lodash/omit'
+import pickBy from 'lodash/pickBy'
 import fromPairs from 'lodash/fromPairs'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -19,26 +20,14 @@ import * as filetypes from 'conscience-lib/utils/fileTypes'
 @autobind
 class SmartTextarea extends React.Component<Props, State>
 {
-    constructor(props: Props) {
-        super(props)
-        this.state = {
-            comment: props.initialContents || '',
-            anchorEl: null,
-            embedType: null,
-            position: 0,
-            textareaScrollTop: 0,
-        }
+    state = {
+        anchorEl: null,
+        embedType: null,
+        position: 0,
+        textareaScrollTop: 0,
     }
 
     _inputTextarea: HTMLTextAreaElement | null = null
-
-    getValue() {
-        return this.state.comment
-    }
-
-    setValue(value: string) {
-        this.setState({ comment: value })
-    }
 
     focus() {
         if (this._inputTextarea) {
@@ -46,12 +35,18 @@ class SmartTextarea extends React.Component<Props, State>
         }
     }
 
-    handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
-        if (event.key === 'Enter' && event.shiftKey && !!this.props.onSubmit) {
-            this.props.onSubmit()
-            return
+    setSelectionRange = (start: number, end: number) => {
+        if (this._inputTextarea) {
+            this._inputTextarea.setSelectionRange(start, end)
         }
     }
+
+    // handleKeyPress(event: React.KeyboardEvent<HTMLDivElement>) {
+    //     if (event.key === 'Enter' && event.shiftKey && !!this.props.onSubmit) {
+    //         this.props.onSubmit()
+    //         return
+    //     }
+    // }
 
     handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
         const text = event.target.value
@@ -71,13 +66,11 @@ class SmartTextarea extends React.Component<Props, State>
         }
 
         const anchorEl = event.target
-        const comment = event.target.value
         const textareaScrollTop = this._inputTextarea ? this._inputTextarea.scrollTop : 0
 
         if (lastToken === '@file') {
             this.setState({
                 anchorEl,
-                comment,
                 position: cursor - 5,
                 embedType: '@file',
                 textareaScrollTop,
@@ -85,7 +78,6 @@ class SmartTextarea extends React.Component<Props, State>
         } else if (lastToken === '@image') {
             this.setState({
                 anchorEl,
-                comment,
                 position: cursor - 6,
                 embedType: '@image',
                 textareaScrollTop,
@@ -93,7 +85,6 @@ class SmartTextarea extends React.Component<Props, State>
         } else if (lastToken === '@discussion') {
             this.setState({
                 anchorEl,
-                comment,
                 position: cursor - 11,
                 embedType: '@discussion',
                 textareaScrollTop,
@@ -101,16 +92,13 @@ class SmartTextarea extends React.Component<Props, State>
         } else {
             this.setState({
                 anchorEl: null,
-                comment,
                 position: 0,
                 embedType: null,
                 textareaScrollTop: 0,
             })
         }
 
-        if (this.props.onChange) {
-            this.props.onChange(event.target.value)
-        }
+        this.props.onChange(event.target.value)
     }
 
     handleClose(embedType?: string, refTarget?: string) {
@@ -126,16 +114,15 @@ class SmartTextarea extends React.Component<Props, State>
         }
         const ref = embedType + ':[' + refTarget + '] '
         const position = this.state.position
-        let comment = this.state.comment
-        comment = comment.substring(0, position) + ref + comment.substring(position + embedType.length)
-        this.setState({ comment: comment }, () => {
+        let value = this.props.value
+        value = value.substring(0, position) + ref + value.substring(position + embedType.length)
+
+        this.props.onChange(value)
+
+        setTimeout(() => {
             this._inputTextarea.setSelectionRange(position + ref.length, position + ref.length)
             this._inputTextarea.scrollTop = textareaScrollTop
-        })
-
-        if (this.props.onChange) {
-            this.props.onChange(comment)
-        }
+        }, 0)
     }
 
     render() {
@@ -192,7 +179,7 @@ class SmartTextarea extends React.Component<Props, State>
         return (
             <div className={classes.root}>
                 <TextField
-                    value={this.state.comment}
+                    value={this.props.value}
                     placeholder={this.props.placeholder}
                     fullWidth
                     multiline
@@ -200,7 +187,7 @@ class SmartTextarea extends React.Component<Props, State>
                     rows={this.props.rows || 3}
                     rowsMax={rowsMax}
                     onChange={this.handleChange}
-                    onKeyUp={this.handleKeyPress}
+                    onKeyUp={/*this.handleKeyPress*/ undefined}
                     className={classes.textField}
                     classes={this.props.textFieldClasses}
                     inputRef={x => this._inputTextarea = x}
@@ -224,9 +211,9 @@ type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    onChange?: (value: string) => void
+    onChange: (value: string) => void
     onSubmit?: () => void
-    initialContents?: string
+    value?: string
     rows?: number
     rowsMax?: number|false
     placeholder?: string
@@ -279,13 +266,11 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         omit(ownProps.uri, 'filename') as URI
     )
 
-    console.log('STA', {commitListsByURI: state.repo.commitListsByURI, repoURIStr, uri: ownProps.uri})
-
     const commitList = state.repo.commitListsByURI[repoURIStr] || []
     const currentHEADCommit = commitList.length > 0 ? commitList[0] : undefined
 
     return {
-        files: state.repo.filesByURI[repoURIStr],
+        files: state.repo.filesByURI[repoURIStr] ? pickBy(state.repo.filesByURI[repoURIStr], file => file.type !== 'folder') : undefined,
         discussionIDs: state.discussion.discussionsByRepo[repoID],
         discussions: state.discussion.discussions,
         currentHEADCommit,

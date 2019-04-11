@@ -1,29 +1,40 @@
+import path from 'path'
 import omit from 'lodash/omit'
 import React from 'react'
-import classnames from 'classnames'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import Tooltip from '@material-ui/core/Tooltip'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select'
 import Input from '@material-ui/core/Input'
+import CancelIcon from '@material-ui/icons/Cancel'
+import SaveIcon from '@material-ui/icons/Save'
 import SettingsIcon from '@material-ui/icons/Settings'
-import { URI } from 'conscience-lib/common'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import { FileEditorComponent } from 'conscience-lib/plugins/types'
+import { IFileEditorPlugin, FileEditorComponent } from 'conscience-lib/plugins/types'
 
 
 @autobind
 class FileEditor extends React.Component<Props, State>
 {
     state = {
-        hovering: false,
         editorName: undefined,
         editorPickerOpen: false,
+        fileModified: false,
     }
 
+    // We have to handle both of these because sometimes components are wrapped in HOCs (like
+    // withStyles, withRouter) that offer `innerRef` as a way of getting to the inner component, and
+    // sometimes they don't.
+    _editor:      FileEditorComponent|null = null
+    _editorInner: FileEditorComponent|null = null
+
     render() {
-        const { classes, showEditorPicker } = this.props
+        const { classes, showToolbar } = this.props
         if (!this.props.uri.filename) {
             return null
         }
@@ -38,93 +49,143 @@ class FileEditor extends React.Component<Props, State>
         }
 
         const editorName = this.state.editorName || editors[0].name
-        let Editor: FileEditorComponent | undefined
-        for (let v of editors) {
-            if (v.name === editorName) {
-                Editor = v.editor
+        let plugin: IFileEditorPlugin|undefined
+        for (let p of editors) {
+            if (p.name === editorName) {
+                plugin = p
                 break
             }
         }
-        if (Editor === undefined) {
-            Editor = editors[0].editor
+        if (!plugin) {
+            plugin = editors[0]
         }
+        const Editor = plugin.editor
 
         const pluginClasses = omit(classes, 'root', 'toolbar', 'editorPicker', 'editorPickerVisible', 'editorPickerIcon', 'editorPickerSelect', 'editorPickerMenu')
+        const showOpenWithSystemEditorButton = this.props.uri.type === URIType.Local
 
         return (
             <div className={classes.root}>
-                <div className={classes.toolbar}>
+                {showToolbar &&
+                    <div className={classes.toolbar}>
+                        {plugin.showSaveButton &&
+                            <Tooltip title="Save">
+                                <Button color="secondary" onClick={this.onClickSave} disabled={!this.state.fileModified}>
+                                    <SaveIcon />
+                                </Button>
+                            </Tooltip>
+                        }
 
-                    {showEditorPicker &&
-                        <div className={classnames(classes.editorPicker, { [classes.editorPickerVisible]: true /*this.state.hovering*/ })}>
-                            <Select
-                                value={editorName}
-                                renderValue={() => (
-                                    <Button color="secondary"
-                                        onMouseEnter={() => this.onHoverEditor(true)}
-                                        onMouseLeave={() => this.onHoverEditor(false)}
-                                    >
-                                        <SettingsIcon className={classes.editorPickerIcon} /> Editor
-                                    </Button>
-                                )}
-                                input={<Input disableUnderline={true} />}
-                                onChange={this.onChangeEditor}
-                                onMouseEnter={() => this.onHoverEditor(true)}
-                                onMouseLeave={() => this.onHoverEditor(false)}
-                                className={classes.editorPickerSelect}
-                                IconComponent={() => null}
-                                classes={{ select: classes.editorPickerMenu }}
-                            >
-                                {editors.map(editor => (
-                                    <MenuItem value={editor.name}>
-                                        {editor.humanName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-                    }
-                </div>
-                <div onMouseEnter={() => this.onHoverEditor(true)} onMouseLeave={() => this.onHoverEditor(false)}>
-                    <Editor
-                        uri={this.props.uri}
-                        isNewFile={this.props.isNewFile}
-                        classes={pluginClasses}
-                    />
-                </div>
+                        <Tooltip title="Close">
+                            <Button color="secondary" onClick={this.onClickClose}>
+                                <CancelIcon />
+                            </Button>
+                        </Tooltip>
+
+                        {showOpenWithSystemEditorButton &&
+                            <Tooltip title="Open with another app on your computer">
+                                <Button color="secondary" onClick={this.onClickOpenWithSystemEditor}>
+                                    <OpenInNewIcon />
+                                </Button>
+                            </Tooltip>
+                        }
+
+                        {editors.length > 1 &&
+                            <div className={classes.editorPicker}>
+                                <Select
+                                    value={editorName}
+                                    renderValue={() => (
+                                        <Button color="secondary">
+                                            <SettingsIcon className={classes.editorPickerIcon} />
+                                        </Button>
+                                    )}
+                                    input={<Input disableUnderline={true} />}
+                                    onChange={this.onChangeEditor}
+                                    IconComponent={() => null}
+                                    className={classes.editorPickerSelect}
+                                    classes={{ select: classes.editorPickerMenu }}
+                                >
+                                    {editors.map(editor => (
+                                        <MenuItem value={editor.name}>
+                                            {editor.humanName}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <Editor
+                    uri={this.props.uri}
+                    isNewFile={this.props.isNewFile}
+                    setFileModified={this.setFileModified}
+                    classes={pluginClasses}
+                    ref={(x: FileEditorComponent) => this._editor = x}
+                    innerRef={x => this._editorInner = x}
+                />
             </div>
         )
     }
 
-    onClickOpenEditorPicker() {
+    onClickOpenEditorPicker = () => {
         this.setState({ editorPickerOpen: !this.state.editorPickerOpen })
     }
 
-    onHoverEditor(hovering: boolean) {
-        this.setState({ hovering })
-    }
-
-    onChangeEditor(evt: React.ChangeEvent<HTMLSelectElement>) {
+    onChangeEditor = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+        // TODO: check this.state.fileModified
         this.setState({
             editorName: evt.target.value,
             editorPickerOpen: false,
         })
     }
 
+    setFileModified = (fileModified: boolean) => {
+        if (this.state.fileModified !== fileModified) {
+            this.setState({ fileModified })
+        }
+    }
+
+    onClickSave = () => {
+        if (this._editor && this._editor.onClickSave) {
+            this._editor.onClickSave()
+            this.setFileModified(false)
+
+        } else if (this._editorInner && this._editorInner.onClickSave) {
+            this._editorInner.onClickSave()
+            this.setFileModified(false)
+        }
+    }
+
+    onClickClose = () => {
+        // TODO: check this.state.fileModified
+        this.props.history.go(-1)
+    }
+
+    onClickOpenWithSystemEditor = () => {
+        try {
+            const shell = (window as any).require('electron').shell
+            const { repoRoot = '', filename = '' } = this.props.uri
+            shell.openItem(path.join(repoRoot, filename))
+        } catch (err) {
+            console.error("err opening file ~> ", err)
+        }
+    }
 }
 
 
-interface Props {
+interface Props extends RouteComponentProps {
     uri: URI
     isNewFile: boolean
-    showEditorPicker?: boolean
-    showButtons?: boolean
+    showToolbar?: boolean
+    showSaveButton?: boolean
     classes?: any
 }
 
 interface State {
-    hovering: boolean
     editorName: string | undefined
     editorPickerOpen: boolean,
+    fileModified: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -135,6 +196,7 @@ const styles = (theme: Theme) => createStyles({
     },
     toolbar: {
         display: 'flex',
+        justifyContent: 'flex-end',
         height: 50,
     },
     breadcrumbs: {
@@ -143,19 +205,6 @@ const styles = (theme: Theme) => createStyles({
     editorPicker: {
         width: 'fit-content',
         position: 'absolute',
-        // right: 0,
-        opacity: 0,
-        transition: theme.transitions.create('opacity', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    editorPickerVisible: {
-        opacity: 1,
-        transition: theme.transitions.create('opacity', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
     },
     editorPickerIcon: {
         fill: theme.palette.secondary.main,
@@ -187,4 +236,4 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileEditor)
+export default withStyles(styles)(withRouter(FileEditor))

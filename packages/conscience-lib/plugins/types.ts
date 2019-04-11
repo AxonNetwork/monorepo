@@ -29,13 +29,13 @@ export interface IFileViewerPlugin {
     pluginType: 'file viewer'
     name: string
     humanName: string
-    viewer: FileViewerComponent
+    viewer: FileViewerComponentClass
     widthMode: WidthMode
 }
 
 export type WidthMode = 'full' | 'breakpoints' | 'unset'
 
-export type FileViewerComponent = React.ComponentClass<IFileViewerPluginProps>
+export type FileViewerComponentClass = React.ComponentClass<IFileViewerPluginProps>
 
 export interface IFileViewerPluginProps {
     uri: URI
@@ -51,14 +51,20 @@ export interface IFileEditorPlugin {
     pluginType: 'file editor'
     name: string
     humanName: string
-    editor: FileEditorComponent
+    editor: FileEditorComponentClass
+    showSaveButton: boolean
 }
 
-export type FileEditorComponent = React.ComponentClass<IFileEditorPluginProps>
+export type FileEditorComponentClass = React.ComponentClass<IFileEditorPluginProps>
+
+export type FileEditorComponent = React.Component<IFileEditorPluginProps> & {
+    onClickSave: () => void
+}
 
 export interface IFileEditorPluginProps {
     uri: URI
     isNewFile: boolean
+    setFileModified: (fileModified: boolean) => void
     classes?: any
 }
 

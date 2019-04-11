@@ -171,6 +171,7 @@ type Props = OwnProps & { classes: any }
 interface OwnProps {
     uri: URI
     isNewFile: boolean
+    setFileModified: (modified: boolean) => void
 }
 
 interface State {
@@ -346,4 +347,5 @@ export default {
     name: 'kanban-editor',
     humanName: 'Kanban board',
     editor: withStyles(styles)(KanbanPlugin),
+    showSaveButton: false,
 }

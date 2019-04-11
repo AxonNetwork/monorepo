@@ -49,6 +49,7 @@ class FileLink extends React.Component<Props, State>
                 >
                     <FileViewer
                         uri={uri}
+                        autoHideToolbar
                         classes={{ codeContainer: classes.codeContainer }}
                     />
                 </Popper>

@@ -1,128 +1,102 @@
-import path from 'path'
 import React from 'react'
+import Resizable from 're-resizable'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
-import IconButton from '@material-ui/core/IconButton'
-import CancelIcon from '@material-ui/icons/Cancel'
-import SaveIcon from '@material-ui/icons/Save'
-import TextField from '@material-ui/core/TextField'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'conscience-components/RenderMarkdown'
-import FormattingHelp from 'conscience-components/FormattingHelp'
 import SmartTextarea from 'conscience-components/SmartTextarea'
-import { selectFile } from 'conscience-components/navigation'
-import { FileMode, URI } from 'conscience-lib/common'
+import { URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
+import OverlayScrollbars from 'overlayscrollbars'
 
 
 @autobind
-class MarkdownEditor extends React.Component<Props, State>
+class MarkdownEditor extends React.Component<Props>
 {
-    constructor(props: Props) {
-        super(props)
-        this.state = {
-            currentContents: props.initialContents,
-            contentsOnDisk: props.initialContents,
-            fileExistsOnDisk: props.fileExistsOnDisk || false,
-            error: undefined,
-        }
-    }
+    _renderedWrapper: HTMLDivElement|null = null
+    _textarea: any|null = null
 
     render() {
         const { classes } = this.props
-        const modified = this.state.currentContents !== this.state.contentsOnDisk
 
         return (
             <div className={classes.root}>
-                <div className={classes.toolbar}>
-                    <IconButton
-                        onClick={this.onClickSave}
-                        disabled={!modified}
-                    >
-                        <SaveIcon />
-                    </IconButton>
-                    <IconButton onClick={this.onClickClose}>
-                        <CancelIcon />
-                    </IconButton>
-                </div>
-
                 <div className={classes.columnContainer}>
+
+                    <Resizable
+                        defaultSize={{ width: '50%' }}
+                        enable={{ right: true }}
+                        handleClasses={{ right: classes.resizeHandle }}
+                    >
+                        <div className={classes.renderedWrapper} ref={x => this._renderedWrapper = x}>
+                            <Card>
+                                <CardContent classes={{ root: classes.cardContent }}>
+                                    <RenderMarkdown
+                                        uri={this.props.uri}
+                                        text={this.props.value}
+                                    />
+                                </CardContent>
+                            </Card>
+
+                            {/* Need this or else the bottom of the card gets cut off, despite the padding.  Probably OverlayScrollbars' fault. */}
+                            <div style={{ height: 6 }}></div>
+                        </div>
+                    </Resizable>
+
                     <div className={classes.textareaWrapper}>
                         <SmartTextarea
                             uri={this.props.uri}
-                            initialContents={this.props.initialContents}
+                            value={this.props.value}
                             rows={1}
                             rowsMax={false}
                             variant="outlined"
-                            onChange={this.onChangeText}
+                            onChange={this.props.onChange}
                             InputProps={{
                                 margin: 'none',
                                 classes: {
                                     root: classes.textareaRoot,
                                     inputMultiline: classes.textareaRoot,
-                                }
+                                },
                             }}
                             classes={{ root: classes.textareaRoot }}
                             textFieldClasses={{ root: classes.textareaRoot }}
+                            innerRef={x => this._textarea = x}
                         />
                     </div>
 
-                    <div className={classes.renderedWrapper}>
-                        <Card>
-                            <CardContent>
-                                <RenderMarkdown
-                                    uri={this.props.uri}
-                                    text={this.state.currentContents}
-                                />
-                            </CardContent>
-                        </Card>
-                    </div>
                 </div>
             </div>
         )
     }
 
-    async onClickSave() {
-        try {
-            this.props.saveFileContents(this.state.currentContents)
-            this.setState({ contentsOnDisk: this.state.currentContents })
-        } catch (error) {
-            this.setState({ error })
-            return
+    componentDidMount() {
+        const options = {
+            className: 'os-theme-dark',
+            autoUpdate: true,
+            autoUpdateInterval: 1000,
+            scrollbars: {
+                autoHide: 'scroll',
+                autoHideDelay: 800,
+            },
+            overflowBehavior: {
+                x: 'hidden',
+                y: 'auto'
+            },
         }
+        OverlayScrollbars(this._renderedWrapper, options)
+        // OverlayScrollbars(this._textarea, options)
     }
 
-    onClickClose() {
-        let uri = this.props.uri
-        if (!this.state.fileExistsOnDisk) {
-            const dir = path.dirname(this.props.uri.filename || '')
-            if (dir === '.') {
-                uri = { ...this.props.uri, filename: undefined }
-            } else {
-                uri = { ...this.props.uri, filename: dir }
-            }
-        }
-        selectFile(uri, FileMode.View)
-    }
-
-    onChangeText(value: string) {
-        this.setState({ currentContents: value })
+    onChangeText = (currentContents: string) => {
+        this.setState({ currentContents })
     }
 }
 
 interface Props {
     uri: URI
-    initialContents: string
-    fileExistsOnDisk: boolean
-    saveFileContents: (contents: string) => Promise<void>
+    value: string
+    onChange: (value: string) => void
     classes: any
-}
-
-interface State {
-    currentContents: string
-    contentsOnDisk: string
-    fileExistsOnDisk: boolean
-    error: Error | undefined
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -145,7 +119,6 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
         width: '50%',
         height: '100%',
-        marginRight: 30,
 
         '& textarea': {
             fontFamily: 'Consolas, Monaco, "Courier New", monospace',
@@ -154,19 +127,26 @@ const styles = (theme: Theme) => createStyles({
     },
     renderedWrapper: {
         flexGrow: 1,
-        width: '50%',
+        // width: '50%',
         height: '100%',
-        overflowY: 'scroll'
+        overflowY: 'auto',
+        padding: 4,
+        marginRight: 30,
     },
-    progressContainer: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        marginTop: 256,
+    cardContent: {
+        padding: 32,
     },
-
     textareaRoot: {
         height: '100%',
+    },
+    resizeHandle: {
+        position: 'absolute',
+        userSelect: 'none',
+        width: '20px !important',
+        height: '100%',
+        top: 0,
+        right: '2px !important',
+        cursor: 'col-resize',
     },
 })
 

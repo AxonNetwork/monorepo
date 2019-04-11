@@ -3,6 +3,7 @@ import isEqual from 'lodash/isEqual'
 import React from 'react'
 import classnames from 'classnames'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
+import Tooltip from '@material-ui/core/Tooltip'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select'
@@ -13,7 +14,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import { URI, URIType, FileMode } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
-import { FileViewerComponent, WidthMode } from 'conscience-lib/plugins/types'
+import { FileViewerComponentClass, WidthMode } from 'conscience-lib/plugins/types'
 import { getFileContents } from '../env-specific'
 import { selectFile } from '../navigation'
 
@@ -30,7 +31,7 @@ class FileViewer extends React.Component<Props, State>
 
     render() {
         const { fileContents } = this.state
-        const { classes, showViewerPicker } = this.props
+        const { classes } = this.props
         if (!this.props.uri.filename) {
             return null
         }
@@ -47,7 +48,7 @@ class FileViewer extends React.Component<Props, State>
         }
 
         const viewerName = this.state.viewerName || viewers[0].name
-        let Viewer: FileViewerComponent = viewers[0].viewer
+        let Viewer: FileViewerComponentClass = viewers[0].viewer
         let widthMode: WidthMode = 'unset'
         for (let v of viewers) {
             if (v.name === viewerName) {
@@ -74,36 +75,34 @@ class FileViewer extends React.Component<Props, State>
         const canQuickEdit = this.props.canEdit &&
             this.props.uri.type === URIType.Local &&
             filetypes.getEditors(this.props.uri.filename).length > 0
-        const canOpen = this.props.canOpen && this.props.uri.type === URIType.Local
-        const showButtons = showViewerPicker || canQuickEdit || canOpen
+        const canOpenInSystemViewer = this.props.canOpen && this.props.uri.type === URIType.Local
+        const showViewerPicker = this.props.showViewerPicker && viewers.length > 1
+        const showToolbar = showViewerPicker || canQuickEdit || canOpenInSystemViewer
 
         return (
             <div className={classnames(classes.root, widthClass)}>
-                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)} className={classes.wrapper}>
-                    <Viewer
-                        uri={this.props.uri}
-                        fileContents={fileContents}
-                        classes={classes}
-                    />
-                </div>
-                {showButtons &&
-                    <div className={classnames(classes.buttons, { [classes.buttonsVisible]: this.state.hovering })}>
+                {showToolbar &&
+                    <div className={classnames({
+                        [classes.buttons]: !this.props.autoHideToolbar,
+                        [classes.buttonsAutoHide]: !!this.props.autoHideToolbar,
+                        [classes.buttonsAutoHideVisible]: this.state.hovering,
+                    })}>
                         {canQuickEdit &&
                             <Button color="secondary"
                                 onClick={this.onClickQuickEdit}
                                 onMouseEnter={() => this.onHoverViewer(true)}
                                 onMouseLeave={() => this.onHoverViewer(false)}
                             >
-                                <EditIcon /> Quick Edit
+                                <EditIcon />
                             </Button>
                         }
-                        {canOpen &&
+                        {canOpenInSystemViewer &&
                             <Button color="secondary"
                                 onMouseEnter={() => this.onHoverViewer(true)}
                                 onMouseLeave={() => this.onHoverViewer(false)}
                                 onClick={this.onClickOpenFile}
                             >
-                                <OpenInNewIcon /> Open
+                                <OpenInNewIcon />
                             </Button>
                         }
                         {showViewerPicker &&
@@ -114,7 +113,7 @@ class FileViewer extends React.Component<Props, State>
                                         onMouseEnter={() => this.onHoverViewer(true)}
                                         onMouseLeave={() => this.onHoverViewer(false)}
                                     >
-                                        <SettingsIcon className={classes.viewerPickerIcon} /> Viewer
+                                        <SettingsIcon className={classes.viewerPickerIcon} />
                                     </Button>
                                 )}
                                 input={<Input disableUnderline={true} />}
@@ -134,6 +133,13 @@ class FileViewer extends React.Component<Props, State>
                         }
                     </div>
                 }
+                <div onMouseEnter={() => this.onHoverViewer(true)} onMouseLeave={() => this.onHoverViewer(false)}>
+                    <Viewer
+                        uri={this.props.uri}
+                        fileContents={fileContents}
+                        classes={classes}
+                    />
+                </div>
             </div>
         )
     }
@@ -144,7 +150,6 @@ class FileViewer extends React.Component<Props, State>
 
     onClickOpenFile = () => {
         const uri = this.props.uri
-        console.log('uri', uri)
         if (uri.type !== URIType.Local) {
             return
         }
@@ -208,6 +213,7 @@ interface Props {
     uri: URI
     fallback?: any
     widthMode?: WidthMode
+    autoHideToolbar?: boolean
     showViewerPicker?: boolean
     canEdit?: boolean
     canOpen?: boolean
@@ -241,6 +247,11 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
     },
     buttons: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+    buttonsAutoHide: {
         width: 'fit-content',
         position: 'absolute',
         right: 0,
@@ -251,7 +262,7 @@ const styles = (theme: Theme) => createStyles({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
-    buttonsVisible: {
+    buttonsAutoHideVisible: {
         opacity: 1,
         transition: theme.transitions.create('opacity', {
             easing: theme.transitions.easing.sharp,

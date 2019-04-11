@@ -29,6 +29,7 @@ class RepoHomePage extends React.Component<Props>
                     <FileViewer
                         uri={{ ...this.props.uri, commit: 'HEAD', filename: 'README.md' }}
                         showViewerPicker={false}
+                        autoHideToolbar={true}
                         fallback={(
                             <div className={classes.readmeContainerNoReadme}>
                                 <div className={classes.readmeContainerNoReadmeContents}>

@@ -21,8 +21,7 @@ class RepoEditorPage extends React.Component<Props>
                 <FileEditor
                     uri={this.props.uri}
                     isNewFile={this.props.isNewFile}
-                    showButtons
-                    showEditorPicker
+                    showToolbar
                 />
             </div>
         )
