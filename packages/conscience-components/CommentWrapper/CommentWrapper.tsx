@@ -26,7 +26,7 @@ class CommentWrapper extends React.Component<Props>
                         {username &&
                             <div className={classes.commentHeaderLeft}>
                                 {this.props.showBadge &&
-                                    <Badge classes={{ badge: classes.commentBadge }} badgeContent="" color="secondary">
+                                    <Badge classes={{ badge: classes.commentBadge }} showZero badgeContent="" color="secondary">
                                         <span><strong>{username}</strong> <small>({time})</small></span>
                                     </Badge>
                                 }
@@ -102,6 +102,7 @@ const styles = (theme: Theme) => createStyles({
         width: 9,
         height: 9,
         top: -4,
+        minWidth: 'unset',
     },
     replyLink: {
         textAlign: 'right',

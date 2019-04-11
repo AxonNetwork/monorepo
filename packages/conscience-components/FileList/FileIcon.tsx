@@ -25,7 +25,7 @@ function FileIcon(props: FileIconProps) {
     }
 
     if (status === 'M' || status === '?' || status === 'U') {
-        icon = <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">{icon}</Badge>
+        icon = <Badge classes={{ badge: classes.badge }} showZero badgeContent="" color="secondary">{icon}</Badge>
     }
     return <ListItemIcon>{icon}</ListItemIcon>
 }
@@ -36,6 +36,7 @@ const styles = createStyles({
         width: 8,
         right: -2,
         height: 8,
+        minWidth: 'unset',
     },
 })
 

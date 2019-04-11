@@ -49,7 +49,7 @@ class DiscussionList extends React.Component<Props>
                             onClick={() => this.selectDiscussion(d.discussionID)}
                         >
                             {showBadge &&
-                                <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} badgeContent="" color="secondary">{null}</Badge>
+                                <Badge classes={{ badge: classes.badge }} className={classes.badgeWrapper} showZero badgeContent="" color="secondary">{null}</Badge>
                             }
                             <div className={classes.description}>
                                 <Typography className={classes.heading}>
@@ -159,6 +159,7 @@ const styles = (theme: Theme) => createStyles({
         width: 9,
         height: 9,
         right: 'auto',
+        minWidth: 'unset',
     },
     badgeWrapper: {
         position: 'absolute',

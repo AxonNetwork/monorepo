@@ -40,7 +40,7 @@ class RepoList extends React.Component<Props>
                             onClick={() => selectRepo(uri, RepoPage.Home)}
                         >
                             {isChanged &&
-                                <Badge classes={{ badge: classes.badge }} badgeContent="" color="secondary">
+                                <Badge classes={{ badge: classes.badge }} showZero badgeContent="" color="secondary">
                                     <ListItemText primary={repoID} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                                 </Badge>
                             }
@@ -78,6 +78,7 @@ const styles = (theme: Theme) => createStyles({
         width: 8,
         left: -16,
         height: 8,
+        minWidth: 'unset',
     },
     sidebarItemText: {
         color: 'rgb(212, 212, 212)',
