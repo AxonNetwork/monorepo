@@ -25,7 +25,7 @@ function CodeIconColored() {
 export default {
     pluginType: 'file type',
     fileTypes: [
-        { extensions: ['csv'], type: 'data', iconComponent: AssessmentIconColored, isTextFile: true, viewers: ['spreadsheet-viewer', 'data-viewer', 'code-viewer'], editors: [] },
+        { extensions: ['csv'], type: 'data', iconComponent: AssessmentIconColored, isTextFile: true, viewers: ['spreadsheet-viewer', 'data-viewer', 'code-viewer'], editors: ['spreadsheet-editor'] },
         { extensions: ['xls', 'xlsx'], type: 'data', iconComponent: AssessmentIconColored, isTextFile: true, viewers: ['spreadsheet-viewer'], editors: [] },
 
         { extensions: ['go'], type: 'code', iconComponent: CodeIconColored, isTextFile: true, viewers: ['code-viewer'], editors: [], language: 'go' },
