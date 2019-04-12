@@ -7,15 +7,22 @@ import debounce from 'lodash/debounce'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
 import FormControl from '@material-ui/core/FormControl'
 import SearchIcon from '@material-ui/icons/Search'
 import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
+import Tooltip from '@material-ui/core/Tooltip'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder'
 import BackupIcon from '@material-ui/icons/Backup'
 import FolderIcon from '@material-ui/icons/Folder'
 import { makeTree, sortFiles } from './fileListUtils'
@@ -25,6 +32,7 @@ import { IRepoFile, FileMode, URI } from 'conscience-lib/common'
 import { autobind, repoUriToString } from 'conscience-lib/utils'
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
+import { createFolder } from 'conscience-components/env-specific'
 import { IGlobalState } from 'conscience-components/redux'
 import NewFileDialog from './NewFileDialog'
 
@@ -35,6 +43,7 @@ class FileList extends React.Component<Props, State>
 {
     state = {
         newFileDialogOpen: false,
+        newFolderDialogOpen: false,
         tree: null,
         quickNavOpen: false,
         quickNavQuery: '',
@@ -42,6 +51,7 @@ class FileList extends React.Component<Props, State>
     }
 
     _inputQuickNav: HTMLInputElement | null = null
+    _inputNewFolderName: HTMLInputElement | null = null
 
     componentDidMount() {
         if (this.props.files) {
@@ -121,9 +131,18 @@ class FileList extends React.Component<Props, State>
                     <Breadcrumbs uri={this.props.uri} classes={{ root: classes.breadcrumb }} />
 
                     {this.props.canEditFiles &&
-                        <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
-                            <ControlPointIcon /> New file
-                        </Button>
+                        <Tooltip title="New file">
+                            <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFile}>
+                                <ControlPointIcon />
+                            </Button>
+                        </Tooltip>
+                    }
+                    {this.props.canEditFiles &&
+                        <Tooltip title="New folder">
+                            <Button mini color="secondary" aria-label="New file" onClick={this.onClickNewFolder}>
+                                <CreateNewFolderIcon />
+                            </Button>
+                        </Tooltip>
                     }
                 </div>
 
@@ -172,6 +191,28 @@ class FileList extends React.Component<Props, State>
                     onClickCreate={this.createNewFile}
                 />
 
+                <Dialog
+                    maxWidth={false}
+                    open={this.state.newFolderDialogOpen}
+                    onClose={this.closeNewFolderDialog}
+                >
+                    <DialogTitle>Create new folder</DialogTitle>
+                    <DialogContent>
+                        <form onSubmit={this.createNewFolder}>
+                            <TextField
+                                label="Folder name"
+                                fullWidth
+                                autoFocus
+                                inputRef={x => this._inputNewFolderName = x}
+                            />
+                        </form>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button color="secondary" variant="contained" onClick={this.createNewFolder}>Create</Button>
+                        <Button color="secondary" variant="outlined" onClick={this.closeNewFolderDialog}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+
             </React.Fragment>
         )
     }
@@ -192,11 +233,10 @@ class FileList extends React.Component<Props, State>
 
     onClickNewFile     = () => this.setState({ newFileDialogOpen: true })
     closeNewFileDialog = () => this.setState({ newFileDialogOpen: false })
-
     createNewFile(filename: string) {
         this.closeNewFileDialog()
 
-        if (filename.length === 0) {
+        if (filename.trim().length === 0) {
             return
         }
 
@@ -206,6 +246,37 @@ class FileList extends React.Component<Props, State>
         selectFile({ ...this.props.uri, filename: fullpath }, FileMode.EditNew)
     }
 
+    onClickNewFolder     = () => this.setState({ newFolderDialogOpen: true })
+    closeNewFolderDialog = () => this.setState({ newFolderDialogOpen: false })
+    async createNewFolder(evt?: React.FormEvent) {
+        if (evt) {
+            evt.preventDefault()
+        }
+
+        const filename = this._inputNewFolderName.value
+
+        this.closeNewFolderDialog()
+
+        if (filename.trim().length === 0) {
+            return
+        }
+
+        const basepath = this.props.uri.filename || '.'
+        const fullpath = path.join(basepath, filename)
+        const folderURI = { ...this.props.uri, filename: fullpath }
+
+        try {
+            await createFolder(folderURI)
+        } catch (err) {
+            // ignore "this folder already exists", rethrow anything else
+            if (err.toString().indexOf('EEXIST') === -1) {
+                throw err
+            }
+        }
+
+        selectFile(folderURI, FileMode.View)
+    }
+
     shouldComponentUpdate(nextProps: Props, nextState: State) {
         return !isEqual(this.props.uri, nextProps.uri) ||
             this.props.files !== nextProps.files ||
@@ -213,6 +284,7 @@ class FileList extends React.Component<Props, State>
             this.props.canEditFiles !== nextProps.canEditFiles ||
             this.state.tree !== nextState.tree ||
             this.state.newFileDialogOpen !== nextState.newFileDialogOpen ||
+            this.state.newFolderDialogOpen !== nextState.newFolderDialogOpen ||
             this.state.quickNavOpen !== nextState.quickNavOpen ||
             this.state.quickNavQuery !== nextState.quickNavQuery ||
             this.state.quickNavFileList !== nextState.quickNavFileList
@@ -233,6 +305,7 @@ interface StateProps {
 
 interface State {
     newFileDialogOpen: boolean
+    newFolderDialogOpen: boolean
     tree: any
     quickNavOpen: boolean
     quickNavQuery: string

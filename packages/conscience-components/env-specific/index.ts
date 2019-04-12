@@ -6,6 +6,7 @@ var getRepoID: (uri: URI, state?: IGlobalState) => string
 var getURIFromParams: (params: { repoID?: string, repoHash?: string }, state?: IGlobalState) => URI | undefined
 var getFileContents: (uri: URI, opts?: IGetFileContentsOptions) => Promise<string | Buffer>
 var saveFileContents: (uri: URI, fileContents: string) => Promise<void>
+var createFolder: (uri: URI) => Promise<void>
 var directEmbedPrefix: (uri: URI) => string
 var getPlatformName: () => string
 
@@ -19,6 +20,7 @@ function init(params: {
     getURIFromParams: typeof getURIFromParams,
     getFileContents: typeof getFileContents,
     saveFileContents: typeof saveFileContents,
+    createFolder: typeof createFolder,
     directEmbedPrefix: typeof directEmbedPrefix,
     getPlatformName: typeof getPlatformName,
 }) {
@@ -27,6 +29,7 @@ function init(params: {
     getURIFromParams = params.getURIFromParams
     getFileContents = params.getFileContents
     saveFileContents = params.saveFileContents
+    createFolder = params.createFolder
     directEmbedPrefix = params.directEmbedPrefix
     getPlatformName = params.getPlatformName
 }
@@ -38,6 +41,7 @@ export {
     getURIFromParams,
     getFileContents,
     saveFileContents,
+    createFolder,
     directEmbedPrefix,
     getPlatformName
 }

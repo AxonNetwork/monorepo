@@ -74,6 +74,23 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             })
         },
 
+        async createFolder(uri: URI) {
+            if (uri.type === URIType.Network) {
+                throw new Error(`cannot saveFileContents on a URIType.Network: ${uri.type} : ${uri.repoID} : ${uri.commit} : ${uri.filename}`)
+            } else if (!uri.filename) {
+                throw new Error(`cannot saveFileContents for a URI with no filename: ${uri.type} : ${uri.repoRoot} : ${uri.commit} : ${uri.filename}`)
+            }
+
+            return new Promise<void>((resolve, reject) => {
+                fs.mkdir(path.join(uri.repoRoot, uri.filename!), { recursive: true }, err => {
+                    if (err) {
+                        return reject(err)
+                    }
+                    resolve()
+                })
+            })
+        },
+
         directEmbedPrefix(uri: URI) {
             if (uri.type === URIType.Network) {
                 const API_URL = process.env.API_URL

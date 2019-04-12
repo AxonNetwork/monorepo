@@ -27,6 +27,10 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
             throw new Error('web platform cannot saveFileContents')
         },
 
+        async createFolder(uri: URI) {
+            throw new Error('web platform cannot createFolder')
+        },
+
         directEmbedPrefix(uri: URI) {
             if (uri.type === URIType.Local) {
                 throw new Error('web platform cannot directEmbedPrefix with a local URI')
