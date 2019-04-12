@@ -204,7 +204,7 @@ const styles = (theme: Theme) => createStyles({
     },
     editorPicker: {
         width: 'fit-content',
-        position: 'absolute',
+        // position: 'absolute',
     },
     editorPickerIcon: {
         fill: theme.palette.secondary.main,

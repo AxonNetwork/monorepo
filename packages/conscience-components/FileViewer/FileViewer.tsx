@@ -88,22 +88,26 @@ class FileViewer extends React.Component<Props, State>
                         [classes.buttonsAutoHideVisible]: this.state.hovering,
                     })}>
                         {canQuickEdit &&
-                            <Button color="secondary"
-                                onClick={this.onClickQuickEdit}
-                                onMouseEnter={() => this.onHoverViewer(true)}
-                                onMouseLeave={() => this.onHoverViewer(false)}
-                            >
-                                <EditIcon />
-                            </Button>
+                            <Tooltip title="Quick edit">
+                                <Button color="secondary"
+                                    onClick={this.onClickQuickEdit}
+                                    onMouseEnter={() => this.onHoverViewer(true)}
+                                    onMouseLeave={() => this.onHoverViewer(false)}
+                                >
+                                    <EditIcon />
+                                </Button>
+                            </Tooltip>
                         }
                         {canOpenInSystemViewer &&
-                            <Button color="secondary"
-                                onMouseEnter={() => this.onHoverViewer(true)}
-                                onMouseLeave={() => this.onHoverViewer(false)}
-                                onClick={this.onClickOpenFile}
-                            >
-                                <OpenInNewIcon />
-                            </Button>
+                            <Tooltip title="Open file in another app">
+                                <Button color="secondary"
+                                    onMouseEnter={() => this.onHoverViewer(true)}
+                                    onMouseLeave={() => this.onHoverViewer(false)}
+                                    onClick={this.onClickOpenFile}
+                                >
+                                    <OpenInNewIcon />
+                                </Button>
+                            </Tooltip>
                         }
                         {showViewerPicker &&
                             <Select
