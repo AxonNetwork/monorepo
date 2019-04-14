@@ -1,8 +1,10 @@
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import ProtocolJSON from './contracts/Protocol.json'
+import UserRegistryJSON from './contracts/UserRegistry.json'
 
 let protocolContract
+let userRegistryContract
 
 export async function getProtocolContract() {
     if (protocolContract !== undefined) {
@@ -20,3 +22,22 @@ export async function getProtocolContract() {
     protocolContract = await Protocol.deployed()
     return protocolContract
 }
+
+export async function getUserRegistryContract() {
+    if (userRegistryContract !== undefined) {
+        return userRegistryContract
+    }
+
+    const UserRegistry = TruffleContract(UserRegistryJSON)
+    const provider = new Web3.providers.HttpProvider(process.env.GETH_NODE)
+    UserRegistry.setProvider(provider)
+    if (typeof UserRegistry.currentProvider.sendAsync !== 'function') {
+        UserRegistry.currentProvider.sendAsync = function () {
+            return UserRegistry.currentProvider.send.apply(UserRegistry.currentProvider, arguments)
+        }
+    }
+    userRegistryContract = await UserRegistry.deployed()
+    return userRegistryContract
+}
+
+

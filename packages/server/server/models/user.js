@@ -28,8 +28,9 @@ User.create = async (email, password, name, username, mnemonic) => {
     const salt = await bcrypt.genSaltAsync(SALT_WORK_FACTOR)
     const passwordHash = await bcrypt.hashAsync(password, salt)
 
+    let userID
     while (true) {
-        const userID = makeID()
+        userID = makeID()
         const newUser = {
             userID,
             passwordHash,
@@ -45,18 +46,8 @@ User.create = async (email, password, name, username, mnemonic) => {
                 Item:                newUser,
                 ConditionExpression: 'attribute_not_exists(userID)',
             })
+            break
 
-            await dynamo.putAsync({
-                TableName: UserEmailsTable,
-                Item:      { email, userID },
-            })
-
-            await dynamo.putAsync({
-                TableName: UserTable,
-                Item:      { userID },
-            })
-
-            return { userID, emails: [ email ], passwordHash, name, username }
         } catch (err) {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
@@ -65,6 +56,13 @@ User.create = async (email, password, name, username, mnemonic) => {
             throw err
         }
     }
+
+    await dynamo.putAsync({
+        TableName: UserEmailsTable,
+        Item:      { email, userID },
+    })
+
+    return { userID, emails: [ email ], passwordHash, name, username }
 }
 
 User.get = async (userID, opts) => {

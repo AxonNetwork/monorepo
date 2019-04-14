@@ -89,9 +89,9 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/create-user', { name: _name, username: _username, email, password, hexSignature, mnemonic })
         } catch (err) {
-            if (err.response.status === 403) {
+            if (err.response && err.response.status === 403) {
                 return new Error('Access denied')
-            } else if (err.response.status === 400) {
+            } else if (err.response && err.response.status === 400) {
                 return new Error(err.response.data.error)
             }
             throw err.response ? err.response.data.error : err

@@ -19,12 +19,19 @@ faucetController.ethFaucet = async (req, res, next) => {
         throw new HTTPError(400, 'Missing field: amount')
     }
 
+    // If the user already has enough ETH, don't do anything.
+    const balance = web3.utils.toBN( await web3.eth.getBalanceAsync(address) )
+    const maxAmount = web3.utils.toBN( web3.utils.toWei(`${MAX_AMOUNT}`, 'ether') )
+    if (balance.gte( maxAmount )) {
+        return res.status(200).json({ result: 'you have plenty of ETH already' })
+    }
+
     const accounts = await web3.eth.getAccountsAsync()
     const faucet = accounts[0]
     const wei = web3.utils.toWei(Math.min(amount, MAX_AMOUNT).toString(), 'ether')
     await web3.eth.sendTransactionAsync({ from: faucet, to: address, value: wei })
 
-    return res.status(200).json({})
+    return res.status(200).json({ result: 'sent you some ETH' })
 }
 
 faucetController.getBalance = async (req, res, next) => {

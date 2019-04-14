@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import ethJSUtil from 'ethereumjs-util'
 import fs from 'fs'
 import path from 'path'
 import validator from 'validator'
@@ -16,7 +15,10 @@ import passportAuthenticateAsync from '../util/passportAuth'
 import { pipeImageToS3, getUploadedImage, deleteImageFromS3 } from '../util/pictureUtils'
 import User from '../models/user'
 import { AWS } from '../config/aws'
-import { getProtocolContract } from '../eth'
+import { getUserRegistryContract } from '../eth'
+
+// For some reason, this module doesn't like being imported.  It ends up being `undefined`.
+const ethJSUtil = require('ethereumjs-util')
 
 const userController = {}
 
@@ -27,7 +29,6 @@ userController.whoAmI = async (req, res, next) => {
 }
 
 userController.login = async (req, res, next) => {
-    console.log('login route')
     const { user, info } = await passportAuthenticateAsync('local', req, res, next)
     if (!user) {
         throw new HTTPError(403, 'Username or password is invalid')
@@ -35,7 +36,6 @@ userController.login = async (req, res, next) => {
     const { token } = await reqLoginAsync(req, user)
 
     const { userID, emails, name, username, picture, orgs, profile, mnemonic } = user
-    console.log('user ~>', user)
     return res.status(200).json({ userID, emails, name, username, picture, orgs, profile, jwt: token, mnemonic })
 }
 
@@ -297,8 +297,9 @@ async function usernameMatchesSignature(username, hexSignature) {
     const addrBuf = ethJSUtil.pubToAddress(pubkey)
     const addr = ethJSUtil.bufferToHex(addrBuf)
 
-    const protocol = await getProtocolContract()
-    const addrByName = await protocol.getAddressForUsername(username)
+    const userRegistry = await getUserRegistryContract()
+    const addrByName = await userRegistry.getAddressForUsername(username)
+    console.log('usernameMatchesSignature', addr, addrByName)
 
     return addr === addrByName
 }
