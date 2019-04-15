@@ -42,7 +42,12 @@ class MarkdownEditorPlugin extends React.Component<Props, State>
         if (!this.props.isNewFile) {
             this.updateFileContents()
         } else {
-            this.setState({ fileContents: '' })
+            if (this.props.uri.filename === 'README.md') {
+                this.setState({ fileContents: defaultREADMEContents })
+            } else {
+                this.setState({ fileContents: '' })
+            }
+            this.props.setFileModified(true)
         }
     }
 
@@ -101,6 +106,21 @@ interface State {
 
 const styles = () => createStyles({
 })
+
+const defaultREADMEContents = `
+# Project title
+
+Here is a short description of the project.  You can include a summary of the work, instructions for helping people get started, and info about the people already working on it.
+
+## Subsection 1
+
+Maybe add some more detail here.
+
+## Team
+
+- Person 1 (<email@university.edu>)
+- Person 2 (<email@university.edu>)
+`.trim()
 
 export default {
     pluginType: 'file editor',
