@@ -6,16 +6,10 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import Dialog from '@material-ui/core/Dialog'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogActions from '@material-ui/core/DialogActions'
-import TextField from '@material-ui/core/TextField'
-import List from '@material-ui/core/List'
 import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import ClearIcon from '@material-ui/icons/Clear'
 import UserAvatar from '../UserAvatar'
-import UserSearchResult from '../UserSearchResult'
+import UserSearchDialog from 'conscience-components/UserSearchDialog'
 import { addMemberToOrg, removeMemberFromOrg } from 'conscience-components/redux/org/orgActions'
 import { clearSearch, searchUsers } from 'conscience-components/redux/search/searchActions'
 import { IGlobalState } from 'conscience-components/redux'
@@ -56,7 +50,7 @@ class Members extends React.Component<Props, State>
                                         <Typography><strong>{user.name}</strong></Typography>
                                         <Typography>{user.username}</Typography>
                                         {adminList.indexOf(userID) > -1 &&
-                                            <Typography><em>Creator/Admin</em></Typography>
+                                            <Typography><em>Admin</em></Typography>
                                         }
                                     </div>
                                     {isAdmin &&
@@ -79,49 +73,11 @@ class Members extends React.Component<Props, State>
                         Add Member
                     </Button>
 
-                    <Dialog open={this.state.dialogOpen} onClose={this.onClickCancelDialog}>
-                        <DialogTitle className={classes.searchDialogTitle}>Add User</DialogTitle>
-                        <form onSubmit={this.searchUser}>
-                            <DialogContent className={classes.dialog}>
-                                <Typography variant='subtitle1'>
-                                    Search:
-                                </Typography>
-                                <TextField
-                                    label="Name or username"
-                                    fullWidth
-                                    inputRef={x => this._inputUser = x}
-                                    autoFocus
-                                />
-                                {this.props.userResult &&
-                                    <List>
-                                        {this.props.userResult.map(({ userID }) => (
-                                            <UserSearchResult
-                                                user={this.props.users[userID]}
-                                                onClick={this.onClickAddMember}
-                                            />
-                                        ))}
-                                    </List>
-                                }
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    type="submit"
-                                    color="secondary"
-                                    variant='contained'
-                                >
-                                    Search
-                                </Button>
-                                <Button
-                                    onClick={this.onClickCancelDialog}
-                                    color="secondary"
-                                    variant='outlined'
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogActions>
-                        </form>
-                    </Dialog>
-
+                    <UserSearchDialog
+                        open={this.state.dialogOpen}
+                        onSelectUser={this.onClickAddMember}
+                        onCancel={this.onClickCancelDialog}
+                    />
                 </CardContent>
             </Card>
         )

@@ -14,7 +14,6 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
-import TextField from '@material-ui/core/TextField'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -26,8 +25,8 @@ import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import UserSearchDialog from 'conscience-components/UserSearchDialog'
 import UserAvatar from '../UserAvatar'
-import UserSearchResult from '../UserSearchResult'
 import { H6 } from '../Typography/Headers'
 import { fetchRepoUsersPermissions, updateUserPermissions, setRepoPublic } from '../redux/repo/repoActions'
 import { clearSearch, searchUsers } from '../redux/search/searchActions'
@@ -134,7 +133,7 @@ class SharedUsers extends React.Component<Props, State>
                                     {isAdmin &&
                                         <TableCell className={classes.centered}>
                                             {currentUser !== user.userID &&
-                                                <IconButton onClick={() => this.openUserDialog(user.userID)}>
+                                                <IconButton onClick={() => this.openPermissionsDialog(user.userID)}>
                                                     <SettingsIcon />
                                                 </IconButton>
                                             }
@@ -171,50 +170,13 @@ class SharedUsers extends React.Component<Props, State>
                         </DialogActions>
                     </Dialog>
 
-                    <Dialog open={this.state.searchDialogOpen} onClose={this.closeSearchDialog}>
-                        <DialogTitle className={classes.searchDialogTitle}>Add User</DialogTitle>
-                        <form onSubmit={this.searchUser}>
-                            <DialogContent className={classes.dialog}>
-                                <Typography variant='subtitle1'>
-                                    Search:
-                                </Typography>
-                                <TextField
-                                    label="Name, username, or email"
-                                    fullWidth
-                                    inputRef={x => this._inputUser = x}
-                                    autoFocus
-                                />
-                                {this.props.userResult &&
-                                    <List>
-                                        {this.props.userResult.map(({ userID }) => (
-                                            <UserSearchResult
-                                                user={this.props.users[userID]}
-                                                onClick={this.openUserDialog}
-                                            />
-                                        ))}
-                                    </List>
-                                }
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    type="submit"
-                                    color="secondary"
-                                    variant='contained'
-                                >
-                                    Search
-                                </Button>
-                                <Button
-                                    onClick={this.closeSearchDialog}
-                                    color="secondary"
-                                    variant='outlined'
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogActions>
-                        </form>
-                    </Dialog>
+                    <UserSearchDialog
+                        open={this.state.searchDialogOpen}
+                        onSelectUser={this.openPermissionsDialog}
+                        onCancel={this.closeSearchDialog}
+                    />
 
-                    <Dialog open={this.state.userDialogOpen} onClose={this.closeUserDialog}>
+                    <Dialog open={this.state.userDialogOpen} onClose={this.closePermissionsDialog}>
                         <DialogTitle>Change Permissions</DialogTitle>
                         <DialogContent className={classes.dialog}>
                             <Typography>
@@ -249,7 +211,7 @@ class SharedUsers extends React.Component<Props, State>
                                 Set Permissions
                             </Button>
                             <Button
-                                onClick={this.closeUserDialog}
+                                onClick={this.closePermissionsDialog}
                                 color="secondary"
                                 variant='outlined'
                                 autoFocus
@@ -273,7 +235,7 @@ class SharedUsers extends React.Component<Props, State>
             this.props.fetchRepoUsersPermissions({ uri: this.props.uri })
         }
         if (prevProps.updatingUserPermissions !== undefined && this.props.updatingUserPermissions === undefined) {
-            this.closeUserDialog()
+            this.closePermissionsDialog()
         }
     }
 
@@ -317,7 +279,7 @@ class SharedUsers extends React.Component<Props, State>
         this.props.searchUsers({ query: username })
     }
 
-    openUserDialog(userID: string) {
+    openPermissionsDialog(userID: string) {
         if (!userID || !this.props.users[userID]) {
             return
         }
@@ -333,7 +295,7 @@ class SharedUsers extends React.Component<Props, State>
         })
     }
 
-    closeUserDialog() {
+    closePermissionsDialog() {
         this.setState({
             userDialogOpen: false,
             selectedUser: undefined,
