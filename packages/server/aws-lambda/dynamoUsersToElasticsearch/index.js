@@ -30,7 +30,9 @@ async function fetchExisting(userID) {
 }
 
 exports.handler = async (event, context) => {
+    console.log(`[axon] receiving ${event.Records.length} jobs...`)
     const updates = event.Records.map(async (record) => {
+        console.log('[axon] record.eventSourceARN =', record.eventSourceARN)
         if (record.eventSourceARN.indexOf('table/ConscienceAPI_UserProfiles') > -1) {
             // Handle updates to the UserProfiles table
 
@@ -58,27 +60,39 @@ exports.handler = async (event, context) => {
         } else if (record.eventSourceARN.indexOf('table/ConscienceAPI_Users') > -1) {
             // Handle updates to the Users table
 
-            let user = await fetchExisting(record.dynamodb.NewImage.userID.S)
-            if (user === null) {
+            if (!record || !record.dynamodb || !record.dynamodb.NewImage || !record.dynamodb.NewImage.userID || !record.dynamodb.NewImage.userID.S) {
                 return Promise.resolve()
             }
 
-            user = {
-                ...user,
-                username: record.dynamodb.NewImage.username.S,
-                name:     record.dynamodb.NewImage.name.S,
+            const userOld = await fetchExisting(record.dynamodb.NewImage.userID.S)
+            if (userOld === null) {
+                console.log(`[axon] User table update: skipping, no existing ES record (userID = ${record.dynamodb.NewImage.userID.S})`)
+                return Promise.resolve()
             }
+
+            const userNew = { ...userOld }
+
+            if (record.dynamodb.NewImage.username && record.dynamodb.NewImage.username.S) {
+                userNew.username = record.dynamodb.NewImage.username.S
+            }
+            if (record.dynamodb.NewImage.name && record.dynamodb.NewImage.name.S) {
+                userNew.name = record.dynamodb.NewImage.name.S
+            }
+
+            console.log('[axon] userOld', userOld, 'userNew', userNew)
 
             return elasticsearch.index({
                 index: 'users',
                 type:  'user',
                 id:    record.dynamodb.NewImage.userID.S,
-                body:  user,
+                body:  userNew,
             })
+        } else {
+            return Promise.resolve()
         }
     })
 
     await Promise.all(updates)
 
-    console.log(`Successfully processed ${event.Records.length} records.`)
+    console.log(`[axon] successfully processed ${event.Records.length} records.`)
 }
