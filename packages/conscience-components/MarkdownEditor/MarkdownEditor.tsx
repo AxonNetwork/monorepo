@@ -50,6 +50,7 @@ class MarkdownEditor extends React.Component<Props>
                             rows={1}
                             rowsMax={false}
                             variant="outlined"
+                            autoFocus={this.props.autoFocus}
                             onChange={this.props.onChange}
                             InputProps={{
                                 margin: 'none',
@@ -95,6 +96,7 @@ class MarkdownEditor extends React.Component<Props>
 interface Props {
     uri: URI
     value: string
+    autoFocus?: boolean
     onChange: (value: string) => void
     classes: any
 }

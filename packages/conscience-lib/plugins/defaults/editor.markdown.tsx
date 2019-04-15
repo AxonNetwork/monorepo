@@ -28,6 +28,7 @@ class MarkdownEditorPlugin extends React.Component<Props, State>
                 uri={this.props.uri}
                 value={fileContents}
                 onChange={this.onChange}
+                autoFocus
             />
         )
     }

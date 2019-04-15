@@ -181,6 +181,7 @@ class SmartTextarea extends React.Component<Props, State>
                 <TextField
                     value={this.props.value}
                     placeholder={this.props.placeholder}
+                    autoFocus={this.props.autoFocus}
                     fullWidth
                     multiline
                     variant={this.props.variant || 'standard'}
@@ -218,6 +219,7 @@ interface OwnProps {
     rowsMax?: number|false
     placeholder?: string
     variant?: 'filled'|'standard'|'outlined'
+    autoFocus?: boolean
     InputProps?: InputProps
     textFieldClasses?: any
 }
