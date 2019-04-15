@@ -6,8 +6,10 @@ import classnames from 'classnames'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button'
 
 import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
@@ -22,7 +24,10 @@ import ElectronRelay from 'lib/ElectronRelay'
 @autobind
 class MainUI extends React.Component<Props, State>
 {
-    state = { sidebarOpen: true }
+    state = {
+        sidebarOpen: true,
+        allowAutoupdateDialog: false,
+    }
 
     onToggleSidebar() {
         this.setState({ sidebarOpen: !this.state.sidebarOpen })
@@ -61,33 +66,68 @@ class MainUI extends React.Component<Props, State>
                     </div>
                 </main>
 
-                <Dialog open={this.props.autoupdateState !== AutoUpdateState.NoUpdate} aria-labelledby="autoupdate-dialog-title">
+                <Dialog
+                    open={this.props.autoupdateState !== AutoUpdateState.NoUpdate && !this.state.allowAutoupdateDialog}
+                    onClose={this.closeAutoupdateDialog}
+                    aria-labelledby="autoupdate-dialog-title"
+                    PaperProps={{
+                        classes: { root: classes.autoupdateDialogRoot }
+                    }}
+                >
                     <DialogTitle id="autoupdate-dialog-title">Checking for updates</DialogTitle>
 
-                    <div className={classes.autoupdateDialogBody}>
-                        {this.props.autoupdateState === AutoUpdateState.Checking &&
-                            <React.Fragment>
-                                <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
-                                <div className={classes.autoupdateStatus}>Connecting...</div>
-                            </React.Fragment>
-                        }
-                        {this.props.autoupdateState === AutoUpdateState.Downloading &&
-                            <React.Fragment>
-                                <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
-                                <div className={classes.autoupdateStatus}>Downloading...</div>
-                            </React.Fragment>
-                        }
+                    <DialogContent>
+                        <div className={classes.autoupdateDialogBody}>
+                            {this.props.autoupdateState === AutoUpdateState.Checking &&
+                                <React.Fragment>
+                                    <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
+                                    <div className={classes.autoupdateStatus}>Connecting...</div>
+                                </React.Fragment>
+                            }
+                            {this.props.autoupdateState === AutoUpdateState.Downloading &&
+                                <React.Fragment>
+                                    <LargeProgressSpinner classes={{ root: classes.autoupdateSpinner }} />
+                                    <div className={classes.autoupdateStatus}>Downloading...</div>
+                                </React.Fragment>
+                            }
+                            {this.props.autoupdateState === AutoUpdateState.Downloaded &&
+                                <React.Fragment>
+                                    <CheckCircleOutlineIcon />
+                                    <div className={classes.autoupdateStatus}>Update downloaded.</div>
+                                </React.Fragment>
+                            }
+                        </div>
+                    </DialogContent>
+
+                    <DialogActions>
                         {this.props.autoupdateState === AutoUpdateState.Downloaded &&
-                            <React.Fragment>
-                                <CheckCircleOutlineIcon />
-                                <div className={classes.autoupdateStatus}>Update downloaded.</div>
-                                <Button color="secondary" variant="contained" onClick={ElectronRelay.quitAndInstallUpdate}>Close app and install update</Button>
-                            </React.Fragment>
+                            <Button color="secondary" variant="contained" onClick={ElectronRelay.quitAndInstallUpdate}>Close app and install update</Button>
                         }
-                    </div>
+                        <Button color="secondary" variant="contained" onClick={this.closeAutoupdateDialog}>Dismiss</Button>
+                    </DialogActions>
                 </Dialog>
+
+                {this.props.autoupdateState === AutoUpdateState.Downloaded &&
+                    <div className={classes.autoupdateNotification}>
+                        <Button
+                            type="submit"
+                            color="secondary"
+                            onClick={this.openAutoupdateDialog}
+                        >
+                            Update available
+                        </Button>
+                    </div>
+                }
             </div>
         )
+    }
+
+    openAutoupdateDialog = () => {
+        this.setState({ allowAutoupdateDialog: false })
+    }
+
+    closeAutoupdateDialog = () => {
+        this.setState({ allowAutoupdateDialog: true })
     }
 }
 
@@ -100,6 +140,7 @@ interface Props extends RouteComponentProps {
 
 interface State {
     sidebarOpen: boolean
+    allowAutoupdateDialog: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -144,6 +185,9 @@ const styles = (theme: Theme) => createStyles({
         paddingTop: theme.spacing.unit * 3,
         display: 'flex',
     },
+    autoupdateDialogRoot: {
+        width: 400,
+    },
     autoupdateDialogBody: {
         padding: 24,
         textAlign: 'center',
@@ -155,6 +199,11 @@ const styles = (theme: Theme) => createStyles({
     },
     autoupdateStatus: {
         padding: '0 0 30px 0',
+    },
+    autoupdateNotification: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
     },
 })
 
