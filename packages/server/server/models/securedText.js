@@ -11,44 +11,38 @@ SecuredText.addFiles = async (files) => {
     const writePromises = chunk(putRequests, 25)
         .map(chunk => ({ RequestItems: { [SecuredTextTable]: chunk } }))
         .map(params => dynamo.batchWriteAsync(params))
-    try {
-        await Promise.all(writePromises)
-    } catch (err) {
-        console.error('Error in SecuredText.addFiles ~>', err)
-    }
+
+    await Promise.all(writePromises)
 }
 
 SecuredText.getFilesForRepo = async (repoID, filesList) => {
-    if (!filesList || filesList.length === 0) {
+    filesList = (filesList || []).filter(file => !!file && typeof file === 'string' && file.trim().length > 0)
+
+    if (filesList.length === 0) {
         return []
     }
+
     const keys = filesList.map(file => ({ repoID, file }))
+    // const keys = filesList
+    //     .filter(file => !!file && typeof file === 'string' && file.trim().length > 0)
+    //     .map(file => ({ repoID, file }))
+
     const readPromises = chunk(keys, 25)
         .map(chunk => ({ RequestItems: { [SecuredTextTable]: { Keys: chunk } } }))
         .map(params => dynamo.batchGetAsync(params))
-    try {
-        const resp = (await Promise.all(readPromises))
-            .map(r => r.Responses[SecuredTextTable])
-        const flat = [].concat.apply([], resp)
-        return flat
-    } catch (err) {
-        console.error('Error in SecuredText.getFilesForRepo ~>', err)
-        throw err
-    }
+
+    const resp = (await Promise.all(readPromises))
+        .map(r => r.Responses[SecuredTextTable])
+    const flat = [].concat.apply([], resp)
+    return flat
 }
 
 SecuredText.getForFile = async (repoID, file) => {
-    const params = {
+    const resp = await dynamo.getAsync({
         TableName: SecuredTextTable,
         Key:       { repoID, file },
-    }
-    try {
-        const resp = await dynamo.getAsync(params)
-        return resp.Item
-    } catch (err) {
-        console.error('Error in SecuredText.getForFile ~>', err)
-        throw err
-    }
+    })
+    return resp.Item
 }
 
 export default SecuredText

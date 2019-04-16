@@ -38,7 +38,6 @@ OrganizationBlogs.create = async ({ orgID, title, body, author }) => {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
             }
-            console.error('Error creating organization ~>', err)
             throw err
         }
     }
@@ -93,21 +92,14 @@ OrganizationBlogs.update = async ({ orgID, created, title, body, author }) => {
         updateExpressionParts.push('#author = :author')
     }
 
-    const params = {
+    const org = await dynamo.updateAsync({
         TableName:        OrganizationBlogsTable,
         Key:              { orgID, created },
         UpdateExpression: `SET ${updateExpressionParts.join(', ')}`,
         ExpressionAttributeNames,
         ExpressionAttributeValues,
         ReturnValues:     'UPDATED_NEW',
-    }
-    let org
-    try {
-        org = await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error(`Error in OrganizationBlogs.update-${field} ~>`, err)
-        throw err
-    }
+    })
 
     return org.Attributes
 }

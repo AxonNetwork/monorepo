@@ -31,7 +31,6 @@ Comment.create = async ({ repoID, userID, text, discussionID }) => {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
             }
-            console.error('Error creating Comment ~>', err)
             throw err
         }
     }

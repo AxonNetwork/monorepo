@@ -29,7 +29,6 @@ Discussion.create = async ({ repoID, subject, userID, commentText }) => {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
             }
-            console.error('Error creating Discussion ~>', err)
             throw err
         }
     }
@@ -60,20 +59,15 @@ Discussion.getAllForRepo = async (repoID) => {
 }
 
 Discussion.updateLastComment = async (discussionID, userID, commentTime) => {
-    try {
-        await dynamo.updateAsync({
-            TableName:                 DiscussionTable,
-            Key:                       { discussionID },
-            UpdateExpression:          'SET lastCommentUser = :lastUser, lastCommentTime = :lastTime',
-            ExpressionAttributeValues: {
-                ':lastUser': userID,
-                ':lastTime': commentTime,
-            },
-        })
-    } catch (err) {
-        console.error('Error in Discussion.updateLastComment ~>', err)
-        throw err
-    }
+    await dynamo.updateAsync({
+        TableName:                 DiscussionTable,
+        Key:                       { discussionID },
+        UpdateExpression:          'SET lastCommentUser = :lastUser, lastCommentTime = :lastTime',
+        ExpressionAttributeValues: {
+            ':lastUser': userID,
+            ':lastTime': commentTime,
+        },
+    })
 }
 
 Discussion.delete = async (discussionID) => {

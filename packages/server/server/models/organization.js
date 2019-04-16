@@ -26,7 +26,6 @@ Organization.create = async (name, creator) => {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
             }
-            console.error('Error creating organization ~>', err)
             throw err
         }
     }
@@ -53,24 +52,18 @@ Organization.get = async (orgID) => {
 }
 
 Organization.updateField = async (orgID, field, value) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'SET #field = :value',
         ExpressionAttributeNames:  { '#field': field },
         ExpressionAttributeValues: { ':value': value },
         ReturnValues:              'UPDATED_NEW',
-    }
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error(`Error in Organization.update-${field} ~>`, err)
-        throw err
-    }
+    })
 }
 
 Organization.updateColors = async (orgID, primaryColor, secondaryColor) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'set #primaryColor = :primaryColor, #secondaryColor = :secondaryColor',
@@ -83,84 +76,49 @@ Organization.updateColors = async (orgID, primaryColor, secondaryColor) => {
             ':secondaryColor': secondaryColor,
         },
         ReturnValues: 'UPDATED_NEW',
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in User.shareRepo~>', err)
-        throw err
-    }
+    })
 }
 
 Organization.addMember = async (orgID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'add #members :member',
         ExpressionAttributeNames:  { '#members': 'members' },
         ExpressionAttributeValues: { ':member': dynamo.createSet([ userID ]) },
         ReturnValues:              'UPDATED_NEW',
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in Organization.addMember ~>', err)
-        throw err
-    }
+    })
 }
 
 Organization.removeMember = async (orgID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'delete #members :member',
         ExpressionAttributeNames:  { '#members': 'members' },
         ExpressionAttributeValues: { ':member': dynamo.createSet([ userID ]) },
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in Organization.removeMember ~>', err)
-        throw err
-    }
+    })
 }
 
 Organization.addRepo = async (orgID, repoID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'add #repos :repo',
         ExpressionAttributeNames:  { '#repos': 'repos' },
         ExpressionAttributeValues: { ':repo': dynamo.createSet([ repoID ]) },
         ReturnValues:              'UPDATED_NEW',
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in Organization.addRepo ~>', err)
-        throw err
-    }
+    })
 }
 
 Organization.removeRepo = async (orgID, repoID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 OrganizationTable,
         Key:                       { orgID },
         UpdateExpression:          'delete #repos :repo',
         ExpressionAttributeNames:  { '#repos': 'repos' },
         ExpressionAttributeValues: { ':repo': dynamo.createSet([ repoID ]) },
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in Organization.removeRepo ~>', err)
-        throw err
-    }
+    })
 }
 
 export default Organization

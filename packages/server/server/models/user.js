@@ -52,7 +52,6 @@ User.create = async (email, password, name, username, mnemonic) => {
             if (err.code === 'ConditionalCheckFailedException') {
                 continue
             }
-            console.error('Error creating user ~>', err)
             throw err
         }
     }
@@ -136,98 +135,60 @@ User.getByEmail = async (email, opts) => {
 }
 
 User.addRepo = async (repoID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 UserTable,
         Key:                       { userID },
         UpdateExpression:          'add #repos :repo',
         ExpressionAttributeNames:  { '#repos': 'repos' },
         ExpressionAttributeValues: { ':repo': dynamo.createSet([ repoID ]) },
         ReturnValues:              'UPDATED_NEW',
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in User.shareRepo~>', err)
-        throw err
-    }
+    })
 }
 
 User.unshareRepo = async (repoID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 UserTable,
         Key:                       { userID },
         UpdateExpression:          'delete repos :repo',
         ExpressionAttributeValues: { ':repo': dynamo.createSet([ repoID ]) },
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in User.unshareRepo~>', err)
-        throw err
-    }
+    })
 }
 
 User.joinOrganization = async (orgID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 UserTable,
         Key:                       { userID },
         UpdateExpression:          'add #orgs :org',
         ExpressionAttributeNames:  { '#orgs': 'orgs' },
         ExpressionAttributeValues: { ':org': dynamo.createSet([ orgID ]) },
         ReturnValues:              'UPDATED_NEW',
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in User.joinOrganization ~>', err)
-        throw err
-    }
+    })
 }
 
 User.exitOrganization = async (orgID, userID) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 UserTable,
         Key:                       { userID },
         UpdateExpression:          'delete orgs :org',
         ExpressionAttributeValues: { ':org': dynamo.createSet([ orgID ]) },
-    }
-
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error('Error in User.exitOrganization ~>', err)
-        throw err
-    }
+    })
 }
 
 User.getOrganizations = async (userID) => {
-    try {
-        const result = await dynamo.getAsync({
-            TableName: UserTable,
-            Key:       { userID },
-        })
-        return (result.Item.orgs || { values: [] }).values
-    } catch (err) {
-        console.error('Error User.getOrganizations ~>', err)
-        throw err
-    }
+    const result = await dynamo.getAsync({
+        TableName: UserTable,
+        Key:       { userID },
+    })
+    return (result.Item.orgs || { values: [] }).values
 }
 
 
 User.getSharedRepos = async (userID) => {
-    try {
-        const result = await dynamo.getAsync({
-            TableName: UserTable,
-            Key:       { userID },
-        })
-        return (result.Item.repos || { values: [] }).values
-    } catch (err) {
-        console.error('Error User.getSharedRepos ~>', err)
-        throw err
-    }
+    const result = await dynamo.getAsync({
+        TableName: UserTable,
+        Key:       { userID },
+    })
+    return (result.Item.repos || { values: [] }).values
 }
 
 // `filenames` must be an object keyed by the dimensions of each version of the resized profile
@@ -238,17 +199,12 @@ User.getSharedRepos = async (userID) => {
 //     '128x128': 'http://...',
 // }
 User.setProfilePictureFilenames = async (userID, filenames) => {
-    try {
-        await dynamo.updateAsync({
-            TableName:                 UserTable,
-            Key:                       { userID },
-            UpdateExpression:          'set picture = :picture',
-            ExpressionAttributeValues: { ':picture': filenames },
-        })
-    } catch (err) {
-        console.error('Error in User.setProfilePictureFilename ~>', err)
-        throw err
-    }
+    await dynamo.updateAsync({
+        TableName:                 UserTable,
+        Key:                       { userID },
+        UpdateExpression:          'set picture = :picture',
+        ExpressionAttributeValues: { ':picture': filenames },
+    })
 }
 
 User.getUserProfile = async (userID) => {
@@ -284,43 +240,28 @@ User.updateUserProfile = async (userID, profile) => {
     }
     const updateExpression = `SET ${updates.join(', ')}`
 
-    try {
-        await dynamo.updateAsync({
-            TableName:                 UserProfilesTable,
-            Key:                       { userID },
-            UpdateExpression:          updateExpression,
-            ExpressionAttributeValues: expressionAttrVals,
-        })
-    } catch (err) {
-        console.error('Error in User.updateUserProfile ~>', err)
-        throw err
-    }
+    await dynamo.updateAsync({
+        TableName:                 UserProfilesTable,
+        Key:                       { userID },
+        UpdateExpression:          updateExpression,
+        ExpressionAttributeValues: expressionAttrVals,
+    })
 }
 
 // @@TODO: make sure email doesn't already exist
 // @@TODO: verification email
 User.addEmail = async (userID, email) => {
-    try {
-        await dynamo.putAsync({
-            TableName: UserEmailsTable,
-            Item:      { email, userID },
-        })
-    } catch (err) {
-        console.error('Error in User.addEmail ~>', err)
-        throw err
-    }
+    await dynamo.putAsync({
+        TableName: UserEmailsTable,
+        Item:      { email, userID },
+    })
 }
 
 User.removeEmail = async (userID, email) => {
-    try {
-        await dynamo.deleteAsync({
-            TableName: UserEmailsTable,
-            Key:       { email },
-        })
-    } catch (err) {
-        console.error('Error in User.addEmail ~>', err)
-        throw err
-    }
+    await dynamo.deleteAsync({
+        TableName: UserEmailsTable,
+        Key:       { email },
+    })
 }
 
 User.verifySettingsExist = async (userID) => {
@@ -328,15 +269,11 @@ User.verifySettingsExist = async (userID) => {
     if (settings !== undefined) {
         return
     }
-    try {
-        await dynamo.putAsync({
-            TableName: UserSettingsTable,
-            Item:      { userID },
-        })
-    } catch (err) {
-        console.error('Error in User.verifySettingsExist ~>', err)
-        throw err
-    }
+
+    await dynamo.putAsync({
+        TableName: UserSettingsTable,
+        Item:      { userID },
+    })
 }
 
 User.getSettings = async (userID) => {
@@ -354,20 +291,14 @@ User.getSettings = async (userID) => {
 }
 
 User.updateSetting = async (userID, field, value) => {
-    const params = {
+    await dynamo.updateAsync({
         TableName:                 UserSettingsTable,
         Key:                       { userID },
         UpdateExpression:          'SET #field = :value',
         ExpressionAttributeNames:  { '#field': field },
         ExpressionAttributeValues: { ':value': value },
         ReturnValues:              'UPDATED_NEW',
-    }
-    try {
-        await dynamo.updateAsync(params)
-    } catch (err) {
-        console.error(`Error in user.update-${field} ~>`, err)
-        throw err
-    }
+    })
 }
 
 export default User
