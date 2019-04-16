@@ -14,7 +14,7 @@ import { selectFile } from 'conscience-components/navigation'
 class MarkdownEditorPlugin extends React.Component<Props, State>
 {
     state = {
-        fileContents: null,
+        fileContents: null as string|null,
     }
 
     render() {
@@ -73,7 +73,7 @@ class MarkdownEditorPlugin extends React.Component<Props, State>
             const fileContents = (await getFileContents(this.props.uri)) as string
             this.setState({ fileContents })
         } catch (error) {
-            this.setState({ fileContents: null, error })
+            this.setState({ fileContents: null })
         }
     }
 

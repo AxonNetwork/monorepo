@@ -210,6 +210,10 @@ class Thread extends React.Component<Props, State>
 
         this.setState({ newCommentText: newValue }, () => {
             setTimeout(() => {
+                if (!this._inputComment) {
+                    return
+                }
+
                 // move cursor to end of box
                 if (this._inputComment.setSelectionRange) {
                     this._inputComment.setSelectionRange(newValue.length, newValue.length)
@@ -217,7 +221,12 @@ class Thread extends React.Component<Props, State>
 
                 if (this._bottomDiv) {
                     this._bottomDiv.scrollIntoView({ behavior: 'smooth' })
-                    setTimeout(() => this._inputComment.focus(), 1000)
+
+                    setTimeout(() => {
+                        if (this._inputComment) {
+                            this._inputComment.focus()
+                        }
+                    }, 1000)
                 }
             }, 0)
         })

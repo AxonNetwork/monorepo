@@ -114,12 +114,15 @@ class SmartTextarea extends React.Component<Props, State>
         }
         const ref = embedType + ':[' + refTarget + '] '
         const position = this.state.position
-        let value = this.props.value
+        let value = this.props.value || ''
         value = value.substring(0, position) + ref + value.substring(position + embedType.length)
 
         this.props.onChange(value)
 
         setTimeout(() => {
+            if (!this._inputTextarea) {
+                return
+            }
             this._inputTextarea.setSelectionRange(position + ref.length, position + ref.length)
             this._inputTextarea.scrollTop = textareaScrollTop
         }, 0)
@@ -184,11 +187,10 @@ class SmartTextarea extends React.Component<Props, State>
                     autoFocus={this.props.autoFocus}
                     fullWidth
                     multiline
-                    variant={this.props.variant || 'standard'}
+                    variant={(this.props.variant || 'standard') as any /* there's something wrong with the official typings */}
                     rows={this.props.rows || 3}
                     rowsMax={rowsMax}
                     onChange={this.handleChange}
-                    onKeyUp={/*this.handleKeyPress*/ undefined}
                     className={classes.textField}
                     classes={this.props.textFieldClasses}
                     inputRef={x => this._inputTextarea = x}
@@ -236,7 +238,6 @@ interface DispatchProps {
 }
 
 interface State {
-    comment: string
     anchorEl: any
     position: number
     embedType: string | null

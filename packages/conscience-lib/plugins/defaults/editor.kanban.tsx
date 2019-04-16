@@ -21,7 +21,7 @@ import { selectFile } from 'conscience-components/navigation'
 import Popover from '@terebentina/react-popover'
 
 @autobind
-class KanbanPlugin extends React.Component<Props>
+class KanbanPlugin extends React.Component<Props, State>
 {
     state = {
         fileContents: null,
@@ -44,8 +44,6 @@ class KanbanPlugin extends React.Component<Props>
                 break
             }
         }
-
-        const { classes } = this.props
 
         return (
             <div>
@@ -115,12 +113,12 @@ class KanbanPlugin extends React.Component<Props>
         }
 
         try {
-            const fileContents = await getFileContents(this.props.uri)
+            const fileContents = (await getFileContents(this.props.uri)) as string
             const data = this.deserialize(fileContents.toString())
 
             this.setState({ fileContents, data })
         } catch (error) {
-            this.setState({ fileContents: null, data: { lanes: [] }, error })
+            this.setState({ fileContents: null, data: { lanes: [] } })
         }
     }
 
@@ -175,8 +173,9 @@ interface OwnProps {
 }
 
 interface State {
-    fileContents: string
+    fileContents: string|null
     data: any
+    showEditLaneTitleModalForLane: string|null
 }
 
 const styles = () => createStyles({

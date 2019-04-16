@@ -253,6 +253,10 @@ class FileList extends React.Component<Props, State>
             evt.preventDefault()
         }
 
+        if (!this._inputNewFolderName) {
+            return
+        }
+
         const filename = this._inputNewFolderName.value
 
         this.closeNewFolderDialog()

@@ -134,6 +134,11 @@ interface Props {
     open: boolean
     onClickCancel: () => void
     onClickCreate: (filename: string) => void
+    classes?: any
+}
+
+interface State {
+    selectedTemplate: number
 }
 
 const styles = (theme: Theme) => createStyles({

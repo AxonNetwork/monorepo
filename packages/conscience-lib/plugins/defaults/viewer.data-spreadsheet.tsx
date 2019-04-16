@@ -34,8 +34,8 @@ class SpreadsheetViewerPlugin extends React.Component<Props, State>
             showToolbar: false,
             showGrid: true,
             view: {
-                height: () => this._container.clientHeight,
-                width: () => this._container.clientWidth,
+                height: () => (this._container || {} as any).clientHeight || 300,
+                width: () => (this._container || {} as any).clientWidth || 300,
             },
             // row: {
             //     len: 100,

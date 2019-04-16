@@ -23,6 +23,8 @@ declare module 'react-syntax-highlighter/prism' {
 declare module 'tomlify-j0.4'
 declare module 'toml-j0.4'
 declare module 'x-data-spreadsheet'
+declare module 'react-trello'
+declare module '@terebentina/react-popover'
 
 
 declare module 'bugsnag-react' {
