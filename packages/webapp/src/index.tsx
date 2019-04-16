@@ -2,6 +2,7 @@ import OfflinePluginRuntime from 'offline-plugin/runtime'
 import React from 'react'
 import ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
+import { ErrorBoundary } from './bugsnag'
 
 import App from 'App'
 import store from 'redux/store'
@@ -28,7 +29,9 @@ store.dispatch(whoami({}))
 const render = (Component: any) => {
     ReactDom.render(
         <AppContainer>
-            <Component store={store} history={history} />
+            <ErrorBoundary>
+                <Component store={store} history={history} />
+            </ErrorBoundary>
         </AppContainer>,
         document.getElementById('root'),
     )
