@@ -31,13 +31,9 @@ export function initPlugins() {
         require('./defaults/filetype.defaults.tsx').default,
         require('./defaults/viewer.img.tsx').default,
         require('./defaults/viewer.code.tsx').default,
-        require('./defaults/viewer.data.tsx').default,
-        require('./defaults/viewer.data-spreadsheet.tsx').default,
-        require('./defaults/viewer.markdown.tsx').default,
-        require('./defaults/editor.text.tsx').default,
-        require('./defaults/editor.data-spreadsheet.tsx').default,
-        require('./defaults/editor.markdown.tsx').default,
-        require('./defaults/editor.kanban.tsx').default,
+        require('./defaults/viewer.data-spreadsheet').default,
+        require('./defaults/viewer.data').default,
+        require('./defaults/viewer.markdown').default,
         require('./defaults/shortcode.mathjax.tsx').default,
     ] as IPlugin[]
 

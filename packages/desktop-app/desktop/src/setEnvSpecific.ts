@@ -12,6 +12,10 @@ import { setPlatformSpecificPlugins } from 'conscience-lib/plugins/platform-spec
 export default function setEnvSpecific(store: Store<IGlobalState>) {
     setPlatformSpecificPlugins([
         require('conscience-lib/plugins/defaults/viewer.pdf.desktop').default,
+        require('conscience-lib/plugins/defaults/editor.kanban.tsx').default,
+        require('conscience-lib/plugins/defaults/editor.text.tsx').default,
+        require('conscience-lib/plugins/defaults/editor.data-spreadsheet.tsx').default,
+        require('conscience-lib/plugins/defaults/editor.markdown.tsx').default,
     ])
 
     envSpecific.init({

@@ -5,6 +5,7 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import RepoInfo from 'conscience-components/RepoInfo'
 import RepoHomePage from './components/RepoHomePage'
 import RepoFilesPage from './components/RepoFilesPage'
+import RepoEditorPage from './components/RepoEditorPage'
 import RepoHistoryPage from './components/RepoHistoryPage'
 import RepoDiscussionPage from './components/RepoDiscussionPage'
 import RepoTeamPage from './components/RepoTeamPage'
@@ -34,6 +35,7 @@ class RepoPageRoutes extends React.Component<Props>
                             <Switch>
                                 <Route path='/repo/:repoID/files/:commit/:filename+' component={RepoFilesPage} />
                                 <Route path='/repo/:repoID/files/:commit' component={RepoFilesPage} />
+                                <Route path='/repo/:repoID/edit/:filename+' component={RepoEditorPage} />
                                 <Route path='/repo/:repoID/history/:commit' component={RepoHistoryPage} />
                                 <Route path='/repo/:repoID/history' component={RepoHistoryPage} />
                                 <Route path='/repo/:repoID/discussion/:discussionID' component={RepoDiscussionPage} />
