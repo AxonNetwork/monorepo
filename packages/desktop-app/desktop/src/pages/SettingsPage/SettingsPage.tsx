@@ -22,6 +22,7 @@ import { logout, uploadUserPicture, modifyUserEmail } from 'conscience-component
 import { IGlobalState } from 'conscience-components/redux'
 import { IUser, IUserSettings } from 'conscience-lib/common'
 import { autobind, schemes } from 'conscience-lib/utils'
+import LocalCache from 'lib/LocalCache'
 
 
 @autobind
@@ -130,7 +131,11 @@ class SettingsPage extends React.Component<Props>
 
 
                         <section className={classes.section}>
-                            <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.props.logout()}>
+                            <Button variant="contained" color="secondary" className={classes.button} onClick={this.clearCache}>
+                                Clear cache
+                            </Button>
+
+                            <Button variant="contained" color="secondary" className={classes.button} onClick={this.props.logout}>
                                 Logout
                             </Button>
                         </section>
@@ -138,6 +143,10 @@ class SettingsPage extends React.Component<Props>
                 </div>
             </div>
         )
+    }
+
+    clearCache = () => {
+        LocalCache.wipe()
     }
 
     onChangeCodeColorScheme(evt: any) {
