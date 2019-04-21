@@ -66,14 +66,6 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
             }
         }
 
-        case UserActionType.LOGIN_FAILED: {
-            return {
-                ...state,
-                loginError: action.payload.error,
-                currentUser: undefined,
-            }
-        }
-
         case UserActionType.WHO_AM_I_FAILED: {
             return {
                 ...state,
@@ -85,6 +77,7 @@ const userReducer = (state: IUserState = initialState, action: IUserAction): IUs
         case UserActionType.SIGNUP_FAILED: {
             return {
                 ...state,
+                loginError: action.payload.error,
                 checkedLoggedIn: true,
                 currentUser: undefined,
             }

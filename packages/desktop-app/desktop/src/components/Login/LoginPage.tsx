@@ -86,7 +86,7 @@ class LoginPage extends React.Component<Props, State>
                             error={!!error}
                         />
                         {error !== undefined &&
-                            <FormHelperText error className={classes.errorMessage}>{error}</FormHelperText>
+                            <FormHelperText error className={classes.errorMessage}>{error.toString()}</FormHelperText>
                         }
                         <Button
                             variant="raised"
