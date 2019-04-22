@@ -251,7 +251,8 @@
       "category": "financial",
       "icon": "icons/icon.png",
       "extraResources": [
-        "desktop/build-resources/binaries/darwin/*"
+        "desktop/build-resources/binaries/darwin/axon-node",
+        "desktop/dist-bundle/prod/noderpc.proto"
       ],
       "binaries": [
         "desktop/build-resources/binaries/darwin/axon-node"
@@ -268,7 +269,7 @@
         "deb"
       ],
       "extraResources": [
-        "desktop/build-resources/binaries/linux/*",
+        "desktop/build-resources/binaries/linux/axon-node",
         "desktop/dist-bundle/prod/noderpc.proto"
       ]
     },
@@ -276,7 +277,7 @@
       "target": "nsis",
       "icon": "icons/icon.ico",
       "extraResources": [
-        "desktop/build-resources/binaries/windows/*",
+        "desktop/build-resources/binaries/windows/axon-node",
         "desktop/dist-bundle/prod/noderpc.proto"
       ]
     },
