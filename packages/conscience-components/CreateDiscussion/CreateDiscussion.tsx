@@ -21,10 +21,10 @@ class CreateDiscussion extends React.Component<Props, State>
     }
 
     _inputSubject!: HTMLInputElement
-    _inputComment!: any
 
     onSubmit() {
-        const valid = this._inputComment.getValue().length > 0 && this._inputSubject.value.length > 0
+        const { newCommentText } = this.state
+        const valid = newCommentText.length > 0 && this._inputSubject.value.length > 0
         if (valid && this.props.uri) {
             let subject = this._inputSubject.value
             if (this.props.attachedTo !== undefined) {
@@ -34,7 +34,7 @@ class CreateDiscussion extends React.Component<Props, State>
             this.props.createDiscussion({
                 uri: this.props.uri,
                 subject: subject,
-                commentText: this._inputComment.getValue(),
+                commentText: newCommentText,
             })
         } else {
             this.setState({ error: 'Oops! You need both a subject and a comment.' })
@@ -80,11 +80,6 @@ class CreateDiscussion extends React.Component<Props, State>
     }
 }
 
-interface State {
-    newCommentText: string
-    error: string
-}
-
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
@@ -99,6 +94,11 @@ interface StateProps {
 
 interface DispatchProps {
     createDiscussion: typeof createDiscussion
+}
+
+interface State {
+    newCommentText: string
+    error: string
 }
 
 const styles = () => createStyles({

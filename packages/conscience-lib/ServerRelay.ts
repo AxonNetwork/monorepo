@@ -61,6 +61,10 @@ const ServerRelay = {
         try {
             resp = await axios.post<IResponse>(API_URL + '/login-with-key', { username, hexSignature })
         } catch (err) {
+            if (!err || !err.response) {
+                throw err
+            }
+
             if (err.response.status === 403) {
                 return new Error(err.response.data.error)
             } else if (err.response.status === 400) {
