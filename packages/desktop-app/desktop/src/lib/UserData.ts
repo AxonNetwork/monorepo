@@ -22,6 +22,7 @@ export interface IUserDataContents {
     fileExtensionsHidden?: boolean
     manualChunking?: boolean
     newestViewedCommentTimestamp?: ICommentTimestamp
+    mostRecentChangelogSeen?: string
 }
 
 const UserData = {
@@ -154,6 +155,15 @@ const UserData = {
             },
         })
         fs.writeFileSync(CONSCIENCERC_PATH, updated)
+    },
+
+    async getMostRecentChangelogSeen() {
+        let mostRecentChangelogSeen = (await UserData.get('mostRecentChangelogSeen')) as string|undefined
+        return mostRecentChangelogSeen
+    },
+
+    async setMostRecentChangelogSeen(semver: string|undefined) {
+        await UserData.set('mostRecentChangelogSeen', semver)
     },
 }
 

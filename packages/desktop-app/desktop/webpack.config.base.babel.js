@@ -174,6 +174,10 @@ export default {
                 from: '../../conscience-lib/rpc/noderpc.proto',
                 to:   'noderpc.proto',
             },
+            {
+                from: '../../../CHANGELOG.md',
+                to:   'CHANGELOG.md',
+            },
         ]),
     ],
 

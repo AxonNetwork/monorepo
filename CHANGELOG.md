@@ -1,5 +1,11 @@
 
-# v0.0.5
+# CHANGELOG
+
+## 0.0.6
+
+- Fixed a bug that prevented users from creating new discussions
+
+## 0.0.5
 
 - Webapp
 - Researcher profile pages
@@ -12,5 +18,6 @@
 - Plugins
 - Spreadsheet editing
 - Kanban/Trello boards
+
 
 
