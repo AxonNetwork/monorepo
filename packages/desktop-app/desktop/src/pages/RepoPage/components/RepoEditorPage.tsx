@@ -44,7 +44,7 @@ interface StateProps {
 
 const styles = (theme: Theme) => createStyles({
     page: {
-        marginTop: 32
+        marginTop: 16,
     },
 })
 

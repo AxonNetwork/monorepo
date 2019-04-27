@@ -86,7 +86,10 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: 16,
     },
     fileListContainer: {
-        marginTop: 16
+        marginTop: 16,
+        // margin: '16px auto 0',
+        // width: 'fit-content',
+        // minWidth: 800,
     },
     fileViewerContainer: {
         display: 'flex',

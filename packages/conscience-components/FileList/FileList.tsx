@@ -8,6 +8,7 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import TextField from '@material-ui/core/TextField'
+import Drawer from '@material-ui/core/Drawer'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -34,7 +35,9 @@ import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
 import { createFolder } from 'conscience-components/env-specific'
 import { IGlobalState } from 'conscience-components/redux'
+import { H5 } from 'conscience-components/Typography/Headers'
 import NewFileDialog from './NewFileDialog'
+import FileDetailsSidebar from './FileDetailsSidebar'
 
 
 
@@ -48,6 +51,8 @@ class FileList extends React.Component<Props, State>
         quickNavOpen: false,
         quickNavQuery: '',
         quickNavFileList: [],
+        detailsFile: undefined,
+        detailsSidebarOpen: false,
     }
 
     _inputQuickNav: HTMLInputElement | null = null
@@ -177,6 +182,7 @@ class FileList extends React.Component<Props, State>
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             canEditFiles={this.props.canEditFiles}
                                             showFullPaths={showFullPaths}
+                                            onClickDetails={this.onClickFileDetails}
                                         />
                                     ))}
                                 </TableBody>
@@ -184,6 +190,12 @@ class FileList extends React.Component<Props, State>
                         </CardContent>
                     </Card>
                 }
+
+                <FileDetailsSidebar
+                    uri={this.state.detailsFile}
+                    open={this.state.detailsSidebarOpen}
+                    onClose={this.onCloseFileDetails}
+                />
 
                 <NewFileDialog
                     open={this.state.newFileDialogOpen}
@@ -217,7 +229,16 @@ class FileList extends React.Component<Props, State>
         )
     }
 
-    onQuickNavSearchChange(evt: React.ChangeEvent<HTMLInputElement>) {
+    onClickFileDetails = (uri: URI) => {
+        this.setState({ detailsFile: uri, detailsSidebarOpen: true })
+    }
+
+    onCloseFileDetails = () => {
+        console.log('onCloseFileDetails')
+        this.setState({ detailsSidebarOpen: false })
+    }
+
+    onQuickNavSearchChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
         if (evt.target.value === '/') {
             return
         }
@@ -291,7 +312,9 @@ class FileList extends React.Component<Props, State>
             this.state.newFolderDialogOpen !== nextState.newFolderDialogOpen ||
             this.state.quickNavOpen !== nextState.quickNavOpen ||
             this.state.quickNavQuery !== nextState.quickNavQuery ||
-            this.state.quickNavFileList !== nextState.quickNavFileList
+            this.state.quickNavFileList !== nextState.quickNavFileList ||
+            this.state.detailsFile !== nextState.detailsFile ||
+            this.state.detailsSidebarOpen !== nextState.detailsSidebarOpen
     }
 }
 
@@ -314,6 +337,8 @@ interface State {
     quickNavOpen: boolean
     quickNavQuery: string
     quickNavFileList: IRepoFile[]
+    detailsFile: URI|undefined
+    detailsSidebarOpen: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -370,6 +395,20 @@ const styles = (theme: Theme) => createStyles({
         '& svg': {
             color: 'rgba(0, 0, 0, 0.54)',
         },
+    },
+    fileDetailsSidebar: {
+        width: 400,
+        padding: 20,
+        marginLeft: 20,
+    },
+    fileDetailsSidebarHeader: {
+        marginBottom: 24,
+        borderBottom: '1px solid #e2e2e2',
+        paddingBottom: 10,
+    },
+    fileDetailsSidebarStats: {
+        color: '#e2e2e2',
+        fontSize: '0.8rem',
     },
 })
 

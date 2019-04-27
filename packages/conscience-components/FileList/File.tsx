@@ -41,7 +41,7 @@ class File extends React.Component<Props, State>
         }
     }
 
-    selectFile() {
+    selectFile(evt: any) {
         if (this.state.mergeConflict) {
             selectFile(this.props.uri, FileMode.ResolveConflict)
         } else {
@@ -57,6 +57,10 @@ class File extends React.Component<Props, State>
                 selectFile(this.props.uri, FileMode.Edit)
             }
         }
+    }
+
+    onRightClick = (evt: any) => {
+        console.log('onRightClick', evt)
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {
@@ -109,7 +113,8 @@ class File extends React.Component<Props, State>
             <TableRow
                 hover
                 onClick={this.selectFile}
-                className={classnames(classes.tableRow, this.state.mergeConflict ? classes.mergeConflict : '')}
+                onContextMenu={this.onRightClick}
+                className={classnames(classes.tableRow, { [classes.mergeConflict]: this.state.mergeConflict })}
                 classes={{ hover: this.state.mergeConflict ? classes.mergeConflictHover : classes.tableRowHover }}
             >
                 <TableCell scope="row" className={classes.tableCell}>
@@ -118,17 +123,22 @@ class File extends React.Component<Props, State>
                         <Typography variant="subheading" className={classes.filename}>{displayname}</Typography>
                     </div>
                 </TableCell>
-                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{bytes(file.size)}</TableCell>
-                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight)}>{moment(file.modified).fromNow()}</TableCell>
-                {isLocal &&
-                    <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellActions)}>
-                        <FileButtons
-                            uri={this.props.uri}
-                            file={this.props.file}
-                            canEditFiles={this.props.canEditFiles}
-                        />
-                    </TableCell>
-                }
+                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellDeemphasize)}>{bytes(file.size)}</TableCell>
+                <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellDeemphasize, classes.tableCellActions)}>
+                    <div className={classnames({ [classes.disappearOnHover]: isLocal}) }>
+                        {moment(file.modified).fromNow()}
+                    </div>
+                    {isLocal &&
+                        <div className={classnames(classes.showOnHover, classes.tableCellActions)}>
+                            <FileButtons
+                                uri={this.props.uri}
+                                file={this.props.file}
+                                canEditFiles={this.props.canEditFiles}
+                                onClickDetails={this.props.onClickDetails}
+                            />
+                        </div>
+                    }
+                </TableCell>
             </TableRow>
         )
         if (this.state.mergeConflict) {
@@ -165,6 +175,7 @@ interface OwnProps {
     fileExtensionsHidden: boolean | undefined
     canEditFiles?: boolean
     showFullPaths?: boolean
+    onClickDetails: (uri: URI) => void
 }
 
 const styles = createStyles({
@@ -184,6 +195,12 @@ const styles = createStyles({
     tableRowHover: {
         '&:hover': {
             backgroundColor: 'rgba(124, 170, 255, 0.13) !important',
+        },
+        '&:hover $disappearOnHover': {
+            display: 'none',
+        },
+        '&:hover $showOnHover': {
+            display: 'table-cell',
         },
     },
     mergeConflict: {
@@ -206,9 +223,23 @@ const styles = createStyles({
         textAlign: 'right',
     },
     tableCellActions: {
+        maxWidth: 100,
+        '& > div': {
+            float: 'right',
+        },
         '& button': {
             marginLeft: 16,
         },
+    },
+    tableCellDeemphasize: {
+        color: '#afafaf',
+    },
+
+    disappearOnHover: {
+        display: 'block',
+    },
+    showOnHover: {
+        display: 'none',
     },
 })
 
