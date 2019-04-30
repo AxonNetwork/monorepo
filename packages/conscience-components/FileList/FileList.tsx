@@ -169,20 +169,28 @@ class FileList extends React.Component<Props, State>
                                 </FormControl>
                             }
 
-                            <Table>
-                                <TableBody>
-                                    {entries.map(file => (
-                                        <File
-                                            uri={{ ...this.props.uri, filename: file.name }}
-                                            file={file}
-                                            key={file.name}
-                                            fileExtensionsHidden={this.props.fileExtensionsHidden}
-                                            canEditFiles={this.props.canEditFiles}
-                                            showFullPaths={showFullPaths}
-                                        />
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            {entries.length === 0 &&
+                                <div className={classes.emptyFolderMessage}>
+                                    This folder is empty.
+                                </div>
+                            }
+
+                            {entries.length > 0 &&
+                                <Table>
+                                    <TableBody>
+                                        {entries.map(file => (
+                                            <File
+                                                uri={{ ...this.props.uri, filename: file.name }}
+                                                file={file}
+                                                key={file.name}
+                                                fileExtensionsHidden={this.props.fileExtensionsHidden}
+                                                canEditFiles={this.props.canEditFiles}
+                                                showFullPaths={showFullPaths}
+                                            />
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            }
                         </CardContent>
                     </Card>
                 }
@@ -387,6 +395,14 @@ const styles = (theme: Theme) => createStyles({
     fileDetailsSidebarStats: {
         color: '#e2e2e2',
         fontSize: '0.8rem',
+    },
+
+    emptyFolderMessage: {
+        textAlign: 'center',
+        color: '#a9a9a9',
+        fontSize: '0.9rem',
+        fontStyle: 'italic',
+        cursor: 'default',
     },
 })
 

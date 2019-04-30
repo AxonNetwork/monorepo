@@ -112,7 +112,7 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOr
             const commits = {} as { [commit: string]: ITimelineEvent }
             const commitList = [] as string[]
 
-            timeline = timeline.filter(e => !!e) // @@TODO: why do timeline events come back null sometimes? 
+            timeline = timeline.filter(e => !!e) // @@TODO: why do timeline events come back null sometimes?
             for (let commit of timeline) {
                 commits[commit.commit] = commit
                 commitList.push(commit.commit)
@@ -346,6 +346,14 @@ function addFolders(files: { [name: string]: IRepoFile }) {
                     isChunked: false,
                 } as IRepoFile
             }
+        }
+    }
+
+    // Remove the fake '.' files inserted by the node to represent empty folders
+    const allKeys = Object.keys(files)
+    for (let filepath of allKeys) {
+        if (path.basename(filepath) === '.') {
+            delete files[filepath]
         }
     }
 }
