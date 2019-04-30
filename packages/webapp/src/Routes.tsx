@@ -13,6 +13,7 @@ import OrgPage from 'pages/OrgPage'
 import ShowcasePage from 'pages/ShowcasePage'
 import SearchPage from 'conscience-components/SearchPage'
 import { IGlobalState } from 'conscience-components/redux'
+import FileDetailsSidebar from 'conscience-components/FileDetailsSidebar'
 
 
 function Routes({ loginState, username, history, classes }: Props) {
@@ -40,6 +41,8 @@ function Routes({ loginState, username, history, classes }: Props) {
                             }
                         }} />
                     </Switch>
+
+                    <FileDetailsSidebar />
                     <Footer />
                 </Typography>
             )} />

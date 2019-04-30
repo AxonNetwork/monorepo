@@ -9,6 +9,7 @@ export type PluginType = 'file type' | 'file viewer' | 'file editor' | 'markdown
 export interface IFileType {
     extensions: string[]
     type: string
+    humanReadableType: string
     language?: string
     isTextFile: boolean
     viewers: string[]

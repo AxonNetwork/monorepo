@@ -1,6 +1,7 @@
 import path from 'path'
 import urljoin from 'url-join'
 import React from 'react'
+import { connect } from 'react-redux'
 import ReactMarkdown from 'react-markdown'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -13,6 +14,7 @@ import { autobind } from 'conscience-lib/utils'
 import { directEmbedPrefix } from 'conscience-components/env-specific'
 import { URI } from 'conscience-lib/common'
 import { renderShortcode } from 'conscience-lib/utils/markdownShortcodes'
+import { setFileDetailsSidebarURI, showFileDetailsSidebar } from 'conscience-components/redux/ui/uiActions'
 
 
 @autobind
@@ -75,7 +77,12 @@ class RenderMarkdown extends React.Component<Props>
                     filename = parts[1]
                 }
 
-                return <img src={urljoin(directEmbedPrefix(uri), filename!)} />
+                const onClick = () => {
+                    this.props.setFileDetailsSidebarURI({ uri: { ...uri, filename } })
+                    this.props.showFileDetailsSidebar({ open: true })
+                }
+
+                return <img src={urljoin(directEmbedPrefix(uri), filename!)} onClick={onClick} style={{ cursor: 'pointer' }} />
             }
 
             case 'file': {
@@ -119,6 +126,9 @@ interface Props {
     text: string
     dirname?: string
 
+    setFileDetailsSidebarURI: typeof setFileDetailsSidebarURI
+    showFileDetailsSidebar: typeof showFileDetailsSidebar
+
     classes?: any
 }
 
@@ -153,4 +163,9 @@ const styles = () => createStyles({
     },
 })
 
-export default withStyles(styles)(RenderMarkdown)
+const mapDispatchToProps = {
+    setFileDetailsSidebarURI,
+    showFileDetailsSidebar,
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(RenderMarkdown))

@@ -67,6 +67,8 @@ export default function setEnvSpecific(store: Store<IGlobalState>) {
                 throw new Error(`cannot saveFileContents for a URI with no filename: ${uri.type} : ${uri.repoRoot} : ${uri.commit} : ${uri.filename}`)
             }
 
+            console.log('saveFileContents', uri)
+
             return new Promise<void>((resolve, reject) => {
                 // const { repoRoot = '', filename = '' } = uri
                 fs.writeFile(path.join(uri.repoRoot, uri.filename!), fileContents, 'utf8', (err?: Error) => {

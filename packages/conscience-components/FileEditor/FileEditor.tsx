@@ -1,6 +1,7 @@
 import path from 'path'
 import omit from 'lodash/omit'
 import React from 'react'
+import { connect } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -9,6 +10,7 @@ import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select'
 import Input from '@material-ui/core/Input'
 import CancelIcon from '@material-ui/icons/Cancel'
+import InfoIcon from '@material-ui/icons/Info'
 import SaveIcon from '@material-ui/icons/Save'
 import SettingsIcon from '@material-ui/icons/Settings'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
@@ -16,6 +18,7 @@ import { URI, URIType } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { IFileEditorPlugin, FileEditorComponent } from 'conscience-lib/plugins/types'
+import { setFileDetailsSidebarURI, showFileDetailsSidebar } from 'conscience-components/redux/ui/uiActions'
 
 
 @autobind
@@ -79,6 +82,12 @@ class FileEditor extends React.Component<Props, State>
                         <Tooltip title="Close">
                             <Button color="secondary" onClick={this.onClickClose}>
                                 <CancelIcon />
+                            </Button>
+                        </Tooltip>
+
+                        <Tooltip title="More details">
+                            <Button color="secondary" onClick={this.onClickDetails}>
+                                <InfoIcon />
                             </Button>
                         </Tooltip>
 
@@ -162,6 +171,11 @@ class FileEditor extends React.Component<Props, State>
         this.props.history.go(-1)
     }
 
+    onClickDetails = () => {
+        this.props.setFileDetailsSidebarURI({ uri: this.props.uri })
+        this.props.showFileDetailsSidebar({ open: true })
+    }
+
     onClickOpenWithSystemEditor = () => {
         try {
             const shell = (window as any).require('electron').shell
@@ -173,13 +187,18 @@ class FileEditor extends React.Component<Props, State>
     }
 }
 
+type Props = OwnProps & DispatchProps & { classes?: any }
 
-interface Props extends RouteComponentProps {
+interface OwnProps extends RouteComponentProps {
     uri: URI
     isNewFile: boolean
     showToolbar?: boolean
     showSaveButton?: boolean
-    classes?: any
+}
+
+interface DispatchProps {
+    showFileDetailsSidebar: typeof showFileDetailsSidebar
+    setFileDetailsSidebarURI: typeof setFileDetailsSidebarURI
 }
 
 interface State {
@@ -236,4 +255,9 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(withRouter(FileEditor))
+const mapDispatchToProps = {
+    showFileDetailsSidebar,
+    setFileDetailsSidebarURI,
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(withRouter(FileEditor)))

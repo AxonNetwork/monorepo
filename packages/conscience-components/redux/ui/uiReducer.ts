@@ -3,6 +3,7 @@ import { RepoActionType, IRepoAction } from '../repo/repoActions'
 import { OrgActionType, IOrgAction } from '../org/orgActions'
 import { UIActionType, IUIAction } from './uiActions'
 import { uriToString } from 'conscience-lib/utils'
+import { URI } from 'conscience-lib/common'
 
 const initialState = {
     loginLoading: false,
@@ -18,6 +19,9 @@ const initialState = {
     cloneRepoProgressByID: {},
     cloneRepoErrorByID: {},
     updatingUserPermissions: undefined,
+
+    fileDetailsSidebarURI: undefined,
+    fileDetailsSidebarOpen: false,
 }
 
 export interface IUIState {
@@ -48,6 +52,9 @@ export interface IUIState {
         [repoID: string]: Error | undefined
     }
     updatingUserPermissions: string | undefined
+
+    fileDetailsSidebarURI: URI | undefined
+    fileDetailsSidebarOpen: boolean
 }
 
 const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserAction | IRepoAction | IOrgAction): IUIState => {
@@ -259,6 +266,19 @@ const uiReducer = (state: IUIState = initialState, action: IUIAction | IUserActi
                 ...state,
                 updateOrgLoading: false
             }
+
+        case UIActionType.SET_FILE_DETAILS_SIDEBAR_URI: {
+            return {
+                ...state,
+                fileDetailsSidebarURI: action.payload.uri,
+            }
+        }
+        case UIActionType.SHOW_FILE_DETAILS_SIDEBAR: {
+            return {
+                ...state,
+                fileDetailsSidebarOpen: action.payload.open
+            }
+        }
     }
 
     return state

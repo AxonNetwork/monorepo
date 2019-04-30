@@ -125,7 +125,7 @@ class File extends React.Component<Props, State>
                 </TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellDeemphasize)}>{bytes(file.size)}</TableCell>
                 <TableCell className={classnames(classes.tableCell, classes.tableCellAlignRight, classes.tableCellDeemphasize, classes.tableCellActions)}>
-                    <div className={classnames({ [classes.disappearOnHover]: isLocal}) }>
+                    <div className={classnames({ [classes.disappearOnHover]: isLocal})}>
                         {moment(file.modified).fromNow()}
                     </div>
                     {isLocal &&
@@ -134,7 +134,6 @@ class File extends React.Component<Props, State>
                                 uri={this.props.uri}
                                 file={this.props.file}
                                 canEditFiles={this.props.canEditFiles}
-                                onClickDetails={this.props.onClickDetails}
                             />
                         </div>
                     }
@@ -175,7 +174,6 @@ interface OwnProps {
     fileExtensionsHidden: boolean | undefined
     canEditFiles?: boolean
     showFullPaths?: boolean
-    onClickDetails: (uri: URI) => void
 }
 
 const styles = createStyles({
@@ -215,6 +213,8 @@ const styles = createStyles({
         borderBottom: 'none',
         maxWidth: 680,
         paddingRight: 20,
+        paddingTop: 0,
+        paddingBottom: 0,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -228,7 +228,7 @@ const styles = createStyles({
             float: 'right',
         },
         '& button': {
-            marginLeft: 16,
+            marginLeft: 8,
         },
     },
     tableCellDeemphasize: {

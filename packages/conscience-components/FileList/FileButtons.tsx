@@ -21,6 +21,7 @@ import { IRepoFile, FileMode, URI, LocalURI, URIType } from 'conscience-lib/comm
 import autobind from 'conscience-lib/utils/autobind'
 import * as filetypes from 'conscience-lib/utils/fileTypes'
 import { selectFile } from 'conscience-components/navigation'
+import { setFileDetailsSidebarURI, showFileDetailsSidebar } from 'conscience-components/redux/ui/uiActions'
 
 
 @autobind
@@ -98,7 +99,8 @@ class FileButtons extends React.Component<Props, State>
 
     onClickDetails = (evt: React.MouseEvent) => {
         evt.stopPropagation()
-        this.props.onClickDetails(this.props.uri)
+        this.props.setFileDetailsSidebarURI({ uri: this.props.uri })
+        this.props.showFileDetailsSidebar({ open: true })
     }
 
     openItemWithSystemEditor(e: React.MouseEvent<HTMLElement>) {
@@ -157,7 +159,6 @@ interface OwnProps {
     uri: URI
     file: IRepoFile
     canEditFiles?: boolean
-    onClickDetails: (uri: URI) => void
 }
 
 interface StateProps {
@@ -166,11 +167,15 @@ interface StateProps {
 
 interface DispatchProps {
     setFilesChunking: typeof setFilesChunking
+    setFileDetailsSidebarURI: typeof setFileDetailsSidebarURI
+    showFileDetailsSidebar: typeof showFileDetailsSidebar
 }
 
 const styles = (theme: Theme) => createStyles({
     iconButton: {
         padding: 0,
+        width: 36,
+        height: 36,
     },
 })
 
@@ -182,6 +187,8 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {
     setFilesChunking,
+    setFileDetailsSidebarURI,
+    showFileDetailsSidebar,
 }
 
 export default connect(

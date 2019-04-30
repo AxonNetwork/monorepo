@@ -11,10 +11,11 @@ interface FileIconProps {
     isFolder: boolean
     status: string
     classes: any
+    ListItemIconClasses: any
 }
 
 function FileIcon(props: FileIconProps) {
-    const { filename, isFolder, status, classes } = props
+    const { filename, isFolder, status, classes, ListItemIconClasses } = props
 
     let icon: JSX.Element
     if (isFolder) {
@@ -27,7 +28,7 @@ function FileIcon(props: FileIconProps) {
     if (status === 'M' || status === '?' || status === 'U') {
         icon = <Badge classes={{ badge: classes.badge }} showZero badgeContent="" color="secondary">{icon}</Badge>
     }
-    return <ListItemIcon>{icon}</ListItemIcon>
+    return <ListItemIcon classes={ListItemIconClasses}>{icon}</ListItemIcon>
 }
 
 const styles = createStyles({

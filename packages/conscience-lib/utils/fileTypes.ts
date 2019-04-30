@@ -43,6 +43,10 @@ export function getType(filename: string) {
     return (filetypes[ext(filename)] || {}).type || 'unknown'
 }
 
+export function getHumanReadableType(filename: string) {
+    return (filetypes[ext(filename)] || {}).humanReadableType || 'unknown'
+}
+
 export function isTextFile(filename: string) {
     return (filetypes[ext(filename)] || {}).isTextFile || false
 }

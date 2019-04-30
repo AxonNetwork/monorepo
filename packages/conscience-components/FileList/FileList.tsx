@@ -35,9 +35,8 @@ import LargeProgressSpinner from 'conscience-components/LargeProgressSpinner'
 import { selectFile } from 'conscience-components/navigation'
 import { createFolder } from 'conscience-components/env-specific'
 import { IGlobalState } from 'conscience-components/redux'
-import { H5 } from 'conscience-components/Typography/Headers'
 import NewFileDialog from './NewFileDialog'
-import FileDetailsSidebar from './FileDetailsSidebar'
+import FileDetailsSidebar from 'conscience-components/FileDetailsSidebar'
 
 
 
@@ -51,8 +50,6 @@ class FileList extends React.Component<Props, State>
         quickNavOpen: false,
         quickNavQuery: '',
         quickNavFileList: [],
-        detailsFile: undefined,
-        detailsSidebarOpen: false,
     }
 
     _inputQuickNav: HTMLInputElement | null = null
@@ -182,7 +179,6 @@ class FileList extends React.Component<Props, State>
                                             fileExtensionsHidden={this.props.fileExtensionsHidden}
                                             canEditFiles={this.props.canEditFiles}
                                             showFullPaths={showFullPaths}
-                                            onClickDetails={this.onClickFileDetails}
                                         />
                                     ))}
                                 </TableBody>
@@ -190,12 +186,6 @@ class FileList extends React.Component<Props, State>
                         </CardContent>
                     </Card>
                 }
-
-                <FileDetailsSidebar
-                    uri={this.state.detailsFile}
-                    open={this.state.detailsSidebarOpen}
-                    onClose={this.onCloseFileDetails}
-                />
 
                 <NewFileDialog
                     open={this.state.newFileDialogOpen}
@@ -224,18 +214,8 @@ class FileList extends React.Component<Props, State>
                         <Button color="secondary" variant="outlined" onClick={this.closeNewFolderDialog}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
-
             </React.Fragment>
         )
-    }
-
-    onClickFileDetails = (uri: URI) => {
-        this.setState({ detailsFile: uri, detailsSidebarOpen: true })
-    }
-
-    onCloseFileDetails = () => {
-        console.log('onCloseFileDetails')
-        this.setState({ detailsSidebarOpen: false })
     }
 
     onQuickNavSearchChange = (evt: React.ChangeEvent<HTMLInputElement>) => {

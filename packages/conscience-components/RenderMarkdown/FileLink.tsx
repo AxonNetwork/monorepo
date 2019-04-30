@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
@@ -6,6 +7,7 @@ import FileViewer from '../FileViewer'
 import { FileMode, URI } from 'conscience-lib/common'
 import { autobind } from 'conscience-lib/utils'
 import { selectFile, getFileURL } from 'conscience-components/navigation'
+import { setFileDetailsSidebarURI, showFileDetailsSidebar } from 'conscience-components/redux/ui/uiActions'
 
 @autobind
 class FileLink extends React.Component<Props, State>
@@ -27,8 +29,9 @@ class FileLink extends React.Component<Props, State>
                 <span ref={x => this._anchorElement = x}>
                     <Link to={getFileURL(uri, FileMode.View)}
                         className={classes.link}
-                        onMouseEnter={this.showPopper}
-                        onMouseLeave={this.hidePopper}
+                        onClick={this.onClick}
+                        onMouseEnter={undefined /*this.showPopper*/}
+                        onMouseLeave={undefined /*this.hidePopper*/}
                     >
                         {this.props.uri.filename || ''}
                     </Link>
@@ -37,8 +40,8 @@ class FileLink extends React.Component<Props, State>
                     open={this.state.showPopper}
                     anchorEl={this._anchorElement}
                     placement="top"
-                    onMouseEnter={this.showPopper}
-                    onMouseLeave={this.hidePopper}
+                    onMouseEnter={undefined /*this.showPopper*/}
+                    onMouseLeave={undefined /*this.hidePopper*/}
                     style={{ zIndex: 999, maxHeight: window.innerHeight * 0.8 }}
                     popperOptions={{
                         modifiers: {
@@ -57,6 +60,13 @@ class FileLink extends React.Component<Props, State>
         )
     }
 
+    onClick = (evt: React.MouseEvent) => {
+        evt.preventDefault()
+        evt.stopPropagation()
+        this.props.setFileDetailsSidebarURI({ uri: this.props.uri })
+        this.props.showFileDetailsSidebar({ open: true })
+    }
+
     goToFile = () => {
         const uri = { ...this.props.uri }
         uri.commit = uri.commit || 'HEAD'
@@ -72,10 +82,15 @@ class FileLink extends React.Component<Props, State>
     }
 }
 
-type Props = OwnProps & { classes: any }
+type Props = OwnProps & DispatchProps & { classes: any }
 
 interface OwnProps {
     uri: URI
+}
+
+interface DispatchProps {
+    showFileDetailsSidebar: typeof showFileDetailsSidebar
+    setFileDetailsSidebarURI: typeof setFileDetailsSidebarURI
 }
 
 interface State {
@@ -103,4 +118,9 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-export default withStyles(styles)(FileLink)
+const mapDispatchToProps = {
+    showFileDetailsSidebar,
+    setFileDetailsSidebarURI,
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(FileLink))

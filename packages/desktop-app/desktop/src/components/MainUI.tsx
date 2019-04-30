@@ -11,6 +11,7 @@ import Login from './Login/LoginPage'
 import AutoupdateDialog from './AutoupdateDialog'
 import ChangelogDialog from './ChangelogDialog'
 import { IGlobalState } from 'conscience-components/redux'
+import FileDetailsSidebar from 'conscience-components/FileDetailsSidebar'
 import { autobind } from 'conscience-lib/utils'
 
 
@@ -58,6 +59,7 @@ class MainUI extends React.Component<Props, State>
                     </div>
                 </main>
 
+                <FileDetailsSidebar />
                 <AutoupdateDialog />
                 <ChangelogDialog />
             </div>
