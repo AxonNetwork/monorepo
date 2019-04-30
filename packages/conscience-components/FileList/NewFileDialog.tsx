@@ -69,7 +69,7 @@ class NewFileDialog extends React.Component<Props, State>
                 open={this.props.open}
                 onClose={this.props.onClickCancel}
             >
-                <form>
+                <form onSubmit={this.onClickCreate}>
                     <DialogTitle>Create new file</DialogTitle>
                     <DialogContent>
                         <div className={classes.templateWrapper}>
@@ -115,7 +115,7 @@ class NewFileDialog extends React.Component<Props, State>
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <Button color="secondary" variant="contained" onClick={this.onClickCreate}>Create</Button>
+                        <Button color="secondary" variant="contained" type="submit">Create</Button>
                         <Button color="secondary" variant="outlined" onClick={this.props.onClickCancel}>Cancel</Button>
                     </DialogActions>
                 </form>
@@ -147,8 +147,12 @@ const styles = (theme: Theme) => createStyles({
         marginBottom: 36,
     },
     templatePreview: {
-        width: 580,
+        maxWidth: 580,
         height: 280,
+
+        '& img': {
+            width: '100%',
+        },
     },
     templateDescription: {
         fontSize: '0.9rem',
@@ -165,6 +169,7 @@ const styles = (theme: Theme) => createStyles({
         width: 200,
         padding: 0,
         flexGrow: 1,
+        flexShrink: 0,
         height: 280,
         overflowY: 'auto',
     },
