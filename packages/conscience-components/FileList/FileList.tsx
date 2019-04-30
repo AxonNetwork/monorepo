@@ -278,8 +278,6 @@ class FileList extends React.Component<Props, State>
                 throw err
             }
         }
-
-        selectFile(folderURI, FileMode.View)
     }
 
     shouldComponentUpdate(nextProps: Props, nextState: State) {
