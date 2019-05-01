@@ -4,28 +4,38 @@ import "overlayscrollbars/css/OverlayScrollbars.css"
 
 class Scrollbar extends React.Component<any> {
 
-    parentRef = React.createRef<HTMLDivElement>()
+    // parentRef = React.createRef<HTMLDivElement>()
     osTargetRef = React.createRef<HTMLDivElement>()
     osInstance: any = null
 
     componentDidMount() {
         const theme = this.props.variant === 'light' ? 'os-theme-light' : 'os-theme-dark'
         const options = {
-            ...(this.props.options || {}),
+            autoUpdate: true,
+            autoUpdateInterval: 1000,
             className: theme,
             overflowBehavior: {
                 x: 'hidden',
                 y: 'auto'
-            }
+            },
+            ...(this.props.options || {}),
         }
-        if (this.osTargetRef !== null) {
-            this.osInstance = OverlayScrollbars(this.osTargetRef.current, options, this.props.extensions)
+
+        if (this.props.autoHideDelay !== undefined) {
+            options.scrollbars = options.scrollbars || {}
+            options.scrollbars.autoHide = 'scroll'
+            options.scrollbars.autoDelay = this.props.autoHideDelay
         }
+
+        // if (this.osTargetRef !== null) {
+        console.log('this.osTargetRef.current', this.osTargetRef.current)
+        this.osInstance = OverlayScrollbars(this.osTargetRef.current, options, this.props.extensions)
+        // }
     }
 
-    componentDidUpdate() {
-        this.osTargetRef
-    }
+    // componentDidUpdate() {
+    //     this.osTargetRef
+    // }
 
     componentWillUnmount() {
         if (this.osInstance && this.osInstance.destroy) {
@@ -34,12 +44,9 @@ class Scrollbar extends React.Component<any> {
     }
 
     render() {
-        const height = this.parentRef.current !== null ? this.parentRef.current.offsetHeight : 0
         return (
-            <div {...this.props} ref={this.parentRef} style={{ height: '100%' }}>
-                <div ref={this.osTargetRef} style={{ height: height }}>
-                    {this.props.children}
-                </div>
+            <div {...this.props} ref={this.osTargetRef}>
+                {this.props.children}
             </div>
         )
     }
@@ -47,6 +54,7 @@ class Scrollbar extends React.Component<any> {
 
 interface Props {
     variant: 'light' | 'dark' | undefined
+    autoHideDelay?: number
     children: any
     options: any
     extensions: any

@@ -64,7 +64,7 @@ class Sidebar extends React.Component<Props, State>
 
                 <Divider />
 
-                <Scrollbar variant='light'>
+                <Scrollbar variant='light' style={{ height: 'calc(100vh - 10px)' }}>
                     <List classes={{ root: classes.repoListRoot }}>
                         <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
                             <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
@@ -85,27 +85,27 @@ class Sidebar extends React.Component<Props, State>
                             />
                         </Collapse>
                     </List>
-                </Scrollbar>
 
-                <div className={classes.sidebarSpacer}></div>
-
-                <Divider />
-                <List className={classes.sidebarDarkBG}>
-                    <ListItem button key="new" onClick={this.navigateNewRepo} className={classes.sidebarItemIconWrapper}>
-                        <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        <ListItemIcon>
-                            <ControlPointIcon />
-                        </ListItemIcon>
-                    </ListItem>
+                    <div className={classes.sidebarSpacer}></div>
 
                     <Divider />
-                    <ListItem button key="settings" onClick={selectSettings} className={classes.sidebarItemIconWrapper}>
-                        <ListItemText primary="Settings" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                        <ListItemIcon>
-                            <SettingsIcon />
-                        </ListItemIcon>
-                    </ListItem>
-                </List>
+                    <List className={classes.sidebarDarkBG}>
+                        <ListItem button key="new" onClick={this.navigateNewRepo} className={classes.sidebarItemIconWrapper}>
+                            <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                            <ListItemIcon>
+                                <ControlPointIcon />
+                            </ListItemIcon>
+                        </ListItem>
+
+                        <Divider />
+                        <ListItem button key="settings" onClick={selectSettings} className={classes.sidebarItemIconWrapper}>
+                            <ListItemText primary="Settings" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                            <ListItemIcon>
+                                <SettingsIcon />
+                            </ListItemIcon>
+                        </ListItem>
+                    </List>
+                </Scrollbar>
             </Drawer>
         )
     }

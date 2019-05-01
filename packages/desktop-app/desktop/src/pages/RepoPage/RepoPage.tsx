@@ -42,7 +42,7 @@ class RepoPageContainer extends React.Component<Props>
                     repoPage={repoPage}
                 />
                 <div id="hihihi" className={classes.repoPage}> {/* @@TODO: either pass ref via props, or rename div ID to something sane */}
-                    <Scrollbar>
+                    <Scrollbar autoHideDelay={800} style={{ height: 'calc(100vh - 10px)' }}>
                         <div className={classes.repoPageInner}>
                             <Switch>
                                 <Route path='/local-repo/:repoHash/files/:commit/:filename+' component={RepoFilesPage} />

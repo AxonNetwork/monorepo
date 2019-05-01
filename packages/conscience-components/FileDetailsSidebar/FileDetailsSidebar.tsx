@@ -20,6 +20,7 @@ import * as fileTypes from 'conscience-lib/utils/fileTypes'
 import { showFileDetailsSidebar } from 'conscience-components/redux/ui/uiActions'
 import FileIcon from 'conscience-components/FileList/FileIcon'
 import FileMetadata from './FileMetadata'
+import Scrollbar from 'conscience-components/Scrollbar'
 
 @autobind
 class FileDetailsSidebar extends React.Component<Props>
@@ -52,6 +53,7 @@ class FileDetailsSidebar extends React.Component<Props>
                 }}
                 open={open}
             >
+                <Scrollbar>
                 <div className={classes.contentRoot}>
                     <div className={classes.header}>
                         <FileIcon
@@ -85,6 +87,7 @@ class FileDetailsSidebar extends React.Component<Props>
 
                     <FileMetadata uri={uri} classes={{ root: classes.fileMetadata }} />
                 </div>
+                </Scrollbar>
             </Drawer>
         )
     }
@@ -117,10 +120,13 @@ const styles = (theme: Theme) => createStyles({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        // overflowY: 'hidden',
     },
     contentRoot: {
         padding: 20,
-        overflowX: 'hidden',
+        // overflowX: 'hidden',
+        // overflowY: 'auto',
+        height: '100vh',
     },
     open: {
         width: 400,
