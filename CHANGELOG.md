@@ -1,6 +1,19 @@
 
 # CHANGELOG
 
+## 0.0.8
+
+- New 'file details' sidebar
+- New file metadata editor
+- Hide 'hidden' files (filenames beginning with '.') by default
+- Improved scrollbar behavior
+- Fixed a crash upon creating a new folder
+- Improved empty folder handling
+
+## 0.0.7
+
+- Fixed a crash on Windows
+
 ## 0.0.6
 
 - Fixed a bug that prevented users from creating new discussions
