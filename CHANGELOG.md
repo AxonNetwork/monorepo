@@ -3,6 +3,8 @@
 
 ## 0.0.8
 
+*April 30, 2019*
+
 - New 'file details' sidebar
 - New file metadata editor
 - Hide 'hidden' files (filenames beginning with '.') by default
@@ -12,13 +14,19 @@
 
 ## 0.0.7
 
+*April 26, 2019*
+
 - Fixed a crash on Windows
 
 ## 0.0.6
 
+*April 25, 2019*
+
 - Fixed a bug that prevented users from creating new discussions
 
 ## 0.0.5
+
+*April 22, 2019*
 
 - Webapp
 - Researcher profile pages
