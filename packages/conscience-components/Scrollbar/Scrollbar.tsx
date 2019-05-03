@@ -2,9 +2,8 @@ import React from "react";
 import OverlayScrollbars from "overlayscrollbars"
 import "overlayscrollbars/css/OverlayScrollbars.css"
 
-class Scrollbar extends React.Component<any> {
-
-    // parentRef = React.createRef<HTMLDivElement>()
+class Scrollbar extends React.Component<any>
+{
     osTargetRef = React.createRef<HTMLDivElement>()
     osInstance: any = null
 
@@ -27,15 +26,8 @@ class Scrollbar extends React.Component<any> {
             options.scrollbars.autoDelay = this.props.autoHideDelay
         }
 
-        // if (this.osTargetRef !== null) {
-        console.log('this.osTargetRef.current', this.osTargetRef.current)
         this.osInstance = OverlayScrollbars(this.osTargetRef.current, options, this.props.extensions)
-        // }
     }
-
-    // componentDidUpdate() {
-    //     this.osTargetRef
-    // }
 
     componentWillUnmount() {
         if (this.osInstance && this.osInstance.destroy) {
@@ -53,7 +45,7 @@ class Scrollbar extends React.Component<any> {
 }
 
 interface Props {
-    variant: 'light' | 'dark' | undefined
+    variant?: 'light' | 'dark'
     autoHideDelay?: number
     children: any
     options: any

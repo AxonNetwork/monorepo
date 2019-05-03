@@ -1,5 +1,6 @@
 import sortBy from 'lodash/sortBy'
 import React from 'react'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
 import { createStyles, withStyles, Theme } from '@material-ui/core/styles'
@@ -50,13 +51,24 @@ class RepoList extends React.Component<Props>
                         </ListItem>
                     )
                 })}
+                <ListItem
+                    button
+                    dense
+                    onClick={this.onClickNewRepo}
+                >
+                    <ListItemText primary="+ New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                </ListItem>
             </List>
         )
+    }
+
+    onClickNewRepo = () => {
+        this.props.history.push(`/new-repo`)
     }
 }
 
 
-type Props = OwnProps & StateProps & { classes: any }
+type Props = OwnProps & StateProps & RouteComponentProps & { classes: any }
 
 interface OwnProps {
     selectedRepo?: string | undefined
@@ -96,7 +108,4 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {}
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles)(RepoList))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(RepoList)))

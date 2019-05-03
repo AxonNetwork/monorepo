@@ -8,13 +8,10 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
-import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Collapse from '@material-ui/core/Collapse'
-import ControlPointIcon from '@material-ui/icons/ControlPoint'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
@@ -33,8 +30,8 @@ import { autobind } from 'conscience-lib/utils'
 class Sidebar extends React.Component<Props, State>
 {
     state = {
-        repoOpen: true,
-        orgOpen: true,
+        repoListOpen: true,
+        orgListOpen: true,
         orgDialogOpen: false,
     }
 
@@ -46,63 +43,48 @@ class Sidebar extends React.Component<Props, State>
                 classes={{
                     paper: classnames(classes.drawerPaper, !open && classes.drawerPaperClose),
                 }}
+                className={classes.root}
                 open={open}
             >
-                <div className={classes.sidebarToggle}>
+                <div className={classes.buttonHeader}>
                     <IconButton onClick={this.props.toggleSidebar}>
                         <MenuIcon />
                     </IconButton>
-                </div>
-                <Divider />
-                <div className={classes.avatarWrapper}>
+
+                    <div style={{ flexGrow: 1 }}></div>
+
                     <UserAvatar
                         user={user}
                         noTooltip
                     />
-                    <Typography className={classes.avatarName} classes={{ root: classes.sidebarItemText }}>{this.props.user.name}</Typography>
                 </div>
 
                 <Divider />
 
-                <Scrollbar variant='light' style={{ height: 'calc(100vh - 10px)' }}>
+                <Scrollbar variant='light' style={{ height: '100vh' }}>
                     <List classes={{ root: classes.repoListRoot }}>
                         <ListItem button onClick={this.onClickExpandRepositories} className={classes.sidebarItemText}>
                             <ListItemText primary="Repositories" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                            {this.state.repoOpen ? <ExpandMore /> : <ExpandLess />}
+                            {this.state.repoListOpen ? <ExpandMore /> : <ExpandLess />}
                         </ListItem>
-                        <Collapse in={this.state.repoOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={this.state.repoListOpen} timeout="auto" unmountOnExit>
                             <RepoList selectedRepo={this.props.selectedRepo} />
                         </Collapse>
 
                         <ListItem button onClick={this.onClickExpandOrganizations} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
                             <ListItemText primary="Organizations" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                            {this.state.orgOpen ? <ExpandMore /> : <ExpandLess />}
+                            {this.state.orgListOpen ? <ExpandMore /> : <ExpandLess />}
                         </ListItem>
-                        <Collapse in={this.state.orgOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={this.state.orgListOpen} timeout="auto" unmountOnExit>
                             <OrgList
                                 orgs={this.props.orgs}
                                 createOrg={this.props.createOrg}
                             />
                         </Collapse>
-                    </List>
 
-                    <div className={classes.sidebarSpacer}></div>
-
-                    <Divider />
-                    <List className={classes.sidebarDarkBG}>
-                        <ListItem button key="new" onClick={this.navigateNewRepo} className={classes.sidebarItemIconWrapper}>
-                            <ListItemText primary="New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                            <ListItemIcon>
-                                <ControlPointIcon />
-                            </ListItemIcon>
-                        </ListItem>
-
-                        <Divider />
-                        <ListItem button key="settings" onClick={selectSettings} className={classes.sidebarItemIconWrapper}>
+                        <ListItem button onClick={selectSettings} className={classnames(classes.sidebarItemText, classes.sidebarItemTextOrganizations)}>
                             <ListItemText primary="Settings" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                            <ListItemIcon>
-                                <SettingsIcon />
-                            </ListItemIcon>
+                            <SettingsIcon />
                         </ListItem>
                     </List>
                 </Scrollbar>
@@ -111,15 +93,11 @@ class Sidebar extends React.Component<Props, State>
     }
 
     onClickExpandRepositories() {
-        this.setState({ repoOpen: !this.state.repoOpen })
+        this.setState({ repoListOpen: !this.state.repoListOpen })
     }
 
     onClickExpandOrganizations() {
-        this.setState({ orgOpen: !this.state.orgOpen })
-    }
-
-    navigateNewRepo() {
-        this.props.history.push(`/new-repo`)
+        this.setState({ orgListOpen: !this.state.orgListOpen })
     }
 }
 
@@ -145,16 +123,13 @@ interface DispatchProps {
 }
 
 interface State {
-    repoOpen: boolean
-    orgOpen: boolean
+    repoListOpen: boolean
+    orgListOpen: boolean
+    orgDialogOpen: boolean
 }
 
-const drawerWidth = 200
-
 const styles = (theme: Theme) => createStyles({
-    sidebarToggle: {
-        // display: 'flex',
-        // justifyContent: 'flex-start',
+    root: {
         '& svg': {
             fill: 'rgb(212, 212, 212)',
         },
@@ -165,7 +140,7 @@ const styles = (theme: Theme) => createStyles({
         backgroundColor: '#383840',
         position: 'relative',
         whiteSpace: 'nowrap',
-        width: drawerWidth,
+        width: 200,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
@@ -179,6 +154,11 @@ const styles = (theme: Theme) => createStyles({
             duration: theme.transitions.duration.leavingScreen,
         }),
         width: 0,
+    },
+    buttonHeader: {
+        display: 'flex',
+        paddingRight: 14,
+        paddingBottom: 10,
     },
     repoListRoot: {
         overflowY: 'auto',
@@ -203,9 +183,6 @@ const styles = (theme: Theme) => createStyles({
         boxShadow: 'inset 0px 5px 15px -3px rgba(0, 0, 0, 0.44)',
     },
     avatarWrapper: {
-        // display: 'flex',
-        // flexDirection: 'column',
-        // alignItems: 'center',
         width: '100%',
         padding: '20px 0',
         textAlign: 'center',

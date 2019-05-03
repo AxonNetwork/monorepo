@@ -29,30 +29,28 @@ class OrgList extends React.Component<Props, State>
         return (
             <React.Fragment>
                 <List>
-                    {
-                        Object.keys(orgs).sort().map((orgID: string) => {
-                            const org = orgs[orgID]
-                            const isSelected = orgID === selectedOrg
-                            return (
-                                <React.Fragment key={orgID}>
-                                    <ListItem
-                                        button
-                                        dense
-                                        className={classnames({ [classes.selected]: isSelected })}
-                                        onClick={() => selectOrg(orgID)}
-                                    >
-                                        <ListItemText primary={org.name} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
-                                    </ListItem>
-                                </React.Fragment>
-                            )
-                        })
-                    }
+                    {Object.keys(orgs).sort().map(orgID => {
+                        const org = orgs[orgID]
+                        const isSelected = orgID === selectedOrg
+                        return (
+                            <React.Fragment key={orgID}>
+                                <ListItem
+                                    button
+                                    dense
+                                    className={classnames({ [classes.selected]: isSelected })}
+                                    onClick={() => selectOrg(orgID)}
+                                >
+                                    <ListItemText primary={org.name} primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                                </ListItem>
+                            </React.Fragment>
+                        )
+                    })}
                     <ListItem
                         button
                         dense
                         onClick={this.onClickOpenOrgDialog}
                     >
-                        <ListItemText primary="New  +" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
+                        <ListItemText primary="+ New" primaryTypographyProps={{ classes: { root: classes.sidebarItemText } }} />
                     </ListItem>
                 </List>
                 <Dialog
