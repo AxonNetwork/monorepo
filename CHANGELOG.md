@@ -1,6 +1,13 @@
 
 # CHANGELOG
 
+## 0.0.9
+
+*May 2, 2019*
+
+- Fixed a few scrollbar bugs
+- Cleaned up the sidebar
+
 ## 0.0.8
 
 *April 30, 2019*
