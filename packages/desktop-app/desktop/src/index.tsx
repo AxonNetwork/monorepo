@@ -9,7 +9,7 @@ import { AppContainer } from 'react-hot-loader'
 import App from './App'
 import store from 'redux/store'
 import history from 'conscience-components/redux/history'
-import { readLocalConfig, checkNodeUser, checkBalanceAndHitFaucet, setAutoUpdateState } from 'redux/user/userActions'
+import { readLocalConfig, checkNodeUser, setAutoUpdateState } from 'redux/user/userActions'
 import { AutoUpdateState } from 'redux/user/userReducer'
 import { initNodeWatcher } from 'conscience-components/redux/repo/repoActions'
 import * as rpc from 'conscience-lib/rpc'
@@ -30,11 +30,11 @@ setEnvSpecific(store)
 initPlugins()
 
 store.dispatch(readLocalConfig())
-store.dispatch(checkBalanceAndHitFaucet())
+// store.dispatch(checkBalanceAndHitFaucet())
 store.dispatch(checkNodeUser())
-store.dispatch(initNodeWatcher({}));
+store.dispatch(initNodeWatcher({}))
 
-(window as any).getState = () => store.getState()
+;(window as any).getState = () => store.getState()
 
 // Webpack offline plugin
 if (isProduction) {

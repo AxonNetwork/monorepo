@@ -4,6 +4,8 @@ import engines from 'consolidate'
 import morgan from 'morgan'
 import path from 'path'
 import compression from 'compression'
+import bugsnag from '@bugsnag/js'
+import bugsnagExpress from '@bugsnag/plugin-express'
 
 import passport from 'passport'
 
@@ -13,6 +15,12 @@ import routes from './routes'
 import HTTPError from './util/HTTPError'
 
 const app = express()
+
+const bugsnagClient = bugsnag(process.env.BUGSNAG_API_KEY)
+bugsnagClient.use(bugsnagExpress)
+const bugsnagMW = bugsnagClient.getPlugin('express')
+
+// app.use(bugsnagMW.requestHandler) // this must be the first `app.use` or bugsnag will miss some errors
 
 const allowCrossDomain = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
@@ -74,8 +82,12 @@ app.use((err, req, res, next) => {
     if (err.statusCode) {
         res.status(err.statusCode).json({ error: err.message })
     } else {
+        bugsnagClient.notify(err)
         res.status(500).json({ error: `Unhandled error: ${err.toString()}` })
     }
 })
+
+// not currently using bugsnag's built-in error handler
+// app.use(bugsnagMW.errorHandler) // this must be the last `app.use`
 
 export default app

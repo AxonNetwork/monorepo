@@ -5,8 +5,11 @@ declare module 'conscience-lib/rpc' {
     export interface IRPCClient {
         setUsernameAsync: (params: { username: string }) => Promise<{ signature: Buffer }>
         getUsernameAsync: (params: {}) => Promise<{ username: string, signature: Buffer }>
+        getEthereumBIP39SeedAsync: (params: {}) => Promise<{ seed: string }>
+        setEthereumBIP39SeedAsync: (params: { seed: string }) => Promise<void>
 
         initRepoAsync: (params: { repoID: string, path?: string, name?: string, email?: string }) => Promise<{ path: string }>
+        checkpointRepo: any
         checkpointRepoAsync: (params: { path: string, message?: string }) => Promise<{ ok: boolean }>
         pullRepo: (params: { path: string }) => any // emitter for progress stream
         cloneRepo: (params: { repoID: string, path?: string, name?: string, email?: string }) => any // emitter for progress stream
@@ -68,7 +71,7 @@ declare module 'conscience-lib/rpc' {
             { filename: string, enabled: boolean }
         ) => Promise<{}>
 
-        watch: (parms: { eventTypes: (0 | 1 | 2 | 3)[] }) => events.EventEmitter
+        watch: (parms: { eventTypes: (1 | 2 | 4 | 8)[] }) => events.EventEmitter
 
 
         // @@TODO: convert to enum
@@ -79,10 +82,10 @@ declare module 'conscience-lib/rpc' {
         }
 
         EventType: {
-            ADDED_REPO: 0,
-            PULLED_REPO: 1,
-            PUSHED_REPO: 2,
-            UPDATED_REF: 3,
+            ADDED_REPO: 1,
+            PULLED_REPO: 2,
+            PUSHED_REPO: 4,
+            UPDATED_REF: 8,
         }
 
     }

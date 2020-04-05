@@ -11,7 +11,7 @@ interface FileIconProps {
     isFolder: boolean
     status: string
     classes: any
-    ListItemIconClasses: any
+    ListItemIconClasses?: any
 }
 
 function FileIcon(props: FileIconProps) {

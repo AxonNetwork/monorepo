@@ -19,7 +19,7 @@ export async function getProtocolContract() {
             return Protocol.currentProvider.send.apply(Protocol.currentProvider, arguments)
         }
     }
-    protocolContract = await Protocol.deployed()
+    protocolContract = await Protocol.at(process.env.PROTOCOL_CONTRACT_ADDRESS)
     return protocolContract
 }
 
@@ -36,7 +36,7 @@ export async function getUserRegistryContract() {
             return UserRegistry.currentProvider.send.apply(UserRegistry.currentProvider, arguments)
         }
     }
-    userRegistryContract = await UserRegistry.deployed()
+    userRegistryContract = await UserRegistry.at(process.env.USER_REGISTRY_CONTRACT_ADDRESS)
     return userRegistryContract
 }
 

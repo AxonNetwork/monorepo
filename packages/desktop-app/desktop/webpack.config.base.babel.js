@@ -15,6 +15,7 @@ import DuplicatePackageCheckerPlugin from 'duplicate-package-checker-webpack-plu
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import ProgressBarWebpackPlugin from 'progress-bar-webpack-plugin'
+import HardSourceWebpackPlugin from 'hard-source-webpack-plugin'
 
 const ReactManifest = path.join(__dirname, 'dist-bundle/dll/react_manifest.json')
 const devMode = process.env.NODE_ENV !== 'production'
@@ -137,6 +138,7 @@ export default {
 
     // A list of used webpack plugins
     plugins: [
+        new HardSourceWebpackPlugin(),
         new webpack.DefinePlugin({ 'process.env.APP_VERSION': JSON.stringify(require('../package.json').version) }),
         // Enforces case sensitive paths.
         new CaseSensitivePathsPlugin(),

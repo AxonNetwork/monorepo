@@ -20,7 +20,7 @@ export function makeLogic
     (opts: { type: string, warnTimeout?: number, process: ProcessFunc<HandledActionType, SuccessActionType, IGlobalState> }) {
     return createLogic({
         type: opts.type,
-        warnTimeout: opts.warnTimeout || 60000,
+        warnTimeout: opts.warnTimeout !== undefined ? opts.warnTimeout : 60000,
         process: async (depObj, dispatch, done) => {
             try {
                 const retval = await Promise.resolve((opts.process as any)(depObj, dispatch, done))

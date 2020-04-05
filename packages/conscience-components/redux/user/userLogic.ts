@@ -59,6 +59,9 @@ const fetchUserDataByUsernameLogic = makeLogic<IFetchUserDataByUsernameAction, I
         const usersState = getState().user.users
         const usersByUsernameState = getState().user.usersByUsername
         const toFetch = uniq(action.payload.usernames).filter(username => {
+            if (!usersByUsernameState[username]) {
+                return true
+            }
             const userID = usersByUsernameState[username] || ''
             return usersState[userID] === undefined
         })

@@ -15,7 +15,7 @@ import logo from '../../assets/img/logo.png'
 
 
 @autobind
-class NewRepository extends React.Component<Props>
+class WelcomePage extends React.Component<Props>
 {
     _inputRepoID: HTMLInputElement | null = null
 
@@ -27,15 +27,22 @@ class NewRepository extends React.Component<Props>
 
                 <H3>Welcome to Axon</H3>
 
+                <br />
                 <form noValidate autoComplete="off" name="create" onSubmit={this.handleSubmit} className={classes.form}>
                     <Typography variant="subtitle1">
-                        Get started by creating your first repository:
+                        <strong>Get started by creating a repository.</strong>
                     </Typography>
+                        <Typography variant="subtitle1">
+                        <span style={{ fontSize: '2rem' }}>🗂</span> A repository is a collection of files and discussions associated with a project.  Don't worry, you can choose anything for now as you explore the app.
+                    </Typography>
+                    <br />
+                    <br />
                     <TextField
                         id="repo-id"
-                        label="Repository ID"
+                        label="Repository name"
                         fullWidth
                         inputRef={x => this._inputRepoID = x}
+                        autoFocus
                     />
                     <Button
                         variant="raised"
@@ -132,4 +139,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(NewRepository))
+)(withStyles(styles)(WelcomePage))

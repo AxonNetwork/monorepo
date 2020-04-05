@@ -252,3 +252,10 @@ export interface ISearchResults {
     files: ISearchFileResult[]
     users: ISearchUserResult[]
 }
+
+export interface ILongRunningOperationStatus {
+    status: string
+    percent: number
+    done: boolean
+}
+

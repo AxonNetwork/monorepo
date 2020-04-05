@@ -17,6 +17,13 @@ import { autobind } from 'conscience-lib/utils'
 @autobind
 class LoginPage extends React.Component<Props, State>
 {
+    state = {
+        displaySignup: true,
+        name: '',
+        password: '',
+        email: '',
+    }
+
     _inputUsername: HTMLInputElement | null = null
     _inputName: HTMLInputElement | null = null
     _inputEmail: HTMLInputElement | null = null

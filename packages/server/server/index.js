@@ -12,4 +12,4 @@ app.listen(process.env.PORT, () => {
 setupRepoCache()
 watchNode()
 
-process.on('SIGINT', () => { console.log('Bye bye!'); process.exit() })
+process.on('SIGINT', () => process.exit())

@@ -23,7 +23,7 @@ import { fetchIsBehindRemote, pullRepo, checkpointRepo, setFilesChunking } from 
 import { IGlobalState } from '../redux'
 import { selectFile } from '../navigation'
 import { getFileContents } from '../env-specific'
-import { IRepoFile, FileMode, LocalURI, URIType } from 'conscience-lib/common'
+import { IRepoFile, FileMode, LocalURI, URIType, ILongRunningOperationStatus } from 'conscience-lib/common'
 import { autobind, uriToString, parseMergeConflict } from 'conscience-lib/utils'
 import isEqual from 'lodash/isEqual'
 
@@ -67,6 +67,29 @@ class PushPullButtons extends React.Component<Props, State>
 
         const pullDisabled = !this.props.isBehindRemote || pullLoading
         const pushDisabled = !filesChanged || checkpointLoading
+
+        const checkpointOpStatus = this.props.checkpointOperationStatus
+        let checkpointOpStatusText = ''
+        if (checkpointOpStatus) {
+            if (checkpointOpStatus.done) {
+                checkpointOpStatusText = 'Done!'
+            } else {
+                let status = checkpointOpStatus.status
+                if (checkpointOpStatus.status === 'updating remote ref') {
+                    status = 'contacting Ethereum network...'
+                } else if (checkpointOpStatus.status === 'requesting replication') {
+                    status = 'contacting peers...'
+                } else if (checkpointOpStatus.status === 'replicating') {
+                    status = 'uploading to peers'
+                }
+
+                if (checkpointOpStatus.percent && checkpointOpStatus.percent.toString().length > 0) {
+                    checkpointOpStatusText = capitalize(status) + `: ${checkpointOpStatus.percent}%`
+                } else {
+                    checkpointOpStatusText = capitalize(status)
+                }
+            }
+        }
 
         return (
             <div className={classes.root}>
@@ -128,7 +151,7 @@ class PushPullButtons extends React.Component<Props, State>
                     <DialogTitle>Commit your changes</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Looks like there a are some large files in repository that aren't being chunked. We recommend chunking any file over 10MB.
+                            Looks like there are some large files in repository that aren't being chunked. We recommend chunking any file over 10MB.
                         </DialogContentText>
                         <DialogContentText>
                             Enable Chunking:
@@ -193,6 +216,18 @@ class PushPullButtons extends React.Component<Props, State>
                             Cancel
                         </Button>
                     </DialogActions>
+                </Dialog>
+
+                <Dialog open={!!checkpointOpStatus}>
+                    <DialogTitle>Sharing your changes...</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <div style={{ marginRight: 16 }}><CircularProgress size={36} className={classes.buttonLoadingProgressDialog} /></div>
+                                <div>{checkpointOpStatusText}</div>
+                            </div>
+                        </DialogContentText>
+                    </DialogContent>
                 </Dialog>
             </div>
         )
@@ -293,6 +328,10 @@ class PushPullButtons extends React.Component<Props, State>
     }
 }
 
+function capitalize(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 type Props = OwnProps & StateProps & DispatchProps & { classes: any }
 
 interface OwnProps {
@@ -306,6 +345,7 @@ interface StateProps {
     manualChunking: boolean
     pullProgress: { fetched: number, toFetch: number } | undefined
     checkpointLoading: boolean
+    checkpointOperationStatus: ILongRunningOperationStatus
 }
 
 interface DispatchProps {
@@ -339,6 +379,9 @@ const styles = (theme: Theme) => createStyles({
         marginTop: -12,
         marginLeft: -12,
     },
+    buttonLoadingProgressDialog: {
+        color: theme.palette.secondary.main,
+    },
 })
 
 const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
@@ -350,6 +393,7 @@ const mapStateToProps = (state: IGlobalState, ownProps: OwnProps) => {
         manualChunking: state.user.userSettings.manualChunking || false,
         pullProgress: state.ui.pullRepoProgressByURI[uriStr],
         checkpointLoading: state.ui.checkpointLoading || false,
+        checkpointOperationStatus: state.repo.checkpointOperationStatus,
     }
 }
 

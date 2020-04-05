@@ -38,6 +38,10 @@ Repo.get = async (repoID) => {
         Key:       { repoID },
     })).Item
 
+    if (!result) {
+        return null
+    }
+
     return {
         repoID:              result.repoID,
         users:               (result.users || {}).values || [],

@@ -25,10 +25,10 @@ function initClient(protoPath) {
     }
 
     client.EventType = {
-        ADDED_REPO:  0,
-        PULLED_REPO: 1,
-        PUSHED_REPO: 2,
-        UPDATED_REF: 3,
+        ADDED_REPO:  1,
+        PULLED_REPO: 2,
+        PUSHED_REPO: 4,
+        UPDATED_REF: 8,
     }
 
     // @@TODO: this invalidates the whole purpose of streaming the response.  redo this later.

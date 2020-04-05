@@ -1,7 +1,6 @@
 import path from 'path'
 import isEqual from 'lodash/isEqual'
 import React from 'react'
-import classnames from 'classnames'
 import { connect } from 'react-redux'
 import Table from '@material-ui/core/Table'
 import TableHead from '@material-ui/core/TableHead'
@@ -71,22 +70,22 @@ class FileMetadata extends React.Component<Props, State>
     }
 
     getMetadataFilename = () => {
-        const dirname  = path.dirname(this.props.uri.filename)
-        const basename = path.basename(this.props.uri.filename)
+        const dirname  = path.dirname(this.props.uri!.filename!)
+        const basename = path.basename(this.props.uri!.filename!)
         return path.join(dirname, '.' + basename + '.meta')
     }
 
     onClickAdd = async () => {
-        const key = this._inputNewKey.value
-        const val = this._inputNewValue.value
+        const key = this._inputNewKey!.value
+        const val = this._inputNewValue!.value
         const metadata = { ...this.state.metadata, [key]: val }
 
         const fileContents = tomlify.toToml(metadata, { space: 0 })
 
-        await saveFileContents({ ...this.props.uri, filename: this.getMetadataFilename() }, fileContents)
+        await saveFileContents({ ...this.props.uri!, filename: this.getMetadataFilename() }, fileContents)
 
-        this._inputNewKey.value = ''
-        this._inputNewValue.value = ''
+        this._inputNewKey!.value = ''
+        this._inputNewValue!.value = ''
 
         this.getFileMetadata()
     }

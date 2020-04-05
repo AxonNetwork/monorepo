@@ -31,7 +31,7 @@ class RepoInfo extends React.Component<Props>
 
                 <div className={classes.spacer}></div>
 
-                <Tabs
+                <Tabs className={classes.tabs}
                     pages={[
                         [RepoPage.Home, 'Home'],
                         [RepoPage.Files, 'Files'],
@@ -70,6 +70,13 @@ const styles = (theme: Theme) => createStyles({
         display: 'flex',
         justifyContent: 'space-between',
         flexShrink: 0,
+
+        [theme.breakpoints.down(1024)]: {
+            flexDirection: 'column',
+        },
+    },
+    tabs: {
+        alignSelf: 'flex-end',
     },
     locationLink: {
         color: theme.palette.secondary.main,

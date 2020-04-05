@@ -32,7 +32,7 @@ class FileEditor extends React.Component<Props, State>
 
     // We have to handle both of these because sometimes components are wrapped in HOCs (like
     // withStyles, withRouter) that offer `innerRef` as a way of getting to the inner component, and
-    // sometimes they don't.
+    // sometimes they aren't.
     _editor:      FileEditorComponent|null = null
     _editorInner: FileEditorComponent|null = null
 
@@ -104,9 +104,11 @@ class FileEditor extends React.Component<Props, State>
                                 <Select
                                     value={editorName}
                                     renderValue={() => (
+                            <Tooltip title="Viewers and editors">
                                         <Button color="secondary">
                                             <SettingsIcon className={classes.editorPickerIcon} />
                                         </Button>
+                            </Tooltip>
                                     )}
                                     input={<Input disableUnderline={true} />}
                                     onChange={this.onChangeEditor}

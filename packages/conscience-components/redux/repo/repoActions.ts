@@ -1,6 +1,6 @@
 import * as parseDiff from 'parse-diff'
 import { FailedAction } from '../reduxUtils'
-import { URI, NetworkURI, LocalURI, IRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo } from 'conscience-lib/common'
+import { URI, NetworkURI, LocalURI, IRepoMetadata, IRepoFile, ITimelineEvent, ISecuredTextInfo, ILongRunningOperationStatus } from 'conscience-lib/common'
 
 export enum RepoActionType {
     GET_REPO_LIST = 'GET_REPO_LIST',
@@ -96,6 +96,8 @@ export enum RepoActionType {
     WATCH_REPO_SUCCESS = 'WATCH_REPO_SUCCESS',
 
     SET_IS_BEHIND_REMOTE = 'SET_IS_BEHIND_REMOTE',
+
+    SET_CHECKPOINT_OPERATION_STATUS = 'SET_CHECKPOINT_OPERATION_STATUS',
 }
 
 export interface IGetRepoListAction {
@@ -511,6 +513,13 @@ export interface ISetIsBehindRemoteAction {
     }
 }
 
+export interface ISetCheckpointOperationStatusAction {
+    type: RepoActionType.SET_CHECKPOINT_OPERATION_STATUS
+    payload: {
+        status: ILongRunningOperationStatus | null
+    }
+}
+
 export type IRepoAction =
     IGetRepoListAction |
     IGetRepoListSuccessAction |
@@ -604,7 +613,9 @@ export type IRepoAction =
     IWatchRepoAction |
     IWatchRepoSuccessAction |
 
-    ISetIsBehindRemoteAction
+    ISetIsBehindRemoteAction |
+
+    ISetCheckpointOperationStatusAction
 
 export const getRepoList = (payload: IGetRepoListAction['payload']): IGetRepoListAction => ({ type: RepoActionType.GET_REPO_LIST, payload })
 export const getLocalRepoList = (payload: IGetLocalRepoListAction['payload']): IGetLocalRepoListAction => ({ type: RepoActionType.GET_LOCAL_REPO_LIST, payload })
@@ -645,3 +656,6 @@ export const pullRepoFailed = (payload: IPullRepoFailedAction['payload']): IPull
 export const initNodeWatcher = (payload: IInitNodeWatcherAction['payload']): IInitNodeWatcherAction => ({ type: RepoActionType.INIT_NODE_WATCHER, payload })
 export const watchRepo = (payload: IWatchRepoAction['payload']): IWatchRepoAction => ({ type: RepoActionType.WATCH_REPO, payload })
 export const setIsBehindRemote = (payload: ISetIsBehindRemoteAction['payload']): ISetIsBehindRemoteAction => ({ type: RepoActionType.SET_IS_BEHIND_REMOTE, payload })
+
+export const setCheckpointOperationStatus = (payload: ISetCheckpointOperationStatusAction['payload']): ISetCheckpointOperationStatusAction => ({ type: RepoActionType.SET_CHECKPOINT_OPERATION_STATUS, payload })
+

@@ -1,3 +1,5 @@
+import isEqual from 'lodash/isEqual'
+import classnames from 'classnames'
 import union from 'lodash/union'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -6,10 +8,14 @@ import { withStyles, createStyles, Theme } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import Tooltip from '@material-ui/core/Tooltip'
+import EditIcon from '@material-ui/icons/Edit'
+import Button from '@material-ui/core/Button'
 import SecuredText from 'conscience-components/SecuredText'
 import SharedUsers from 'conscience-components/SharedUsers'
-import FileViewer from 'conscience-components/FileViewer'
+// import FileViewer from 'conscience-components/FileViewer'
 import DiscussionList from 'conscience-components/DiscussionList'
+import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import { H6 } from 'conscience-components/Typography/Headers'
 import Timeline from 'conscience-components/Timeline'
 import { selectFile } from 'conscience-components/navigation'
@@ -17,20 +23,56 @@ import { IGlobalState } from 'conscience-components/redux'
 import { getURIFromParams, getRepoID } from 'conscience-components/env-specific'
 import { IRepoMetadata, FileMode, IUser, URI } from 'conscience-lib/common'
 import { autobind, uriToString } from 'conscience-lib/utils'
+import { getFileContents } from 'conscience-components/env-specific'
 
 
 @autobind
-class RepoHomePage extends React.Component<Props>
+class RepoHomePage extends React.Component<Props, State>
 {
+    state = {
+        readmeContents: null,
+        firstLoad: true,
+        hovering: false,
+    }
+
+    onHoverViewer = (hovering: boolean) => {
+        this.setState({ hovering })
+    }
+
+    onClickQuickEdit = () => {
+        selectFile({ ...this.props.uri!, filename: 'README.md', commit: 'working' }, FileMode.Edit)
+    }
+
     render() {
         const { classes } = this.props
-        if (!this.props.uri) return null
+        if (!this.props.uri) {
+            return null
+        } else if (this.state.firstLoad) {
+            return null
+        }
 
         return (
             <div className={classes.main}>
 
-                <div className={classes.readmeContainer}>
-                    <FileViewer
+                <div className={classes.readmeContainer}
+                            onMouseEnter={() => this.onHoverViewer(true)}
+                            onMouseLeave={() => this.onHoverViewer(false)}
+                >
+                    <div className={classnames(
+                        classes.buttons,
+                        classes.buttonsAutoHide,
+                        { [classes.buttonsAutoHideVisible]: this.state.hovering },
+                    )}>
+                    <Tooltip title="Quick edit">
+                        <Button color="secondary"
+                            onClick={this.onClickQuickEdit}
+                        >
+                            <EditIcon />
+                        </Button>
+                    </Tooltip>
+                    </div>
+
+                    {/*<FileViewer
                         uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
                         canEdit
                         autoHideToolbar={true}
@@ -45,7 +87,30 @@ class RepoHomePage extends React.Component<Props>
                                 </div>
                             </div>
                         )}
-                    />
+                    />*/}
+
+                    {this.state.readmeContents === null &&
+                        <div className={classes.readmeContainerNoReadme}>
+                            <div className={classes.readmeContainerNoReadmeContents} onClick={this.onClickEditReadme}>
+                                <div className={classes.noReadmeText}>
+                                    Click here to add a welcome message and instructions to this repository.
+                                </div>
+
+                                <AddCircleOutlineIcon className={classes.noReadmeAddIcon} />
+                            </div>
+                        </div>
+                    }
+                    {this.state.readmeContents !== null &&
+                        <Card>
+                            <CardContent classes={{ root: classes.readmeContent }}>
+                                <RenderMarkdown
+                                    uri={{ ...this.props.uri, commit: 'working', filename: 'README.md' }}
+                                    text={this.state.readmeContents || ''}
+                                    dirname={'.'}
+                                />
+                            </CardContent>
+                        </Card>
+                    }
                 </div>
                 <div className={classes.sidebarComponents}>
                     {this.props.metadata && this.props.metadata.firstVerifiedCommit &&
@@ -97,6 +162,25 @@ class RepoHomePage extends React.Component<Props>
             selectFile({ ...this.props.uri, commit: 'working', filename: 'README.md' }, FileMode.EditNew)
         }
     }
+
+    componentDidMount() {
+        this.updateReadmeContents()
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(this.props.uri, prevProps.uri)) {
+            this.updateReadmeContents()
+        }
+    }
+
+    async updateReadmeContents() {
+        try {
+            const readmeContents = (await getFileContents({ ...this.props.uri, filename: 'README.md', commit: 'working' } as URI)) as string
+            this.setState({ readmeContents, firstLoad: false })
+        } catch (error) {
+            this.setState({ readmeContents: null, firstLoad: false })
+        }
+    }
 }
 
 interface MatchParams {
@@ -110,6 +194,12 @@ interface Props extends RouteComponentProps<MatchParams> {
     metadata?: IRepoMetadata | null
     hasReadme: boolean
     classes: any
+}
+
+interface State {
+    readmeContents: string|null
+    firstLoad: boolean
+    hovering: boolean
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -131,6 +221,7 @@ const styles = (theme: Theme) => createStyles({
         },
         [theme.breakpoints.down(1080)]: {
             marginBottom: 16,
+            flexBasis: 'auto',
         },
     },
     editReadmeButton: {
@@ -161,6 +252,9 @@ const styles = (theme: Theme) => createStyles({
         fontSize: '5rem',
         color: '#a2a2a2',
     },
+    readmeContent: {
+        padding: 48,
+    },
     sidebarComponents: {
         flexGrow: 1,
         minWidth: 350,
@@ -181,6 +275,29 @@ const styles = (theme: Theme) => createStyles({
         '& button': {
             marginRight: 4,
         },
+    },
+    buttons: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+    buttonsAutoHide: {
+        width: 'fit-content',
+        position: 'absolute',
+        right: 0,
+        padding: 4,
+        opacity: 0,
+        transition: theme.transitions.create('opacity', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    buttonsAutoHideVisible: {
+        opacity: 1,
+        transition: theme.transitions.create('opacity', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
 })
 

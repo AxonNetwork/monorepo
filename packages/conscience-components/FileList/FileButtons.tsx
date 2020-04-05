@@ -123,9 +123,6 @@ class FileButtons extends React.Component<Props, State>
             return false
         }
         return filetypes.isTextFile(this.props.file.name)
-
-        // const editors = filetypes.getEditors(this.props.file.name)
-        // return editors.length > 0
     }
 
     toggleChunking() {
@@ -138,7 +135,7 @@ class FileButtons extends React.Component<Props, State>
         this.closeChunkingDialog()
     }
 
-    openChunkingDialog(e: React.MouseEvent<HTMLElement>) {
+    openChunkingDialog = (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation()
         this.setState({ chunkingDialogOpen: true })
     }

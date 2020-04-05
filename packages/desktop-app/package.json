@@ -1,6 +1,6 @@
 {
   "name": "desktop-app",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "repository": {
     "type": "git",
     "url": "conscience://desktop-app"
@@ -10,7 +10,7 @@
   "main": "desktop/electron/electron.js",
   "license": "Copyright Conscience, Inc., 2019",
   "scripts": {
-    "clean": "trash desktop/dist-bundle desktop/dist-app .awcache coverage",
+    "clean": "rm -rf desktop/dist-bundle desktop/dist-app .awcache coverage",
     "dll": "cross-env NODE_ENV=production webpack --config ./desktop/webpack.config.dll.babel.js",
     "dev": "yarn clean && yarn dll && yarn dev-client",
     "dev-client": "cross-env NODE_ENV=development webpack-dev-server --hot --config ./desktop/webpack.config.dev.babel.js",
@@ -26,7 +26,8 @@
     "electron-build-mac": "build -m --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
     "electron-build-win": "build -w --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
     "electron-build-linux": "build -l --c.extraMetadata.main=desktop/electron/electron.js --c.extraMetadata.name=Axon --c.mac.appId=com.axon.app",
-    "clean-windows": "rm -rf ~/.axonrc ~/.axon.key ~/axon/ /c/Users/bryn/.axonrc /c/Users/bryn/.axon.app.json  /c/Users/bryn/.axon.key /c/Users/bryn/axon /c/Users/bryn/AppData/Roaming/desktop-app /c/Users/bryn/AppData/Roaming/Axon"
+    "clean-windows": "rm -rf ~/.axonrc ~/.axon.key ~/axon/ /c/Users/bryn/.axonrc /c/Users/bryn/.axon.app.json  /c/Users/bryn/.axon.key /c/Users/bryn/axon /c/Users/bryn/AppData/Roaming/desktop-app /c/Users/bryn/AppData/Roaming/Axon",
+    "electron-rebuild": "cd ../.. && npm run electron-rebuild"
   },
   "dependencies": {
     "@babel/cli": "^7.1.0",
@@ -92,7 +93,7 @@
     "express-session": "^1.15.6",
     "file-loader": "^2.0.0",
     "fix-path": "^2.1.0",
-    "grpc": "^1.15.1",
+    "grpc": "1.24.2",
     "helmet": "^3.13.0",
     "highlighter": "^0.1.0",
     "history": "^4.7.2",
@@ -103,6 +104,7 @@
     "image-webpack-loader": "^4.3.1",
     "immutable": "4.0.0-rc.9",
     "isomorphic-git": "^0.35.4",
+    "js-yaml": "^3.13.1",
     "klaw": "^3.0.0",
     "lodash": "^4.5.4",
     "mime-types": "^2.1.21",
@@ -148,7 +150,6 @@
     "toiletdb": "^1.4.1",
     "toml-j0.4": "^1.1.1",
     "tomlify-j0.4": "^3.0.0",
-    "trash-cli": "^1.4.0",
     "ts-loader": "^5.1.1",
     "typeface-roboto": "^0.0.54",
     "typescript": "^3.0.3",
@@ -251,12 +252,12 @@
       "category": "financial",
       "icon": "icons/icon.png",
       "extraResources": [
-        "desktop/build-resources/binaries/darwin/axon-node",
+        "desktop/build-resources/binaries/darwin/axond",
         "desktop/dist-bundle/prod/noderpc.proto",
         "desktop/dist-bundle/prod/CHANGELOG.md"
       ],
       "binaries": [
-        "desktop/build-resources/binaries/darwin/axon-node"
+        "desktop/build-resources/binaries/darwin/axond"
       ]
     },
     "pkg": {
@@ -270,7 +271,7 @@
         "deb"
       ],
       "extraResources": [
-        "desktop/build-resources/binaries/linux/axon-node",
+        "desktop/build-resources/binaries/linux/axond",
         "desktop/dist-bundle/prod/noderpc.proto",
         "desktop/dist-bundle/prod/CHANGELOG.md"
       ]
@@ -279,7 +280,7 @@
       "target": "nsis",
       "icon": "icons/icon.ico",
       "extraResources": [
-        "desktop/build-resources/binaries/windows/axon-node",
+        "desktop/build-resources/binaries/windows/axond",
         "desktop/dist-bundle/prod/noderpc.proto",
         "desktop/dist-bundle/prod/CHANGELOG.md"
       ]

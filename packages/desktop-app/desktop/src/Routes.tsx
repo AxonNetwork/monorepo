@@ -7,6 +7,7 @@ import NewRepoPage from './pages/NewRepoPage'
 import OrgPage from './pages/OrgPage'
 import SettingsPage from './pages/SettingsPage'
 import SearchPage from 'conscience-components/SearchPage'
+import FeedbackPage from 'conscience-components/FeedbackPage'
 import UserPage from 'conscience-components/UserPage'
 
 function Routes({ history, classes }: Props) {
@@ -19,6 +20,7 @@ function Routes({ history, classes }: Props) {
             <Route path="/org/:orgID" component={OrgPage} />
             <Route path="/welcome" component={WelcomePage} />
             <Route path="/settings" component={SettingsPage} />
+            <Route path="/feedback" component={FeedbackPage} />
             <Route path="/user/:username" render={props => {
                 return <UserPage {...props} classes={{ container: classes.scrollContainer }} />
             }} />

@@ -70,12 +70,6 @@ class TextEditorPlugin extends React.Component<Props, State>
             return
         }
 
-        // Don't handle binary files, only text
-        if (!filetypes.isTextFile(this.props.uri.filename)) {
-            this.setState({ fileContents: null })
-            return
-        }
-
         try {
             const fileContents = (await getFileContents(this.props.uri)) as string
             this.setState({ fileContents })

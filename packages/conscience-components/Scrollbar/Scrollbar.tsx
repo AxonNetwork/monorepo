@@ -2,7 +2,7 @@ import React from "react";
 import OverlayScrollbars from "overlayscrollbars"
 import "overlayscrollbars/css/OverlayScrollbars.css"
 
-class Scrollbar extends React.Component<any>
+class Scrollbar extends React.Component<Props>
 {
     osTargetRef = React.createRef<HTMLDivElement>()
     osInstance: any = null
@@ -48,8 +48,9 @@ interface Props {
     variant?: 'light' | 'dark'
     autoHideDelay?: number
     children: any
-    options: any
-    extensions: any
+    options?: any
+    extensions?: any
+    style?: any
 }
 
 export default Scrollbar

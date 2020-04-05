@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon /usr/local/bin/axon || true
-ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon-node /usr/local/bin/axon-node || true
+ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axond /usr/local/bin/axond || true
 ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_decode /usr/local/bin/axon_decode || true
 ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_diff /usr/local/bin/axon_diff || true
 ln -s $DSTROOT/Axon.app/Contents/Resources/desktop/build-resources/binaries/axon_encode /usr/local/bin/axon_encode || true

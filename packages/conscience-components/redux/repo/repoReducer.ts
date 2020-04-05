@@ -5,6 +5,7 @@ import { OrgActionType, IOrgAction } from '../org/orgActions'
 import { IRepoMetadata, IRepoFile, IRepoPermissions, ITimelineEvent, IUpdatedRefEvent, ISecuredTextInfo, LocalURI } from 'conscience-lib/common'
 import { uriToString } from 'conscience-lib/utils'
 import keyBy from 'lodash/keyBy'
+import { ILongRunningOperationStatus } from 'conscience-lib/common'
 
 export const initialState = {
     repoListByUserID: {},
@@ -22,6 +23,8 @@ export const initialState = {
     isPublicByID: {},
     diffsByCommitHash: {},
     isBehindRemoteByURI: {},
+
+    checkpointOperationStatus: null,
 }
 
 export interface IRepoState {
@@ -40,6 +43,8 @@ export interface IRepoState {
     isPublicByID: { [repoID: string]: boolean }
     diffsByCommitHash: { [commit: string]: parseDiff.File[] }
     isBehindRemoteByURI: { [uri: string]: boolean }
+
+    checkpointOperationStatus: null | ILongRunningOperationStatus
 }
 
 const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOrgAction): IRepoState => {
@@ -291,6 +296,14 @@ const repoReducer = (state: IRepoState = initialState, action: IRepoAction | IOr
                     ...state.diffsByCommitHash,
                     [commit]: diff,
                 }
+            }
+        }
+
+        case RepoActionType.SET_CHECKPOINT_OPERATION_STATUS: {
+            const { status } = action.payload
+            return {
+                ...state,
+                checkpointOperationStatus: status,
             }
         }
 

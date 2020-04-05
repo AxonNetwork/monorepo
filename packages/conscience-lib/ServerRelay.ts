@@ -217,6 +217,10 @@ const ServerRelay = {
             metadata: IMaybeRepoMetadata[]
         }
 
+        if (repoIDs.length === 0) {
+            return []
+        }
+
         const response = await axios.get<IResponse>(`${API_URL}/repos/metadata?` + querystring.stringify({ repoIDs }))
         return response.data.metadata
     },
@@ -558,6 +562,10 @@ const ServerRelay = {
         const qs = querystring.stringify({ q: query })
         const resp = await axios.get<IResponse>(API_URL + `/search/search-users?${qs}`)
         return resp.data
+    },
+
+    async sendFeedbackEmail(subject: string, message: string) {
+        await axios.post<{}>(API_URL + `/feedback`, { subject, message })
     },
 }
 

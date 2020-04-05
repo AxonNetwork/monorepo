@@ -168,7 +168,7 @@ let isKilled = false
 let nodeProc = null
 function startNode() {
     const env = getEnv()
-    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `axon-node${getPlatformBinaryExtension()}`)
+    const nodePath = path.join(env.CONSCIENCE_BINARIES_PATH, `axond${getPlatformBinaryExtension()}`)
 
     // fs.writeFileSync('c:\\Users\\bryn\\Desktop\\conscience-app-env.json', JSON.stringify(process.env))
     // fs.writeFileSync('c:\\Users\\bryn\\Desktop\\conscience-electron-env.json', JSON.stringify(env))

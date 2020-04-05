@@ -133,6 +133,7 @@ const styles = (theme: Theme) => createStyles({
     container: {
         display: 'flex',
         justifyContent: 'center',
+        width: '100%',
     },
     main: {
         // width: 1024,

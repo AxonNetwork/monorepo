@@ -8,7 +8,6 @@ import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import TextField from '@material-ui/core/TextField'
-import Drawer from '@material-ui/core/Drawer'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -36,7 +35,6 @@ import { selectFile } from 'conscience-components/navigation'
 import { createFolder } from 'conscience-components/env-specific'
 import { IGlobalState } from 'conscience-components/redux'
 import NewFileDialog from './NewFileDialog'
-import FileDetailsSidebar from 'conscience-components/FileDetailsSidebar'
 
 
 
@@ -50,6 +48,8 @@ class FileList extends React.Component<Props, State>
         quickNavOpen: false,
         quickNavQuery: '',
         quickNavFileList: [],
+        detailsFile: undefined,
+        detailsSidebarOpen: false,
     }
 
     _inputQuickNav: HTMLInputElement | null = null

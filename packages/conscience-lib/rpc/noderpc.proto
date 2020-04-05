@@ -8,15 +8,19 @@ option go_package = "pb";
 service NodeRPC {
   rpc SetUsername(SetUsernameRequest) returns (SetUsernameResponse) {}
   rpc GetUsername(GetUsernameRequest) returns (GetUsernameResponse) {}
+  rpc SetEthereumBIP39Seed(SetEthereumBIP39SeedRequest) returns (SetEthereumBIP39SeedResponse) {}
+  rpc GetEthereumBIP39Seed(GetEthereumBIP39SeedRequest) returns (GetEthereumBIP39SeedResponse) {}
 
   rpc InitRepo(InitRepoRequest) returns (InitRepoResponse) {}
-  rpc CheckpointRepo(CheckpointRepoRequest) returns (CheckpointRepoResponse) {}
+  rpc ImportRepo(ImportRepoRequest) returns (ImportRepoResponse) {}
+  rpc CheckpointRepo(CheckpointRepoRequest) returns (stream CheckpointRepoResponsePacket) {}
   rpc PullRepo(PullRepoRequest) returns (stream PullRepoResponsePacket) {}
   rpc CloneRepo(CloneRepoRequest) returns (stream CloneRepoResponsePacket) {}
   rpc FetchFromCommit(FetchFromCommitRequest) returns (stream FetchFromCommitResponse) {}
   rpc FetchChunks(FetchChunksRequest) returns (stream FetchChunksResponse) {}
 
   rpc RegisterRepoID(RegisterRepoIDRequest) returns (RegisterRepoIDResponse) {}
+  rpc IsRepoIDRegistered(IsRepoIDRegisteredRequest) returns (IsRepoIDRegisteredResponse) {}
   rpc TrackLocalRepo(TrackLocalRepoRequest) returns (TrackLocalRepoResponse) {}
   rpc GetLocalRepos(GetLocalReposRequest) returns (stream GetLocalReposResponsePacket) {}
   rpc SetReplicationPolicy(SetReplicationPolicyRequest) returns (SetReplicationPolicyResponse) {}
@@ -30,6 +34,7 @@ service NodeRPC {
 
   rpc SetRepoPublic(SetRepoPublicRequest) returns (SetRepoPublicResponse) {}
   rpc IsRepoPublic(IsRepoPublicRequest) returns (IsRepoPublicResponse) {}
+  rpc GetUserPermissions(GetUserPermissionsRequest) returns (GetUserPermissionsResponse) {}
   rpc SetUserPermissions(SetUserPermissionsRequest) returns (SetUserPermissionsResponse) {}
   rpc GetRepoUsers(GetRepoUsersRequest) returns (GetRepoUsersResponse) {}
 
@@ -44,6 +49,10 @@ service NodeRPC {
 
   rpc SetFileChunking(SetFileChunkingRequest) returns (SetFileChunkingResponse) {}
   rpc Watch(WatchRequest) returns (stream WatchResponse) {}
+
+  rpc CreateCommit(stream CreateCommitRequest) returns (CreateCommitResponse) {}
+
+  rpc RunPipeline(RunPipelineRequest) returns (RunPipelineResponse) {}
 }
 
 message SetUsernameRequest {
@@ -53,6 +62,18 @@ message SetUsernameRequest {
 message SetUsernameResponse {
     bytes signature = 2;
 }
+
+message GetEthereumBIP39SeedRequest {}
+
+message GetEthereumBIP39SeedResponse {
+    string seed = 1;
+}
+
+message SetEthereumBIP39SeedRequest {
+    string seed = 1;
+}
+
+message SetEthereumBIP39SeedResponse {}
 
 message GetUsernameRequest {}
 
@@ -72,13 +93,22 @@ message InitRepoResponse {
     string path = 1;
 }
 
+message ImportRepoRequest {
+    string repoRoot = 1;
+    string repoID = 2;
+}
+
+message ImportRepoResponse {}
+
 message CheckpointRepoRequest {
     string path = 1;
     string message = 2;
 }
 
-message CheckpointRepoResponse {
-    bool ok = 1;
+message CheckpointRepoResponsePacket {
+    string status = 1;
+    int64 percent = 2;
+    bool end = 3;
 }
 
 message PullRepoRequest {
@@ -155,6 +185,16 @@ message RegisterRepoIDRequest {
     string repoID = 1;
 }
 
+message RegisterRepoIDResponse {}
+
+message IsRepoIDRegisteredRequest {
+    string repoID = 1;
+}
+
+message IsRepoIDRegisteredResponse {
+    bool isRegistered = 1;
+}
+
 message FetchChunksRequest {
     string repoID = 1;
     string path = 2;
@@ -167,7 +207,6 @@ message FetchChunksResponse {
     bool end = 3;
 }
 
-message RegisterRepoIDResponse {}
 
 message TrackLocalRepoRequest {
     string repoPath = 1;
@@ -185,7 +224,7 @@ message GetLocalReposResponsePacket {
 
 message SetReplicationPolicyRequest {
     string repoID = 1;
-    bool shouldReplicate = 2;
+    int64 maxBytes = 2;
 }
 
 message SetReplicationPolicyResponse {}
@@ -284,6 +323,17 @@ message GetRepoUsersRequest {
 message GetRepoUsersResponse {
     uint64 total = 1;
     repeated string users = 2;
+}
+
+message GetUserPermissionsRequest {
+    string repoID = 1;
+    string username = 2;
+}
+
+message GetUserPermissionsResponse {
+    bool puller = 1;
+    bool pusher = 2;
+    bool admin = 3;
 }
 
 message SetUserPermissionsRequest {
@@ -437,10 +487,15 @@ message SetFileChunkingRequest {
 message SetFileChunkingResponse {}
 
 message WatchRequest {
-    repeated uint64 eventTypes = 1;
+    message UpdatedRefEventParams {
+        uint64 fromBlock = 1;
+        repeated string repoIDs = 2;
+    }
 
-    uint64 updatedRefStart = 2;
+    repeated uint64 eventTypes = 1;
+    UpdatedRefEventParams updatedRefEventParams = 2;
 }
+
 
 message WatchResponse {
 
@@ -478,3 +533,70 @@ message WatchResponse {
     }
 }
 
+message CreateCommitRequest {
+    message Header {
+        string repoID = 1;
+        bytes parentCommitHash = 2;
+        string refName = 3;
+        string authorName = 4;
+        string authorEmail = 5;
+        string commitMessage = 6;
+    }
+
+    message FileOperation {
+        message UpsertHeader {
+            string filename = 1;
+            uint64 uncompressedSize = 2;
+            uint64 ctime = 3;
+            uint64 mtime = 4;
+        }
+        message UpsertData {
+            bytes data = 1;
+            bool end = 2;
+        }
+
+        message Delete {
+            string filename = 1;
+        }
+
+        // @@TODO: Rename
+
+        oneof operation {
+            UpsertHeader upsertHeader = 1;
+            UpsertData upsertData = 2;
+            Delete delete = 3;
+        }
+    }
+
+    message Done {}
+
+    oneof payload {
+        Header header = 1;
+        FileOperation fileOperation = 2;
+        Done done = 3;
+    }
+}
+
+message CreateCommitResponse {
+    bool success = 1;
+    bytes commitHash = 2;
+}
+
+message RunPipelineRequest {
+    message Stage {
+        string platform = 1;
+        string codeRepoID = 2;
+        bytes commitHash = 3;
+        string entryFilename = 4;
+        repeated string entryArgs = 5;
+    }
+
+    string inputRepoID = 1;
+    bytes inputObjectID = 2;
+    repeated Stage stages = 3;
+    string outputFilename = 4;
+}
+
+message RunPipelineResponse {
+    bytes commitHash = 1;
+}

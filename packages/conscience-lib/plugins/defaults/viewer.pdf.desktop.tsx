@@ -87,9 +87,9 @@ const styles = () => createStyles({
 })
 
 export default {
-    pluginType: 'file viewer',
+    pluginType: 'file editor',
     name: 'pdf-viewer',
     humanName: 'Default PDF viewer',
-    viewer: withStyles(styles)(PDFViewerPlugin),
+    editor: withStyles(styles)(PDFViewerPlugin),
     widthMode: 'breakpoints',
 }

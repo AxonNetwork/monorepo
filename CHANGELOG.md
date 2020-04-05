@@ -1,6 +1,15 @@
 
 # CHANGELOG
 
+## 0.0.10
+
+*September 24, 2019*
+
+- Now running on the Bloxberg Ethereum network (bloxberg.org)
+- New viewers available for spreadsheets and Markdown documents
+- Added a new "Help & feedback" section to the sidebar for contacting the Axon team
+- Misc. bugfixes
+
 ## 0.0.9
 
 *May 2, 2019*

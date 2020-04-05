@@ -39,7 +39,7 @@ import isEqual from 'lodash/isEqual'
 
 
 @autobind
-class SharedUsers extends React.Component<Props, State>
+class AccessControlList extends React.Component<Props, State>
 {
     _inputUser: HTMLInputElement | null = null
 
@@ -62,7 +62,7 @@ class SharedUsers extends React.Component<Props, State>
         const sharedUsernames = union(admins, pushers, pullers)
         // @@TODO: Hardcoded filter, replace after adding replicator/delegator permissions
         const sharedUsers = sharedUsernames
-            .filter(username => username !== 'conscience')
+            .filter(username => ['axon', 'jupiter', 'saturn'].includes(username) === false)
             .map(username => usersByUsername[username])
             .map(id => users[id])
             .filter(user => !!user)
@@ -448,4 +448,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles)(SharedUsers))
+)(withStyles(styles)(AccessControlList))

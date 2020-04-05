@@ -29,7 +29,9 @@ const LocalCache = {
     // load metadata from cache or update if behind
     async loadMetadata(uri: LocalURI): Promise<IRepoMetadata> {
         await LocalCache.syncCache(uri)
-        return db.metadata.findOneAsync({ path: uri.repoRoot })
+        let x = db.metadata.findOneAsync({ path: uri.repoRoot })
+        console.log('LocalCache', uri, x)
+        return x
     },
 
     async loadSecuredFileInfo(uri: LocalURI): Promise<ISecuredTextInfo> {

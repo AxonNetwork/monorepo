@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import Tab from './Tab'
@@ -15,9 +16,10 @@ function Tabs<T extends number>(props: {
     onTabSelect: (page: T) => void
     menuLabelsHidden: boolean
     classes: any,
+    className?: string
 }) {
     return (
-        <div className={props.classes.root}>
+        <div className={classnames(props.classes.root, props.className)}>
             {props.pages.map((option: [T, string]) => {
                 const icon = getIcon(option[1])
                 return (

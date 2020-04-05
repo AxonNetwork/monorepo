@@ -50,6 +50,7 @@ routes.post('/api/user/email', mustAuthenticate, asyncMiddleware(userController.
 routes.post('/api/user/settings', mustAuthenticate, asyncMiddleware(userController.updateSettings))
 routes.post('/api/user/sawComment', mustAuthenticate, asyncMiddleware(userController.sawComment))
 routes.get('/api/user/settings', mustAuthenticate, asyncMiddleware(userController.getSettings))
+routes.post('/api/feedback', mustAuthenticate, asyncMiddleware(userController.sendFeedbackEmail))
 
 routes.post('/api/create-repo', mustAuthenticate, asyncMiddleware(repoController.create))
 routes.get('/api/shared-users', mustAuthenticate, asyncMiddleware(repoController.getSharedUsers))

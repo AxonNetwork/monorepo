@@ -1,12 +1,13 @@
 import path from 'path'
 import uniq from 'lodash/uniq'
-import toml from 'toml-j0.4'
-import tomlify from 'tomlify-j0.4'
+// import toml from 'toml-j0.4'
+// import tomlify from 'tomlify-j0.4'
 const { app } = (window as any).require('electron').remote
 const fs = (window as any).require('fs')
+import * as rpc from 'conscience-lib/rpc'
 
 export const CONFIG_PATH = path.join(app.getPath('home'), '.axon.app.json')
-export const CONSCIENCERC_PATH = path.join(app.getPath('home'), '.axonrc')
+export const AXONRC_PATH = path.join(app.getPath('home'), '.axonrc')
 
 interface ICommentTimestamp {
     [repoID: string]: {
@@ -129,32 +130,50 @@ const UserData = {
     },
 
     async getMnemonic() {
-        const contents = fs.readFileSync(CONSCIENCERC_PATH)
-        const parsed = toml.parse(contents.toString()) as any
-        return (parsed.node || {}).EthereumBIP39Seed || ''
+        // const contents = fs.readFileSync(AXONRC_PATH)
+        // const parsed = toml.parse(contents.toString()) as any
+        // return (parsed.node || {}).EthereumBIP39Seed || ''
+
+        const rpcClient = rpc.getClient()
+        console.log('rpcclient', rpcClient)
+        try {
+        const { seed } = await (rpcClient as any).getEthereumBip39SeedAsync({})
+        console.log('seed ~>', seed)
+        return seed
+    } catch (err) {
+        console.error('getMnemonic error~>', err)
+    }
+    return ''
     },
 
-    async setMnemonic(mnemonic: string) {
-        const contents = fs.readFileSync(CONSCIENCERC_PATH)
-        let parsed = toml.parse(contents.toString()) as any
-        parsed.node.EthereumBIP39Seed = mnemonic
-        var updated = tomlify.toToml(parsed, {
-            space: 0,
-            replace: function(key: string, value: any) {
-                // prevent tomlify from turning integers into floats
-                const context = this
-                const keypath = tomlify.toKey(context.path)
-                const integerFields = [
-                    'node.P2PListenPort',
-                    'node.MaxConcurrentPeers',
-                ]
-                if (integerFields.indexOf(keypath) > -1) {
-                    return value.toFixed(0)
-                }
-                return false
-            },
-        })
-        fs.writeFileSync(CONSCIENCERC_PATH, updated)
+    async setMnemonic(seed: string) {
+        const rpcClient = rpc.getClient()
+        try {
+        await (rpcClient as any).setEthereumBip39SeedAsync({ seed })
+    } catch (err) {
+        console.error('setMnemonic error~>', err)
+    }
+
+        // const contents = fs.readFileSync(AXONRC_PATH)
+        // let parsed = toml.parse(contents.toString()) as any
+        // parsed.node.EthereumBIP39Seed = mnemonic
+        // var updated = tomlify.toToml(parsed, {
+        //     space: 0,
+        //     replace: function(key: string, value: any) {
+        //         // prevent tomlify from turning integers into floats
+        //         const context = this
+        //         const keypath = tomlify.toKey(context.path)
+        //         const integerFields = [
+        //             'node.P2PListenPort',
+        //             'node.MaxConcurrentPeers',
+        //         ]
+        //         if (integerFields.indexOf(keypath) > -1) {
+        //             return value.toFixed(0)
+        //         }
+        //         return false
+        //     },
+        // })
+        // fs.writeFileSync(AXONRC_PATH, updated)
     },
 
     async getMostRecentChangelogSeen() {

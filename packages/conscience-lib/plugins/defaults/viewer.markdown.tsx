@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual'
 import path from 'path'
 import React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
@@ -6,13 +7,19 @@ import CardContent from '@material-ui/core/CardContent'
 import RenderMarkdown from 'conscience-components/RenderMarkdown/RenderMarkdown'
 import autobind from 'conscience-lib/utils/autobind'
 import { URI } from 'conscience-lib/common'
+import { getFileContents } from 'conscience-components/env-specific'
 
 
 @autobind
-class MarkdownViewerPlugin extends React.Component<Props>
+class MarkdownViewerPlugin extends React.Component<Props, State>
 {
+    state = {
+        fileContents: '',
+    }
+
     render() {
-        const { fileContents, classes } = this.props
+        const { classes } = this.props
+        const { fileContents } = this.state
 
         return (
             <Card>
@@ -26,13 +33,40 @@ class MarkdownViewerPlugin extends React.Component<Props>
             </Card>
         )
     }
+
+    componentDidMount() {
+        this.updateFileContents()
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (!isEqual(prevProps.uri, this.props.uri)) {
+            this.updateFileContents()
+        }
+    }
+
+    async updateFileContents() {
+        if (!this.props.uri.filename) {
+            this.setState({ fileContents: null })
+            return
+        }
+
+        try {
+            const fileContents = (await getFileContents(this.props.uri)) as string
+            this.setState({ fileContents })
+        } catch (error) {
+            this.setState({ fileContents: null })
+        }
+    }
 }
 
 type Props = OwnProps & { classes: any }
 
 interface OwnProps {
     uri: URI
-    fileContents?: string
+}
+
+interface State {
+    fileContents: string|null
 }
 
 const styles = () => createStyles({
@@ -49,9 +83,9 @@ const styles = () => createStyles({
 })
 
 export default {
-    pluginType: 'file viewer',
+    pluginType: 'file editor',
     name: 'markdown-viewer',
     humanName: 'Default Markdown viewer',
-    viewer: withStyles(styles)(MarkdownViewerPlugin),
+    editor: withStyles(styles)(MarkdownViewerPlugin),
     widthMode: 'breakpoints',
 }

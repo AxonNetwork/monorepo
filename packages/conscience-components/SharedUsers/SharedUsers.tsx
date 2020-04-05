@@ -28,8 +28,10 @@ class SharedUsers extends React.Component<Props>
         const { permissions, users, usersByUsername } = this.props
         const { admins = [], pushers = [], pullers = [] } = permissions || {}
         const sharedUsers = union(admins, pushers, pullers)
+            .filter(username => ['axon', 'jupiter', 'saturn'].includes(username) === false)
             .map(username => usersByUsername[username])
             .map(id => users[id])
+            .filter(user => !!user)
         return (
             <React.Fragment>
                 {sharedUsers.map(user => {

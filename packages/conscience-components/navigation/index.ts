@@ -147,8 +147,11 @@ export function selectSettings() {
     history.push('/settings')
 }
 
+export function selectFeedback() {
+    history.push('/feedback')
+}
+
 export function selectSearch(query: string) {
-    console.log('selectSearch', `/search/${encodeURIComponent(query)}`)
     history.push(`/search/${encodeURIComponent(query)}`)
 }
 

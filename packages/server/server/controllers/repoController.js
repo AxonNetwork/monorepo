@@ -61,7 +61,7 @@ const checkUserAccess = async (user, repoID) => {
     ])
     const canView = isPublicResp.isPublic || (user && user.username && pullers.indexOf(user.username) > -1)
     if (!canView) {
-        throw new HTTPError(403, 'Unauthorized to view this repo')
+        throw new HTTPError(403, `Unauthorized to view repo "${repoID}"`)
     }
 }
 
@@ -83,6 +83,7 @@ repoController.getRepoMetadata = async (req, res, next) => {
             return {
                 repoID: id,
                 isNull: true,
+                error: err,
             }
         }
     })
@@ -157,7 +158,7 @@ repoController.getRepoUsersPermissions = async (req, res, next) => {
         rpcClient.isRepoPublicAsync({ repoID }),
     ])
     // @@TODO refactor replicators to a different permission type
-    const replicators = [ 'jupiter', 'saturn', 'conscience', 'conscience-node' ]
+    const replicators = [ 'jupiter', 'saturn', 'axon' ]
     admins = admins.filter(name => replicators.indexOf(name) < 0)
     pullers = pullers.filter(name => replicators.indexOf(name) < 0)
     pushers = pushers.filter(name => replicators.indexOf(name) < 0)

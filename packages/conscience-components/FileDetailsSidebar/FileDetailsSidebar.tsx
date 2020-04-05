@@ -1,5 +1,4 @@
 import path from 'path'
-import moment from 'moment'
 import classnames from 'classnames'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -7,12 +6,15 @@ import { connect } from 'react-redux'
 import bytes from 'bytes'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import IconButton from '@material-ui/core/IconButton'
 import Drawer from '@material-ui/core/Drawer'
+import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import SecuredText from 'conscience-components/SecuredText'
-import { IRepoFile, URI, FileMode } from 'conscience-lib/common'
-import { getFileURL, getCommitURL } from 'conscience-components/navigation'
+import { IRepoFile, URI, URIType, FileMode } from 'conscience-lib/common'
+import { selectFile, getCommitURL } from 'conscience-components/navigation'
 import { autobind, repoUriToString } from 'conscience-lib/utils'
 import { IGlobalState } from 'conscience-components/redux'
 import { H6 } from 'conscience-components/Typography/Headers'
@@ -49,50 +51,88 @@ class FileDetailsSidebar extends React.Component<Props>
                 anchor="right"
                 PaperProps={{ elevation: 4 }}
                 classes={{
-                    paper: classnames(classes.fileDetailsSidebar, open && classes.open),
+                    paper: classnames(classes.root, open && classes.open),
                 }}
                 open={open}
             >
                 <Scrollbar>
-                <div className={classes.contentRoot}>
-                    <div className={classes.header}>
-                        <FileIcon
-                            filename={file.name}
-                            isFolder={file.type === 'folder'}
-                            status={file.status}
-                            ListItemIconClasses={{ root: classes.fileListItemIcon }}
-                        />
+                    <div className={classes.contentRoot}>
+                        <div className={classes.header}>
+                            <FileIcon
+                                filename={file.name}
+                                isFolder={file.type === 'folder'}
+                                status={file.status}
+                                ListItemIconClasses={{ root: classes.fileListItemIcon }}
+                            />
 
-                        <div style={{ flexGrow: 1 }}>
-                            <H6 className={classes.headerText}>{path.basename(file.name)}</H6>
-                            <div className={classes.commitHash}>{commitHash}</div>
+                            <div style={{ flexGrow: 1 }}>
+                                <H6 className={classes.headerText}>{path.basename(file.name)}</H6>
+                                <div className={classes.commitHash}>{commitHash}</div>
+                            </div>
+
+                            <IconButton onClick={this.close} className={classes.closeButton}>
+                                <CloseIcon />
+                            </IconButton>
                         </div>
 
-                        <IconButton onClick={this.close} className={classes.closeButton}>
-                            <CloseIcon />
-                        </IconButton>
-                    </div>
-
-                    <div className={classes.fileDetailsSidebarStats}>
-                        <Typography>
-                            <div className={classes.filetype}>
-                                {filetype}
+                        <div className={classes.bodyFirstLine}>
+                            <div className={classes.bodyFirstLineStats}>
+                                <Typography>
+                                    <div className={classes.filetype}>{filetype}</div>
+                                    <div>{bytes(file.size)}</div>
+                                </Typography>
                             </div>
-                            {/*<div>Last modified {moment((file || {}).modified).fromNow()}</div>*/}
-                            <div>{bytes(file.size)}</div>
-                        </Typography>
+
+                            <div>
+                                <Tooltip title="Open">
+                                    <IconButton onClick={this.openFile}>
+                                        <OpenInBrowserIcon />
+                                    </IconButton>
+                                </Tooltip>
+
+                                {this.props.uri && this.props.uri.type === URIType.Local &&
+                                    <Tooltip title="Open with another app on your computer">
+                                        <IconButton onClick={this.openWithSystemEditor}>
+                                            <OpenInNewIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                }
+                            </div>
+                        </div>
+
+                        <SecuredText uri={uri} classes={{ iconContainer: classes.securedTextIcon }} />
+
+                        <FileMetadata uri={uri} classes={{ root: classes.fileMetadata }} />
                     </div>
-
-                    <SecuredText uri={uri} classes={{ iconContainer: classes.securedTextIcon }} />
-
-                    <FileMetadata uri={uri} classes={{ root: classes.fileMetadata }} />
-                </div>
                 </Scrollbar>
             </Drawer>
         )
     }
 
-    close = () => {
+    openFile() {
+        if (!this.props.uri) {
+            return
+        }
+        selectFile(this.props.uri, FileMode.Edit)
+    }
+
+    openWithSystemEditor() {
+        if (!this.props.uri) {
+            return
+        } else if (this.props.uri.type === URIType.Network) {
+            return
+        }
+
+        try {
+            const shell = (window as any).require('electron').shell
+            const { repoRoot = '', filename = '' } = this.props.uri
+            shell.openItem(path.join(repoRoot, filename))
+        } catch (err) {
+            console.error("err opening file ~> ", err)
+        }
+    }
+
+    close() {
         this.props.showFileDetailsSidebar({ open: false })
     }
 }
@@ -113,7 +153,7 @@ interface DispatchProps {
 }
 
 const styles = (theme: Theme) => createStyles({
-    fileDetailsSidebar: {
+    root: {
         width: 0,
         marginLeft: 20,
         transition: theme.transitions.create('width', {
@@ -145,9 +185,11 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
         // padding: '8px 0',
     },
-    fileDetailsSidebarStats: {
-        color: '#a9a9a9',
-        fontSize: '0.8rem',
+    bodyFirstLine: {
+        display: 'flex',
+    },
+    bodyFirstLineStats: {
+        flexGrow: 1,
     },
     closeButton: {
         height: 'fit-content',

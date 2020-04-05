@@ -33,7 +33,7 @@ import {
     pullRepoProgress, pullRepoSuccess, pullRepoFailed,
     fetchIsBehindRemote, addRepoToRepoList, bringTimelineUpToDate,
     markRepoFilesDirty, watchRepo,
-    fetchRepoMetadata,
+    fetchRepoMetadata, setCheckpointOperationStatus,
 } from 'conscience-components/redux/repo/repoActions'
 import {
     getRepoListLogic,
@@ -101,7 +101,7 @@ const initRepoLogic = makeLogic<IInitRepoAction, IInitRepoSuccessAction>({
 
         await Promise.all([
             ServerRelay.createRepo(repoID),
-            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'conscience', puller: true, pusher: true, admin: true }),
+            rpc.getClient().setUserPermissionsAsync({ repoID, username: 'axon', puller: true, pusher: true, admin: true }),
         ])
         // @@TODO track nonces in node
         // sent serially so nonce stay in sync
@@ -328,6 +328,7 @@ const fetchIsBehindRemoteLogic = makeLogic<IFetchIsBehindRemoteAction, IFetchIsB
 const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsAction, IFetchRepoUsersPermissionsSuccessAction>({
     type: RepoActionType.FETCH_REPO_USERS_PERMISSIONS,
     async process({ action }, dispatch) {
+        console.log('fetchRepoUsersPermissions', action.payload.uri)
         const { uri } = action.payload
         const repoID = getRepoID(uri)
         let permissions = {} as {
@@ -346,6 +347,7 @@ const fetchRepoUsersPermissionsLogic = makeLogic<IFetchRepoUsersPermissionsActio
                 rpcClient.isRepoPublicAsync({ repoID })
             ])
             permissions = { admins, pushers, pullers, isPublic: isPublicResp.isPublic }
+            console.log('fetchRepoUsersPermissions', permissions)
         } else {
             permissions = await ServerRelay.getRepoUsersPermissions(repoID)
 
@@ -376,6 +378,9 @@ const updateUserPermissionsLogic = makeLogic<IUpdateUserPermissionsAction, IUpda
         const repoID = getRepoID(uri)
         const userID = getState().user.usersByUsername[username]
         const rpcClient = rpc.getClient()
+
+        console.log('update user perms + clear cache')
+        await LocalCache.wipe()
 
         let sharePromise = (admin || pusher || puller) ?
             ServerRelay.shareRepo(repoID, userID) :
@@ -442,6 +447,7 @@ const fetchRemoteRefsLogic = makeLogic<IFetchRemoteRefsAction, IFetchRemoteRefsS
 
 const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSuccessAction>({
     type: RepoActionType.CHECKPOINT_REPO,
+    warnTimeout: 0,
     async process({ action, getState }, dispatch) {
         const { uri, message } = action.payload
         if (uri.type === URIType.Local) {
@@ -461,7 +467,33 @@ const checkpointRepoLogic = makeLogic<ICheckpointRepoAction, ICheckpointRepoSucc
                 }
 
             }
-            await rpcClient.checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
+            // await rpcClient.checkpointRepoAsync({ path: uri.repoRoot || '', message: message })
+
+            const emitter = rpcClient.checkpointRepo({ path: uri.repoRoot || '', message: message })
+
+            await new Promise((resolve, reject) => {
+                emitter.on('data', (status: any) => {
+                    console.log('CHECKPOINT STATUS PKT ~>', status)
+                    if (status.end === true) {
+                        console.log('CHECKPOINT STATUS END IS TRUE')
+
+                        setTimeout(() => {
+                            console.log('CHECKPOINT STATUS DISPATCHING DONE')
+                            dispatch(setCheckpointOperationStatus({ status: null }))
+                            resolve()
+                        }, 3000)
+
+                    } else {
+                        if (status.percent) {
+                            status.percent = status.percent.toString()
+                        }
+                        dispatch(setCheckpointOperationStatus({ status }))
+                    }
+                })
+                emitter.on('end', () => { console.log('CHECKPOINT STATUS END') })
+                emitter.on('error', (err: Error) => { reject(err) })
+            })
+
         } else {
             throw new Error('Cannot checkpoint network repo')
         }
@@ -597,18 +629,23 @@ const watchRepoLogic = makeContinuousLogic<IWatchRepoAction>({
             const watcher = RepoWatcher.watch(repoID, path) // returns null if the watcher already exists
             if (watcher) {
                 watcher.on('file_change', () => {
+                    console.log('xyzzy ~> file_change')
                     dispatch(markRepoFilesDirty({ uri }))
                 })
                 watcher.on('pulled_repo', (evt) => {
+                    console.log('xyzzy ~> pulled_repo')
                     dispatch(fetchIsBehindRemote({ uri }))
                     dispatch(bringTimelineUpToDate({ uri }))
                     dispatch(markRepoFilesDirty({ uri }))
                 })
                 watcher.on('pushed_repo', () => {
+                    console.log('xyzzy ~> pushed_repo')
+                    dispatch(fetchIsBehindRemote({ uri }))
                     dispatch(bringTimelineUpToDate({ uri }))
                     dispatch(markRepoFilesDirty({ uri }))
                 })
                 watcher.on('updated_ref', () => {
+                    console.log('xyzzy ~> updated_ref')
                     if (!getState().repo.isBehindRemoteByURI[uriStr]) {
                         dispatch(fetchIsBehindRemote({ uri }))
                     }
