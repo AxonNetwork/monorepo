@@ -93,7 +93,7 @@
     "through2": "^3.0.0",
     "truffle-contract": "^3.0.6",
     "truffle-hdwallet-provider": "0.0.6",
-    "validator": "^9.4.1",
+    "validator": "^13.7.0",
     "web3": "1.0.0-beta.36",
     "websocket": "^1.0.28"
   },
